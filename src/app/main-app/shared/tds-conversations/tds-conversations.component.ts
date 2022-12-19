@@ -1,3 +1,4 @@
+import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { ChatomniCommentService } from './../../services/chatomni-service/chatomni-comment.service';
 import { ChatomniReplyCommentModelDto } from './../../dto/conversation-all/chatomni/chatomni-comment.dto';
 import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service';
@@ -89,7 +90,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   messageModel: string | undefined;
   isLoadingSendMess: boolean = false;
 
-  lstUser!: TDSSafeAny[];
+  lstUser!: ApplicationUserDTO[];
   users: TDSSafeAny[] = [];
   keyFilterUser: string = '';
   isLoadingSelectUser: boolean = false;
@@ -333,7 +334,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   loadUser() {
     this.applicationUserService.setUserActive();
     this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (res) => {
           this.users = [...res];
           this.lstUser = [...res];
       },
