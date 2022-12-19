@@ -79,7 +79,7 @@ import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.serv
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy {
+export class ConversationOrderComponent implements OnInit, OnChanges {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() team!: CRMTeamDTO;
@@ -164,8 +164,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   disableSyncOrder: boolean = false; //dùng cho bài viết
   commentPost!: ChatomniDataItemDto; //dùng cho bài viết
   indexDbStorage!: DataPouchDBDTO[];
-
-  timerApiLastv2: any;
 
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -396,9 +394,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
     this.validateData();
+    this.isLoading = true;
 
     this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};
     this.mappingAddress(this.quickOrderModel);
+    this.isLoading = false;
     this.cdRef.detectChanges();
   }
 
@@ -534,24 +534,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
+          this.message.error(`${error?.error?.message}`);
           this.cdRef.detectChanges();
       }
     });
   }
 
   loadCurrentCompany() {
-    this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.apiCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
 
-        if(this.companyCurrents.DefaultWarehouseId) {
-          this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
+        let warehouseId = this.companyCurrents.DefaultWarehouseId;
+        if(warehouseId > 0) {
+          this.loadInventoryWarehouseId(warehouseId);
         }
       },
       error: (error: any) => {
-        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+        this.message.error(error?.error?.message);
       }
     });
   }
@@ -1525,28 +1525,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   productIndexDB() {
-    this.destroyTimer();
     this.isLoadingProduct = true;
     this.indexDbStorage = [];
 
-    this.timerApiLastv2 = setTimeout(() => {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: KeyCacheIndexDBDTO) => {
+            if(!res) return;
+            this.indexDbStorage = [...res?.cacheDbStorage];
 
-      this.productIndexDBService.setCacheDBRequest();
-      this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
-          next:(res: KeyCacheIndexDBDTO) => {
-              if(!res) return;
-              this.indexDbStorage = [...res?.cacheDbStorage];
-
-              this.isLoadingProduct = false;
-              this.cdRef.detectChanges();
-          },
-          error:(err) => {
-              this.isLoadingProduct = false;
-              this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
-              this.cdRef.detectChanges();
-          }
-      })
-    }, 3 * 1000);
+            this.isLoadingProduct = false;
+            this.cdRef.detectChanges();
+        },
+        error:(err) => {
+            this.isLoadingProduct = false;
+            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+            this.cdRef.detectChanges();
+        }
+    })
   }
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
@@ -1673,16 +1669,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           }
       })
     }, 350);
-  }
-
-  destroyTimer() {
-    if (this.timerApiLastv2) {
-      clearTimeout(this.timerApiLastv2);
-    }
-  }
-
-  ngOnDestroy() {
-    this.destroyTimer();
   }
 
 }
