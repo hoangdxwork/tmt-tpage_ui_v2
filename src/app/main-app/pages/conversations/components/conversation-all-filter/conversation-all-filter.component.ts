@@ -1,3 +1,4 @@
+import { ApplicationUserDTO } from './../../../../dto/account/application-user.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { CRMTagDTO } from './../../../../dto/crm-tag/odata-crmtag.dto';
@@ -11,7 +12,6 @@ import { QueryFilterConversationDto } from '@app/dto/conversation-all/chatomni/c
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { Observable, takeUntil } from 'rxjs';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ApplicationUserDTO } from '@app/dto/user/application-user.dto';
 
 @Component({
   selector: 'conversation-all-filter',
@@ -72,7 +72,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   loadUserActive() {
     this.applicationUserService.setUserActive();
     this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ApplicationUserDTO[]) => {
+      next: (res) => {
           this.lstUser = [...res];;
           this.lstUser = this.lstUser.sort((a, b) => (a.Name.length) - (b.Name.length));
           this.lstUserSearch = this.lstUser;
