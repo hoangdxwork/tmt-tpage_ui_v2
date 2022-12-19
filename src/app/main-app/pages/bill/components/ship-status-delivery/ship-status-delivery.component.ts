@@ -1,4 +1,4 @@
-import { DeliveryCarrierService } from './../../../../services/delivery-carrier.service';
+import { Message } from './../../../../../lib/consts/message.const';
 import { Validators } from '@angular/forms';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnDestroy, OnInit } from '@angular/core';
@@ -6,7 +6,8 @@ import { Subject, takeUntil, finalize } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 
 @Component({
   selector: 'ship-status-delivery',
@@ -28,14 +29,14 @@ export class ShipStatusDeliveryComponent implements OnInit, OnDestroy {
   constructor(private fastSaleOrderService: FastSaleOrderService,
     private modal: TDSModalRef,
     private message: TDSMessageService,
-    private deliveryCarrierService: DeliveryCarrierService,
+    private deliveryCarrierService: DeliveryCarrierV2Service,
     private fb: FormBuilder) { 
       this.createForm();
     }
 
   ngOnInit(): void {
     this.urlSampleUrl = this.fastSaleOrderService.urlSampleShipStatusDelivery();
-    this.loadCarrier();
+    this.loadDeliveryCarrier();
   }
 
   createForm(){
@@ -47,10 +48,16 @@ export class ShipStatusDeliveryComponent implements OnInit, OnDestroy {
     })
   }
 
-  loadCarrier(){
-    this.deliveryCarrierService.dataCarrierActive$.subscribe((res) => {
-      this.listDeliveryCarrier = res;
-    });
+  loadDeliveryCarrier(){
+    this.deliveryCarrierService.setDeliveryCarrier();
+    this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.listDeliveryCarrier = [...res.value];
+      },
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      }
+    })
   }
 
   handleFileInput(event: any) {

@@ -274,7 +274,7 @@
                       <tds-form-field class="flex flex-auto">
                           <tds-select valueField="Id" textField="Name" (ngModelChange)="onChangeCarrierV2($event)"
                             formControlName="Carrier" placeholder='Chọn đối tác giao hàng' [valuePrimitive]="false"
-                            [data]="(lstCarriers | async) || []" [allowClear]="true">
+                            [data]="lstCarriers" [allowClear]="true">
                           </tds-select>
                       </tds-form-field>
                       <!-- <button tds-button-icon tds-tooltip tooltipTitle="Tính" color="primary"

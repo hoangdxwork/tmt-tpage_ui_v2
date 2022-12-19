@@ -47,7 +47,6 @@ import { PaymentMultipComponent } from './components/payment-multip/payment-mult
 import { AccountRegisterPaymentService } from '../../services/account-register-payment.service';
 import { ModalSearchPartnerComponent } from './components/modal-search-partner/modal-search-partner.component';
 import { CommonService } from '../../services/common.service';
-import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { PartnerService } from '../../services/partner.service';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { BillExpandComponent } from './components/bill-expand/bill-expand.component';
@@ -110,7 +109,6 @@ const SERVICES = [
   FastSaleOrderService,
   OdataFastSaleOrderService,
   TagService,
-  DeliveryCarrierService,
   PrinterService,
   ExcelExportService,
   AccountRegisterPaymentService,

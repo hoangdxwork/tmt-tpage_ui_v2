@@ -643,6 +643,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
                 orderId: order.id,
                 comment: item
             });
+          } else {
+            this.conversationOrderFacade.hasValueOrderCode$.emit('');
           }
 
           if(type == 'SALEONLINE_ORDER') {

@@ -18,19 +18,21 @@ export class ApplicationUserService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/user";
 
   lstUserActive: any = [];
+  lstUser: ApplicationUserDTO[] = [];
   private readonly _lstUserActive$ = new ReplaySubject<any>();
+  private readonly _lstUser$ = new ReplaySubject<any>();
 
   constructor(private apiService: TCommonService) {
       super(apiService);
   }
 
-  getUserActive() {
+  getUserActive(): Observable<ApplicationUserDTO[]> {
     return  this._lstUserActive$.asObservable();
   }
 
   setUserActive() {
     if(TDSHelperArray.hasListValue(this.lstUserActive)) {
-        this._lstUserActive$.next(this.lstUserActive);
+      this._lstUserActive$.next(this.lstUserActive);
     } else {
         this.apiUserActive().subscribe({
             next: (res: any) => {
@@ -44,14 +46,29 @@ export class ApplicationUserService extends BaseSevice {
     }
   }
 
+  setUsers(params: string) {
+    if(TDSHelperArray.hasListValue(this.lstUser)) {
+      this._lstUserActive$.next(this.lstUser);
+    } else {
+        this.get(params).subscribe({
+            next: (res: any) => {
+                this.lstUser = [...res.value];
+                this._lstUser$.next(res.value);
+            },
+            error: (err: any) => {
+                this._lstUser$.next(err);
+            }
+        });
+    }
+  }
+
+  getUsers(): Observable<ApplicationUserDTO[]> {
+    return  this._lstUser$.asObservable();
+  }
+
   apiUserActive() {
     let filter ='$filter=(Active%20eq%20true)&$count=true';
-    const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}?${filter}`,
-        method: CoreApiMethodType.get,
-    }
-
-    return this.apiService.getData<ODataApplicationUserDTO>(api, null);
+    return this.get(filter);
   }
 
   get(params: string): Observable<any> {

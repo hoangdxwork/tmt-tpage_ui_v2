@@ -522,6 +522,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
                   if(this.conversationInfo && this.conversationInfo.Order) {
                       this.orderCode = this.conversationInfo.Order.Code;
+                  } else {
+                      delete this.orderCode;
                   }
 
                   this.isLoading = false;

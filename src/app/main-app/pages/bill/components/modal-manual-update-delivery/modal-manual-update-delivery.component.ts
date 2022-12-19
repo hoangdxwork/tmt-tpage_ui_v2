@@ -5,10 +5,10 @@ import { Subject, takeUntil, finalize } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { DeliveryCarrierDTOV2 } from './../../../../dto/delivery-carrier.dto';
-import { DeliveryCarrierService } from './../../../../services/delivery-carrier.service';
 import { FastSaleOrderDTO } from './../../../../dto/saleonlineorder/saleonline-order-red.dto';
 import { TDSModalRef } from 'tds-ui/modal';
 import { Component, Input, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 
 @Component({
   selector: 'app-modal-manual-update-delivery',
@@ -35,22 +35,25 @@ export class ModalManualUpdateDeliveryComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(private modal: TDSModalRef,
-    private carrierService: DeliveryCarrierService,
+    private carrierService: DeliveryCarrierV2Service,
     private fastSaleOrderService: FastSaleOrderService,
     private message: TDSMessageService) { }
 
   ngOnInit(): void {
-    this.loadCarrier();
+    this.loadDeliveryCarrier();
     this.searchData = this.model;
   }
 
-  loadCarrier() {
-    this.carrierService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstCarriers = res.value;
-    },
-      error => {
+  loadDeliveryCarrier(){
+    this.carrierService.setDeliveryCarrier();
+    this.carrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstCarriers = [...res.value];
+      },
+      error: error =>{
         this.message.error(error?.error?.message || Message.CanNotLoadData);
-      });
+      }
+    })
   }
 
   onInputKeyup(ev: TDSSafeAny) {

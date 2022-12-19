@@ -68,7 +68,6 @@ import { ConversationDataFacade } from '../../services/facades/conversation-data
 import { ConversationEventFacade } from '../../services/facades/conversation-event.facade';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
-import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { DirectivesModule } from '../../shared/directives/directives.module';
 import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
 
@@ -88,7 +87,6 @@ const SERVICES = [
   ConversationEventFacade,
   ConversationOrderFacade,
   FastSaleOrderService,
-  DeliveryCarrierService,
   AttachmentDataFacade,
   AttachmentService,
   AttachmentState,

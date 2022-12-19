@@ -65,8 +65,7 @@ export class AppComponent {
       next: (res: SocketEventSubjectDto) => {
 
         let localSocket = this.socketStorageNotificationService.getLocalStorage() as any;
-
-        if(!localSocket['socket.all']) return;
+        if(!(localSocket && localSocket['socket.all'])) return;
 
         this.teamId = (this.route.snapshot.queryParams?.teamId || 0) as number;
         switch(res.EventName) {
@@ -106,8 +105,8 @@ export class AppComponent {
           case ChatmoniSocketEventName.chatomniOnMessage:
               if(!localSocket[ChatmoniSocketEventName.chatomniOnMessage]) return;
               if(!localSocket[CRMTeamType._Facebook] && (res?.Data?.Message?.MessageType == ChatomniMessageType.FacebookComment || res?.Data?.Message?.MessageType == ChatomniMessageType.FacebookMessage)) return;
-              if(!localSocket[CRMTeamType._TShop] && (res?.Data?.Message?.MessageType == ChatomniMessageType.TShopComment || res?.Data?.Message?.MessageType == ChatomniMessageType.TShopMessage)) return; 
-              if(!localSocket[CRMTeamType._TikTok] && res?.Data?.Message?.MessageType == ChatomniMessageType.UnofficialTikTokChat ) return; 
+              if(!localSocket[CRMTeamType._TShop] && (res?.Data?.Message?.MessageType == ChatomniMessageType.TShopComment || res?.Data?.Message?.MessageType == ChatomniMessageType.TShopMessage)) return;
+              if(!localSocket[CRMTeamType._TikTok] && res?.Data?.Message?.MessageType == ChatomniMessageType.UnofficialTikTokChat ) return;
 
               let paramsMess = this.router.url.startsWith('/conversation') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
               let exist = res && paramsMess;

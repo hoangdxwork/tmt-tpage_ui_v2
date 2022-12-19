@@ -276,8 +276,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
   }
 
   loadCurrentCompany() {
-    this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.apiCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
           this.companyCurrents = res;
           if(this.companyCurrents.DefaultWarehouseId) {

@@ -13,7 +13,6 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
@@ -70,6 +69,7 @@ import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 
 @Component({
   selector: 'conversation-order',
@@ -79,7 +79,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy {
+export class ConversationOrderComponent implements OnInit, OnChanges {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() team!: CRMTeamDTO;
@@ -165,14 +165,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   commentPost!: ChatomniDataItemDto; //dùng cho bài viết
   indexDbStorage!: DataPouchDBDTO[];
 
-  timerApiLastv2: any;
+  noteWhenNoId!: string | TDSSafeAny;
 
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
     private csOrder_FromConversationHandler: CsOrder_FromConversationHandler,
     private applicationUserService: ApplicationUserService,
     private modal: TDSModalService,
-    private deliveryCarrierService: DeliveryCarrierService,
+    private deliveryCarrierService: DeliveryCarrierV2Service,
     private postEvent: ConversationPostEvent,
     private cdRef: ChangeDetectorRef,
     private crmTeamService: CRMTeamService,
@@ -215,7 +215,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.loadUsers();
     this.loadUserLogged();
     this.loadCurrentCompany();
-    this.loadCarrier();
+    this.loadDeliveryCarrier();
     this.productIndexDB();
 
     this.eventEmitter();
@@ -358,6 +358,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           this.validateData();
           this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(info, this.team, this.type)};
           this.mappingAddress(this.quickOrderModel);
+          this.checkSelectNote();
+
           this.cdRef.detectChanges();
       }
     })
@@ -396,9 +398,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
     this.validateData();
+    this.isLoading = true;
 
     this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};
     this.mappingAddress(this.quickOrderModel);
+    this.isLoading = false;
     this.cdRef.detectChanges();
   }
 
@@ -434,6 +438,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   updateOrder(type: string) {
     let id = this.quickOrderModel.Id as string;
     if(!id) {
+        this.noteWhenNoId = this.quickOrderModel.Note;
         this.cdRef.detectChanges();
         return;
     }
@@ -534,24 +539,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
+          this.message.error(`${error?.error?.message}`);
           this.cdRef.detectChanges();
       }
     });
   }
 
   loadCurrentCompany() {
-    this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.apiCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
 
-        if(this.companyCurrents.DefaultWarehouseId) {
-          this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
+        let warehouseId = this.companyCurrents.DefaultWarehouseId;
+        if(warehouseId > 0) {
+          this.loadInventoryWarehouseId(warehouseId);
         }
       },
       error: (error: any) => {
-        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+        this.message.error(error?.error?.message);
       }
     });
   }
@@ -606,10 +611,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   loadUsers() {
-    this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.users = [...res.value];
-          this.lstUser = [...res.value];
+    this.applicationUserService.setUserActive();
+    this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+          this.users = [...res];
+          this.lstUser = [...res];
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}`);
@@ -644,13 +650,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     })
   }
 
-  loadCarrier() {
-    this.deliveryCarrierService.get().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.lstCarrier = [...res.value];
+  loadDeliveryCarrier(){
+    this.deliveryCarrierService.setDeliveryCarrier();
+    this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstCarrier = [...res.value];
       },
-      error: (error: any) => {
-          this.message.error(`${error?.error?.message}`);
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
     })
   }
@@ -1524,28 +1531,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   productIndexDB() {
-    this.destroyTimer();
     this.isLoadingProduct = true;
     this.indexDbStorage = [];
 
-    this.timerApiLastv2 = setTimeout(() => {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: KeyCacheIndexDBDTO) => {
+            if(!res) return;
+            this.indexDbStorage = [...res?.cacheDbStorage];
 
-      this.productIndexDBService.setCacheDBRequest();
-      this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
-          next:(res: KeyCacheIndexDBDTO) => {
-              if(!res) return;
-              this.indexDbStorage = [...res?.cacheDbStorage];
-
-              this.isLoadingProduct = false;
-              this.cdRef.detectChanges();
-          },
-          error:(err) => {
-              this.isLoadingProduct = false;
-              this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
-              this.cdRef.detectChanges();
-          }
-      })
-    }, 3 * 1000);
+            this.isLoadingProduct = false;
+            this.cdRef.detectChanges();
+        },
+        error:(err) => {
+            this.isLoadingProduct = false;
+            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+            this.cdRef.detectChanges();
+        }
+    })
   }
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
@@ -1674,14 +1677,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     }, 350);
   }
 
-  destroyTimer() {
-    if (this.timerApiLastv2) {
-      clearTimeout(this.timerApiLastv2);
+  checkSelectNote() {
+    //TODO: khi chưa có đơn, mà khách hàng chọn comment ghi chú thì gán tạm trên giao diện
+    if(TDSHelperString.hasValueString(this.noteWhenNoId)) {
+      this.quickOrderModel.Note = this.noteWhenNoId;
     }
+    delete this.noteWhenNoId;
   }
-
-  ngOnDestroy() {
-    this.destroyTimer();
-  }
-
 }

@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { finalize, shareReplay, take, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ModalAddUserComponent } from './../../components/modal-add-user/modal-add-user.component';
@@ -28,7 +29,8 @@ export interface DataUser {
 
 @Component({
   selector: 'app-config-users-operation',
-  templateUrl: './config-users-operation.component.html'
+  templateUrl: './config-users-operation.component.html',
+  providers: [TDSDestroyService]
 })
 
 export class ConfigUsersOperationComponent implements OnInit {
@@ -62,6 +64,7 @@ export class ConfigUsersOperationComponent implements OnInit {
     private applicationUserService: ApplicationUserService,
     private applicationRoleService: ApplicationRoleService,
     private router: Router,
+    private destroy$: TDSDestroyService,
     private crmTeamService: CRMTeamService
   ) { }
 
@@ -75,13 +78,18 @@ export class ConfigUsersOperationComponent implements OnInit {
     this.isLoading = true;
     let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex);
 
-    this.applicationUserService.get(params)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.lstUsers = res.value;
-
+    this.applicationUserService.setUsers(params);
+    this.applicationUserService.getUsers().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.lstUsers = [...res];
         this.loadCRMTeamUser();
-      });
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err.error?.message);
+      }
+    })
   }
 
   loadUserRole() {

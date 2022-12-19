@@ -192,13 +192,14 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   eventEmitter() {
-    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+    this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         if(warehouseId > 0) {
-          this.productService.lstInventory = null;
 
+          this.productService.lstInventory = null;
           this.productService.setInventoryWarehouseId(warehouseId);
+
           this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
               this.inventories = {};
@@ -667,8 +668,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   loadCurrentCompany() {
-    this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.apiCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
           this.companyCurrents = res;
           if(this.companyCurrents.DefaultWarehouseId) {

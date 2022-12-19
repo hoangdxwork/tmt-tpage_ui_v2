@@ -1,3 +1,4 @@
+import { DeliveryCarrierV2Service } from 'src/app/main-app/services/delivery-carrier-v2.service';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
@@ -22,7 +23,6 @@ import { ModalProductTemplateComponent } from '@app/shared/tpage-add-product/mod
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { takeUntil, mergeMap } from 'rxjs';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
@@ -164,7 +164,7 @@ export class EditOrderV2Component implements OnInit {
     private applicationUserService: ApplicationUserService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
-    private deliveryCarrierService: DeliveryCarrierService,
+    private deliveryCarrierService: DeliveryCarrierV2Service,
     private prepareModelFeeV2Handler: PrepareModelFeeV2Handler,
     private selectShipServiceV2Handler: SelectShipServiceV2Handler,
     private updateShipExtraHandler: UpdateShipExtraHandler,
@@ -193,7 +193,7 @@ export class EditOrderV2Component implements OnInit {
       this.productIndexDB();
     }
 
-    this.loadCarrier();
+    this.loadDeliveryCarrier();
     this.loadCurrentCompany();
     this.eventEmitter();
   }
@@ -300,8 +300,7 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadCurrentCompany() {
-    this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.apiCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
 
@@ -335,9 +334,15 @@ export class EditOrderV2Component implements OnInit {
     this.innerText = this._street;
   }
 
-  loadCarrier() {
-    this.deliveryCarrierService.get().pipe(takeUntil(this.destroy$)).subscribe(res => {
+  loadDeliveryCarrier(){
+    this.deliveryCarrierService.setDeliveryCarrier();
+    this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
         this.lstCarrier = [...res.value];
+      },
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      }
     })
   }
 
@@ -884,9 +889,10 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadUser() {
-    this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        this.lstUser = [...res.value];
+    this.applicationUserService.setUserActive();
+    this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.lstUser = [...res];
       },
       error: (error: any) => {
         this.message.error(error?.error?.message || 'Không thể tải danh sách user');
