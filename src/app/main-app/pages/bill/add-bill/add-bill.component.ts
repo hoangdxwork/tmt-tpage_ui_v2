@@ -1,3 +1,4 @@
+import { Message } from './../../../../lib/consts/message.const';
 import { ShipReceiver } from './../../../dto/partner/change-partner-pricelist.dto';
 import { DeliveryCarrierV2Service } from './../../../services/delivery-carrier-v2.service';
 import { SuggestAddressService } from './../../../services/suggest-address.service';
@@ -26,7 +27,6 @@ import { FastSaleOrder_DefaultDTOV2, OrderLineV2, ShipServiceExtra } from 'src/a
 import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
 import { AccountJournalPaymentDTO } from 'src/app/main-app/dto/register-payment/register-payment.dto';
 import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { Observable, BehaviorSubject, pipe } from 'rxjs';
@@ -84,7 +84,7 @@ export class AddBillComponent implements OnInit {
   dataModel!: FastSaleOrder_DefaultDTOV2;
   saleConfig!: SaleSettingConfigDto_V2;
   companyCurrents!: CompanyCurrentDTO;
-  lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
+  lstCarriers!: DeliveryCarrierDTOV2[];
   lstPaymentJournals!: Observable<AccountJournalPaymentDTO[]>;
   lstPrices!: Observable<PartnerCategoryDTO[]>;
   lstCustomers!: Observable<CustomerDTO[]>;
@@ -165,7 +165,7 @@ export class AddBillComponent implements OnInit {
     private route: ActivatedRoute,
     private partnerService: PartnerService,
     private message: TDSMessageService,
-    private deliveryCarrierService: DeliveryCarrierService,
+    private deliveryCarrierService: DeliveryCarrierV2Service,
     private sharedService: SharedService,
     private commonService: CommonService,
     private fsOrderLineService: FastSaleOrderLineService,
@@ -243,7 +243,7 @@ export class AddBillComponent implements OnInit {
 
     this.loadCity();
     this.loadSaleConfig();
-    this.lstCarriers = this.loadCarrier();
+    this.loadDeliveryCarrier();
     this.lstPaymentJournals = this.loadPaymentJournals();
     this.lstPrices = this.loadListPrice();
     this.lstCustomers = this.loadCustomers();
@@ -1599,6 +1599,18 @@ export class AddBillComponent implements OnInit {
 
   loadCarrier() {
     return this.deliveryCarrierService.get().pipe(map(res => res.value));
+  }
+
+  loadDeliveryCarrier(){
+    this.deliveryCarrierService.setDeliveryCarrier();
+    this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstCarriers = [...res.value];
+      },
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      }
+    })
   }
 
   loadPaymentJournals() {

@@ -13,7 +13,6 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { UpdateInfoPartnerComponent } from '../update-info-partner/update-info-partner.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -21,6 +20,7 @@ import { ModalAddAddressV2Component } from '@app/pages/conversations/components/
 import { CreateBillDefaultErrorDTO, DataErrorDefaultDTO } from '@app/dto/order/default-error.dto';
 import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 import { SharedService } from '@app/services/shared.service';
+import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 
 @Component({
   selector: 'app-create-bill-default',
@@ -72,7 +72,7 @@ export class CreateBillDefaultComponent implements OnInit {
     private modalRef: TDSModalRef,
     private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
-    private carrierService: DeliveryCarrierService,
+    private carrierService: DeliveryCarrierV2Service,
     private fastSaleOrderService: FastSaleOrderService,
     private printerService: PrinterService,
     private destroy$: TDSDestroyService,
@@ -80,7 +80,7 @@ export class CreateBillDefaultComponent implements OnInit {
     private configService: TDSConfigService) { }
 
   ngOnInit(): void {
-    this.loadCarrier();
+    this.loadDeliveryCarrier();
     this.loadData();
     this.loadCurrentCompany();
     this.configService.set('notification', { maxStack: 100 });
@@ -127,15 +127,16 @@ export class CreateBillDefaultComponent implements OnInit {
       });
   }
 
-  loadCarrier() {
-    this.carrierService.get().pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res: any) => {
-        this.lstCarriers = res.value;
+  loadDeliveryCarrier(){
+    this.carrierService.setDeliveryCarrier();
+    this.carrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstCarriers = [...res.value];
       },
-      error:(err) => {
-        this.message.error(err?.error?.message || Message.CanNotLoadData);
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
-    });
+    })
   }
 
   mappingAddress(data: Partner) {

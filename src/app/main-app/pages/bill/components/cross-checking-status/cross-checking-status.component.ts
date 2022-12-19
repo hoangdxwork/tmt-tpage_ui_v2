@@ -6,12 +6,12 @@ import { CrossCheckingDTO, CrossCheckingOrder, ExistedCrossChecking } from '../.
 import { DeliveryCarrierDTOV2 } from '../../../../dto/delivery-carrier.dto';
 import { Observable, takeUntil } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { DeliveryCarrierService } from '../../../../services/delivery-carrier.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit, HostListener, Renderer2, ViewChild, ElementRef } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
+import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 
 @Component({
   selector: 'cross-checking-status',
@@ -24,7 +24,7 @@ export class CrossCheckingStatusComponent implements OnInit {
   listOfData:CrossCheckingOrder[] = [];
   listTempOfData:CrossCheckingOrder[] = [];
   modelData!:CrossCheckingDTO;
-  lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
+  lstCarriers!: DeliveryCarrierDTOV2[];
   isInput: boolean = false;
   listenerValue: string = '';
   tabIndex: number = 0;
@@ -56,7 +56,7 @@ export class CrossCheckingStatusComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
     private modal: TDSModalRef,
-    private deliveryCarrierService: DeliveryCarrierService,
+    private deliveryCarrierService: DeliveryCarrierV2Service,
     private fashSaleOrder: FastSaleOrderService,
     private notification: TDSNotificationService,
     private render: Renderer2,
@@ -67,7 +67,7 @@ export class CrossCheckingStatusComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDefaultData();
-    this.lstCarriers = this.loadCarrier();
+    this.loadDeliveryCarrier();
   }
 
   createForm(){
@@ -90,8 +90,16 @@ export class CrossCheckingStatusComponent implements OnInit {
     };
   }
 
-  loadCarrier() {
-    return this.deliveryCarrierService.get().pipe(map(res => res.value),takeUntil(this.destroy$));
+  loadDeliveryCarrier(){
+    this.deliveryCarrierService.setDeliveryCarrier();
+    this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstCarriers = [...res.value];
+      },
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      }
+    })
   }
 
   changeStatusForAll(){

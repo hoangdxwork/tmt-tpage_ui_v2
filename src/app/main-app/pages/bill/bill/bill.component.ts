@@ -27,11 +27,11 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 
 @Component({
   selector: 'app-bill',
@@ -166,7 +166,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     private resizeObserver: TDSResizeObserver,
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
-    private deliveryCarrierService: DeliveryCarrierService,
+    private deliveryCarrierService: DeliveryCarrierV2Service,
     private crmMatchingService: CRMMatchingService,
     private chatomniConversationService: ChatomniConversationService,
     private chatomniMessageFacade: ChatomniMessageFacade) {
@@ -185,7 +185,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     })
-    this.loadCarrier();
+    this.loadDeliveryCarrier();
   }
 
   loadAllTeam() {
@@ -201,10 +201,11 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     })
   }
 
-  loadCarrier() {
-    this.deliveryCarrierService.get().subscribe({
-      next: (res: any) => {
-        this.lstCarriers = res.value;
+  loadDeliveryCarrier(){
+    this.deliveryCarrierService.setDeliveryCarrier();
+    this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstCarriers = [...res.value];
 
         let data: DeliveryCarrierDTOV2[] = [];
         this.lstCarriers.map(x=>{
@@ -219,8 +220,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.lstCarrierDelivery = [...data];
       },
-      error: (error: any) => {
-        this.message.error(`${error?.error?.message}` || 'Tải dữ liệu thất bại!');
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
     })
   }

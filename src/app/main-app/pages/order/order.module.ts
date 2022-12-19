@@ -42,7 +42,6 @@ import { PartnerService } from '../../services/partner.service';
 import { UpdateInfoPartnerComponent } from './components/update-info-partner/update-info-partner.component';
 import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
-import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 import { TDSAvatarModule } from 'tds-ui/avatar';
 import { TDSTabsModule } from 'tds-ui/tabs';
@@ -95,7 +94,6 @@ const SERVICES = [
   OdataSaleOnline_OrderService,
   SaleOnline_OrderService,
   TagService,
-  DeliveryCarrierService,
   CommonService,
   FastSaleOrderService,
   PartnerService,

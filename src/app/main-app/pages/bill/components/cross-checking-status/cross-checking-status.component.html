@@ -4,7 +4,7 @@
             <label class="font-semibold">Đối tác giao hàng</label>
             <tds-form-field class="w-full col-span-3">
                 <tds-select formControlName="carrierId" valueField="Id" textField="Name" placeholder='Đối tác giao hàng'
-                    [data]="(lstCarriers | async) || []" [allowClear]="true">
+                    [data]="lstCarriers" [allowClear]="true">
                 </tds-select>
                 <tds-error>
                     Vui lòng chọn đối tác giao hàng

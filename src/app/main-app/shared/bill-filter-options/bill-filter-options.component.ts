@@ -1,7 +1,11 @@
+import { Message } from './../../../lib/consts/message.const';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { takeUntil } from 'rxjs';
+import { DeliveryCarrierV2Service } from 'src/app/main-app/services/delivery-carrier-v2.service';
 import { DeliveryCarrierDTOV2 } from './../../dto/delivery-carrier.dto';
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { addDays } from "date-fns";
-import { DeliveryCarrierService } from "src/app/main-app/services/delivery-carrier.service";
 import { TagService } from "src/app/main-app/services/tag.service";
 import { TDSContextMenuService } from "tds-ui/dropdown";
 import { TDSSafeAny, TDSHelperString } from "tds-ui/shared/utility";
@@ -9,6 +13,7 @@ import { TDSSafeAny, TDSHelperString } from "tds-ui/shared/utility";
 @Component({
   selector: 'bill-filter-options',
   templateUrl: './bill-filter-options.component.html',
+  providers: [TDSDestroyService]
 })
 
 export class BillFilterOptionsComponent implements OnInit {
@@ -56,26 +61,25 @@ export class BillFilterOptionsComponent implements OnInit {
 
   constructor(private tagService: TagService,
       private tdsContextMenuService: TDSContextMenuService,
-      private carrierService: DeliveryCarrierService) {
+      private carrierService: DeliveryCarrierV2Service,
+      private destroy$: TDSDestroyService,
+      private message: TDSMessageService) {
   }
 
   ngOnInit(): void {
-    this.carrierService.get().subscribe((res: TDSSafeAny) => {
-        this.lstCarriers = res.value;
+    this.loadDeliveryCarrier();
+  }
 
-        // let data: DeliveryCarrierDTOV2[] = [];
-        // this.lstCarriers.map(x=>{
-        //   let exist = data.find(y => y.DeliveryType == x.DeliveryType);
-        //   if(!exist) {
-        //     if(!TDSHelperString.hasValueString(x.DeliveryTypeGet)) {
-        //       x.DeliveryTypeGet = x.DeliveryType;
-        //     }
-        //     data = [ ...data, ...[x]]; 
-        //   }
-        // });
-
-        // this.lstCarriers = [...data];
-    });
+  loadDeliveryCarrier(){
+    this.carrierService.setDeliveryCarrier();
+    this.carrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstCarriers = [...res.value];
+      },
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      }
+    })
   }
 
   onChangeDate(event: any[]) {
