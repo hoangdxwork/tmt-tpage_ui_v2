@@ -126,10 +126,10 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   }
 
   eventEmitter() {
-    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+    this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
-        
+
         if(warehouseId > 0) {
           this.productService.lstInventory = null;
           this.loadInventoryWarehouseId(warehouseId);
@@ -244,8 +244,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   }
 
   loadCurrentCompany() {
-    this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.apiCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res || {};
 
@@ -254,7 +253,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
         }
       },
       error: (error: any) => {
-          this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+          this.message.error(error?.error?.message);
       }
     });
   }
@@ -266,7 +265,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
           this.inventories = res;
       },
       error: (err: any) => {
-          this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+          this.message.error(err?.error?.message);
       }
     });
   }

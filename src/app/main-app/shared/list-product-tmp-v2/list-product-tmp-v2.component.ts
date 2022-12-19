@@ -108,7 +108,6 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
     this.loadCurrentCompany();
     this.loadProductCategory();
     this.loadData();
-
     this.eventEmitter();
   }
 
@@ -136,27 +135,27 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
   }
 
   eventEmitter() {
-    this.productTemplateFacade.onStockChangeProductQty$.subscribe({
+    this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
-     
         if(warehouseId > 0) {
-          this.productService.lstInventory = null;
 
+          this.productService.lstInventory = null;
           this.productService.setInventoryWarehouseId(warehouseId);
+
           this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
               this.inventories = {};
               this.inventories = res;
 
               if(this.response) {
-                this.mappingProductToLive(this.response);
+                  this.mappingProductToLive(this.response);
               }
             },
             error: (err: any) => {
               this.message.error(err?.error?.message);
               if(this.response) {
-                this.mappingProductToLive(this.response);
+                  this.mappingProductToLive(this.response);
               }
             }
           });
@@ -269,8 +268,7 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
   }
 
   loadCurrentCompany() {
-    this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.apiCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res || {};
 
