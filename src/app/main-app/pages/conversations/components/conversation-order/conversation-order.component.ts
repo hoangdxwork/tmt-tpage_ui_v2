@@ -165,6 +165,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   commentPost!: ChatomniDataItemDto; //dùng cho bài viết
   indexDbStorage!: DataPouchDBDTO[];
 
+  noteWhenNoId!: string | TDSSafeAny;
+
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
     private csOrder_FromConversationHandler: CsOrder_FromConversationHandler,
@@ -356,6 +358,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
           this.validateData();
           this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(info, this.team, this.type)};
           this.mappingAddress(this.quickOrderModel);
+          this.checkSelectNote();
+
           this.cdRef.detectChanges();
       }
     })
@@ -434,6 +438,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   updateOrder(type: string) {
     let id = this.quickOrderModel.Id as string;
     if(!id) {
+        this.noteWhenNoId = this.quickOrderModel.Note;
         this.cdRef.detectChanges();
         return;
     }
@@ -1671,4 +1676,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }, 350);
   }
 
+  checkSelectNote() {
+    //TODO: khi chưa có đơn, mà khách hàng chọn comment ghi chú thì gán tạm trên giao diện
+    if(TDSHelperString.hasValueString(this.noteWhenNoId)) {
+      this.quickOrderModel.Note = this.noteWhenNoId;
+    }
+    delete this.noteWhenNoId;
+  }
 }
