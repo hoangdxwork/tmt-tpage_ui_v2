@@ -28,7 +28,6 @@ import { ConversationOrderFacade } from '../../services/facades/conversation-ord
 import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
 import { PartnerService } from '../../services/partner.service';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
-import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { CommonService } from '../../services/common.service';
 import { FacebookGraphService } from '../../services/facebook-graph.service';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
@@ -162,7 +161,6 @@ const SERVICES = [
   SaleOnline_OrderService,
   PartnerService,
   FastSaleOrderService,
-  DeliveryCarrierService,
   CommonService,
   FacebookGraphService,
   ActivityMatchingService,

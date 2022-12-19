@@ -45,7 +45,6 @@ import { TableOrderMessageComponent } from './components/table-order-message/tab
 import { TableBillMessageComponent } from './components/table-bill-message/table-bill-message.component';
 import { ModalInfoBillComponent } from './components/modal-info-bill/modal-info-bill.component';
 import { TagService } from '../../services/tag.service';
-import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { ODataLiveCampaignOrderService } from '../../services/mock-odata/odata-live-campaign-order.service';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { PartnerService } from '../../services/partner.service';
@@ -147,7 +146,6 @@ const SERVICES = [
   ApplicationUserService,
   CommonHandler,
   TagService,
-  DeliveryCarrierService,
   ODataLiveCampaignOrderService,
   FastSaleOrderService,
   PartnerService,

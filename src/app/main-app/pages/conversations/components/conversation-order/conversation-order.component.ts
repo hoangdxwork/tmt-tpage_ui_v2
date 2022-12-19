@@ -13,7 +13,6 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
@@ -70,6 +69,7 @@ import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 
 @Component({
   selector: 'conversation-order',
@@ -172,7 +172,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     private csOrder_FromConversationHandler: CsOrder_FromConversationHandler,
     private applicationUserService: ApplicationUserService,
     private modal: TDSModalService,
-    private deliveryCarrierService: DeliveryCarrierService,
+    private deliveryCarrierService: DeliveryCarrierV2Service,
     private postEvent: ConversationPostEvent,
     private cdRef: ChangeDetectorRef,
     private crmTeamService: CRMTeamService,
@@ -215,7 +215,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.loadUsers();
     this.loadUserLogged();
     this.loadCurrentCompany();
-    this.loadCarrier();
+    this.loadDeliveryCarrier();
     this.productIndexDB();
 
     this.eventEmitter();
@@ -644,13 +644,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     })
   }
 
-  loadCarrier() {
-    this.deliveryCarrierService.get().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.lstCarrier = [...res.value];
+  loadDeliveryCarrier(){
+    this.deliveryCarrierService.setDeliveryCarrier();
+    this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstCarrier = [...res.value];
       },
-      error: (error: any) => {
-          this.message.error(`${error?.error?.message}`);
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
     })
   }

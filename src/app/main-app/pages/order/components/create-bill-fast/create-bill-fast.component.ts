@@ -9,12 +9,12 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { CreateBillErrorComponent } from '../create-bill-error/create-bill-error.component';
 import { UpdateInfoPartnerComponent } from '../update-info-partner/update-info-partner.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { CarrierListOrderDTO, GetListOrderIdsDTO, PartnerListOrderDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
 import { CreateBillDefaultErrorDTO } from '@app/dto/order/default-error.dto';
+import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 
 @Component({
   selector: 'create-bill-fast',
@@ -60,14 +60,14 @@ export class CreateBillFastComponent implements OnInit {
     private modalRef: TDSModalRef,
     private destroy$: TDSDestroyService,
     private fastSaleOrderService: FastSaleOrderService,
-    private carrierService: DeliveryCarrierService,
+    private carrierService: DeliveryCarrierV2Service,
     private printerService: PrinterService) {
       this.createForm();
   }
 
   ngOnInit(): void {
     if(TDSHelperArray.hasListValue(this.lstData)) {
-      this.loadCarrier();
+      this.loadDeliveryCarrier();
 
       this.updateAmountTotal(this.lstData);
       this.lstData.forEach((x, i) =>{
@@ -76,15 +76,16 @@ export class CreateBillFastComponent implements OnInit {
     }
   }
 
-  loadCarrier() {
-    this.carrierService.get().pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res: any) => {
+  loadDeliveryCarrier(){
+    this.carrierService.setDeliveryCarrier();
+    this.carrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
         this.lstCarriers = [...res.value];
       },
-      error:(err) => {
-        this.message.error(err?.error?.message || Message.CanNotLoadData);
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
-    });
+    })
   }
 
   onChangeCarrier(carrier: CarrierListOrderDTO, index: number) {

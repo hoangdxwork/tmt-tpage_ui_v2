@@ -1,6 +1,7 @@
+import { ODataDeliveryCarrierDTOV2 } from './../dto/delivery-carrier.dto';
 import { ProductDTO } from '../dto/product/product.dto';
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, ReplaySubject } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "./base.service";
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -13,9 +14,12 @@ import { DeliveryCarrierDTO } from '../dto/carrier/delivery-carrier.dto';
 })
 
 export class DeliveryCarrierV2Service extends BaseSevice {
-  prefix: string = "";
-  table: string = "";
+  prefix: string = "odata";
+  table: string = "DeliveryCarrier";
   baseRestApi: string = "rest/v1.0/deliverycarrierV2";
+
+  lstDeliveryCarrier: any;
+  private readonly _deliveryCarrierSubject$ = new ReplaySubject<any>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -34,6 +38,34 @@ export class DeliveryCarrierV2Service extends BaseSevice {
     }
     return value
   };
+
+  getDeliveryCarrier(){
+    return this._deliveryCarrierSubject$.asObservable();
+  }
+
+  setDeliveryCarrier() {
+    if(this.lstDeliveryCarrier) {
+        this._deliveryCarrierSubject$.next(this.lstDeliveryCarrier);
+    } else {
+        this.get().subscribe({
+          next: (res: any) => {
+            if(res) {
+                this.lstDeliveryCarrier = {...res};
+                this._deliveryCarrierSubject$.next(this.lstDeliveryCarrier);
+            }
+          }
+        })
+    }
+  }
+
+  get(): Observable<any> {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}?$orderby=Name asc&$filter=Active eq true`,
+        method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataDeliveryCarrierDTOV2>(api,null);
+  }
 
   getByDeliveryType(type: string): Observable<Array<DeliveryCarrierDTO>> {
     let api: CoreAPIDTO = {
@@ -110,17 +142,6 @@ export class DeliveryCarrierV2Service extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
-
-  // getViewByDeliveryType(type: string, skip : number, top: number): Observable<DeliveryCarrierDTO> {
-  //   const api: CoreAPIDTO = {
-  //       url: `${this._BASE_URL}/odata/DeliveryCarrier/OdataService.GetView?%24top=${top}&%24skip=${skip}&%24filter=(Active+eq+true+and+DeliveryType+eq+%27${type}%27)&%24count=true`,
-  //       method: CoreApiMethodType.get,
-  //   }
-
-  //   return this.apiService.getData<TDSSafeAny>(api, null);
-  // }
-
-  // // top=${top}&%24skip=${skip}&%24filter=(Active+eq+true+and+DeliveryType+eq+%27${type}%27)
 
   getViewByDeliveryType(params: any): Observable<DeliveryCarrierDTO> {
     const api: CoreAPIDTO = {

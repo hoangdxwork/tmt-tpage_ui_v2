@@ -1,16 +1,11 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { addDays } from "date-fns";
 import { Observable } from "rxjs";
-import { DeliveryCarrierDTOV2 } from "src/app/main-app/dto/delivery-carrier.dto";
 import { LiveCampaignModel, ODataLiveCampaignModelDTO } from "@app/dto/live-campaign/odata-live-campaign-model.dto";
 import { TDSDateRangeDTO } from "src/app/main-app/handler-v2/common.handler";
-import { DeliveryCarrierService } from "src/app/main-app/services/delivery-carrier.service";
 import { LiveCampaignService } from "src/app/main-app/services/live-campaign.service";
-import { FilterObjFastSaleModel } from "src/app/main-app/services/mock-odata/odata-fastsaleorder.service";
 import { FilterObjLiveCampaignDTO } from "src/app/main-app/services/mock-odata/odata-live-campaign.service";
-import { TagService } from "src/app/main-app/services/tag.service";
-import { TDSContextMenuService } from "tds-ui/dropdown";
-import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSSafeAny } from "tds-ui/shared/utility";
 
 @Component({
   selector: 'filter-option-campaign',

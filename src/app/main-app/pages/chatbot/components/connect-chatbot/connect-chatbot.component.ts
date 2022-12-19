@@ -1,8 +1,8 @@
-import { finalize } from 'rxjs/operators';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CRMTeamDTO, InputCreateChatbotDTO } from 'src/app/main-app/dto/team/team.dto';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 import { CompanyService } from 'src/app/main-app/services/company.service';
 import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
@@ -10,12 +10,14 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 
 @Component({
   selector: 'connect-chatbot',
   templateUrl: './connect-chatbot.component.html',
-  styleUrls: ['./connect-chatbot.component.scss']
+  styleUrls: ['./connect-chatbot.component.scss'],
+  providers: [TDSDestroyService]
 })
 export class ConnectChatbotComponent implements OnInit {
 
@@ -31,10 +33,11 @@ export class ConnectChatbotComponent implements OnInit {
   constructor(
     private modalRef: TDSModalRef,
     private formBuilder: FormBuilder,
-    private deliveryCarrierService: DeliveryCarrierService,
+    private deliveryCarrierService: DeliveryCarrierV2Service,
     private companyService: CompanyService,
     private crmTeamService: CRMTeamService,
-    private message: TDSMessageService
+    private message: TDSMessageService,
+    private destroy$: TDSDestroyService,
   ) { }
 
   ngOnInit(): void {
@@ -63,10 +66,17 @@ export class ConnectChatbotComponent implements OnInit {
     this.formConnectChatbot.controls["Name"].setValue(this.channel.Facebook_PageName);
   }
 
-  loadDeliveryCarrier() {
-    this.deliveryCarrierService.dataCarrierActive$.subscribe(res => {
-      this.lstCarriers = res;
-    });
+
+  loadDeliveryCarrier(){
+    this.deliveryCarrierService.setDeliveryCarrier();
+    this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstCarriers = [...res.value];
+      },
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      }
+    })
   }
 
   loadCompany() {

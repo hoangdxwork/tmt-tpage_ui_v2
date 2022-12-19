@@ -8,7 +8,6 @@ import { MainSharedModule } from '../../shared/shared.module';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { ConnectChatbotComponent } from './components/connect-chatbot/connect-chatbot.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { CompanyService } from '../../services/company.service';
 import { TDSButtonModule } from 'tds-ui/button';
 import { TDSAvatarModule } from 'tds-ui/avatar';
@@ -27,7 +26,6 @@ const cmp =[
 ]
 
 const SERVICES = [
-  DeliveryCarrierService,
   CompanyService
 ]
 
