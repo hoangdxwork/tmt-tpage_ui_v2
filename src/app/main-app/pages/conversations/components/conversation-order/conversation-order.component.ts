@@ -608,9 +608,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   loadUsers() {
     this.applicationUserService.setUserActive();
     this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.users = [...res.value];
-          this.lstUser = [...res.value];
+      next: (res) => {
+          this.users = [...res];
+          this.lstUser = [...res];
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}`);
