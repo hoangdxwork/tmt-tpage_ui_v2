@@ -163,7 +163,7 @@
     <!--Xử lí thông tin khách hàng & Đơn hàng-->
     <div class="flex 2xl:w-[32%] w-[32%] h-full" *ngIf="conversationItem">
         <div class="w-full h-full flex flex-col">
-            <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex">
+            <tds-tabset class="bg-white border border-neutral-2-200 w-full h-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex">
                 <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
 
                     <ng-template #conversationPartner let-active="active">
@@ -185,9 +185,8 @@
                                 (onTabOderOutput)="onTabOderOutput($event)">
                             </conversation-partner>
                         </div>
-
                         <div *ngIf="!(currentTeam && conversationItem && type && conversationInfo)" class="w-full h-full flex">
-                            <div csLoadingPartner class="w-full h-full flex"></div>
+                            <div csLoadingPartner class="w-full h-full flex bg-white"></div>
                         </div>
                     </div>
                 </tds-tab>
