@@ -890,9 +890,10 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadUser() {
-    this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-        this.lstUser = [...res.value];
+    this.applicationUserService.setUserActive();
+    this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.lstUser = [...res];
       },
       error: (error: any) => {
         this.message.error(error?.error?.message || 'Không thể tải danh sách user');
