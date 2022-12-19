@@ -79,7 +79,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy {
+export class ConversationOrderComponent implements OnInit, OnChanges {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() team!: CRMTeamDTO;
@@ -165,8 +165,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   commentPost!: ChatomniDataItemDto; //dùng cho bài viết
   indexDbStorage!: DataPouchDBDTO[];
 
-  timerApiLastv2: any;
-
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
     private csOrder_FromConversationHandler: CsOrder_FromConversationHandler,
@@ -215,6 +213,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.loadUsers();
     this.loadUserLogged();
     this.loadCurrentCompany();
+
     this.loadCarrier();
     this.productIndexDB();
 
@@ -396,9 +395,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
     this.validateData();
+    this.isLoading = true;
 
     this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};
     this.mappingAddress(this.quickOrderModel);
+    this.isLoading = false;
     this.cdRef.detectChanges();
   }
 
@@ -534,7 +535,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'ĝã xảy ra lỗi');
+          this.message.error(`${error?.error?.message}`);
           this.cdRef.detectChanges();
       }
     });
@@ -1524,28 +1525,24 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   productIndexDB() {
-    this.destroyTimer();
     this.isLoadingProduct = true;
     this.indexDbStorage = [];
 
-    this.timerApiLastv2 = setTimeout(() => {
+    this.productIndexDBService.setCacheDBRequest();
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
+        next:(res: KeyCacheIndexDBDTO) => {
+            if(!res) return;
+            this.indexDbStorage = [...res?.cacheDbStorage];
 
-      this.productIndexDBService.setCacheDBRequest();
-      this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
-          next:(res: KeyCacheIndexDBDTO) => {
-              if(!res) return;
-              this.indexDbStorage = [...res?.cacheDbStorage];
-
-              this.isLoadingProduct = false;
-              this.cdRef.detectChanges();
-          },
-          error:(err) => {
-              this.isLoadingProduct = false;
-              this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
-              this.cdRef.detectChanges();
-          }
-      })
-    }, 3 * 1000);
+            this.isLoadingProduct = false;
+            this.cdRef.detectChanges();
+        },
+        error:(err) => {
+            this.isLoadingProduct = false;
+            this.message.error(err?.error?.message || Message.Product.CanNotLoadData);
+            this.cdRef.detectChanges();
+        }
+    })
   }
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
@@ -1672,16 +1669,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           }
       })
     }, 350);
-  }
-
-  destroyTimer() {
-    if (this.timerApiLastv2) {
-      clearTimeout(this.timerApiLastv2);
-    }
-  }
-
-  ngOnDestroy() {
-    this.destroyTimer();
   }
 
 }

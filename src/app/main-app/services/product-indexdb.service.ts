@@ -1,17 +1,17 @@
-import { Injectable, NgZone, OnDestroy } from "@angular/core";
-import { Observable, Subject, ReplaySubject } from "rxjs";
-import { map, mergeMap, shareReplay } from "rxjs/operators";
+import { Injectable } from "@angular/core";
+import { Observable, Subject } from "rxjs";
+import { map, mergeMap } from "rxjs/operators";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
+import { TDSMessageService } from "tds-ui/message";
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from "../dto/product-pouchDB/product-pouchDB.dto";
 import { BaseSevice } from "./base.service";
-import { ProductIndexDBHelperService } from './product-indexdb-helper.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class ProductIndexDBService extends BaseSevice implements OnDestroy {
+export class ProductIndexDBService extends BaseSevice {
 
   prefix: string = "odata";
   table: string = "ProductTemplateUOMLine";
@@ -25,13 +25,12 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
     cacheDbStorage: []
   }
 
-  private destroy$ = new Subject<void>();
-  private readonly _cacheObject$ = new Subject<KeyCacheIndexDBDTO>()
+  private readonly _cacheObject$ = new Subject<KeyCacheIndexDBDTO>();
 
   constructor(private apiService: TCommonService,
-    private indexDBHelperService: ProductIndexDBHelperService,
+    private message: TDSMessageService,
     private cacheApi: THelperCacheService) {
-    super(apiService);
+      super(apiService);
   }
 
   removeCacheDBRequest(){
@@ -42,80 +41,153 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
     return this._cacheObject$.asObservable();
   }
 
+  // setCacheDBRequest() {
+  //   let keyCache = this._keyCacheProductIndexDB;
+  //   this.cacheApi.getItem(keyCache).pipe(map((x: any) => {
+
+  //       if (TDSHelperString.hasValueString(x)) {
+  //           let cache = JSON.parse(x['value']) as TDSSafeAny;
+  //           let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
+  //           this.cacheObject = Object.assign(this.cacheObject, cacheDB);
+  //       } else {
+  //           this.cacheObject = {
+  //               cacheCount: 0,
+  //               cacheVersion: -1,
+  //               cacheDbStorage: []
+  //           };
+  //       }
+
+  //       return this.cacheObject;
+  //     }),
+  //     mergeMap((x: KeyCacheIndexDBDTO) => {
+  //         return this.getLastVersionV2(x.cacheCount, x.cacheVersion).pipe(map(a => a));
+  //     }))
+  //     .subscribe({
+  //         next: (res: ProductPouchDBDTO) => {
+
+  //             const data = this.cacheObject;
+  //             if (res.IsDelete === true) {
+  //                 data.cacheDbStorage = [];
+  //             }
+
+  //             let exist = (data && data.cacheCount == 0 && data.cacheVersion == -1);
+  //             if (exist) {
+  //                 data.cacheDbStorage = [];
+  //                 data.cacheDbStorage = [...res.Datas];
+  //             } else {
+  //                 res.Datas?.map((x: DataPouchDBDTO) => {
+  //                     let index = data.cacheDbStorage?.findIndex(y => y.Id == x.Id && y.UOMId == x.UOMId);
+  //                     if(index >= 0) {
+  //                         data.cacheDbStorage[index] = {...x};
+  //                     } else {
+  //                         data.cacheDbStorage = [...[x], ...data.cacheDbStorage];
+  //                     }
+  //                 })
+  //             }
+
+  //             data.cacheDbStorage = [...data.cacheDbStorage];
+  //             data.cacheDbStorage = data.cacheDbStorage?.sort((a: any,b: any) => b.Version - a.Version);
+
+  //             //TODO: check số version
+  //             let versions = data.cacheDbStorage?.map((x: DataPouchDBDTO) => x.Version);
+  //             let lastVersion = Math.max(...versions);
+
+  //             //TODO: check số lượng
+  //             let countDB = Number(data.cacheDbStorage.length);
+
+  //             //TODO: lưu cache cho ds sản phẩm
+  //             const items: KeyCacheIndexDBDTO = {
+  //                 cacheCount: countDB,
+  //                 cacheVersion: lastVersion,
+  //                 cacheDbStorage: data.cacheDbStorage
+  //             };
+
+  //             let keyCache = this._keyCacheProductIndexDB;
+  //             this.cacheApi.setItem(keyCache, JSON.stringify(items));
+  //             this._cacheObject$.next(items);
+  //         },
+  //         error: (error: any) => {
+  //             this._cacheObject$.next(error);
+  //         }
+  //     })
+  // }
+
   setCacheDBRequest() {
     let keyCache = this._keyCacheProductIndexDB;
-    this.cacheApi.getItem(keyCache).pipe(map((x: any) => {
+    this.cacheApi.getItem(keyCache).subscribe({
+      next: (x: any) => {
         if (TDSHelperString.hasValueString(x)) {
-
             let cache = JSON.parse(x['value']) as TDSSafeAny;
             let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
             this.cacheObject = Object.assign(this.cacheObject, cacheDB);
-
         } else {
-          this.cacheObject = {
-              cacheCount: 0,
-              cacheVersion: -1,
-              cacheDbStorage: []
-          }
-        }
-        return this.cacheObject;
-      }),
-      mergeMap((x: KeyCacheIndexDBDTO) => {
-        return this.getLastVersionV2(x.cacheCount, x.cacheVersion).pipe(map(a => a));
-      }))
-      .subscribe({
-          next: (res: ProductPouchDBDTO) => {
-
-            const data = this.cacheObject;
-            if (res.IsDelete === true) {
-                data.cacheDbStorage = [];
-            }
-
-            let exist = (data.cacheCount == 0 && data.cacheVersion == -1);
-            if (exist) {
-                data.cacheDbStorage = [];
-                data.cacheDbStorage = [...res.Datas];
-            } else {
-                res.Datas.map((x: DataPouchDBDTO) => {
-                    let index = data.cacheDbStorage.findIndex(y => y.Id == x.Id && y.UOMId == x.UOMId);
-                    if(index > -1){
-                        data.cacheDbStorage[index] = {...x};
-                    } else {
-                        data.cacheDbStorage = [...[x], ...data.cacheDbStorage];
-                    }
-                })
-            }
-
-            data.cacheDbStorage = [...data.cacheDbStorage];
-            data.cacheDbStorage = data.cacheDbStorage.sort((a: any,b: any) => b.Version - a.Version);
-
-            //TODO: check số version
-            let versions = data.cacheDbStorage.map((x: DataPouchDBDTO) => x.Version);
-            let lastVersion = this.getMaxVersion(versions) ;
-
-            //TODO: check số lượng
-            let countDB = Number(data.cacheDbStorage.length);
-
-            //TODO: lưu cache cho ds sản phẩm
-            const items: KeyCacheIndexDBDTO = {
-              cacheCount: countDB,
-              cacheVersion: lastVersion,
-              cacheDbStorage: data.cacheDbStorage
-            };
-
-            let keyCache = this._keyCacheProductIndexDB;
-            this.cacheApi.setItem(keyCache, JSON.stringify(items));
-            this._cacheObject$.next(items);
-          },
-          error: (error: any) => {
-              console.log(error);
-              this._cacheObject$.next({
+            this.cacheObject = {
                 cacheCount: 0,
                 cacheVersion: -1,
                 cacheDbStorage: []
-              });
-          }
-      })
+            };
+        }
+
+        this.getLastVersionV2(this.cacheObject.cacheCount, this.cacheObject.cacheVersion).subscribe({
+          next: (res: ProductPouchDBDTO) => {
+
+              const data = this.cacheObject;
+              if (res.IsDelete === true) {
+                  data.cacheDbStorage = [];
+              }
+
+              let exist = (data && data.cacheCount == 0 && data.cacheVersion == -1);
+              if (exist) {
+                  data.cacheDbStorage = [];
+                  data.cacheDbStorage = [...res.Datas];
+              } else {
+                  res.Datas?.map((x: DataPouchDBDTO) => {
+                      let index = data.cacheDbStorage?.findIndex(y => y.Id == x.Id && y.UOMId == x.UOMId);
+                      if(index >= 0) {
+                          data.cacheDbStorage[index] = {...x};
+                      } else {
+                          data.cacheDbStorage = [...[x], ...data.cacheDbStorage];
+                      }
+                  })
+              }
+
+              data.cacheDbStorage = [...data.cacheDbStorage];
+              data.cacheDbStorage = data.cacheDbStorage?.sort((a: any,b: any) => b.Version - a.Version);
+
+              //TODO: check số version
+              let versions = data.cacheDbStorage?.map((x: DataPouchDBDTO) => x.Version);
+              let lastVersion = this.getLastVersion(versions);
+
+              //TODO: check số lượng
+              let countDB = Number(data.cacheDbStorage.length);
+
+              //TODO: lưu cache cho ds sản phẩm
+              const items: KeyCacheIndexDBDTO = {
+                  cacheCount: countDB,
+                  cacheVersion: lastVersion,
+                  cacheDbStorage: data.cacheDbStorage
+              };
+
+              let keyCache = this._keyCacheProductIndexDB;
+              this.cacheApi.setItem(keyCache, JSON.stringify(items));
+              this._cacheObject$.next(items);
+          },
+          error: (error: any) => {
+              this._cacheObject$.next(error);
+          }})
+      },
+      error: (error: any) => {
+          this.message.error(error?.error?.message);
+      }
+    })
+  }
+
+  getLastVersion(versions: any[]) {
+    if(versions.length >= 80000) {
+        return Math.max(...versions);
+    } else {
+        return Math.max(...versions);
+    }
   }
 
   getLastVersionV2(countIndex: number, version: number): Observable<any> {
@@ -124,17 +196,6 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
       method: CoreApiMethodType.get
     }
     return this.apiService.getData<ProductPouchDBDTO>(api, null);
-  }
-
-  getMaxVersion(lstVersion: number[]) {
-    return lstVersion.reduce(function (p, v) {
-      return ( p > v ? p : v );
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
 }
