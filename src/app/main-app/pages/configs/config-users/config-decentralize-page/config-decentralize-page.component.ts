@@ -86,10 +86,11 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex);
 
-    this.applicationUserService.get(params)
+    this.applicationUserService.setUsers(params);
+    this.applicationUserService.getUsers()
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
-        this.lstUsers = res.value;
+        this.lstUsers = [...res];
       });
   }
 
