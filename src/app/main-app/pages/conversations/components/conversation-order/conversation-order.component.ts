@@ -542,17 +542,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   loadCurrentCompany() {
-    this.sharedService.setCurrentCompany();
-    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+    this.sharedService.apiCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
         this.companyCurrents = res;
 
-        if(this.companyCurrents.DefaultWarehouseId) {
-          this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
+        let warehouseId = this.companyCurrents.DefaultWarehouseId;
+        if(warehouseId > 0) {
+          this.loadInventoryWarehouseId(warehouseId);
         }
       },
       error: (error: any) => {
-        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+        this.message.error(error?.error?.message);
       }
     });
   }
