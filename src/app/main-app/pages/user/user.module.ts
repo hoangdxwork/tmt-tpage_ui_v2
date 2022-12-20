@@ -1,3 +1,4 @@
+import { SummaryOrderByPeriodComponent } from './components/info-pack-of-data/summary-order-by-period.component';
 import { EventSummaryService } from './../../services/event-summary.service';
 import { TDSModalModule } from 'tds-ui/modal';
 import { InfoUserComponent } from './components/info-user/info-user.component';
@@ -85,7 +86,8 @@ const SERVICES = [
     ModalGetNotificationComponent,
     ActivitiesComponent,
     ModalRequestPermissionComponent,
-    SocketNotificationComponent
+    SocketNotificationComponent,
+    SummaryOrderByPeriodComponent
   ],
   imports: [
     CommonModule,
