@@ -106,7 +106,14 @@
                                         <div *ngFor="let item of lstUser" (click)="changeUser(item)"
                                         class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
                                         <div class="flex gap-x-2">
-                                            <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
+                                            <!-- <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar> -->
+                                            <span *ngIf="item?.Avatar">
+                                              <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
+                                            </span>
+                                            <span *ngIf="!item?.Avatar">
+                                                <tds-avatar [text]="item.Name | avatarRandom" class="text-white" size="sm"
+                                                    [style.background-color]="item.Id | randomColor"></tds-avatar>
+                                            </span>
                                             <span>{{item.Name}}</span>
                                         </div>
                                         <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == quickOrderModel?.User?.Id"></span>
