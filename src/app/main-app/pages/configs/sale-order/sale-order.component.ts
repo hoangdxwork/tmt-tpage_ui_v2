@@ -31,6 +31,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     { id: "Địa chỉ KH", value: "{partner.address}" },
     { id: "Đơn hàng", value: "{order}" },
     { id: "Mã đơn hàng", value: "{order.code}" },
+    { id: "Ghi chú đơn hàng", value: "{order.note}" },
     { id: "Chi tiết đơn hàng", value: "{order.details}" },
     { id: "Tổng tiền đơn hàng", value: "{order.total_amount}" },
     { id: "Bình luận chốt đơn", value: "{order.comment}" },
