@@ -1,3 +1,4 @@
+import { SummaryOrderDTO } from './../dto/dashboard/summary-order.dto';
 import { SummaryTagDTO } from './../dto/dashboard/summary-daily.dto';
 import { EventSummaryDTO } from './../dto/dashboard/summary-overview.dto';
 import { Injectable } from "@angular/core";
@@ -52,7 +53,7 @@ export class EventSummaryService extends BaseSevice {
     return this.apiService.getData<SummaryTagDTO[]>(api, null);
   }
 
-  getSummaryOrderByPeriod(since: any, until: any): Observable<any> {
+  getSummaryOrderByPeriod(since: any, until: any): Observable<SummaryOrderDTO> {
     since = format(since, 'yyyy-MM-dd+00:00:00');
     until= format(until, 'yyyy-MM-dd+00:00:00');
 
