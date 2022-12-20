@@ -203,4 +203,10 @@ export class OverviewOrderBypartnerComponent implements OnInit {
 
     this.lstOrder = [...data];
   }
+
+  onOpenTrackingUrl(data: OdataGetOrderPartnerIdModal) {
+    if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
+      window.open(data.TrackingUrl, '_blank')
+    }
+  }
 }

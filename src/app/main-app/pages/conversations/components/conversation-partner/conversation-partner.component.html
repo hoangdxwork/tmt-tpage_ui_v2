@@ -174,7 +174,7 @@
                           (Chưa có đối tác)</div>
 
                         <div class="text-body-2 font-regular font-sans text-neutral-1-900">
-                          [{{ lastInvoice.ShowState }}<span class="text-info-500 pl-0.5" *ngIf="lastInvoice.TrackingRef"> - {{ lastInvoice.TrackingRef }}</span>]
+                          [{{ lastInvoice.ShowState }}<span class="text-info-500 pl-0.5" *ngIf="lastInvoice.TrackingRef" (click)="onOpenTrackingUrl(lastInvoice)"> - {{ lastInvoice.TrackingRef }}</span>]
                         </div>
 
                     </div>
@@ -327,7 +327,7 @@
 
                   <tds-form-field>
                       <tds-label>Ghi chú</tds-label>
-                      <input tdsInput placeholder="Nhập ghi chú"  [(ngModel)]="partner.Comment" [ngModelOptions]="{standalone: true}"/>
+                      <textarea tdsInput placeholder="Nhập ghi chú" class="resize-none no-scrollbar"  [(ngModel)]="partner.Comment" [ngModelOptions]="{standalone: true}"></textarea>
                   </tds-form-field>
 
                   <div class="flex flex-col gap-y-2">

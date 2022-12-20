@@ -959,6 +959,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
 
     if (obs) {
+      this.message.info('Đang thao tác in phiếu...');
       obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           this.printerService.printHtml(res);
       }, (error: TDSSafeAny) => {
@@ -1584,12 +1585,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onQuickSaleOnlineOrder(order: QuickSaleOnlineOrderModel, type?: string) {
     this.conversationOrderFacade.hasValueOrderCode$.emit(order.Code);
-    this.postEvent.spinLoadingTab$.emit(false);
 
     let csid = order.Facebook_ASUserId;
     this.onSyncConversationPartner(csid);
 
-    this.isLoading = false;
     if(order.IsCreated) {
         this.message.success('Tạo đơn hàng thành công');
     } else {
@@ -1669,9 +1668,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               if(type == 'FastSaleOrder') {
                   this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
               }
+              this.isLoading = false;
+              this.postEvent.spinLoadingTab$.emit(false);
+
+              this.cdRef.detectChanges();
           },
           error: (error: any) => {
+              this.postEvent.spinLoadingTab$.emit(false);
+              this.isLoading = false;
               this.message.error(error?.error?.message);
+
+              this.cdRef.detectChanges();
           }
       })
     }, 350);
