@@ -58,10 +58,10 @@ export class ModalGetNotificationComponent implements OnInit {
   }
 
   save() {
-    this.registerTopics()
+    this.registerTopics(true)
   }
 
-  registerTopics() {
+  registerTopics(isMessage: boolean) {
     let model = {
       TopicIds: this.idsRegister
     }
@@ -70,7 +70,11 @@ export class ModalGetNotificationComponent implements OnInit {
     this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.isLoading = false;
-          this.message.success('Đăng ký nhận tin thành công');
+
+          if(isMessage == true) {
+            this.message.success('Đăng ký nhận tin thành công');
+          }
+
           this.modal.destroy(null);
       },
       error: (err: any) => {
@@ -118,7 +122,7 @@ export class ModalGetNotificationComponent implements OnInit {
             this.deviceToken = null;
 
             this.firebaseMessagingService.removeDeviceTokenLocalStorage();
-            this.registerTopics();
+            this.registerTopics(false);
         },
         error: (err: any) => {
             this.isLoading = false;
