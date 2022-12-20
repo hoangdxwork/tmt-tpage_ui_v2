@@ -182,9 +182,11 @@ export class ProductIndexDBService extends BaseSevice {
     })
   }
 
-  getLastVersion(versions: any[]) {
-    if(versions.length >= 80000) {
-        return Math.max(...versions);
+  getLastVersion(versions: any[]):number {
+    if(versions?.length >= 80000) {
+
+      let lstVersion = versions.splice(0, 80000);
+      return Math.max(...lstVersion,...[this.getLastVersion(versions)]);
     } else {
         return Math.max(...versions);
     }
