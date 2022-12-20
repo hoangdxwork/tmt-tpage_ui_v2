@@ -124,7 +124,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
-    
+
     this.validateData();
     this.isLoading = true;
     this.conversationInfo = {...conversationInfo};
@@ -233,6 +233,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadPartnerStatus() {
+    this.commonService.setPartnerStatus();
     this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.lstPartnerStatus = [...res];

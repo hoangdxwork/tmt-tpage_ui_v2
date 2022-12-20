@@ -1,6 +1,6 @@
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
@@ -21,6 +21,10 @@ export class CommonService extends BaseSevice {
   // Dữ liệu bảng giá
   public shopPaymentProviders$ = new BehaviorSubject<any>({});
   public priceListItems$ = new BehaviorSubject<any>([]);
+
+  lstPartnerStatus: any;
+  private readonly _partnerStatusSubject$ = new ReplaySubject<any>();
+
 
   constructor(private apiService: TCommonService) {
     super(apiService);
@@ -50,7 +54,26 @@ export class CommonService extends BaseSevice {
     return this.apiService.getData<PartnerStatusReport>(api, null);
   }
 
-  getPartnerStatus(): Observable<ListItemStatusDTO[]> {
+  getPartnerStatus(){
+    return this._partnerStatusSubject$.asObservable();
+  }
+
+  setPartnerStatus() {
+    if(this.lstPartnerStatus) {
+        this._partnerStatusSubject$.next(this.lstPartnerStatus);
+    } else {
+        this.get().subscribe({
+          next: (res: any) => {
+            if(res) {
+                this.lstPartnerStatus = {...res};
+                this._partnerStatusSubject$.next(this.lstPartnerStatus);
+            }
+          }
+        })
+    }
+  }
+
+  get(): Observable<ListItemStatusDTO[]> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/GetPartnerStatus`,
       method: CoreApiMethodType.get,
