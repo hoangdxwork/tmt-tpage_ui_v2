@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: '[csLoadingPost]',
   template: `<div class="h-full flex flex-auto">
-                <tds-spin class="h-full w-[60.1%] flex flex-col bg-neutral-3-200 pr-1">
+                <tds-spin class="h-full w-[62.5%] flex flex-col bg-neutral-3-200 pr-1">
                     <div class="h-fit w-full flex flex-row items-center gap-x-3 bg-white p-4 mb-1">
                         <tds-skeleton-element
                             tdsType="button" [tdsActive]="true"
@@ -42,7 +42,7 @@ import { Component, OnInit } from '@angular/core';
                         <tds-skeleton [tdsAvatar]="true" [tdsParagraph]="{ rows: 2 }"></tds-skeleton>
                     </div>
                 </tds-spin>
-                <div class="h-full w-[39.9%] flex flex-col flex-auto bg-neutral-3-200">
+                <div class="h-full w-[37.5%] flex flex-col flex-auto bg-neutral-3-200">
                     <div class="h-fit w-full flex flex-row bg-white gap-x-4 p-4 mb-1">
                         <tds-skeleton-element
                             tdsType="input" [tdsActive]="true"
