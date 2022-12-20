@@ -916,4 +916,10 @@ export class DetailBillComponent implements OnInit {
 
     return 1;
   }
+
+  onOpenTrackingUrl(data: FastSaleOrderModelDTO) {
+    if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
+      window.open(data.TrackingUrl, '_blank')
+    }
+  }
 }

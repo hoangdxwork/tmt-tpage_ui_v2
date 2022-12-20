@@ -58,6 +58,7 @@ export interface OdataGetOrderPartnerIdModal {
   TrackingArea?: any;
   IsProductDefault: boolean;
   TrackingRefSort?: any;
+  TrackingUrl?: string;
   ShipStatus: string;
   ShowShipStatus: string;
   SaleOnlineName: string;

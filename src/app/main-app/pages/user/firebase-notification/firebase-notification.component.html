@@ -85,7 +85,7 @@
           [disabled]="(item != 'socket.all' && !this.socketData['socket.all']) || (!this.socketData['chatomni.on-message'] && (item | checkSocketTeamType))"
           (ngModelChange)="change(item)" size="lg">
         </tds-switch>
-        <span class="ml-4">{{ item | getSocketName }}</span>
+        <span class="ml-4" [ngClass]="item == 'socket.all' ? 'font-semibold' : ''">{{ item | getSocketName }}</span>
       </div>
     </div>
   </div>

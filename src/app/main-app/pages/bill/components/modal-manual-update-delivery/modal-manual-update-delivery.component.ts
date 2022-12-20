@@ -128,4 +128,10 @@ export class ModalManualUpdateDeliveryComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  onOpenTrackingUrl(data: FastSaleOrderDTO) {
+    if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
+      window.open(data.TrackingUrl, '_blank')
+    }
+  }
 }

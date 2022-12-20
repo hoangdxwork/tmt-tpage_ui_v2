@@ -101,6 +101,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   commentOrders?: any = {};
   filterObj : TDSSafeAny;
   lengthDataSource: number = 0;
+  setOfCheckedPsid = new Set<string>();
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -140,6 +141,17 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     }
 
     this.onEventSocket();
+    this.onEventEmitter();
+  }
+
+  onEventEmitter() {
+    this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationInfoDto) =>{
+        this.setOfCheckedPsid.delete(res.Conversation?.UserId);
+
+        this.cdRef.detectChanges();
+      }
+    })
   }
 
   loadOrderPartnerbylLivecampaign() {
@@ -648,10 +660,12 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
           }
 
           if(type == 'SALEONLINE_ORDER') {
+              this.setOfCheckedPsid.add(psid);
               this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
           }
 
           this.conversationOrderFacade.loadPartnerByPostComment$.emit(info);
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.postEvent.spinLoadingTab$.emit(false);
