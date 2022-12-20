@@ -157,6 +157,7 @@ export class ProductIndexDBService extends BaseSevice {
               //TODO: check số version
               let versions = data.cacheDbStorage?.map((x: DataPouchDBDTO) => x.Version);
               let lastVersion = this.getLastVersion(versions);
+console.log(lastVersion);
 
               //TODO: check số lượng
               let countDB = Number(data.cacheDbStorage.length);
@@ -182,9 +183,11 @@ export class ProductIndexDBService extends BaseSevice {
     })
   }
 
-  getLastVersion(versions: any[]) {
-    if(versions.length >= 80000) {
-        return Math.max(...versions);
+  getLastVersion(versions: any[]):number {
+    if(versions?.length >= 80000) {
+
+      let lstVersion = versions.splice(0, 80000);
+      return Math.max(...lstVersion,...[this.getLastVersion(versions)]);
     } else {
         return Math.max(...versions);
     }

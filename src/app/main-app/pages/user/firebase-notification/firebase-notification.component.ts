@@ -236,14 +236,17 @@ export class FirebaseNotificationComponent implements OnInit {
     } else {
       setTimeout(() => {
         let scrollContent = document.getElementsByClassName('scrollable-content')?.item(0);
-        this.render.addClass(scrollContent,'!h-auto');//set thuộc tính h-auto cho viewport
+        
+        if(scrollContent) {
+          this.render.addClass(scrollContent,'!h-auto');//set thuộc tính h-auto cho viewport
 
-        let scrollerHeight = this.render.parentNode(scrollContent)?.clientHeight as number;//chiều cao của scroller
-        this.viewPortHeight = scrollContent?.clientHeight as number;//chiều cao viewport
-        this.itemHeight = Math.round(this.viewPortHeight/this.itemCount);//chiều cao của mỗi item
-        // trường hợp chiều cao của viewport < scroller height, get nextdata
-        if(this.viewPortHeight < scrollerHeight) {
-          this.nextData(scrollerHeight);
+          let scrollerHeight = this.render.parentNode(scrollContent)?.clientHeight as number;//chiều cao của scroller
+          this.viewPortHeight = scrollContent?.clientHeight as number;//chiều cao viewport
+          this.itemHeight = Math.round(this.viewPortHeight/this.itemCount);//chiều cao của mỗi item
+          // trường hợp chiều cao của viewport < scroller height, get nextdata
+          if(this.viewPortHeight < scrollerHeight) {
+            this.nextData(scrollerHeight);
+          }
         }
       }, 2000);
     }
