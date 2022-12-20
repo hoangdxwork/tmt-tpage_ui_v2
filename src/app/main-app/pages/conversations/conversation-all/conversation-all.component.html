@@ -167,7 +167,7 @@
                 <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
 
                     <ng-template #conversationPartner let-active="active">
-                        <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 py-4 pr-4 relative  group"
+                        <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 py-4 pr-4 relative group"
                             [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
 
                             <span class="mr-2">Khách hàng</span>
@@ -185,7 +185,8 @@
                                 (onTabOderOutput)="onTabOderOutput($event)">
                             </conversation-partner>
                         </div>
-                        <div *ngIf="!(currentTeam && conversationItem && type && conversationInfo)" class="w-full h-full flex">
+
+                        <div class="w-full h-full flex" *ngIf="!(currentTeam && conversationItem && type && conversationInfo)">
                             <div csLoadingPartner class="w-full h-full flex bg-white"></div>
                         </div>
                     </div>
@@ -220,7 +221,7 @@
     </div>
 
     <div class="w-[80%] h-full flex" *ngIf="!conversationItem && isLoading">
-        <div csLoadingPost class="h-full w-full"></div>
+        <div csLoadingConversation class="h-full w-full"></div>
     </div>
 
     <!-- chưa có dữ liệu -->
