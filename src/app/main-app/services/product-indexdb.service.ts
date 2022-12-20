@@ -157,7 +157,6 @@ export class ProductIndexDBService extends BaseSevice {
               //TODO: check số version
               let versions = data.cacheDbStorage?.map((x: DataPouchDBDTO) => x.Version);
               let lastVersion = this.getLastVersion(versions);
-console.log(lastVersion);
 
               //TODO: check số lượng
               let countDB = Number(data.cacheDbStorage.length);
