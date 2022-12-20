@@ -47,7 +47,7 @@
                 Biểu đồ đơn hàng
             </h2>
             <div echarts [options]="options" [size]="size" class="mb-16"></div>
-            <div echarts [options]="orderOptions || {}" [size]="orderSize" [merge]="orderOptions"></div>
+            <summary-order-by-period></summary-order-by-period>
             </div>
       </div>
     </tds-card-content>
