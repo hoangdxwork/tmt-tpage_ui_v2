@@ -46,7 +46,8 @@
                 </svg>
                 Biểu đồ đơn hàng
             </h2>
-              <div echarts [options]="options" [size]="size"></div>
+            <div echarts [options]="options" [size]="size" class="mb-16"></div>
+            <div echarts [options]="orderOptions || {}" [size]="orderSize" [merge]="orderOptions"></div>
             </div>
       </div>
     </tds-card-content>
