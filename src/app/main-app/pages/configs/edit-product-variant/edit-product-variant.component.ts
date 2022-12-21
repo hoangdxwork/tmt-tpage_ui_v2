@@ -9,7 +9,6 @@ import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
-import { THelperCacheService } from 'src/app/lib';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -22,11 +21,12 @@ import { PrepareEditVariantHandler } from 'src/app/main-app/handler-v2/product-v
 })
 
 export class EditProductVariantComponent implements OnInit {
-  //#region Declare
+
   @Input() id!: number;
 
   _form!: FormGroup;
   dataModel!: ProductDTO;
+
   lstProductCategory!: ProductCategoryDTO[];
   lstProductUOM!: ProductUOMDTO[];
   imageList: Array<TDSSafeAny> = [];
@@ -48,9 +48,7 @@ export class EditProductVariantComponent implements OnInit {
     }
     return value;
   };
-  //#endregion Declare
 
-  //#region Initallization
   constructor(private modal: TDSModalRef,
     private fb: FormBuilder,
     private createFormHandler : CreateFormProductVariantHandler,
@@ -76,20 +74,15 @@ export class EditProductVariantComponent implements OnInit {
   createForm() {
     this._form = this.createFormHandler.createEditForm(this._form, this.fb);
   }
-  //#endregion Initallization
 
-  //#region Api-request
   loadData() {
     this.isLoading = true;
-    this.productService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe(
-        {
+    this.productService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
-            if(res) {
-              delete res['@odata.context'];
-              this.dataModel = {...res};
 
-              this.updateForm(res);
-            }
+            delete res['@odata.context'];
+            this.dataModel = {...res};
+            this.updateForm(res);
 
             this.isLoading = false;
           },
@@ -102,8 +95,7 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   loadProductCategory() {
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstProductCategory = [...res.value];
         },
@@ -114,8 +106,7 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   loadUOM() {
-    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstProductUOM = [...res.value];
         },
@@ -124,9 +115,7 @@ export class EditProductVariantComponent implements OnInit {
         }
       })
   }
-  //#endregion Api-request
 
-  //#region Handle
   updateForm(data: TDSSafeAny) {
 
     this._form.controls['Categ'].setValue(data.Categ);
@@ -145,7 +134,18 @@ export class EditProductVariantComponent implements OnInit {
 
   loadDataIndexDBCache() {
     this.productIndexDBService.setCacheDBRequest();
-    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+        this.isLoading = false;
+        this.message.success('Cập nhật thành công!');
+        this.modal.destroy(true);
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        this.message.success('Cập nhật thành công!');
+        this.modal.destroy(true);
+      }
+    })
   }
 
   onSubmit() {
@@ -215,7 +215,6 @@ export class EditProductVariantComponent implements OnInit {
 
   prepareModel() {
     let model = this.prepareEditVariantHandler.prepareModel(this.dataModel, this._form.value, this._form.controls['Images'].value) as ProductDTO;
-
     return model;
   }
 
@@ -239,19 +238,15 @@ export class EditProductVariantComponent implements OnInit {
 
   onSave(): any {
     let model = this.prepareModel();
+    if(this.checkError()) return;
 
-    if(this.checkError()){
-      return;
-    }
-
-    this.productService.updateProduct(this.id, model).pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.isLoading = true;
+    this.productService.updateProduct(this.id, model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-          this.message.success('Cập nhật thành công!');
           this.loadDataIndexDBCache();
-          this.modal.destroy(true);
         },
         error: error => {
+          this.isLoading = false;
           this.message.error(error?.error?.message || 'Thao tác thất bại');
         }
       });
@@ -297,5 +292,5 @@ export class EditProductVariantComponent implements OnInit {
     }
 
     return null;
-}
+  }
 }

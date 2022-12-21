@@ -54,6 +54,7 @@ export class CreateProductVariantComponent implements OnInit {
   uploadUrl = '';
   modelDefault!: ProductDTO;
   addToFBPage = false;
+  isLoading: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -182,7 +183,18 @@ export class CreateProductVariantComponent implements OnInit {
 
   loadDataIndexDBCache() {
     this.productIndexDBService.setCacheDBRequest();
-    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({})
+    this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        this.message.success(Message.InsertSuccess);
+        this.router.navigateByUrl('/configs/product-variant');
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        this.message.success(Message.InsertSuccess);
+        this.router.navigateByUrl('/configs/product-variant');
+      }
+    })
   }
 
   addImages(data: IRAttachmentDTO) {
@@ -233,16 +245,14 @@ export class CreateProductVariantComponent implements OnInit {
     let data = {
       model: { PageId: facebook_PageId, ProductIds: [ids] }
     }
-    this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe(
-      {
+
+    this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-          this.notification.success(
-            'Thêm thành công',
-            'Đã thêm sản phẩm ' + name + ' vào page.'
-          );
+          this.notification.success('Thêm thành công',
+            'Đã thêm sản phẩm ' + name + ' vào page' );
         },
         error: error => {
-          this.message.error(error?.error?.message || "Thêm mới sản phẩm vào page thất bại");
+            this.message.error(error?.error?.message || "Thêm mới sản phẩm vào page thất bại");
         }
       });
   }
@@ -265,18 +275,17 @@ export class CreateProductVariantComponent implements OnInit {
       return
     }
 
-    this.productService.insertProduct(model).pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.isLoading = true;
+    this.productService.insertProduct(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           if (this.addToFBPage) {
-            this.addProductToPageFB(res.Id, model.Name);
+              this.addProductToPageFB(res.Id, model.Name);
           }
 
           this.loadDataIndexDBCache();
-          this.message.success(Message.InsertSuccess);
-          this.router.navigateByUrl('/configs/product-variant');
         },
         error: error => {
+          this.isLoading = false;
           this.message.error(error?.error?.message || Message.InsertFail);
         }
       });
