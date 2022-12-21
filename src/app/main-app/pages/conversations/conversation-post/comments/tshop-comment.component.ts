@@ -145,9 +145,8 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
   onEventEmitter() {
     this.postEvent.isLoadingInsertFromPost$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: boolean) =>{
-        this.isLoadingInsertFromPost = res;
-
+      next: (res: boolean) => {
+        this.isLoadingInsertFromPost = false;
         this.cdRef.detectChanges();
       }
     })
@@ -618,10 +617,9 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   }
 
   onInsertFromPost(item: ChatomniDataItemDto) {
-    this.isLoadingInsertFromPost = true
+    this.isLoadingInsertFromPost = true;
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, null, 'SALEONLINE_ORDER');
-    this.cdRef.detectChanges();
   }
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
@@ -646,15 +644,16 @@ export class TShopCommentComponent implements OnInit, OnChanges {
           }
 
           if(type == 'SALEONLINE_ORDER') {
-              this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
+            this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
           }
 
           this.conversationOrderFacade.loadPartnerByPostComment$.emit(info);
       },
       error: (error: any) => {
           this.postEvent.spinLoadingTab$.emit(false);
-          this.isLoadingInsertFromPost = false
+          this.isLoadingInsertFromPost = false;
           this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
+          this.cdRef.detectChanges();
       }
     })
   }

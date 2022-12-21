@@ -147,8 +147,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   onEventEmitter() {
     this.postEvent.isLoadingInsertFromPost$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: boolean) =>{
-        this.isLoadingInsertFromPost = res;
-        this.cdRef.detectChanges();
+          this.isLoadingInsertFromPost = false;
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -631,16 +631,14 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   onInsertFromPost(item: ChatomniDataItemDto) {
-    this.isLoadingInsertFromPost = true
+    this.isLoadingInsertFromPost = true;
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, null, 'SALEONLINE_ORDER');
-    this.cdRef.detectChanges();
   }
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
     this.postEvent.spinLoadingTab$.emit(true);
     let psid = item.UserId || item.Data?.from?.id;
-
     if (!psid) {
       this.message.error("Không truy vấn được thông tin người dùng!");
       return;
@@ -661,7 +659,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
           }
 
           if(type == 'SALEONLINE_ORDER') {
-              this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
+            this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
           }
 
           this.conversationOrderFacade.loadPartnerByPostComment$.emit(info);
@@ -669,8 +667,9 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
       },
       error: (error: any) => {
           this.postEvent.spinLoadingTab$.emit(false);
-          this.isLoadingInsertFromPost = false
+          this.isLoadingInsertFromPost = false;
           this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
+          this.cdRef.detectChanges();
       }
     })
   }

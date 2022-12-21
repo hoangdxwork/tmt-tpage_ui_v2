@@ -79,7 +79,7 @@ import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.serv
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationOrderComponent implements OnInit, OnChanges {
+export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() team!: CRMTeamDTO;
@@ -166,6 +166,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   indexDbStorage!: DataPouchDBDTO[];
 
   noteWhenNoId!: string | TDSSafeAny;
+  syncTimer: any;
 
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -824,6 +825,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         error: (error: any) => {
             this.isLoading = false;
             this.postEvent.isLoadingInsertFromPost$.emit(false);
+            this.postEvent.spinLoadingTab$.emit(false);
+
             this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
             this.cdRef.detectChanges();
         }
@@ -1660,7 +1663,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onSyncConversationPartner(csid: any, type?: string) {
-    setTimeout(() => {
+    this.destroyTimer();
+    this.syncTimer = setTimeout(() => {
       this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$)).subscribe({
           next: (info: ChatomniConversationInfoDto) => {
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
@@ -1669,23 +1673,29 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               if(type == 'FastSaleOrder') {
                   this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
               }
-              this.isLoading = false;
+
               this.postEvent.spinLoadingTab$.emit(false);
               this.postEvent.isLoadingInsertFromPost$.emit(false);
 
-
+              this.isLoading = false;
               this.cdRef.detectChanges();
           },
           error: (error: any) => {
               this.postEvent.spinLoadingTab$.emit(false);
               this.postEvent.isLoadingInsertFromPost$.emit(false);
+
               this.isLoading = false;
               this.message.error(error?.error?.message);
-
               this.cdRef.detectChanges();
           }
       })
     }, 350);
+  }
+
+  destroyTimer() {
+    if (this.syncTimer) {
+      clearTimeout(this.syncTimer);
+    }
   }
 
   checkSelectNote() {
@@ -1694,5 +1704,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       this.quickOrderModel.Note = this.noteWhenNoId;
     }
     delete this.noteWhenNoId;
+  }
+
+  ngOnDestroy(): void {
+    this.destroyTimer();
   }
 }
