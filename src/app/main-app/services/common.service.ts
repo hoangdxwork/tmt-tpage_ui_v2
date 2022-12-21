@@ -72,7 +72,7 @@ export class CommonService extends BaseSevice {
             }
           },
           error: error =>{
-            this.message.error(`${error?.error?.message}`)
+            this._partnerStatusSubject$.next(error)
           }
         })
     }
