@@ -456,12 +456,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     if(Number(index) >= 0) {
       currentOmni = this.lstConversation[index];
 
-      //TODO: item thứ 7 trở đi không hiện trên màn hình đổi lên đầu
-      if(Number(index) >= 6) {
-        this.lstConversation = this.lstConversation.filter(x => x.ConversationId != params_csid);
-        this.lstConversation = [...[currentOmni], ...this.lstConversation];
-      }
-
       let exist = currentOmni && currentOmni?.ConversationId;
       if(exist) {
           this.setCurrentConversationItem(currentOmni);
@@ -798,17 +792,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           let currentOmni = {} as any;
           let index = this.lstConversation.findIndex(x => x.ConversationId == this.conversationItem?.ConversationId);
-          if(Number(index) >= 0) {
-            let currentOmni = this.lstConversation[index];
-
-            //TODO: item thứ 7 trở đi không hiện trên màn hình đổi lên đầu
-            if(Number(index) >= 6) {
-              this.lstConversation = this.lstConversation.filter(x => x.ConversationId != this.conversationItem?.ConversationId);
-              this.lstConversation = [...[currentOmni], ...this.lstConversation];
-            }
-
-          } else if(!this.isFilter) {
-
+          if(Number(index) < 0 && !this.isFilter) {
             let teamId = this.currentTeam?.Id as number;
             let csid = this.conversationItem?.ConversationId;
             if(!TDSHelperString.hasValueString(csid)) {

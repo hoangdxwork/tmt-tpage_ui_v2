@@ -90,8 +90,10 @@
 
                         <!-- thao tác -->
                         <div *ngIf="!item.IsOwner" class="flex items-center pt-3" >
-                            <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm"
+                            <tds-spin *ngIf="!isShowModal && !item.ParentId" [spinning]="this.setOfCheckedPsid.has(item.UserId)" [indicator]="indicatorTemplate">
+                            <button type="button" tds-button color="primary" class="mr-2" size="sm"
                                 (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
+                            </tds-spin>
 
                             <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
                                 tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.UserId] : '')" tds-tooltip>
@@ -100,9 +102,9 @@
                                 </span>
                             </button>
 
-                            <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại tin nhắn" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
+                            <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại bình luận" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
                                 <span class="flex items-center justify-center">
-                                    <i class="tdsi-messenger-fill text-neutral-1-500"></i>
+                                    <i class="tdsi-message-fill text-neutral-1-500"></i>
                                 </span>
                             </button>
 
@@ -290,3 +292,7 @@
       </div>
   </ng-container>
 </tds-drawer>
+
+<ng-template #indicatorTemplate>
+    <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+</ng-template>

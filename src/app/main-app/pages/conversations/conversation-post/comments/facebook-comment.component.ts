@@ -632,8 +632,17 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   onInsertFromPost(item: ChatomniDataItemDto) {
+    let psid = item.UserId || item.Data?.from?.id;
+
+    if (!psid) {
+      this.message.error("Không truy vấn được thông tin người dùng!");
+      return;
+    }
+    this.setOfCheckedPsid.add(psid);
+
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, null, 'SALEONLINE_ORDER');
+    this.cdRef.detectChanges();
   }
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
@@ -660,7 +669,6 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
           }
 
           if(type == 'SALEONLINE_ORDER') {
-              this.setOfCheckedPsid.add(psid);
               this.conversationOrderFacade.loadInsertFromPostFromComment$.emit(item);
           }
 

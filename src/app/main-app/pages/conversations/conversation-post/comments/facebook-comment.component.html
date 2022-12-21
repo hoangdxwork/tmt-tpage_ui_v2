@@ -121,8 +121,8 @@
 
                           <!-- thao tác -->
                           <div class="flex items-center pt-3">
-                              <tds-spin [spinning]="this.setOfCheckedPsid.has(item.Data?.from!.id)" [indicator]="indicatorTemplate" >
-                                <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
+                              <tds-spin *ngIf="!isShowModal && !item.ParentId" [spinning]="this.setOfCheckedPsid.has(item.Data?.from!.id)" [indicator]="indicatorTemplate" >
+                                <button type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
                               </tds-spin>
 
                               <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"

@@ -100,6 +100,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   commentOrders?: any = {};
   filterObj : TDSSafeAny;
   lengthDataSource: number = 0;
+  setOfCheckedPsid = new Set<string>();
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -139,8 +140,18 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
     }
 
     this.onEventSocket();
+    this.onEventEmitter();
   }
 
+  onEventEmitter() {
+    this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationInfoDto) =>{
+        this.setOfCheckedPsid.delete(res.Conversation?.UserId);
+
+        this.cdRef.detectChanges();
+      }
+    })
+  }
   loadOrderPartnerbylLivecampaign() {
     if(this.data && this.data.LiveCampaignId) {
       let id = this.data.LiveCampaignId as string;
@@ -606,8 +617,17 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   }
 
   onInsertFromPost(item: ChatomniDataItemDto) {
+    let psid = item.UserId;
+
+    if (!psid) {
+      this.message.error("Không truy vấn được thông tin người dùng!");
+      return;
+    }
+    this.setOfCheckedPsid.add(psid);
+
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, null, 'SALEONLINE_ORDER');
+    this.cdRef.detectChanges();
   }
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
