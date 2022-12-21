@@ -101,6 +101,8 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   filterObj : TDSSafeAny;
   lengthDataSource: number = 0;
 
+  setOfCheckedPsid = new Set<string>();
+
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
   constructor(private message: TDSMessageService,
@@ -139,6 +141,17 @@ export class TShopCommentComponent implements OnInit, OnChanges {
     }
 
     this.onEventSocket();
+    this.onEventEmitter();
+  }
+
+  onEventEmitter() {
+    this.chatomniConversationFacade.onSyncConversationInfo$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniConversationInfoDto) =>{
+        this.setOfCheckedPsid.delete(res.Conversation?.UserId);
+
+        this.cdRef.detectChanges();
+      }
+    })
   }
 
   loadOrderPartnerbylLivecampaign() {
@@ -606,8 +619,17 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   }
 
   onInsertFromPost(item: ChatomniDataItemDto) {
+    let psid = item.UserId;
+
+    if (!psid) {
+      this.message.error("Không truy vấn được thông tin người dùng!");
+      return;
+    }
+    this.setOfCheckedPsid.add(psid);
+
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, null, 'SALEONLINE_ORDER');
+    this.cdRef.detectChanges();
   }
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {

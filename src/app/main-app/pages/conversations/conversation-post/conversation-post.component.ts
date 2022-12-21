@@ -415,12 +415,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     if(Number(index) >= 0) {
       currentObject = this.lstObjects[index];
 
-      //TODO: item thứ 6 trở đi không hiện trên màn hình đổi lên đầu
-      if(Number(index) >= 5) {
-        this.lstObjects = this.lstObjects.filter(x => x.ObjectId != params_postid);
-        this.lstObjects = [...[currentObject], ...this.lstObjects];
-      }
-
       let exist = currentObject && currentObject?.ObjectId;
       if(exist) {
           this.currentObject = currentObject;
@@ -589,16 +583,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           let currentObject = {} as any;
 
           let index = this.lstObjects.findIndex(x => x.ObjectId == this.currentPost?.ObjectId);
-          if(Number(index) >= 0) {
-             currentObject = this.lstObjects[index];
-
-            //TODO: item thứ 6 trở đi không hiện trên màn hình đổi lên đầu
-            if(Number(index) >= 5) {
-              this.lstObjects = this.lstObjects.filter(x => x.ObjectId != this.currentPost?.ObjectId);
-              this.lstObjects = [...[currentObject], ...this.lstObjects];
-            }
-
-          } else if(!this.isFilter) {
+          if(Number(index) < 0 && !this.isFilter) {
             let teamId = this.currentTeam?.Id as number;
             let objectId = this.currentPost?.ObjectI;
 

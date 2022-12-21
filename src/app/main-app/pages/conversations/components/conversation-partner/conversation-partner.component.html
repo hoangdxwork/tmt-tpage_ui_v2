@@ -13,8 +13,15 @@
               </div>
               <div class="flex gap-6">
 
-                <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="conversationItem.ConversationId" [token]="team.ChannelToken">
+                <!-- Facebook -->
+                <tpage-avatar-facebook *ngIf="team.Type =='Facebook'" [shape]="'circle'" [size]="'lg'" [psid]="conversationItem.ConversationId" [token]="team.ChannelToken">
                 </tpage-avatar-facebook>
+
+                <!-- Tshop -->
+                <tds-avatar *ngIf="team.Type =='TShop'" [size]="'lg'" [tdsSrc]="conversationItem.Avatar?.Url" [isAvatar]="true"></tds-avatar>
+
+                <!-- Tiktok -->
+                <tds-avatar *ngIf="team.Type =='UnofficialTikTok'" [size]="'lg'" [tdsSrc]="conversationItem.Avatar?.Url" [isAvatar]="true"></tds-avatar>
 
                 <div class="flex flex-col gap-2">
                     <div class="flex gap-4 items-center" style="min-height: 34px;">
