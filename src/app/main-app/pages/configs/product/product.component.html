@@ -105,7 +105,11 @@
                                     <tds-avatar [tdsSrc]="data.ImageUrl" [size]="44" [isAvatar]="false"
                                         class="rounded-lg"></tds-avatar>
                                 </td>
-                                <td *ngIf="!isHiddenColumn('DefaultCode')" [tdsLeft]="true" class="border-r">{{ data.DefaultCode }}</td>
+                                <td *ngIf="!isHiddenColumn('DefaultCode')" [tdsLeft]="true" class="border-r">
+                                  <div class="max-w-[100px] truncate">
+                                      {{ data.DefaultCode }}
+                                  </div>
+                                </td>
                                 <td *ngIf="!isHiddenColumn('Name')" class="border-r">
                                   <div class="w-full">
                                     {{ data.Name }}

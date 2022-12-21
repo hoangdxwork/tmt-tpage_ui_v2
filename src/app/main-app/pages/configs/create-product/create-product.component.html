@@ -46,10 +46,10 @@
       <tds-tabset class="w-full bg-white mt-1" [clsTab]="'flex'" [tabBarStyle]="{'padding-left': '16px'}">
         <tds-tab [title]="custom1">
           <ng-template #custom1 let-active="active">
-            <div class="w-[137px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
+            <span class="w-[137px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
               [ngClass]='{"text-neutral-1-900 border-primary-1 ":active,"text-neutral-1-400 border-transparent hover:text-neutral-1-900 hover:border-primary-1":!active}'>
               Thông tin chung
-            </div>
+            </span>
           </ng-template>
           <div class="grid grid-cols-2 gap-y-4 2xl:gap-x-8 xl:gap-x-6">
             <div class="grid grid-cols-3 xl:gap-y-4 2xl:gap-x-6 xl:gap-x-4 items-center h-fit">
@@ -205,10 +205,10 @@
 
         <tds-tab [title]="custom2">
           <ng-template #custom2 let-active="active">
-            <div class="w-[90px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
+            <span class="w-[90px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
               [ngClass]='{"text-neutral-1-900 border-primary-1 ":active,"text-neutral-1-400 border-transparent hover:text-neutral-1-900 hover:border-primary-1":!active}'>
               Hình ảnh
-            </div>
+            </span>
           </ng-template>
           <upload-pictures-wall class="mr-12" [size]="112" [isArray]="true"
             [data]="_form.controls.Images.value|convertListUrl" (onLoadImage)="getImageList($event)">
@@ -217,10 +217,10 @@
 
         <tds-tab [title]="custom3" *ngIf="id">
           <ng-template #custom3 let-active="active">
-            <div class="w-[92px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
+            <span class="w-[137px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
               [ngClass]='{"text-neutral-1-900 border-primary-1 ":active,"text-neutral-1-400 border-transparent hover:text-neutral-1-900 hover:border-primary-1":!active}'>
               Đơn vị bán hàng
-            </div>
+            </span>
           </ng-template>
           <div class="h-full w-full">
             <div class="rounded-xl border border-neutral-2-200 flex flex-col">
@@ -306,15 +306,15 @@
 
         <tds-tab [title]="custom4" *ngIf="_form.controls.SaleOK.value">
           <ng-template #custom4 let-active="active">
-            <div class="w-[92px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
+            <span class="w-[92px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
               [ngClass]='{"text-neutral-1-900 border-primary-1 ":active,"text-neutral-1-400 border-transparent hover:text-neutral-1-900 hover:border-primary-1":!active}'>
               Bán hàng
-            </div>
+            </span>
           </ng-template>
-          <div
+          <span
             class="grid grid-cols-2 gap-y-4 gap-x-8 items-center text-neutral-1-600 text-header-2 font-semibold">
-            <span>Điểm bán hàng</span>
-          </div>
+            Điểm bán hàng
+          </span>
 
           <div class="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
             <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
@@ -334,113 +334,121 @@
 
         <tds-tab [title]="custom5">
           <ng-template #custom5 let-active="active">
-            <div class="w-[127px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
+            <span class="w-[127px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
               [ngClass]='{"text-neutral-1-900 border-primary-1 ":active,"text-neutral-1-400 border-transparent hover:text-neutral-1-900 hover:border-primary-1":!active}'>
               Thông tin khác
-            </div>
+            </span>
           </ng-template>
-          <div class="grid grid-cols-1 gap-y-4">
-            <div class="grid grid-cols-8 gap-x-6">
-              <tds-label class="max-w-[143px]">Mô tả sản phẩm</tds-label>
-              <tds-form-field class="w-full col-span-7">
+          <div class="flex flex-col gap-4">
+            <span class="w-full flex gap-6">
+              <tds-label class="w-[143px]">Mô tả sản phẩm</tds-label>
+              <tds-form-field class="flex-auto">
                 <textarea tdsInput formControlName="Description" placeholder="Nhập mô tả sản phẩm" class="resize-none no-scrollbar"></textarea>
               </tds-form-field>
-            </div>
-
-            <div class="grid grid-cols-8 gap-x-6">
-              <tds-label class="max-w-[143px]">Mô tả trên báo giá bán hàng</tds-label>
-              <tds-form-field class="w-full col-span-7">
+            </span>
+            <span class="w-full flex gap-6">
+              <tds-label class="w-[143px]">Mô tả trên báo giá bán hàng</tds-label>
+              <tds-form-field class="flex-auto">
                 <textarea tdsInput formControlName="DescriptionSale" placeholder="Nhập mô tả trên báo giá bán hàng" class="resize-none no-scrollbar"></textarea>
               </tds-form-field>
-            </div>
-
-            <div class="grid grid-cols-2 gap-x-8 gap-y-4">
-              <div class="grid grid-cols-4 gap-y-4 gap-x-6 items-center">
-                <tds-label class="max-w-[143px]">Nhà sản xuất</tds-label>
-                <div class="flex space-x-2 items-center col-span-3">
-                  <tds-form-field class="w-full">
-                    <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà sản xuất'
-                      [data]="producerList" [allowClear]="true" [optionOverflowSize]="5"
-                      [valuePrimitive]="false" formControlName="Producer">
-                    </tds-select>
+            </span>
+            <div class="flex gap-x-8">
+              <div class="w-1/2 flex flex-col gap-4">
+                <span class="w-full flex gap-6 items-center">
+                  <tds-label class="w-[143px]">Nhà sản xuất</tds-label>
+                  <div class="flex-auto flex gap-2 items-center">
+                    <tds-form-field class="flex-auto">
+                      <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà sản xuất'
+                        [data]="producerList" [allowClear]="true" [optionOverflowSize]="5"
+                        [valuePrimitive]="false" formControlName="Producer">
+                      </tds-select>
+                    </tds-form-field>
+                    <button tds-button-icon color="primary" size="sm" type="button" (click)="addProducer()">
+                      <span class="flex items-center">
+                        <i class="tdsi-plus-fill"></i>
+                      </span>
+                    </button>
+                  </div>
+                </span>
+                <span class="w-full flex gap-6 items-center">
+                  <tds-label class="w-[143px]">Nhà nhập khẩu</tds-label>
+                  <div class="flex-auto flex gap-2 items-center">
+                    <tds-form-field class="flex-auto">
+                      <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà nhập khẩu'
+                        [data]="importerList" [allowClear]="true" [optionOverflowSize]="5"
+                        [valuePrimitive]="false" formControlName="Importer">
+                      </tds-select>
+                    </tds-form-field>
+                    <button tds-button-icon color="primary" size="sm" type="button" (click)="addImporter()">
+                      <span class="flex items-center">
+                        <i class="tdsi-plus-fill"></i>
+                      </span>
+                    </button>
+                  </div>
+                </span>
+                <span class="w-full flex gap-6 items-center">
+                  <tds-label class="w-[143px]">Nhà phân phối</tds-label>
+                  <div class="flex-auto flex gap-2 items-center">
+                    <tds-form-field class="flex-auto">
+                      <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà phân phối'
+                        [data]="distributorList" [allowClear]="true"
+                        [optionOverflowSize]="5" [valuePrimitive]="false" formControlName="Distributor">
+                      </tds-select>
+                    </tds-form-field>
+                    <button tds-button-icon color="primary" size="sm" type="button" (click)="addDistributor()">
+                      <span class="flex items-center">
+                        <i class="tdsi-plus-fill"></i>
+                      </span>
+                    </button>
+                  </div>
+                </span>
+                <span class="w-full flex gap-6 items-center">
+                  <tds-label class="w-[143px]">Xuất xứ</tds-label>
+                  <div class="flex-auto flex gap-2 items-center">
+                    <tds-form-field class="flex-auto">
+                      <tds-select valueField="Id" textField="Name" placeholder='Chọn xuất xứ'
+                        [data]="originCountryList" [allowClear]="true"
+                        [optionOverflowSize]="5" [valuePrimitive]="false" formControlName="OriginCountry">
+                      </tds-select>
+                    </tds-form-field>
+                    <button tds-button-icon color="primary" size="sm" type="button" (click)="addOriginCountry()">
+                      <span class="flex items-center">
+                        <i class="tdsi-plus-fill"></i>
+                      </span>
+                    </button>
+                  </div>
+                </span>
+                <span class="w-full flex gap-6 items-center">
+                  <tds-label class="w-[143px]">Năm sản xuất</tds-label>
+                  <tds-form-field class="flex-auto">
+                    <tds-input-number formControlName="YearOfManufacture" [min]="0" placeholder="0"
+                      class="text-neutral-1-900 text-body-2 font-regular">
+                    </tds-input-number>
+                    <tds-error>
+                      Vui lòng nhập năm sản xuất
+                    </tds-error>
                   </tds-form-field>
-                  <button tds-button-icon color="primary" size="sm" type="button" (click)="addProducer()">
-                    <span class="flex items-center">
-                      <i class="tdsi-plus-fill"></i>
-                    </span>
-                  </button>
-                </div>
-
-                <tds-label class="max-w-[143px]">Nhà nhập khẩu</tds-label>
-                <div class="flex space-x-2 items-center col-span-3">
-                  <tds-form-field class="w-full">
-                    <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà nhập khẩu'
-                      [data]="importerList" [allowClear]="true" [optionOverflowSize]="5"
-                      [valuePrimitive]="false" formControlName="Importer">
-                    </tds-select>
-                  </tds-form-field>
-                  <button tds-button-icon color="primary" size="sm" type="button" (click)="addImporter()">
-                    <span class="flex items-center">
-                      <i class="tdsi-plus-fill"></i>
-                    </span>
-                  </button>
-                </div>
-
-                <tds-label class="max-w-[143px]">Nhà phân phối</tds-label>
-                <div class="flex space-x-2 items-center col-span-3">
-                  <tds-form-field class="w-full">
-                    <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà phân phối'
-                      [data]="distributorList" [allowClear]="true"
-                      [optionOverflowSize]="5" [valuePrimitive]="false" formControlName="Distributor">
-                    </tds-select>
-                  </tds-form-field>
-                  <button tds-button-icon color="primary" size="sm" type="button" (click)="addDistributor()">
-                    <span class="flex items-center">
-                      <i class="tdsi-plus-fill"></i>
-                    </span>
-                  </button>
-                </div>
-
-                <tds-label class="max-w-[143px]">Xuất xứ</tds-label>
-                <div class="flex space-x-2 items-center col-span-3">
-                  <tds-form-field class="w-full">
-                    <tds-select valueField="Id" textField="Name" placeholder='Chọn xuất xứ'
-                      [data]="originCountryList" [allowClear]="true"
-                      [optionOverflowSize]="5" [valuePrimitive]="false" formControlName="OriginCountry">
-                    </tds-select>
-                  </tds-form-field>
-                  <button tds-button-icon color="primary" size="sm" type="button" (click)="addOriginCountry()">
-                    <span class="flex items-center">
-                      <i class="tdsi-plus-fill"></i>
-                    </span>
-                  </button>
-                </div>
-
-                <tds-label class="max-w-[143px]">Năm sản xuất</tds-label>
-                <tds-form-field class="w-full col-span-3">
-                  <tds-input-number formControlName="YearOfManufacture" [min]="0" placeholder="0"
-                    class="text-neutral-1-900 text-body-2 font-regular">
-                  </tds-input-number>
-                  <tds-error>
-                    Vui lòng nhập năm sản xuất
-                  </tds-error>
-                </tds-form-field>
+                </span>
               </div>
-              <div class="grid grid-cols-4 grid-rows-1 gap-y-4 gap-x-6 items-center">
-                <tds-label class="max-w-[143px]">Thành phần</tds-label>
-                <tds-form-field class="w-full col-span-3">
-                  <textarea tdsInput formControlName="Element" placeholder="Nhập thành phần" class="resize-none no-scrollbar"></textarea>
-                </tds-form-field>
-
-                <tds-label class="max-w-[143px]">Thông số kỹ thuật</tds-label>
-                <tds-form-field class="w-full col-span-3">
-                  <textarea tdsInput formControlName="Specifications" placeholder="Nhập thông số kỹ thuật" class="resize-none no-scrollbar"></textarea>
-                </tds-form-field>
-
-                <tds-label class="max-w-[143px]">Thông tin cảnh báo</tds-label>
-                <tds-form-field class="w-full col-span-3">
-                  <textarea tdsInput formControlName="InfoWarning" placeholder="Nhập thông tin cảnh báo" class="resize-none no-scrollbar"></textarea>
-                </tds-form-field>
+              <div class="w-1/2 flex flex-col gap-4">
+                <span class="w-full flex gap-6">
+                  <tds-label class="w-[143px]">Thành phần</tds-label>
+                  <tds-form-field class="flex-auto">
+                    <textarea tdsInput formControlName="Element" placeholder="Nhập thành phần" class="resize-none no-scrollbar"></textarea>
+                  </tds-form-field>
+                </span>
+                <span class="w-full flex gap-6">
+                  <tds-label class="w-[143px]">Thông số kỹ thuật</tds-label>
+                  <tds-form-field class="flex-auto">
+                    <textarea tdsInput formControlName="Specifications" placeholder="Nhập thông số kỹ thuật" class="resize-none no-scrollbar"></textarea>
+                  </tds-form-field>
+                </span>
+                <span class="w-full flex gap-6">
+                  <tds-label class="w-[143px]">Thông tin cảnh báo</tds-label>
+                  <tds-form-field class="flex-auto">
+                    <textarea tdsInput formControlName="InfoWarning" placeholder="Nhập thông tin cảnh báo" class="resize-none no-scrollbar"></textarea>
+                  </tds-form-field>
+                </span>
               </div>
             </div>
           </div>

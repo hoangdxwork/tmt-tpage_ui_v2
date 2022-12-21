@@ -71,7 +71,7 @@ export class CommonService extends BaseSevice {
                 this._partnerStatusSubject$.next(this.lstPartnerStatus);
             }
           },
-          error: error =>{
+          error: error => {
             this._partnerStatusSubject$.next(error)
           }
         })
