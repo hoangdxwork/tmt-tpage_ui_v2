@@ -13,7 +13,10 @@ import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utili
 
 @Component({
   selector: 'app-config-users-shift',
-  templateUrl: './config-users-shift.component.html'
+  templateUrl: './config-users-shift.component.html',
+  host: {
+    class: 'w-full h-full flex'
+  }
 })
 export class ConfigUsersShiftComponent implements OnInit {
   visible: boolean = false;
