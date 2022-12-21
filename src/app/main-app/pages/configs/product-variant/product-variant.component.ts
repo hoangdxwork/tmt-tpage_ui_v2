@@ -76,9 +76,9 @@ export class ListProductVariantComponent implements OnInit {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
         }
-        
+
         this.isLoading = false;
-      }, 
+      },
       error: (err) => {
         this.isLoading = false;
         this.message.error(err?.error?.message || 'Tải dữ liệu khách hàng thất bại!');
@@ -136,7 +136,7 @@ export class ListProductVariantComponent implements OnInit {
         }
 
         this.isLoading = false;
-      }, 
+      },
       error: (err) => {
         this.isLoading = false;
         this.message.error(err?.error?.message || 'Tìm kiếm không thành công');
@@ -164,7 +164,7 @@ export class ListProductVariantComponent implements OnInit {
             next: (res: any) => {
               this.message.success("Đã mở hiệu lực thành công!");
               this.loadData(this.pageSize, this.pageIndex);
-            }, 
+            },
             error: (err) => {
               this.message.error(err?.error?.message || 'Mở hiệu lực thất bại!');
             }
@@ -177,7 +177,7 @@ export class ListProductVariantComponent implements OnInit {
             next: (res: any) => {
               this.message.success("Đã hết hiệu lực!");
               this.loadData(this.pageSize, this.pageIndex);
-            }, 
+            },
             error: (err) => {
               this.message.error(err?.error?.message || 'Đóng hiệu lực thất bại!');
             }
@@ -205,7 +205,7 @@ export class ListProductVariantComponent implements OnInit {
             this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
               next: (res: any) => {
                 this.message.success("Thao tác thành công");
-              }, 
+              },
               error: (err) => {
                 this.message.error(err?.error?.message || "Thêm mới sản phẩm vào page thất bại");
               }
@@ -233,7 +233,7 @@ export class ListProductVariantComponent implements OnInit {
           this.message.success('Đã xóa sản phẩm khỏi page');
           this.onSelectChange(this.selected);
           return;
-        }, 
+        },
         error: (err) => {
           this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
         }
@@ -312,7 +312,7 @@ export class ListProductVariantComponent implements OnInit {
         id: id
       },
     });
-    modal.afterClose.subscribe((result: any) => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: any) => {
       if (result == true) {
         this.loadData(this.pageSize, this.pageIndex);
       }
@@ -333,7 +333,7 @@ export class ListProductVariantComponent implements OnInit {
               this.message.success('Xóa sản phẩm thành công!')
               this.onSelectChange(this.selected);
               return
-            }, 
+            },
             error: (err) => {
               this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
             }
@@ -365,7 +365,7 @@ export class ListProductVariantComponent implements OnInit {
               this.message.success('Đã xóa sản phẩm khỏi page')
               this.onSelectChange(this.selected);
               return
-            }, 
+            },
             error: (err) => {
               this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
             }
