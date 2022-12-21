@@ -1,33 +1,33 @@
-<form [formGroup]="addUOMForm" autocomplete="off" (ngSubmit)="onSubmit()">
+<form [formGroup]="_form">
     <div class="grid grid-cols-4 gap-y-4 items-center">
         <tds-label>Tên</tds-label>
-        <tds-form-field class="w-full col-span-3">
+        <tds-form-field class="w-full col-span-3" [color]="!_form.value.Name && _form.controls.Name.touched? 'error' : 'default'">
             <input tdsInput formControlName="Name" autocomplete="off" placeholder="Nhập tên {{ name }}" />
-            <tds-error>Vui lòng nhập tên</tds-error>
+            <tds-error>Vui lòng nhập tên {{ name }}</tds-error>
         </tds-form-field>
 
         <tds-label>Mã</tds-label>
         <tds-form-field class="w-full col-span-3">
             <input tdsInput formControlName="Code" autocomplete="off" placeholder="Nhập mã {{ name }}" />
-            <tds-error>Vui lòng nhập mã</tds-error>
+            <tds-error>Vui lòng nhập mã {{ name }}</tds-error>
         </tds-form-field>
 
         <tds-label>Địa chỉ</tds-label>
         <tds-form-field class="w-full col-span-3">
             <input tdsInput formControlName="Address" autocomplete="off" placeholder="Nhập địa chỉ {{ name }}" />
-            <tds-error>Vui lòng nhập địa chỉ</tds-error>
+            <tds-error>Vui lòng nhập địa chỉ {{ name }}</tds-error>
         </tds-form-field>
 
         <tds-label>Số điện thoại</tds-label>
         <tds-form-field class="w-full col-span-3">
             <input tdsInput formControlName="Phone" autocomplete="off" placeholder="Nhập số điện thoại {{ name }}" />
-            <tds-error>Vui lòng nhập số điện thoại</tds-error>
+            <tds-error>Vui lòng nhập số điện thoại {{ name }}</tds-error>
         </tds-form-field>
 
         <tds-label>Email</tds-label>
         <tds-form-field class="w-full col-span-3">
             <input tdsInput formControlName="Email" autocomplete="off" placeholder="Nhập email {{ name }}" />
-            <tds-error>Vui lòng nhập email</tds-error>
+            <tds-error>Vui lòng nhập email {{ name }}</tds-error>
         </tds-form-field>
 
         <tds-label>Ghi chú</tds-label>
@@ -39,6 +39,6 @@
 </form>
 <!-- footer -->
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
-    <button tds-button type="submit" color="primary" (click)="save()">Tạo mới</button>
+    <button tds-button class="mr-2" color="secondary" (click)="onCancel()">Hủy bỏ</button>
+    <button tds-button type="submit" color="primary" (click)="onSave()">Tạo mới</button>
 </div>

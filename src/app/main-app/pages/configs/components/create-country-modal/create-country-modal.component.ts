@@ -1,80 +1,68 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { ProductTemplateService } from '../../../../services/product-template.service';
-import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
-import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { takeUntil } from 'rxjs/operators';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'create-country-modal',
-  templateUrl: './create-country-modal.component.html'
+  templateUrl: './create-country-modal.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class CreateCountryModalComponent implements OnInit, OnDestroy {
-  originCountyForm!:FormGroup;
-  private destroy$ = new Subject<void>();
+export class CreateCountryModalComponent implements OnInit {
+  _form!:FormGroup;
+  isLoading: boolean = false;
 
   constructor(
     private modal: TDSModalRef,
     private message: TDSMessageService,
     private productTemplateService: ProductTemplateService,
+    private destroy$: TDSDestroyService,
     private formBuilder: FormBuilder
   ) {
     this.initForm();
   }
 
-  ngOnInit(): void {
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+  ngOnInit(): void { }
 
   initForm(){
-    this.originCountyForm = this.formBuilder.group({
+    this._form = this.formBuilder.group({
       Code: [null],
       Name: [null,Validators.required],
       Note: [null]
     });
   }
 
-  repareModel() {
-    let formModel = this.originCountyForm.value;
-    let model = {
-      Code: formModel.Code,
-      Name: formModel.Name,
-      Note: formModel.Note
-    };
-
-    return model;
-  }
-
-  onSubmit() {
-    if (!this.originCountyForm.invalid) {
-      let model = this.repareModel();
-      this.productTemplateService.insertOriginCountry(model).pipe(takeUntil(this.destroy$)).subscribe(
-        (res:TDSSafeAny)=>{
-          this.message.success('Thêm mới thành công');
-          this.modal.destroy(this.originCountyForm);
-          this.originCountyForm.reset();
-        },
-        err=>{
-          this.message.error(err.error.message??'Thêm thất bại');
-        }
-      )
-
+  save() {
+    if(!this._form.controls["Name"].value) {
+      this.message.error('Vui lòng nhập tên xuất xứ sản phẩm');
+      return;
     }
+
+    this.isLoading = true;
+    let model = this._form.value;
+
+    this.productTemplateService.insertOriginCountry(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+
+        if(!res) return;
+        delete res["@odata.context"];
+        this.isLoading = false;
+
+        this.message.success('Thêm mới thành công');
+        this.modal.destroy(res);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err.error?.message || 'Thêm xuất xứ thất bại');
+      }
+    })
   }
 
   cancel() {
-      this.modal.destroy(null);
-  }
-
-  save() {
-      this.onSubmit();
+    this.modal.destroy(null);
   }
 }
