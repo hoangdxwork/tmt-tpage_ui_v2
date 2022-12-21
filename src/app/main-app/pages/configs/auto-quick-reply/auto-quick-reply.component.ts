@@ -17,7 +17,10 @@ import { SortEnum } from 'src/app/lib';
 
 @Component({
   selector: 'auto-quick-reply',
-  templateUrl: './auto-quick-reply.component.html'
+  templateUrl: './auto-quick-reply.component.html',
+  host: {
+    class: 'flex h-full w-full'
+  }
 })
 
 export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
@@ -93,7 +96,7 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
           this.AutoChatList = res.value
           this.count = res['@odata.count'] as number
           this.isLoading = false;
-        }, 
+        },
         error: error => {
           this.message.error(error.error.message || 'Tải dữ liệu thất bại!');
         }

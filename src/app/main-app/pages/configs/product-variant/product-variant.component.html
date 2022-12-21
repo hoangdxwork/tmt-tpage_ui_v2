@@ -14,7 +14,7 @@
         </div>
         <div class="w-full relative">
             <tds-filter-status [(ngModel)]='selected' (selectChange)="onSelectChange($event)"
-                class="h-full tds-tab-config">
+                class="h-full px-4 tds-tab-config">
                 <tds-filter-status-item name="Tất cả" [disabled]="isLoading" [value]="0" class="h-full">
                 </tds-filter-status-item>
                 <tds-filter-status-item name="Kênh kết nối ({{team ? team.Name : 'Chưa chọn kênh'}})"
@@ -65,9 +65,9 @@
                 </tds-form-field>
             </div>
         </div>
-        <div class="w-full h-full pb-2.5 text-body-2">
+        <div class="w-full flex-auto pb-2.5 text-body-2">
             <tds-table #rowSelectionTable [listData]="lstOfData" [showSizeChanger]="true" [frontPagination]="false"
-                [loading]="isLoading" [scroll]="{y:'auto'}" [pageSize]="pageSize" [pageIndex]="pageIndex"
+                [loading]="isLoading" [scroll]="{y:'auto', x: 'auto'}" [pageSize]="pageSize" [pageIndex]="pageIndex"
                 [total]="count" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>
                     <tr class="text-neutral-1-900 text-body-2 font-semibold">

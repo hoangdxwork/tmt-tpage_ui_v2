@@ -30,6 +30,9 @@ export interface DataUser {
 @Component({
   selector: 'app-config-users-operation',
   templateUrl: './config-users-operation.component.html',
+  host: {
+    class: 'flex h-full w-full'
+  },
   providers: [TDSDestroyService]
 })
 

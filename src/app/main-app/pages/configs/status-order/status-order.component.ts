@@ -15,6 +15,9 @@ import { PartnerStatusComponent } from '../components/partner-status/partner-sta
 @Component({
   selector: 'app-status-order',
   templateUrl: './status-order.component.html',
+  host: {
+    class: 'flex h-full w-full',
+  }
 })
 export class StatusOrderComponent implements OnInit {
 

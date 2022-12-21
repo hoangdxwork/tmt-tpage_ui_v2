@@ -1,4 +1,4 @@
-<div class="w-full h-full pb-4 px-4">
+<div class="w-full flex h-full pb-4 px-4">
     <div class="flex flex-col w-full h-full bg-white rounded-xl">
         <div class="flex flex-row items-center justify-between px-4 py-3">
             <div class="flex flex-row items-center">
@@ -37,13 +37,14 @@
                     </tds-form-field>
                 </div>
             </div>
-            <div class="w-full h-full pb-2.5">
+            <div class="w-full flex-auto pb-2.5">
                     <tds-table #rowSelectionTable
                     [listData]="lstData"
                     [tableLayout]="'fixed'"
                     [showSizeChanger]="true"
                     [loading]="loading"
                     [pageSize]="20"
+                    [scroll]="{ x: 'auto', y: 'auto'}"
                     [total]="count"
                     [loading]="isLoading"
                     (clickRefresh)="refreshData()"

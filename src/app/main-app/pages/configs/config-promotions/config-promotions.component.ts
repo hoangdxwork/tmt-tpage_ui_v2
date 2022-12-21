@@ -13,7 +13,10 @@ import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-promotions',
-  templateUrl: './config-promotions.component.html'
+  templateUrl: './config-promotions.component.html',
+  host: {
+    class: 'flex h-full w-full'
+  }
 })
 export class ConfigPromotionsComponent implements OnInit {
   dropdownList:Array<TDSSafeAny> = [

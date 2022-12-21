@@ -1,5 +1,5 @@
 <tds-table #partnerStatusTable [listData]="lstData" [showSizeChanger]="true" [frontPagination]="false"
-  [loading]="isLoading" [scroll]="{y:'auto'}" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count"
+  [loading]="isLoading" [scroll]="{y:'auto', x:'auto'}" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count"
   (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
   <thead>
     <tr>
