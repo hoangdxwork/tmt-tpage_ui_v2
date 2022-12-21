@@ -330,6 +330,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.isRefreshing = true;
     this.innerText.nativeElement.value = '';
     this.disableNextUrl = false;
+    this.isFilter = false;
 
     if(this.virtualScroller) {
       this.virtualScroller.refresh();
@@ -341,17 +342,17 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         this.clickReload = 0;
 
         if (this.currentTeam) {
-          this.tiktokService.refreshListen(this.currentTeam.OwnerId).subscribe({
-            next: res => {
-
-            },
-            error: error => {
-
-            }
-          })
+            this.tiktokService.refreshListen(this.currentTeam.ChannelId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: res => {
+                this.loadFilterDataSource();
+              },
+              error: error => {
+                this.message.error(error?.error?.message);
+              }
+            })
         }
     } else {
-      this.loadFilterDataSource();
+        this.loadFilterDataSource();
     }
 
   setTimeout(() => {
@@ -558,6 +559,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       debounceTime(750),distinctUntilChanged()).subscribe({
         next: (text: string) => {
             this.isFilter = true;
+            if(!TDSHelperString.hasValueString(text)) {
+              this.isFilter = false;
+            }
+
             this.disableNextUrl = false;
             let value = TDSHelperString.stripSpecialChars(text.trim());
             this.keyFilter = value;
@@ -581,29 +586,44 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       next: (res: ChatomniObjectsDto) => {
           this.lstObjects  = [...res.Items];
           let currentObject = {} as any;
+          let params_postid = this.getStoragePostId();
+
+          if(params_postid == null || params_postid == undefined || params_postid != this.currentPost?.ObjectId) {
+            currentObject = this.lstObjects[0];
+            this.currentObject = currentObject;
+      
+            this.selectPost(currentObject);
+            this.isLoading = false;
+            return;
+          }
 
           let index = this.lstObjects.findIndex(x => x.ObjectId == this.currentPost?.ObjectId);
           if(Number(index) < 0 && !this.isFilter) {
-            let teamId = this.currentTeam?.Id as number;
-            let objectId = this.currentPost?.ObjectI;
+              let teamId = this.currentTeam?.Id as number;
+              let objectId = this.currentPost?.ObjectId;
 
-            if(!TDSHelperString.hasValueString(objectId)) {
-              this.message.error('Không tìm thấy ObjectId');
-              return;
-            }
-
-            this.chatomniObjectService.getById(objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (res: ChatomniObjectsItemDto) => {
-                  currentObject = {...res};
-                  this.lstObjects = [...[currentObject], ...this.lstObjects];
-
-                  this.isLoading = false;
-              },
-              error: (error: any) => {
-                  this.isLoading = false;
-                  this.message.error(error?.error?.message);
+              if(!TDSHelperString.hasValueString(objectId)) {
+                  this.message.error('Không tìm thấy ObjectId');
+                  return;
               }
-            })
+
+              this.chatomniObjectService.getById(objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (res: ChatomniObjectsItemDto) => {
+                    currentObject = {...res};
+                    let item = this.lstObjects.filter(x => x.ObjectId == objectId)[0];
+                    if(item) {
+                      return;
+                    }
+
+                    this.lstObjects = [...[currentObject], ...this.lstObjects];
+
+                    this.isLoading = false;
+                },
+                error: (error: any) => {
+                    this.isLoading = false;
+                    this.message.error(error?.error?.message);
+                }
+              })
           }
 
           setTimeout(() => {
