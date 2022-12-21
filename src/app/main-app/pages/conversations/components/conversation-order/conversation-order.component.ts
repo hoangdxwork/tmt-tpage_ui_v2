@@ -823,6 +823,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         },
         error: (error: any) => {
             this.isLoading = false;
+            this.postEvent.isLoadingInsertFromPost$.emit(false);
             this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
             this.cdRef.detectChanges();
         }
@@ -1670,11 +1671,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               }
               this.isLoading = false;
               this.postEvent.spinLoadingTab$.emit(false);
+              this.postEvent.isLoadingInsertFromPost$.emit(false);
+
 
               this.cdRef.detectChanges();
           },
           error: (error: any) => {
               this.postEvent.spinLoadingTab$.emit(false);
+              this.postEvent.isLoadingInsertFromPost$.emit(false);
               this.isLoading = false;
               this.message.error(error?.error?.message);
 

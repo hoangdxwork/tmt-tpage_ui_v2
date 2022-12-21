@@ -100,7 +100,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   commentOrders?: any = {};
   filterObj : TDSSafeAny;
   lengthDataSource: number = 0;
-  isLoadingInsertFromPost!: boolean;
+  isLoadingInsertFromPost: boolean = false;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -144,7 +144,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   }
 
   onEventEmitter() {
-    this.postEvent.spinLoadingTab$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.postEvent.isLoadingInsertFromPost$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: boolean) =>{
         this.isLoadingInsertFromPost = res;
 
@@ -617,8 +617,10 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   }
 
   onInsertFromPost(item: ChatomniDataItemDto) {
+    this.isLoadingInsertFromPost = true
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, null, 'SALEONLINE_ORDER');
+    this.cdRef.detectChanges();
   }
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
@@ -650,6 +652,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
       },
       error: (error: any) => {
           this.postEvent.spinLoadingTab$.emit(false);
+          this.isLoadingInsertFromPost = false
           this.notification.error('Lỗi tải thông tin khách hàng', `${error?.error?.message}`);
       }
     })
