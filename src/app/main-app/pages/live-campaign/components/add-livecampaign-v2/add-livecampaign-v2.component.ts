@@ -74,6 +74,9 @@ export class AddLiveCampaignV2Component implements OnInit {
     dir: SortEnum.desc,
   }];
 
+  isShowEditLimitedQuantity!: boolean;
+  limitedQuantityAll: number = 0;
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -781,4 +784,25 @@ export class AddLiveCampaignV2Component implements OnInit {
         }
       }
     }
+
+  showEditLimitedQuantity() {
+    this.isShowEditLimitedQuantity = true;
+  }
+
+  onSavePopover() {
+    let formDetails = this.detailsForm.value as any[];
+
+    if(formDetails && formDetails.length > 0) {
+      formDetails.map(x=> {
+        return x.LimitedQuantity = this.limitedQuantityAll;
+      })
+  
+      this.detailsForm.clear();
+      this.initFormDetails(formDetails);
+    }
+  }
+
+  onClosePopover() {
+    this.isShowEditLimitedQuantity = false;
+  }
 }
