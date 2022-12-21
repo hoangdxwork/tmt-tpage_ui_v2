@@ -121,9 +121,7 @@
 
                           <!-- thao tác -->
                           <div class="flex items-center pt-3">
-                              <tds-spin *ngIf="!isShowModal && !item.ParentId" [spinning]="this.setOfCheckedPsid.has(item.Data?.from!.id)" [indicator]="indicatorTemplate" >
-                                <button type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
-                              </tds-spin>
+                              <button *ngIf="!isShowModal && !item.ParentId" [loading]="isLoadingInsertFromPost" [loadingTemplate]="'Tạo đơn hàng'" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
 
                               <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
                                   tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" tds-tooltip>
@@ -328,7 +326,3 @@
         </div>
     </ng-container>
 </tds-drawer>
-
-<ng-template #indicatorTemplate>
-    <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-  </ng-template>
