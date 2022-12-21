@@ -107,6 +107,7 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   }
 
   loadPartnerStatus() {
+    this.commonService.setPartnerStatus();
     this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
             this.lstPartnerStatus = [...res];

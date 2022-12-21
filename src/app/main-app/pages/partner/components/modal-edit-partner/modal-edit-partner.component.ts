@@ -36,7 +36,7 @@ export class ModalEditPartnerComponent implements OnInit {
   fileList: TDSUploadFile[] = [];
 
   formatterPercent = (value: number) => `${formatNumber(value,vi_VN.locale,'1.2-2')}`;
-  
+
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
     {
@@ -44,7 +44,7 @@ export class ModalEditPartnerComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -263,6 +263,7 @@ export class ModalEditPartnerComponent implements OnInit {
   }
 
   openStatus() {
+    this.commonService.setPartnerStatus();
     this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res) => {

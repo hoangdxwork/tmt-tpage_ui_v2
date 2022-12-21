@@ -130,9 +130,13 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   loadPartnerStatus() {
+    this.commonService.setPartnerStatus();
     this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             this.lstPartnerStatus = [...res];
+        },
+        error: error =>{
+          this.message.error(error?.error?.message || Message.CanNotLoadData);
         }
     });
   }
