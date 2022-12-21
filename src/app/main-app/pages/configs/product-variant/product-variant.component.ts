@@ -20,6 +20,9 @@ import { TDSTableQueryParams } from 'tds-ui/table';
 @Component({
   selector: 'product-variant',
   templateUrl: './product-variant.component.html',
+  host: {
+    class: 'h-full w-full flex'
+  },
   providers: [TDSDestroyService]
 })
 

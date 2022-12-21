@@ -19,8 +19,8 @@
               </button>
           </div>
       </div>
-      <div class="w-full h-full pb-4">
-          <tds-table #tableUser [listData]="lstUsers" [loading]="isLoading" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" showPagination showSizeChanger [scroll]="{y:'auto'} ">
+      <div class="w-full flex-auto pb-2.5">
+          <tds-table #tableUser [listData]="lstUsers" [loading]="isLoading" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" showPagination showSizeChanger [scroll]="{y:'auto', x:'auto'} ">
               <thead>
                   <tr>
                       <th>STT</th>
