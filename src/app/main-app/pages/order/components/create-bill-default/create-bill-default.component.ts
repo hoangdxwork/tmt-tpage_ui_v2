@@ -113,11 +113,13 @@ export class CreateBillDefaultComponent implements OnInit {
             this.carrier = this.lstData.Carrier;
           }
           // TODO: cập nhật danh sách đơn hàng
+          this.lstCheckRowErrors = [];
           this.lstLine = this.lstData.Lines.map((x: TDSSafeAny) => { return this.createLines(x) });
           this.lstLine.forEach((x, i) =>{
             this.checkPartnerInfo(x.Partner, i);
           });
 
+          this.coDAmount();
           this.isLoading = false;
         },
         error:(err) => {
@@ -283,12 +285,24 @@ export class CreateBillDefaultComponent implements OnInit {
         this.lstLine[index].Partner["City"] = result.City;
         this.lstLine[index].Partner["CityCode"] = result?.City?.code ? result.City.code : null;
         this.lstLine[index].Partner["CityName"] = result?.City?.name ? result.City.name : null;
+
+        this.lstCheckRowErrors = [];
+        this.lstLine.forEach((x, i) =>{
+          this.checkPartnerInfo(x.Partner, i);
+        });
       }
     });
   }
 
   onRemove(index: number) {
     this.lstLine = this.lstLine.filter((f,i)=> index != i);
+  }
+
+  coDAmount() {
+    this.lstLine.map(x => {
+      x.COD = (x.TotalAmount + x.ShipAmount) - x.DepositAmount;
+      if(x.COD < 0) x.COD = 0;
+    })
   }
 
   onModalError(lstDataErrorDefault: DataErrorDefaultDTO[], lstErrors: TDSSafeAny[], carrierId: number, type?: string ) {
@@ -307,11 +321,29 @@ export class CreateBillDefaultComponent implements OnInit {
   }
 
   prepareModel() {
-    let lines: DataErrorDefaultDTO[] = this.lstLine.map(item => {
-      delete item.CheckAddress;
-      delete item.COD;
-
-      return item as DataErrorDefaultDTO;
+    let lines: DataErrorDefaultDTO[] = this.lstLine.map(x => {
+      return {
+        Id: x.Id,
+        Ids: x.Ids,
+        PartnerId: x.PartnerId,
+        FacebookId: x.FacebookId,
+        FacebookName: x.FacebookName,
+        Comment: x.Comment,
+        ProductNote: x.ProductNote,
+        TotalAmount: x.TotalAmount,
+        ShipAmount: x.ShipAmount,
+        DepositAmount: x.DepositAmount,
+        ShipWeight: x.ShipWeight,
+        IsPayment: x.IsPayment,
+        CarrierId: x.CarrierId,
+        CarrierName: x.CarrierName,
+        SaleOnlineIds: x.SaleOnlineIds,
+        TimeLock: x.TimeLock,
+        CompanyId: x.CompanyId,
+        WarehouseId: x.WarehouseId,
+        Reference: x.Reference,
+        Partner: x.Partner
+      } as DataErrorDefaultDTO;
     });
 
     let result: OrderBillDefaultDTO = {
