@@ -11,7 +11,6 @@ export class ConversationPostEvent{
     // TODO sự kiện loading
     public isLoadingInsertFromPost$: EventEmitter<boolean> = new EventEmitter();
 
-    // TODO: Tổng commet của bài viết lấy theo length api trả về
-    public lengthLstObject$: EventEmitter<number> = new EventEmitter();
-
+    // TODO: Đếm số comment được realtime trả về
+    public countRealtimeMess$: EventEmitter<boolean> = new EventEmitter();
 }

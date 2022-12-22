@@ -25,9 +25,6 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
-import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
-import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
@@ -113,7 +110,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private resizeObserver: TDSResizeObserver,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private notification: TDSNotificationService,
-    private tiktokService: TiktokService) {
+    private tiktokService: TiktokService,
+    private route: ActivatedRoute) {
       super(crmService, activatedRoute, router);
   }
 
@@ -214,6 +212,21 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
 
         this.cdRef.detectChanges();
+      }
+    })
+
+     // TODO: Cộng realtime bình luận bài viết
+     this.postEvent.countRealtimeMess$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          let post_id = (this.route.snapshot.queryParams?.post_id || 0) as string;
+          let index = this.lstObjects.findIndex(x => x.ObjectId == post_id);
+
+          if(Number(index) >= 0) {
+            this.lstObjects[index].CountComment += 1;
+            this.lstObjects[index] = {...this.lstObjects[index]};
+
+            this.cdRef.detectChanges();
+          }
       }
     })
   }
