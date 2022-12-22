@@ -86,7 +86,9 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
   drawerEditLiveCampaign: boolean = false;
   visibleDrawerEditLive: boolean = false;
-  linkFacebook = 'https://www.facebook.com/'
+  linkFacebook = 'https://www.facebook.com/';
+
+  isChanged: boolean = false;
 
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
@@ -151,13 +153,19 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       }
     })
 
-    //TODO: Tổng bình luận bài viết
-    this.postEvent.lengthLstObject$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (length: any) => {
-          if(length && this.team.Type == CRMTeamType._Facebook && this.data.Data) {
-            (this.data.Data as MDB_Facebook_Mapping_PostDto).count_comments = length;
+    // TODO: Tổng bình luận bài viết
+    this.postEvent.countRealtimeMess$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
 
-            this.cdRef.detectChanges();
+          if(res && this.team.Type == CRMTeamType._Facebook && this.data) {
+              if(this.isChanged == false) {
+                  this.data.CountComment = this.data.CountComment;
+              } else {
+                  this.data.CountComment = this.data.CountComment + 1;
+              }
+
+              this.isChanged = true;
+              this.cdRef.detectChanges();
           }
       }
     })

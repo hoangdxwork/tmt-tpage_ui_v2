@@ -1,9 +1,6 @@
 <tds-spin [spinning]="isLoading">
-  <div class="p-4 flex w-full justify-center">
-    <div class="w-3/4 bg-white rounded-xl">
-      <tds-card *ngIf="currentTab == getPackOfDataEnum.INFO">
-        <info-pack-of-data [tenantInfo]="tenantInfo" [tenantUsed]="tenantUsed" [userTime]="userTime" (eventChangeTab)="onChangeTab($event)"></info-pack-of-data>
-      </tds-card>
+  <div class="p-4 flex w-full justify-center overflow-auto tds-custom-scroll">
+    <div class="w-3/4 h-fit bg-white rounded-xl" *ngIf="currentTab != getPackOfDataEnum.INFO">
       <tds-card *ngIf="currentTab == getPackOfDataEnum.CHOOSE">
         <choose-pack-of-data [tenantInfo]="tenantInfo" [tenantUsed]="tenantUsed" [userTime]="userTime" [appPackage]="appPackage"
           (eventChangeTab)="onChangeTab($event)"></choose-pack-of-data>
@@ -14,6 +11,11 @@
       </tds-card>
       <tds-card *ngIf="currentTab == getPackOfDataEnum.PAYMENT">
         <info-payment-pack-of-data [tenantInfo]="tenantInfo" [dataPayment]="dataPayment" (eventChangeTab)="onChangeTab($event)"></info-payment-pack-of-data>
+      </tds-card>
+    </div>
+    <div class="w-full h-fit bg-white rounded-xl" *ngIf="currentTab == getPackOfDataEnum.INFO">
+      <tds-card>
+        <info-pack-of-data [tenantInfo]="tenantInfo" [tenantUsed]="tenantUsed" [userTime]="userTime" (eventChangeTab)="onChangeTab($event)"></info-pack-of-data>
       </tds-card>
     </div>
   </div>

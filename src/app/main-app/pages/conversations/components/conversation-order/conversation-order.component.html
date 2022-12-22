@@ -34,7 +34,7 @@
                                     </div>
                                 </div>
 
-                                <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()" tds-tooltip [tooltipTitle]="isEditPartner ? 'Đóng' : 'Chỉnh sửa'">
+                                <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()" tds-tooltip tooltipPlacement="topRight" [tooltipTitle]="isEditPartner ? 'Đóng' : 'Chỉnh sửa'" >
                                     <span class="flex items-center">
                                         <i [ngClass]="isEditPartner? 'tdsi-close-fill': 'tdsi-edit-fill'" class="text-xl leading-none text-neutral-1-400"></i>
                                     </span>
@@ -72,7 +72,7 @@
                                 <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
                                     <input tdsInput autocomplete="off" placeholder="Địa chỉ" [(ngModel)]="quickOrderModel.Address" [ngModelOptions]="{ standalone: true }"/>
                                 </tds-form-field>
-                                <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip [tooltipTitle]="quickOrderModel.Address ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'">
+                                <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip tooltipPlacement="topRight" [tooltipTitle]="quickOrderModel.Address ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'">
                                     <span class="flex items-center">
                                       <i class="tdsi-location-fill"></i>
                                     </span>
@@ -106,7 +106,13 @@
                                         <div *ngFor="let item of lstUser" (click)="changeUser(item)"
                                         class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
                                         <div class="flex gap-x-2">
-                                            <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
+                                            <span *ngIf="item?.Avatar">
+                                              <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
+                                            </span>
+                                            <span *ngIf="!item?.Avatar">
+                                                <tds-avatar [text]="item.Name | avatarRandom" class="text-white" size="sm"
+                                                    [style.background-color]="item.Id | randomColor"></tds-avatar>
+                                            </span>
                                             <span>{{item.Name}}</span>
                                         </div>
                                         <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == quickOrderModel?.User?.Id"></span>
@@ -202,7 +208,7 @@
                             <span class="flex items-center"><i class="tdsi-gift-fill text-primary-1"></i></span>
                         </button> -->
                         <button tds-button-flat-icon type="button" color="secondary" class="cursor-pointer"
-                            tds-tooltip tooltipTitle="Chọn bảng giá" (click)="showModalConfigProduct()">
+                            tds-tooltip tooltipTitle="Chọn bảng giá" tooltipPlacement="topRight" (click)="showModalConfigProduct()">
                             <span class="flex items-center"><i class="tdsi-adjustments-line text-neutral-1-400"></i></span>
                         </button>
                     </div>
@@ -227,7 +233,7 @@
                                                         {{ item.Price | numberCustom }}đ
                                                     </span>
 
-                                                    <span class="tdsi-edit-line flex text-base cursor-pointer mr-1" tds-popover [popoverVisible]="visibleIndex == index"
+                                                    <span class="tdsi-edit-line flex text-base cursor-pointer mr-1" [tds-tooltip]="'Thêm ghi chú'" tds-popover [popoverVisible]="visibleIndex == index"
                                                         popoverTrigger="click" [popoverContent]="tmpEditPrice" [popoverAutoClose]="true" [popoverBackdrop]="true"
                                                         (popoverVisibleChange)="openPopover($event, item.Price, index)">
                                                     </span>
@@ -291,13 +297,13 @@
                                     <td width="30%">
                                         <div class="flex gap-x-2 items-center">
                                             <button type="button" class="tdsi-minus-fill text-white p-0.5 bg-neutral-1-200 rounded-full cursor-pointer hover:bg-primary-1"
-                                                [disabled]="item.Quantity == 1" (click)="minus(item)"></button>
+                                                [disabled]="item.Quantity == 1" (click)="minus(item)" [tds-tooltip]="'Giảm sản phẩm'"></button>
                                             <tds-form-field class="w-[50px] hover:bg-primary-1 bg-opacity-10 rounded">
                                                 <input tdsInput type="number" [min]="1" [step]="1" autocomplete="off" size="sm" class="cart-checkout text-center font-semibold text-neutral-1-900"
                                                     placeholder="1" [ngModel]="item.Quantity" [ngModelOptions]="{standalone: true}"
                                                     (ngModelChange)="onChangeQuantity($event, item)"/>
                                             </tds-form-field>
-                                            <button type="button" class="tdsi-plus-fill text-white p-0.5 bg-neutral-1-200 rounded-full hover:bg-primary-1"
+                                            <button type="button" class="tdsi-plus-fill text-white p-0.5 bg-neutral-1-200 rounded-full hover:bg-primary-1" tds-tooltip="Tăng sản phẩm"
                                                 (click)="plus(item)"></button>
                                         </div>
                                     </td>
@@ -305,7 +311,7 @@
                                     <!-- Xóa sản phẩm -->
                                     <td class="text-center h-full">
                                         <button type="button" (click)="onRemoveProduct(item)">
-                                            <i class="tdsi-trash-line text-error-500 text-xl cursor-pointer"></i>
+                                            <i class="tdsi-trash-line text-error-500 text-xl cursor-pointer" tds-tooltip="Xóa sản phẩm" tooltipPlacement="topRight"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -359,7 +365,7 @@
                                             </tds-form-field>
 
                                             <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                                <span> -{{ saleModel.DiscountAmount | numberCustom  }}đ </span>
+                                                <span> -{{ saleModel.DiscountAmount | numberCustom }}đ </span>
                                             </div>
                                         </div>
 
@@ -372,7 +378,7 @@
                                             </tds-form-field>
 
                                             <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                                <span> -{{ saleModel.DecreaseAmount }}đ </span>
+                                                <span> -{{ saleModel.DecreaseAmount | numberCustom }}đ </span>
                                             </div>
                                         </div>
                                     </div>
@@ -409,7 +415,7 @@
             <!-- Checkbox tạo hóa đơn bán hàng -->
             <div class="py-4 bg-primary-3 px-6 mt-1">
                 <tds-checkbox [(ngModel)]="isEnableCreateOrder" [ngModelOptions]="{standalone: true}" (change)="onEnableCreateOrder($event)">
-                    <span class="font-semibold">Tạo hoá đơn bán hàng</span>
+                    <span class="font-semibold">Tạo hóa đơn bán hàng</span>
                 </tds-checkbox>
             </div>
 
@@ -488,7 +494,7 @@
                                 <tds-label class="w-1/4">{{item.DisplayName}}<span class="text-error-400">*</span></tds-label>
                                 <tds-form-field class="w-3/4">
                                     <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
-                                        [data]="item.ConfigsValue" [ngModel]="item.ConfigValue" [allowClear]="true"
+                                        [data]="item.ConfigsValue" [ngModel]="item.ConfigValue" (selectChange)="onChangeConfigValue($event, item.ConfigName)" [allowClear]="true"
                                         [ngModelOptions]="{standalone: true}" [allowClear]="item.InputType == 'combo_box'">
                                     </tds-select>
                                 </tds-form-field>
@@ -507,7 +513,7 @@
                               </div>
 
                               <div class="px-4 border-l">
-                                  <button *ngIf="!saleModel.TrackingRef && isEnableCalcFee" tds-button-icon color="info" size="sm"  (click)="calcFee()" title="Tính lại tiền ship" type="button">
+                                  <button *ngIf="!saleModel.TrackingRef && isEnableCalcFee" tds-button-icon color="info" size="sm"  (click)="calcFee()" tds-tooltip="Tính lại tiền ship" type="button">
                                       <span class="flex items-center justify-center">
                                           <i class=" tdsi-reload-fill"></i>
                                       </span>
@@ -574,7 +580,7 @@
                                                     [popoverContent]="popoverContentShip_ExtraMoney"
                                                     [popoverFooter]="popoverFooterShip_ExtraMoney" [popoverAutoClose]="true"
                                                     [popoverBackdrop]="true" popoverPlacement="right">
-                                                    {{(child.ExtraMoney | number) || 0}}đ
+                                                    {{(child.ExtraMoney | numberCustom) || 0}}đ
                                                 </button>
 
                                                 <!-- popover button Thuế -->

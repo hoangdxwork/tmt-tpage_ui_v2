@@ -274,7 +274,7 @@
                                         <img src="../../../assets/imagesv2/conversation/love-circle.svg" width="20px" height="20px"
                                             class="rounded-full z-40 -ml-2">
                                     </div>
-                                    <span> {{(data.Data | facebookType).count_reactions || 0}} </span>
+                                    <span> {{data.CountReaction || 0}} </span>
                                 </div>
                                 <div class="flex gap-x-3 flex-auto justify-end items-center">
                                     <tds-form-field class="flex-auto">
@@ -282,7 +282,7 @@
                                         <input tdsInput placeholder="Tìm kiếm bình luận" autocomplete="off" #innerText/>
                                     </tds-form-field>
 
-                                    <span class="comment-count" tds-tooltip tooltipTitle="Bình luận đang hiển thị"> {{(data.Data | facebookType).count_comments || 0}} bình luận </span>
+                                    <span class="comment-count"> {{data.CountComment || 0}} bình luận </span>
                                     <span class="share-count  mr-3"> {{(data.Data | facebookType).count_shares || 0}} lượt chia sẻ </span>
                                 </div>
                             </div>

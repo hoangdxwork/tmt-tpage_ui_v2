@@ -79,7 +79,7 @@ import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.serv
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationOrderComponent implements OnInit, OnChanges {
+export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() team!: CRMTeamDTO;
@@ -166,6 +166,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   indexDbStorage!: DataPouchDBDTO[];
 
   noteWhenNoId!: string | TDSSafeAny;
+  syncTimer: any;
 
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -736,15 +737,25 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
   }
 
+  onChangeConfigValue(event: any, configName: string){
+    this.configsProviderDataSource.map(x => {
+
+      if(x.ConfigName === configName) {
+        x.ConfigValue = event;
+      }
+    })
+  }
+
   searchUser(){
     let data = this.users;
     let key = this.keyFilterUser;
+
     if (TDSHelperString.hasValueString(key)) {
       key = TDSHelperString.stripSpecialChars(key.trim());
     }
-    data = data.filter((x) =>
-      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
-    this.lstUser = data
+
+    data = data.filter((x) => (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1));
+    this.lstUser = data;
   }
 
   calcFee() {
@@ -823,6 +834,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
         },
         error: (error: any) => {
             this.isLoading = false;
+            this.postEvent.isLoadingInsertFromPost$.emit(false);
+            this.postEvent.spinLoadingTab$.emit(false);
+
             this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
             this.cdRef.detectChanges();
         }
@@ -959,6 +973,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
     }
 
     if (obs) {
+      this.message.info('Đang thao tác in phiếu...');
       obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           this.printerService.printHtml(res);
       }, (error: TDSSafeAny) => {
@@ -1584,12 +1599,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
 
   onQuickSaleOnlineOrder(order: QuickSaleOnlineOrderModel, type?: string) {
     this.conversationOrderFacade.hasValueOrderCode$.emit(order.Code);
-    this.postEvent.spinLoadingTab$.emit(false);
 
     let csid = order.Facebook_ASUserId;
     this.onSyncConversationPartner(csid);
 
-    this.isLoading = false;
     if(order.IsCreated) {
         this.message.success('Tạo đơn hàng thành công');
     } else {
@@ -1660,7 +1673,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
   }
 
   onSyncConversationPartner(csid: any, type?: string) {
-    setTimeout(() => {
+    this.destroyTimer();
+    this.syncTimer = setTimeout(() => {
       this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$)).subscribe({
           next: (info: ChatomniConversationInfoDto) => {
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
@@ -1669,12 +1683,29 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
               if(type == 'FastSaleOrder') {
                   this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
               }
+
+              this.postEvent.spinLoadingTab$.emit(false);
+              this.postEvent.isLoadingInsertFromPost$.emit(false);
+
+              this.isLoading = false;
+              this.cdRef.detectChanges();
           },
           error: (error: any) => {
+              this.postEvent.spinLoadingTab$.emit(false);
+              this.postEvent.isLoadingInsertFromPost$.emit(false);
+
+              this.isLoading = false;
               this.message.error(error?.error?.message);
+              this.cdRef.detectChanges();
           }
       })
     }, 350);
+  }
+
+  destroyTimer() {
+    if (this.syncTimer) {
+      clearTimeout(this.syncTimer);
+    }
   }
 
   checkSelectNote() {
@@ -1683,5 +1714,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges {
       this.quickOrderModel.Note = this.noteWhenNoId;
     }
     delete this.noteWhenNoId;
+  }
+
+  ngOnDestroy(): void {
+    this.destroyTimer();
   }
 }

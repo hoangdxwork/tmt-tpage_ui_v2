@@ -16,8 +16,8 @@
   </div>
 
   <div class="w-full mt-[30px] rounded-md h-[512px]" *ngIf="lstLine">
-    <div class="w-full h-full ">
-      <tds-table class="tds-table-rounded" #basicTable [bordered]="true" [listData]="lstLine" [showPagination]="false">
+    <div class="w-full h-full">
+      <tds-table class="tds-table-rounded" #basicTable [bordered]="true" [scroll]="{y:'auto'}" [listData]="lstLine" [showPagination]="false">
         <thead class="rounded">
           <tr>
             <th width="4%">STT</th>
@@ -69,7 +69,7 @@
                   <tds-label>Tiền hàng</tds-label>
                   <tds-form-field class="col-span-2 w-full">
                     <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.TotalAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
-                      [(ngModel)]="data.TotalAmount" [ngModelOptions]="{standalone: true}">
+                      [(ngModel)]="data.TotalAmount" [ngModelOptions]="{standalone: true}" (ngModelChange)="coDAmount()">
                     </tds-input-number>
                   </tds-form-field>
                   <!-- COD -->
@@ -83,14 +83,14 @@
                   <tds-label>Tiền cọc</tds-label>
                   <tds-form-field class="col-span-2 w-full">
                     <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.DepositAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
-                      [(ngModel)]="data.DepositAmount" [ngModelOptions]="{standalone: true}">
+                      [(ngModel)]="data.DepositAmount" [ngModelOptions]="{standalone: true}" (ngModelChange)="coDAmount()">
                     </tds-input-number>
                   </tds-form-field>
                   <!-- Phí ship -->
                   <tds-label>Phí ship</tds-label>
                   <tds-form-field class="col-span-2 w-full">
                     <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.ShipAmount | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
-                      [(ngModel)]="data.ShipAmount" [ngModelOptions]="{standalone: true}">
+                      [(ngModel)]="data.ShipAmount" [ngModelOptions]="{standalone: true}" (ngModelChange)="coDAmount()">
                     </tds-input-number>
                   </tds-form-field>
                   <!-- khối lượng -->
@@ -128,7 +128,7 @@
               <td colspan="3">
                 <div class="flex gap-x-2">
                   <tds-form-field class="w-full">
-                    <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText[index]" [ngModelOptions]="{standalone: true}"/>
+                    <input tdsInput placeholder="Tìm kiếm địa chỉ..." [(ngModel)]="innerText[index]" [ngModelOptions]="{standalone: true}"/>
                   </tds-form-field>
                   <button tds-button-icon color="primary" type="button" tds-tooltip [tooltipTitle]="innerText[index] ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'" (click)="showModalSuggestAddress(data.Partner,index)">
                       <span class="flex items-center">

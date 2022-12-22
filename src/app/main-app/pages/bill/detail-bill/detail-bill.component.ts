@@ -463,8 +463,8 @@ export class DetailBillComponent implements OnInit{
   }
 
   onOpenTrackingUrl(data: BillDetailDTO) {
-    if(data && TDSHelperString.hasValueString(data.TrackingRef)) {
-      window.open(data.TrackingRef, '_blank')
+    if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
+      window.open(data.TrackingUrl, '_blank')
     }
   }
 

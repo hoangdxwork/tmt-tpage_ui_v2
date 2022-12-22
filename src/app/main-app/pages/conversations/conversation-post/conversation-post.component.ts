@@ -25,9 +25,6 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
-import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
-import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
-import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
@@ -113,7 +110,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private resizeObserver: TDSResizeObserver,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private notification: TDSNotificationService,
-    private tiktokService: TiktokService) {
+    private tiktokService: TiktokService,
+    private route: ActivatedRoute) {
       super(crmService, activatedRoute, router);
   }
 
@@ -214,6 +212,21 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
 
         this.cdRef.detectChanges();
+      }
+    })
+
+     // TODO: Cộng realtime bình luận bài viết
+     this.postEvent.countRealtimeMess$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          let post_id = (this.route.snapshot.queryParams?.post_id || 0) as string;
+          let index = this.lstObjects.findIndex(x => x.ObjectId == post_id);
+
+          if(Number(index) >= 0) {
+              this.lstObjects[index].CountComment += 1;
+              this.lstObjects[index] = {...this.lstObjects[index]};
+          }
+
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -330,6 +343,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.isRefreshing = true;
     this.innerText.nativeElement.value = '';
     this.disableNextUrl = false;
+    this.isFilter = false;
 
     if(this.virtualScroller) {
       this.virtualScroller.refresh();
@@ -341,17 +355,17 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         this.clickReload = 0;
 
         if (this.currentTeam) {
-          this.tiktokService.refreshListen(this.currentTeam.OwnerId).subscribe({
-            next: res => {
-
-            },
-            error: error => {
-
-            }
-          })
+            this.tiktokService.refreshListen(this.currentTeam.ChannelId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: res => {
+                this.loadFilterDataSource();
+              },
+              error: error => {
+                this.message.error(error?.error?.message);
+              }
+            })
         }
     } else {
-      this.loadFilterDataSource();
+        this.loadFilterDataSource();
     }
 
   setTimeout(() => {
@@ -414,12 +428,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     let index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
     if(Number(index) >= 0) {
       currentObject = this.lstObjects[index];
-
-      //TODO: item thứ 6 trở đi không hiện trên màn hình đổi lên đầu
-      if(Number(index) >= 5) {
-        this.lstObjects = this.lstObjects.filter(x => x.ObjectId != params_postid);
-        this.lstObjects = [...[currentObject], ...this.lstObjects];
-      }
 
       let exist = currentObject && currentObject?.ObjectId;
       if(exist) {
@@ -564,6 +572,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       debounceTime(750),distinctUntilChanged()).subscribe({
         next: (text: string) => {
             this.isFilter = true;
+            if(!TDSHelperString.hasValueString(text)) {
+              this.isFilter = false;
+            }
+
             this.disableNextUrl = false;
             let value = TDSHelperString.stripSpecialChars(text.trim());
             this.keyFilter = value;
@@ -587,38 +599,44 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       next: (res: ChatomniObjectsDto) => {
           this.lstObjects  = [...res.Items];
           let currentObject = {} as any;
+          let params_postid = this.getStoragePostId();
+
+          if(params_postid == null || params_postid == undefined || params_postid != this.currentPost?.ObjectId) {
+            currentObject = this.lstObjects[0];
+            this.currentObject = currentObject;
+
+            this.selectPost(currentObject);
+            this.isLoading = false;
+            return;
+          }
 
           let index = this.lstObjects.findIndex(x => x.ObjectId == this.currentPost?.ObjectId);
-          if(Number(index) >= 0) {
-             currentObject = this.lstObjects[index];
+          if(Number(index) < 0 && !this.isFilter) {
+              let teamId = this.currentTeam?.Id as number;
+              let objectId = this.currentPost?.ObjectId;
 
-            //TODO: item thứ 6 trở đi không hiện trên màn hình đổi lên đầu
-            if(Number(index) >= 5) {
-              this.lstObjects = this.lstObjects.filter(x => x.ObjectId != this.currentPost?.ObjectId);
-              this.lstObjects = [...[currentObject], ...this.lstObjects];
-            }
-
-          } else if(!this.isFilter) {
-            let teamId = this.currentTeam?.Id as number;
-            let objectId = this.currentPost?.ObjectI;
-
-            if(!TDSHelperString.hasValueString(objectId)) {
-              this.message.error('Không tìm thấy ObjectId');
-              return;
-            }
-
-            this.chatomniObjectService.getById(objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (res: ChatomniObjectsItemDto) => {
-                  currentObject = {...res};
-                  this.lstObjects = [...[currentObject], ...this.lstObjects];
-
-                  this.isLoading = false;
-              },
-              error: (error: any) => {
-                  this.isLoading = false;
-                  this.message.error(error?.error?.message);
+              if(!TDSHelperString.hasValueString(objectId)) {
+                  this.message.error('Không tìm thấy ObjectId');
+                  return;
               }
-            })
+
+              this.chatomniObjectService.getById(objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (res: ChatomniObjectsItemDto) => {
+                    currentObject = {...res};
+                    let item = this.lstObjects.filter(x => x.ObjectId == objectId)[0];
+                    if(item) {
+                      return;
+                    }
+
+                    this.lstObjects = [...[currentObject], ...this.lstObjects];
+
+                    this.isLoading = false;
+                },
+                error: (error: any) => {
+                    this.isLoading = false;
+                    this.message.error(error?.error?.message);
+                }
+              })
           }
 
           setTimeout(() => {

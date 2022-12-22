@@ -254,11 +254,15 @@ export class AddBillComponent implements OnInit {
   }
 
   loadPartnerStatus() {
+    this.commonService.setPartnerStatus();
     this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.lstPartnerStatus = [...res];
+      next: (res: TDSSafeAny) => {
+        this.lstPartnerStatus = [...res];
+      },
+      error: error =>{
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
-    });
+    })
   }
 
   selectStatus(item: any): void {
@@ -1600,6 +1604,7 @@ export class AddBillComponent implements OnInit {
   loadCarrier() {
     return this.deliveryCarrierService.get().pipe(map(res => res.value));
   }
+
 
   loadDeliveryCarrier(){
     this.deliveryCarrierService.setDeliveryCarrier();

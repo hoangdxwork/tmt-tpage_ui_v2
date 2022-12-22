@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { TDSChartOptions, TDSBarChartComponent } from 'tds-report';
 import { TenantInfoDTO, TenantUsedDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
@@ -6,70 +7,19 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'info-pack-of-data',
-  templateUrl: './info-pack-of-data.component.html'
+  templateUrl: './info-pack-of-data.component.html',
+  providers: [TDSDestroyService]
 })
 export class InfoPackOfDataComponent implements OnInit, OnChanges {
   options: any;
-  array = [0, 1, 2, 3]
-  isIndex = -1
+  array = [0, 1, 2, 3];
+  isIndex = -1;
 
   size: any = ['auto', 300];
+  labelData: TDSSafeAny[] = [];
+  seriesData: TDSSafeAny[] = [];
 
   chartOptions = TDSChartOptions();
-
-  chartComponent: TDSBarChartComponent = {
-    legend: {
-      show: true,
-      right: 0,
-      top: 'middle',
-      orient: 'vertical',
-      icon: 'circle',
-    },
-    grid: {
-      left: '20%',
-      right: '20%'
-    },
-    color: ['#0184FF', '#FF8900'],
-    axis: {
-      xAxis: [
-        {
-          show: true,
-          axisLabel: {
-            show: true
-          },
-          axisLine: {
-            show: true
-          },
-          interval: 500,
-          splitNumber: 4
-        }
-      ],
-      yAxis: [
-        {
-          axisLabel: {
-            margin: 45,
-            width: 180,
-           },
-          data: ['Đơn hàng'],
-        }
-      ]
-    },
-    series: [
-      {
-        type: 'bar',
-        name: 'Tổng đơn hàng của bạn',
-        barWidth: 32,
-        data: [ 0 ]
-      },
-      {
-        type: 'bar',
-        name: 'Hạn mức gói sử dụng',
-        barWidth: 32,
-        data: [ 0 ]
-      },
-    ]
-  }
-  // khởi tạo 1 object TDSBarChartComponent với 2 thành phần cơ bản axis, series
 
   @Input() tenantInfo!: TenantInfoDTO;
   @Input() tenantUsed!: TenantUsedDTO;
@@ -79,25 +29,89 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
 
   isLoading: boolean = false;
   currentTab: PackOfDataEnum = PackOfDataEnum.INFO;
+  saleOrderCount: number = 0;
+  tenantLimitedCount: number = 0;
+  interval: number = 0;
 
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(this.tenantInfo && this.tenantUsed) {
-      this.uploadChart(this.tenantUsed);
+    if(changes["tenantUsed"] && !changes["tenantUsed"].firstChange) {
+      this.buildData(this.tenantUsed)
+      this.buildChart();
     }
   }
 
   ngOnInit(): void {
-    this.options = this.chartOptions.BarChartOption(this.chartComponent); //khởi tạo option bar chart cơ bản
+    if(this.tenantInfo && this.tenantUsed) {
+      this.buildData(this.tenantUsed);
+      this.buildChart();
+    }
   }
 
-  uploadChart(used: TenantUsedDTO) {
-    this.chartComponent.series[0].data[0] = used.saleOnlineOrder;
-    this.chartComponent.series[1].data[1] = this.tenantInfo.Limitations.FastSaleOrder;
-    this.options = this.chartOptions.BarChartOption(this.chartComponent); //khởi tạo option bar chart cơ bản
-    // console.log(this.options);
+  buildData(used: TenantUsedDTO) {
+    this.saleOrderCount = used.saleOnlineOrder;
+    this.tenantLimitedCount = this.tenantInfo.Limitations.FastSaleOrder;
 
+    let max = Math.max(...[this.saleOrderCount,this.tenantLimitedCount]);
+    this.interval = this.getInterval(max);
+  }
+
+  buildChart() {
+    let chartComponent: TDSBarChartComponent = {
+      legend: {
+        show: true,
+        right: 0,
+        top: 'middle',
+        orient: 'vertical',
+        icon: 'circle',
+      },
+      grid: {
+        left: '20%',
+        right: '20%'
+      },
+      color: ['#0184FF', '#FF8900'],
+      axis: {
+        xAxis: [
+          {
+            show: true,
+            axisLabel: {
+              show: true
+            },
+            axisLine: {
+              show: true
+            },
+            interval: this.interval,
+            splitNumber: 4
+          }
+        ],
+        yAxis: [
+          {
+            axisLabel: {
+              margin: 45,
+              width: 180,
+             },
+            data: ['Đơn hàng'],
+          }
+        ]
+      },
+      series: [
+        {
+          type: 'bar',
+          name: 'Tổng đơn hàng của bạn',
+          barWidth: 32,
+          data: [ this.saleOrderCount ]
+        },
+        {
+          type: 'bar',
+          name: 'Hạn mức gói sử dụng',
+          barWidth: 32,
+          data: [ this.tenantLimitedCount ]
+        },
+      ]
+    }
+
+    this.options = this.chartOptions.BarChartOption(chartComponent);
   }
 
   onExpand() {
@@ -109,10 +123,25 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
   }
 
   focusData(idx: number) {
-    this.isIndex = idx
+    this.isIndex = idx;
   }
 
   clickBackPageInfoData() {
   }
 
+  getInterval(maxSeriesValue: number){
+    // TODO: lấy 5 khoảng thời gian giữa 2 mốc trên trục
+    let interval = this.prepareInterval(maxSeriesValue/5);
+
+    return interval;
+  }
+
+  prepareInterval(interval: number){
+    let i = 10;
+    while((interval/i) > 10) {
+      i *= 10;
+    }
+
+    return Math.ceil(interval / i) * i;
+  }
 }

@@ -719,9 +719,9 @@ export class ConfigAddProductComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe(result => {
-      if(result) {
-        this.loadProductCategory();
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ConfigCateg) => {
+      if(res) {
+        this.categoryList = [...[res],...this.categoryList];
       }
     });
   }
@@ -737,9 +737,9 @@ export class ConfigAddProductComponent implements OnInit {
       }
     });
 
-    modal.afterClose.subscribe(result => {
-      if(result) {
-        this.loadUOMAddType();
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ConfigUOMTypeDTO) => {
+      if(res) {
+        this.producerList = [...[res],...this.producerList];
       }
     });
   }
@@ -755,9 +755,9 @@ export class ConfigAddProductComponent implements OnInit {
       }
     });
 
-    modal.afterClose.subscribe(result => {
-      if(result) {
-        this.loadUOMAddType();
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ConfigUOMTypeDTO) => {
+      if(res) {
+        this.importerList = [...[res],...this.importerList];
       }
     });
   }
@@ -773,9 +773,9 @@ export class ConfigAddProductComponent implements OnInit {
       }
     });
 
-    modal.afterClose.subscribe(result => {
-      if(result) {
-        this.loadUOMAddType();
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ConfigUOMTypeDTO) => {
+      if(res) {
+        this.distributorList = [...[res],...this.distributorList];
       }
     });
   }
@@ -788,9 +788,9 @@ export class ConfigAddProductComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe(result => {
-      if(result) {
-        this.loadOriginCountry();
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ConfigOriginCountryDTO) => {
+      if(res) {
+        this.originCountryList = [...[res],...this.originCountryList];
       }
     });
   }

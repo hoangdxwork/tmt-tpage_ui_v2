@@ -36,7 +36,7 @@
                                         <div class="flex items-center gap-x-2">
                                             <img width="40px" height="20px" [src]="dataModel.CarrierDeliveryType | getAvatarCarrier" alt="">
                                             <span class="font-semibold"> {{ dataModel.CarrierName || '---' }} </span>
-                                            <span class="text-info-500 font-semibold ml-2">{{ dataModel.TrackingRef || '---' }}</span>
+                                            <span class="text-info-500 font-semibold ml-2" (click)="onOpenTrackingUrl(dataModel)">{{ dataModel.TrackingRef || '---' }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -188,7 +188,7 @@
                                             <span>Mã vận đơn</span>
                                         </div>
                                         <div class="w-2/3">
-                                            <span class="font-semibold text-info-500">{{ dataModel.TrackingRef || '---' }}</span>
+                                            <span class="font-semibold text-info-500" (click)="onOpenTrackingUrl(dataModel)">{{ dataModel.TrackingRef || '---' }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">

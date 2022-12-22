@@ -148,10 +148,14 @@ export class TpageAddCategoryComponent implements OnInit {
     this.isLoading = true;
 
     this.productCategoryService.insert(model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: TDSSafeAny) => {
+      next: (res: any) => {
+
+        if(!res) return;
+        delete res["@odata.context"];
         this.isLoading = false;
+        
         this.message.success(Message.InsertSuccess);
-        this.modal.destroy(model);
+        this.modal.destroy(res);
       },
       error: (err) => {
         this.isLoading = false;

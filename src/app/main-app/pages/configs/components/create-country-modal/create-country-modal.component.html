@@ -1,10 +1,10 @@
-<form [formGroup]="originCountyForm" autocomplete="off" (ngSubmit)="onSubmit()">
+<form [formGroup]="_form">
   <div class="grid grid-cols-4 gap-y-4 items-center">
     <tds-label>Tên</tds-label>
-    <tds-form-field class="w-full col-span-3">
+    <tds-form-field class="w-full col-span-3" [color]="!_form.value.Name && _form.controls.Name.touched ? 'error' : 'default'">
       <input tdsInput formControlName="Name" autocomplete="off" placeholder="Nhập tên xuất xứ" />
       <tds-error>
-        Vui lòng nhập tên xuất xứ
+        Vui lòng nhập tên xuất xứ sản phẩm
       </tds-error>
     </tds-form-field>
 

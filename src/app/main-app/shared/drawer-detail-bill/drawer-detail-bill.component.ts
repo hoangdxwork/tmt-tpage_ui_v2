@@ -10,7 +10,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { finalize, Observable, takeUntil } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { ChangeDetectorRef, Component, Input, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
-import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { Conversation_LastBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 
 @Component({
@@ -324,5 +324,11 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
   onClose(){
     this.visibleDrawerBillDetail = false;
     this.onVisibleDrawer.emit(false);
+  }
+
+  onOpenTrackingUrl(data: BillDetailDTO) {
+    if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
+      window.open(data.TrackingUrl, '_blank')
+    }
   }
 }

@@ -87,6 +87,9 @@ export class AddLivecampaignPostV2Component implements OnInit {
 
   lstOrderTags!: string[];
 
+  isShowEditLimitedQuantity!: boolean;
+  limitedQuantityAll: number = 0;
+
   sort: Array<SortDataRequestDTO>= [{
     field: "DateCreated",
     dir: SortEnum.desc,
@@ -453,6 +456,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
   }
 
   removeAllDetail() {
+    this.isShowEditLimitedQuantity = false;
     this.modal.error({
       title: 'Xóa sản phẩm',
       content: 'Bạn muốn xóa tất cả sản phẩm?',
@@ -969,4 +973,39 @@ export class AddLivecampaignPostV2Component implements OnInit {
         }
       }
     }
+
+  showEditLimitedQuantity() {
+    let formDetails = this.detailsForm.value as any[];
+
+    if(formDetails && formDetails.length > 0) {
+        this.isShowEditLimitedQuantity = true;
+    } 
+    else {
+        this.message.error('Chưa có sản phẩm nào trong danh sách');
+        this.isShowEditLimitedQuantity = false;
+    }
+  }
+
+  onPopoverVisibleChangeLimitedQuantity(event: boolean) {
+    if(!event) {
+        this.limitedQuantityAll = 0;
+    }
+  }
+
+  onSavePopover() {
+    let formDetails = this.detailsForm.value as any[];
+
+    if(formDetails && formDetails.length > 0) {
+      formDetails.map(x=> {
+        return x.LimitedQuantity = this.limitedQuantityAll;
+      })
+  
+      this.detailsForm.clear();
+      this.initFormDetails(formDetails);
+    }
+  }
+
+  onClosePopover() {
+    this.isShowEditLimitedQuantity = false;
+  }
 }

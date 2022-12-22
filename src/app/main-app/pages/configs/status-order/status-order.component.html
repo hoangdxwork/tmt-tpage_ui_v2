@@ -1,4 +1,4 @@
-<div class="h-full pb-4 px-4">
+<div class="h-full w-full flex pb-4 px-4">
   <div class="flex flex-col w-full h-full bg-white rounded-xl">
     <div class="flex flex-row items-center justify-between px-4 py-3">
       <div class="flex flex-row items-center">
@@ -20,7 +20,7 @@
 
           <tds-table #orderStatusTable [listData]="lstOfData" [showSizeChanger]="true" [frontPagination]="false"
             [loading]="isLoading" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count"
-            [scroll]="{y:'auto'}" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
+            [scroll]="{y:'auto', x: 'auto'}" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
             <thead>
               <tr class="text-neutral-1-900 font-semibold">
                 <th [width]="'80px'" class="text-center">STT</th>

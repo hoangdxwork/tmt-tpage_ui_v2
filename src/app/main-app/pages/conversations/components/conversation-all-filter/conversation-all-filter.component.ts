@@ -63,7 +63,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     this.crmTagService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (tags: CRMTagDTO[]) => {
           this.lstOfTag = [...tags];
-          this.lstOfTag = this.lstOfTag.sort((a, b) => (a.Name.length) - (b.Name.length));
+          this.lstOfTag = this.lstOfTag.sort((a, b) => (a.Name?.length || 0) - (b.Name?.length || 0));
           this.lstOfTagSearch = this.lstOfTag;
       }
     })
@@ -73,8 +73,8 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     this.applicationUserService.setUserActive();
     this.applicationUserService.getUserActive().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-          this.lstUser = [...res];;
-          this.lstUser = this.lstUser.sort((a, b) => (a.Name.length) - (b.Name.length));
+          this.lstUser = [...res];
+          this.lstUser = this.lstUser.sort((a, b) => (a.Name?.length || 0) - (b.Name?.length || 0));
           this.lstUserSearch = this.lstUser;
       }
     })
@@ -158,11 +158,11 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
         ids = this.queryObj['user_ids'];
     }
 
-    let exits = ids?.find((x: any) => x == item.Id);
+    let exits = ids?.find((x: any) => x == item?.Id);
     if(exits) {
-        ids = ids.filter((x: any)  => x != item.Id);
+        ids = ids.filter((x: any)  => x != item?.Id);
     } else {
-        ids.push(item.Id);
+        ids.push(item?.Id);
     }
 
     this.queryObj['user_ids'] = [...ids];

@@ -5,7 +5,7 @@ import { NotificationItemDto } from '@app/dto/firebase/firebase-notification.dto
 import { FireBaseDevice, FireBaseTopicDto, TopicDetailDto } from '@app/dto/firebase/topics.dto';
 import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
-import { getMessaging, getToken, onMessage, deleteToken } from 'firebase/messaging';
+import { getMessaging, getToken } from 'firebase/messaging';
 import { takeUntil } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { TDSConfigService } from 'tds-ui/core/config';
@@ -22,11 +22,14 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 
 @Component({
   selector: 'firebase-notification',
-  templateUrl: './firebase-notification.component.html'
+  templateUrl: './firebase-notification.component.html',
+  providers: [TDSDestroyService]
 })
+
 export class FirebaseNotificationComponent implements OnInit {
-  @ViewChild(VirtualScrollerComponent)
-    private virtualScroller!: VirtualScrollerComponent;
+
+  @ViewChild(VirtualScrollerComponent) private virtualScroller!: VirtualScrollerComponent;
+
   data!: NotificationItemDto[];
   topicData: FireBaseTopicDto[] = [];
   dataDetail!: any;
@@ -59,9 +62,7 @@ export class FirebaseNotificationComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private render: Renderer2,
     private firebaseMessagingService: FirebaseMessagingService,
-    //socket noti
-    private socketStorageNotificationService: SocketStorageNotificationService,
-    ) {
+    private socketStorageNotificationService: SocketStorageNotificationService) {
   }
 
   ngOnInit(): void {
@@ -71,10 +72,7 @@ export class FirebaseNotificationComponent implements OnInit {
     if (id && paramsNoti) {
       this.id = id;
     }
-  //   this.route.params.subscribe(params => {
-  //     this.id = params['id'];
-  //     console.log('firebase-notification',id)
-  // });
+
     this.loadData();
     this.loadUrl();
 
@@ -91,10 +89,12 @@ export class FirebaseNotificationComponent implements OnInit {
       this.socketStorageNotificationService.setLocalStorage();
       exist = this.socketStorageNotificationService.getLocalStorage();
     }
+
     for(let item in exist) {
       this.lstItems.push(item);
     }
-    this.socketData = exist
+
+    this.socketData = exist;
     this.onEventEmitter();
   }
 
@@ -168,11 +168,9 @@ export class FirebaseNotificationComponent implements OnInit {
           let item: NotificationItemDto = null as any;
           if (TDSHelperString.hasValueString(id) && this.data) {
             let exist = this.data?.filter(x => x && x.id == id)[0];
-            // let itemIdex = this.data?.findIndex(x => x && x.id == id) || 0;
             if (exist) {
               item = exist;
             }
-            // this.virtualScroller.scrollToIndex(itemIdex)
           }
 
           if (item == null && this.data) {
@@ -238,14 +236,17 @@ export class FirebaseNotificationComponent implements OnInit {
     } else {
       setTimeout(() => {
         let scrollContent = document.getElementsByClassName('scrollable-content')?.item(0);
-        this.render.addClass(scrollContent,'!h-auto');//set thuộc tính h-auto cho viewport
+        
+        if(scrollContent) {
+          this.render.addClass(scrollContent,'!h-auto');//set thuộc tính h-auto cho viewport
 
-        let scrollerHeight = this.render.parentNode(scrollContent)?.clientHeight as number;//chiều cao của scroller
-        this.viewPortHeight = scrollContent?.clientHeight as number;//chiều cao viewport
-        this.itemHeight = Math.round(this.viewPortHeight/this.itemCount);//chiều cao của mỗi item
-        // trường hợp chiều cao của viewport < scroller height, get nextdata
-        if(this.viewPortHeight < scrollerHeight) {
-          this.nextData(scrollerHeight);
+          let scrollerHeight = this.render.parentNode(scrollContent)?.clientHeight as number;//chiều cao của scroller
+          this.viewPortHeight = scrollContent?.clientHeight as number;//chiều cao viewport
+          this.itemHeight = Math.round(this.viewPortHeight/this.itemCount);//chiều cao của mỗi item
+          // trường hợp chiều cao của viewport < scroller height, get nextdata
+          if(this.viewPortHeight < scrollerHeight) {
+            this.nextData(scrollerHeight);
+          }
         }
       }, 2000);
     }
@@ -320,7 +321,7 @@ export class FirebaseNotificationComponent implements OnInit {
 
     this.firebaseRegisterService.registerDevice(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-            this.message.success('Đăng ký nhận tin thành công');
+            this.message.success('Đăng ký token thiết bị thành công');
             this.registerTopics();
         },
         error: (err: any) => {
@@ -339,7 +340,7 @@ export class FirebaseNotificationComponent implements OnInit {
     this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.isLoading = false;
-          this.message.success('Đăng kí nhận tin thành công');
+          this.message.success('Đăng ký nhận tin thành công');
       },
       error: (err: any) => {
           this.isLoading = false;
@@ -351,7 +352,7 @@ export class FirebaseNotificationComponent implements OnInit {
   modalGetNotifications() {
     let deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
 
-    this.modalService.create({
+    let modal = this.modalService.create({
       title: 'Danh sách đăng kí nhận tin',
       content: ModalGetNotificationComponent,
       size: "xl",
@@ -367,6 +368,12 @@ export class FirebaseNotificationComponent implements OnInit {
         idsTopic: this.idsTopic
       }
     });
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
+      }
+    })
   }
 
   // socket noti
@@ -375,7 +382,6 @@ export class FirebaseNotificationComponent implements OnInit {
       this.socketData = this.socketStorageNotificationService.getLocalStorage();
     });
   }
-
 
   change(item: any) {
     if(item == "socket.all") {

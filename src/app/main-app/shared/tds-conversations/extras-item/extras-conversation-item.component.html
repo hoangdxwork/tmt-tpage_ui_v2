@@ -40,12 +40,12 @@
                     class="rounded-full z-40 -ml-2">
             </div>
             <span>
-                {{(data.Data | facebookType)?.reactions?.summary?.total_count || 0}}
+                {{data.CountReaction || 0}}
             </span>
         </div>
         <div class="comment flex flex-row items-center">
             <span class="comment-count  mr-4">
-                {{(data.Data | facebookType)?.comments?.summary?.total_count || 0}} Bình luận
+                {{data.CountComment || 0}} Bình luận
             </span>
             <div class="comment-button">
                 <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Bài viết tổng quan" tooltipPlacement="bottom"
@@ -127,8 +127,15 @@
                 <img src="../../../assets/imagesv2/conversation/love-circle.svg" width="20px" height="20px"
                     class="rounded-full z-40 -ml-2">
             </div>
+
+            <span>
+                {{data.CountReaction || 0}}
+            </span>
         </div>
         <div class="comment flex flex-row items-center">
+            <span class="comment-count  mr-4">
+                {{data.CountComment || 0}} Bình luận
+            </span>
             <div class="comment-button">
                 <button tds-button-flat-icon color="secondary" tds-tooltip tooltipTitle="Đi tới bình luận" tooltipPlacement="bottom"
                     (click)="openPost(item, 'post')">

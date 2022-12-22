@@ -74,6 +74,9 @@ export class AddLiveCampaignV2Component implements OnInit {
     dir: SortEnum.desc,
   }];
 
+  isShowEditLimitedQuantity!: boolean;
+  limitedQuantityAll: number = 0;
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -660,6 +663,7 @@ export class AddLiveCampaignV2Component implements OnInit {
   }
 
   onDeleteAll(){
+    this.isShowEditLimitedQuantity = false;
     this.modalService.error({
       title: 'Xóa sản phẩm',
       content: 'Bạn muốn xóa tất cả sản phẩm?',
@@ -781,4 +785,39 @@ export class AddLiveCampaignV2Component implements OnInit {
         }
       }
     }
+
+  showEditLimitedQuantity() {
+    let formDetails = this.detailsForm.value as any[];
+
+    if(formDetails && formDetails.length > 0) {
+        this.isShowEditLimitedQuantity = true;
+    } 
+    else {
+        this.message.error('Chưa có sản phẩm nào trong danh sách');
+        this.isShowEditLimitedQuantity = false;
+    }
+  }
+
+  onPopoverVisibleChange(event: boolean) {
+    if(!event) {
+        this.limitedQuantityAll = 0;
+    }
+  }
+
+  onSavePopover() {
+    let formDetails = this.detailsForm.value as any[];
+
+    if(formDetails && formDetails.length > 0) {
+      formDetails.map(x=> {
+        return x.LimitedQuantity = this.limitedQuantityAll;
+      })
+  
+      this.detailsForm.clear();
+      this.initFormDetails(formDetails);
+    }
+  }
+
+  onClosePopover() {
+    this.isShowEditLimitedQuantity = false;
+  }
 }

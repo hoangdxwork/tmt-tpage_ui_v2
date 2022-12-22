@@ -9,6 +9,7 @@ import { ShowMoreDirective } from "./show-more.directive";
 import { YiAutoScrollDirective } from "./yi-auto-scroll.directive";
 import { YuriAvatarDirective } from "./yuri-avatar.directive";
 import { CsLoadingPartnerDirective } from './cs-loading-partner.directive';
+import { CsLoadingConversationDirective } from './cs-loading-conversation.directive';
 
 const DIRECTIVES = [
   YiAutoScrollDirective,
@@ -16,7 +17,8 @@ const DIRECTIVES = [
   ShowMoreDirective,
   CsLoadingObjectDirective,
   CsLoadingPostDirective,
-  CsLoadingPartnerDirective
+  CsLoadingPartnerDirective,
+  CsLoadingConversationDirective
 ]
 
 @NgModule({

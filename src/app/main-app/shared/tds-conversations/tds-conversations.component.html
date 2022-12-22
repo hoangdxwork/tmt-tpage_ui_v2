@@ -5,7 +5,7 @@
                 <div class="avatar mr-2 relative">
                     <!-- Facebook -->
                         <tpage-avatar-facebook [size]="48" *ngIf="team.Type == 'Facebook'"
-                            [noAssignedUser]="data.AssignedTo?.UserName ? true : false"
+                            [statusColor]="statusColor"
                             [shape]="'circle'" [psid]="data.ConversationId"
                             [token]="team.ChannelToken">
                         </tpage-avatar-facebook>
@@ -134,12 +134,12 @@
                 </div>
 
                 <div *ngIf="miniChat != true">
-                    <button type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3" (click)="onProductLastV2()">
+                    <button type="button" tds-button-flat-icon tds-tooltip="Danh sách sản phẩm" color="secondary" rounded="!rounded-full" class="mr-3" (click)="onProductLastV2()">
                         <img src="../../../assets/imagesv2/conversation/box-add.svg" width="21px" height="21px">
                     </button>
                 </div>
 
-                <button *ngIf="!isOpenSearch" type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="onOpenSearch()">
+                <button *ngIf="!isOpenSearch" type="button" tds-tooltip="Tìm kiếm" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="onOpenSearch()">
                     <i class="tdsi-search-fill"></i>
                 </button>
 
@@ -275,6 +275,7 @@
                     [popoverContent]="popoverContentOptionSendMessages"
                     popoverTrigger="click"
                     [popoverPlacement]="['topLeft', 'leftTop']"
+                    tds-tooltip="Tùy chọn"
                     class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-three-dots-horizon-fill">
                 </tds-avatar>
 
@@ -294,6 +295,7 @@
                     [popoverVisible]="isVisbleTag"
                     (popoverVisibleChange)="callbackTag($event)"
                     [popoverPlacement]="['topLeft', 'leftTop']"
+                    tds-tooltip="Gắn nhãn"
                     class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-tag-fill">
                 </tds-avatar>
 
@@ -360,7 +362,7 @@
             </div>
         </div>
         <!-- editer+toolbars -->
-        
+
         <tds-spin [spinning]="isLoadingImage" class="relative">
             <div [ngClass]="team && team.Type == 'UnofficialTikTok' ? 'z-1000' :'hidden'" class="absolute bg-neutral-3-50 bg-opacity-50 inset-0 h-full">
             </div>

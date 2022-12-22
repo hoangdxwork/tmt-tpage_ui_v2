@@ -204,8 +204,8 @@
               </div>
             </td>
             <!-- Mã vận đơn -->
-            <td *ngIf="isHidden('TrackingRef')" class="w-full truncate border-r">
-              {{bill.TrackingRef}}
+            <td *ngIf="isHidden('TrackingRef')" (click)="onOpenTrackingUrl(bill)" class="w-full truncate border-r">
+              <span class="font-semibold text-info-400 cursor-pointer">{{bill.TrackingRef}}</span>
             </td>
             <!-- Địa chỉ -->
             <td *ngIf="isHidden('Address')" class="w-full border-r">

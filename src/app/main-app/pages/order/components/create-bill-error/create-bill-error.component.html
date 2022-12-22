@@ -1,13 +1,17 @@
 <div *tdsModalTitle>
   <div class="flex flex-row items-center gap-x-2">
-    <tds-checkbox [(ngModel)]="checkedAll" [indeterminate]="indeterminate" (ngModelChange)="changeAll($event)" [disabled]="isLoading"></tds-checkbox>
-    <tds-label class="text-error-500">Danh sách lỗi</tds-label>
+    <tds-label>Danh sách lỗi</tds-label>
   </div>
 </div>
 
 <tds-spin [spinning]="isLoading">
+  <div class="flex flex-row items-center gap-x-2 pb-4" *ngIf="lstErrorSelected && lstErrorSelected.length > 0">
+    <tds-checkbox [(ngModel)]="checkedAll" [indeterminate]="indeterminate" (ngModelChange)="changeAll($event)" [disabled]="isLoading" 
+     [ngModelOptions]="{standalone: true}" ></tds-checkbox>
+    <span class="text-error-500 font-semibold">Chọn tất cả</span>
+  </div>
   <div class="flex flex-col w-full">
-    <div class="flex flex-col gap-y-2 max-h-[500px] overflow-y-auto tds-custom-scroll pr-2">
+    <div *ngIf="lstErrorSelected" class="flex flex-col gap-y-2 max-h-[500px] overflow-y-auto tds-custom-scroll pr-2">
       <div *ngFor="let err of lstErrors" class="text-body-2 bg-neutral-3-50">
         <div [innerHTML]="err"></div>
       </div>
@@ -22,14 +26,15 @@
         </tds-checkbox>
       </div>
     </div>
-    <div class="flex flex-row gap-x-2 items-center pt-4 mt-4 border-t">
+    <div class="flex flex-row gap-x-2 items-center pt-4 mt-4 border-t" *ngIf="lstErrorSelected && lstErrorSelected.length > 0">
       <tds-checkbox [(ngModel)]="isPrint" [ngModelOptions]="{standalone: true}" (ngModelChange)="changePrint('isPrint', $event)">In phiếu</tds-checkbox>
       <tds-checkbox [(ngModel)]="isPrintShip" [ngModelOptions]="{standalone: true}" (ngModelChange)="changePrint('isPrintShip', $event)">In phiếu ship</tds-checkbox>
     </div>
 
-    <div class="w-full flex justify-end gap-x-2 p-4" *tdsModalFooter>
+    <div class="w-full flex justify-end gap-x-2 pt-4 px-4">
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-      <button tds-button type="button" color="primary" (click)="onSave()">Tạo cưỡng bức</button>
+      <button tds-button type="button" color="primary" (click)="onSave()" *ngIf="lstErrorSelected && lstErrorSelected.length > 0">Tạo cưỡng bức</button>
     </div>
   </div>
 </tds-spin>
+<div *tdsModalFooter></div>

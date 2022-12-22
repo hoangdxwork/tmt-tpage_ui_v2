@@ -1,3 +1,4 @@
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { ChatomniCommentService } from './../../services/chatomni-service/chatomni-comment.service';
 import { ChatomniReplyCommentModelDto } from './../../dto/conversation-all/chatomni/chatomni-comment.dto';
@@ -111,11 +112,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   filterObj: TDSSafeAny;
   order: TDSSafeAny;
   companyCurrents: TDSSafeAny;
+  statusColor: string = '#28A745';
 
   quickReplies: Array<QuickReplyDTO> = [];
   objQuickReply: TDSSafeAny = {};
 
   constructor(private modalService: TDSModalService,
+    private partnerService: PartnerService,
     private chatomniMessageService: ChatomniMessageService,
     private omniMessageFacade: ChatomniMessageFacade,
     private omniCommentFacade: ChatomniCommentFacade,
@@ -184,6 +187,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         }
       }
     )
+
+    // TODO: cập nhật màu ring của khung avatar
+    this.partnerService.changeStatus$.subscribe({
+      next: (res: string) => {
+        this.statusColor = res;
+        this.cdRef.detectChanges();
+      }
+    })
   }
 
   onEventSocket() {
@@ -537,7 +548,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
           if(res) {
-              if(res.Extras) {
+              if(res.Extras && this.dataSource) {
                 this.dataSource.Extras = res.Extras;
               }
 

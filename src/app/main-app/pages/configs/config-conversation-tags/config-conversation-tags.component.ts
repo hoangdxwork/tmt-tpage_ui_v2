@@ -16,7 +16,10 @@ import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
     selector: 'app-config-conversation-tags',
-    templateUrl: './config-conversation-tags.component.html'
+    templateUrl: './config-conversation-tags.component.html',
+    host: {
+      class: 'flex h-full w-full'
+    }
 })
 export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('filterText') filterText!: ElementRef;

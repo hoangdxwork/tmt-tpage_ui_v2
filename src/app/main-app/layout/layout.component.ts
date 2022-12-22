@@ -427,7 +427,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
     this.firebaseRegisterService.registerDevice(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-            this.message.success('Đăng ký nhận tin thành công');
+            this.message.success('Đăng ký token thiết bị thành công');
             this.isRegister = false;
             this.isDeviceToken = true;
             this.registerTopics();
@@ -446,7 +446,9 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     }
 
     this.firebaseRegisterService.registerTopics(model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {},
+      next: (res: any) => {
+        this.message.success('Đăng ký nhận tin thành công');
+      },
       error: (err: any) => {
           this.isRegister = false;
           this.isDeviceToken = true;

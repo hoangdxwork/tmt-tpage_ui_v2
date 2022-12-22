@@ -27,7 +27,7 @@ export class CreateBillErrorComponent implements OnInit {
   @Input() isApprove!: boolean;
 
   lstErrorSelected: TDSSafeAny[] = [];
-  checkedAll = false;
+  checkedAll: boolean = false;
   indeterminate = false;
   isLoading = false;
   isPrint = false;
@@ -43,6 +43,7 @@ export class CreateBillErrorComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.lstErrorSelected = [];
     this.lstDataErrorDefault.forEach((err) => {
       this.lstErrorSelected.push({ isSelected: false, error: err });
     });
