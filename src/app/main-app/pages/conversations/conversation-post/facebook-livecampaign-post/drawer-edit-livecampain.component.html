@@ -256,70 +256,89 @@
                                     </div>
 
                                     <div class="flex flex-row items-center justify-between w-full mb-1">
-                                            <!-- Trạng thái  -->
-                                            <!-- <div class="flex mb-1">
-                                                <span class="flex items-center pr-2">Trạng thái:</span>
-                                                <div class="flex flex-auto">
-                                                    <div *ngIf="isEditDetails[data.Id]" class="w-[70%]">
-                                                        <tds-checkbox [(ngModel)]="data.IsActive">
-                                                        </tds-checkbox>
-                                                    </div>
-                                                    <div *ngIf="!isEditDetails[data.Id] && data.IsActive"
-                                                        class="text-body-2 text-secondary-1" style="font-style: italic;">
-                                                        Hoạt động
-                                                    </div>
-                                                    <div *ngIf="!isEditDetails[data.Id] && !data.IsActive"
-                                                        class="text-body-2 text-accent-3" style="font-style: italic;">
-                                                        Đã tắt
-                                                    </div>
+                                        <!-- Trạng thái  -->
+                                        <!-- <div class="flex mb-1">
+                                            <span class="flex items-center pr-2">Trạng thái:</span>
+                                            <div class="flex flex-auto">
+                                                <div *ngIf="isEditDetails[data.Id]" class="w-[70%]">
+                                                    <tds-checkbox [(ngModel)]="data.IsActive">
+                                                    </tds-checkbox>
                                                 </div>
-                                            </div> -->
-
-                                            <!-- Số lượng chốt -->
-                                            <div class="flex item-center gap-x-2 text-body-2">
-                                                <div class="text-neutral-1-500 flex items-center hover:underline hover:text-info-500"
-                                                    tds-tooltip="Click xem đơn hàng chờ chốt" (click)="showModalLiveCampaignOrder(data)">
-                                                    Chờ chốt:&nbsp;
-                                                    <span class="mr-0.5">{{ (data.QueueQuantity || 0) | numberCustom }}</span>
-                                                    <tds-spinner
-                                                        [ngClass]="animateSocket[data.ProductId + '_' + data.UOMId + '_queueQty'] ? 'visible' : 'invisible'"
-                                                        [color]="'error'" class="w-2.5 h-2.5"></tds-spinner>
+                                                <div *ngIf="!isEditDetails[data.Id] && data.IsActive"
+                                                    class="text-body-2 text-secondary-1" style="font-style: italic;">
+                                                    Hoạt động
                                                 </div>
-                                                <div>/</div>
-                                                <div class="text-neutral-1-500 flex items-center  hover:underline hover:text-info-500"
-                                                    tds-tooltip="Click xem hóa đơn đã chốt" (click)="showModalLiveCampaignBill(data)">
-                                                    Đã chốt:&nbsp;
-                                                    <span class="mr-0.5">{{ (data.UsedQuantity || 0) | numberCustom }}</span>
-                                                    <tds-spinner
-                                                        [ngClass]="animateSocket[data.ProductId + '_' + data.UOMId + '_usedQty'] ? 'visible' : 'invisible'"
-                                                        [color]="'error'" class="ml-1 w-2.5 h-2.5"></tds-spinner>
+                                                <div *ngIf="!isEditDetails[data.Id] && !data.IsActive"
+                                                    class="text-body-2 text-accent-3" style="font-style: italic;">
+                                                    Đã tắt
                                                 </div>
                                             </div>
-                                            <div class="flex items-center"
-                                                [ngClass]="data.RemainQuantity > 10 ? 'text-info-400' : 'text-error-400'">
-                                                Còn lại:&nbsp;
-                                                <span class="font-semibold">{{ (((data.Quantity - data.UsedQuantity) || 0) | numberCustom) }}</span>
+                                        </div> -->
+
+                                        <!-- Số lượng chốt -->
+                                        <div class="flex item-center gap-x-2 text-body-2">
+                                            <div class="text-neutral-1-500 flex items-center hover:underline hover:text-info-500"
+                                                tds-tooltip="Click xem đơn hàng chờ chốt" (click)="showModalLiveCampaignOrder(data)">
+                                                Chờ chốt:&nbsp;
+                                                <span class="mr-0.5">{{ (data.QueueQuantity || 0) | numberCustom }}</span>
                                                 <tds-spinner
-                                                    [ngClass]="animateSocket[data.ProductId + '_' + data.UOMId + '_queueQty']
-                                                        || animateSocket[data.ProductId + '_' + data.UOMId + '_usedQty'] ? 'visible' : 'invisible'"
+                                                    [ngClass]="animateSocket[data.ProductId + '_' + data.UOMId + '_queueQty'] ? 'visible' : 'invisible'"
                                                     [color]="'error'" class="w-2.5 h-2.5"></tds-spinner>
                                             </div>
-                                    </div>
-                                    <div class="flex w-full items-center mb-1 gap-x-2 justify-center">
-                                        <!-- Giá bán -->
-                                        <div class="flex flex-col items-center gap-x-1 w-1/2" *ngIf="isEditDetails[data.Id]">
-                                            <span class="flex pr-2 w-full">Giá:</span>
-
-                                            <div *ngIf="isEditDetails[data.Id]" class=" w-full">
-                                                <tds-form-field class="w-full">
-                                                    <tds-input-number [min]="0" [step]="1000" size="sm" class="w-full"
-                                                        [(ngModel)]="data.Price"
-                                                        [formatter]="numberWithCommas" [parser]="parserComas">
-                                                    </tds-input-number>
-                                                </tds-form-field>
+                                            <div>/</div>
+                                            <div class="text-neutral-1-500 flex items-center  hover:underline hover:text-info-500"
+                                                tds-tooltip="Click xem hóa đơn đã chốt" (click)="showModalLiveCampaignBill(data)">
+                                                Đã chốt:&nbsp;
+                                                <span class="mr-0.5">{{ (data.UsedQuantity || 0) | numberCustom }}</span>
+                                                <tds-spinner
+                                                    [ngClass]="animateSocket[data.ProductId + '_' + data.UOMId + '_usedQty'] ? 'visible' : 'invisible'"
+                                                    [color]="'error'" class="ml-1 w-2.5 h-2.5"></tds-spinner>
                                             </div>
                                         </div>
+                                        <div class="flex items-center"
+                                            [ngClass]="data.RemainQuantity > 10 ? 'text-info-400' : 'text-error-400'">
+                                            Còn lại:&nbsp;
+                                            <span class="font-semibold">{{ (((data.Quantity - data.UsedQuantity) || 0) | numberCustom) }}</span>
+                                            <tds-spinner
+                                                [ngClass]="animateSocket[data.ProductId + '_' + data.UOMId + '_queueQty']
+                                                    || animateSocket[data.ProductId + '_' + data.UOMId + '_usedQty'] ? 'visible' : 'invisible'"
+                                                [color]="'error'" class="w-2.5 h-2.5"></tds-spinner>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 w-full items-center mb-1 gap-2 justify-center">
+                                        <!-- Giá bán -->
+                                        <div class="flex flex-col items-center gap-y-1 w-full" *ngIf="isEditDetails[data.Id]">
+                                            <span class="flex pr-2 w-full">Giá:</span>
+                                            <tds-form-field class="w-full">
+                                                <tds-input-number [min]="0" [step]="1000" size="sm" class="w-full"
+                                                    [(ngModel)]="data.Price"
+                                                    [formatter]="numberWithCommas" [parser]="parserComas">
+                                                </tds-input-number>
+                                            </tds-form-field>
+                                        </div>
 
+                                        <div *ngIf="isEditDetails[data.Id]" class="w-full flex flex-col gap-y-1">
+                                            <!-- Giới hạn trên đơn -->
+                                            <span class="flex truncate">Giới hạn trên đơn</span>
+                                            <tds-form-field class="w-full">
+                                                <tds-input-number [min]="0" [step]="1" size="sm" class="w-full"
+                                                    [(ngModel)]="data.LimitedQuantity"
+                                                    [formatter]="numberWithCommas" [parser]="parserComas">
+                                                </tds-input-number>
+                                            </tds-form-field>
+                                        </div>
+
+                                        <div *ngIf="isEditDetails[data.Id]" class="w-full flex flex-col items-center gap-y-1">
+                                            <!-- Số lượng -->
+                                            <span class="flex pr-2 w-full truncate">Số lượng:</span>
+                                            <tds-form-field class="w-full">
+                                                <tds-input-number [min]="0" [step]="1" size="sm" class="w-full"
+                                                    [(ngModel)]="data.Quantity"
+                                                    [formatter]="numberWithCommas" [parser]="parserComas">
+                                                </tds-input-number>
+                                            </tds-form-field>
+                                        </div>
+                                        
                                         <div class="flex gap-x-1 w-full" *ngIf="!isEditDetails[data.Id]">
                                             <span class="flex items-center">Giá:</span>
                                             <div class="text-body-2 text-center flex items-center ml-2 font-semibold">
@@ -327,33 +346,13 @@
                                             </div>
                                         </div>
 
-                                        <div *ngIf="isEditDetails[data.Id]" class="w-1/2 flex">
-                                            <!-- Số lượng -->
-                                            <div class="flex flex-col items-center gap-x-1">
-                                                <span class="flex pr-2 w-full  truncate">Số lượng:</span>
-    
-                                                <tds-form-field class="w-full">
-                                                    <tds-input-number [min]="0" [step]="1" size="sm" class="w-full"
-                                                        [(ngModel)]="data.Quantity"
-                                                        [formatter]="numberWithCommas" [parser]="parserComas">
-                                                    </tds-input-number>
-                                                </tds-form-field>
+                                        <div class="flex gap-x-1 w-full" *ngIf="!isEditDetails[data.Id]">
+                                            <span class="flex items-center">Giới hạn trên đơn:</span>
+                                            <div class="text-body-2 text-center flex items-center ml-2 font-semibold">
+                                                {{ data.LimitedQuantity || 0 | numberCustom }}
                                             </div>
                                         </div>
-    
                                     </div>
-                                    <div *ngIf="isEditDetails[data.Id]" class="w-1/2 flex flex-col mb-1 gap-x-1 pr-1">
-                                        <!-- Giới hạn trên đơn -->
-                                        <span class="flex truncate">Giới hạn trên đơn</span>
-
-                                        <tds-form-field class="w-full">
-                                            <tds-input-number [min]="0" [step]="1" size="sm" class="w-full"
-                                                [(ngModel)]="data.LimitedQuantity"
-                                                [formatter]="numberWithCommas" [parser]="parserComas">
-                                            </tds-input-number>
-                                        </tds-form-field>
-                                    </div>
-                                    
                                 </div>
                             </div>
                     </virtual-scroller>

@@ -101,6 +101,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   filterObj : TDSSafeAny;
   lengthDataSource: number = 0;
   isLoadingInsertFromPost: boolean = false;
+  isLoadingiconMess: boolean = false;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -754,6 +755,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   openMiniChat(data: ChatomniDataItemDto) {
+    this.isLoadingiconMess = true;
     if(data && this.team){
         this.loadMDBByPSId(this.team.ChannelId, data.UserId);
     }
@@ -769,12 +771,14 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
         if (res) {
             let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
             this.currentConversation = { ...model };
-
             this.isOpenDrawer = true;
+            this.isLoadingiconMess = false;
+
             this.cdRef.detectChanges();
         }
       },
       error: (error: any) => {
+          this.isLoadingiconMess = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     })

@@ -129,14 +129,13 @@ export class OverviewLiveCampaignComponent implements OnInit {
     if(!exist) return;
 
     let currentLiveCampaign = {...this.dataLiveCampaign} as LiveCampaignModel
-    this.isLoading = true;
     let model = {} as any;
 
     this.modalService.info({
       title: 'Xóa chiến dịch live',
       content: `Bạn có chắc muốn xóa chiến dịch <span class="text-info-500 font-semibold">${this.dataLiveCampaign.Name}</span>`,
       onOk: () => {
-
+        this.isLoading = true;
         switch(this.type) {
           case CRMTeamType._Facebook:
             model = {...this.prepareFbLiveCampaign.prepareUpdateFbLiveCampaign(this.data, currentLiveCampaign, 'cancel')};
