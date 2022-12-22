@@ -28,6 +28,8 @@ export interface UserMany{
     RecipientId?: string
 }
 
-export enum TypeSendMessage {
-   
-} 
+export enum EnumSendMessageType {
+  _NORMAl = 0,
+  _RETRY = 1,
+  _REPLY = 2
+}
