@@ -755,8 +755,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   openMiniChat(data: ChatomniDataItemDto) {
-    this.isLoadingiconMess = true;
     if(data && this.team){
+        this.isLoadingiconMess = true;
         this.loadMDBByPSId(this.team.ChannelId, data.UserId);
     }
   }

@@ -100,11 +100,17 @@
                                 </span>
                             </button>
 
-                            <button *ngIf="!isShowModal && !item.ParentId" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hội thoại bình luận" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)">
+                            <button *ngIf="!isShowModal && !item.ParentId && !item.IsOwner" [loading]="isLoadingiconMess" type="button" tds-button-icon color="secondary" 
+                                class="mr-2" size="sm" tooltipTitle="Hội thoại bình luận" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)" [loadingTemplate]="iconMess">
+                                  <span class="flex items-center justify-center">
+                                      <i class="tdsi-comment-on-fill text-neutral-1-500"></i>
+                                  </span>
+                              </button>
+                              <ng-template #iconMess>
                                 <span class="flex items-center justify-center">
-                                    <i class="tdsi-message-fill text-neutral-1-500"></i>
+                                    <i class="tdsi-comment-on-fill text-neutral-1-500"></i>
                                 </span>
-                            </button>
+                              </ng-template>
 
                             <div *ngIf="childs[item.Id]">
                                 <button type="button" *ngIf="isHiddenComment[item.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, true)" class="mr-2" size="sm" tooltipTitle="Ẩn thị bài viết" tooltipPlacement="top" tds-tooltip>
