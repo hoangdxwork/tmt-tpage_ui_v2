@@ -8,10 +8,8 @@ import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { PartnerService } from '../partner.service';
 import { PartnerTimeStampDto } from '@app/dto/partner/partner-timestamp.dto';
-import { CRMTeamService } from '../crm-team.service';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { TDSMessageService } from 'tds-ui/message';
 
 @Injectable()
 
@@ -29,8 +27,6 @@ export class ChatomniCommentFacade extends BaseSevice  {
 
   constructor(private apiService: TCommonService,
     public cacheApi: THelperCacheService,
-    private message: TDSMessageService,
-    private crmTeamService: CRMTeamService,
     private partnerService: PartnerService) {
     super(apiService);
   }
@@ -135,7 +131,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
           this.partner$.next(this.partnerDict[teamId]);
       },
       error: (error: any) => {
-          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.partner$.next(error);
       }
     });
   }
