@@ -737,15 +737,25 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     }
   }
 
+  onChangeConfigValue(event: any, configName: string){
+    this.configsProviderDataSource.map(x => {
+
+      if(x.ConfigName === configName) {
+        x.ConfigValue = event;
+      }
+    })
+  }
+
   searchUser(){
     let data = this.users;
     let key = this.keyFilterUser;
+
     if (TDSHelperString.hasValueString(key)) {
       key = TDSHelperString.stripSpecialChars(key.trim());
     }
-    data = data.filter((x) =>
-      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
-    this.lstUser = data
+
+    data = data.filter((x) => (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1));
+    this.lstUser = data;
   }
 
   calcFee() {

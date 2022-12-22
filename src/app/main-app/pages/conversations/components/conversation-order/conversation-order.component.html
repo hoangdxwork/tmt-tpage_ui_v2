@@ -494,7 +494,7 @@
                                 <tds-label class="w-1/4">{{item.DisplayName}}<span class="text-error-400">*</span></tds-label>
                                 <tds-form-field class="w-3/4">
                                     <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
-                                        [data]="item.ConfigsValue" [ngModel]="item.ConfigValue" [allowClear]="true"
+                                        [data]="item.ConfigsValue" [ngModel]="item.ConfigValue" (selectChange)="onChangeConfigValue($event, item.ConfigName)" [allowClear]="true"
                                         [ngModelOptions]="{standalone: true}" [allowClear]="item.InputType == 'combo_box'">
                                     </tds-select>
                                 </tds-form-field>
