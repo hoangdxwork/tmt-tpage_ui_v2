@@ -5,7 +5,7 @@
                 <div class="avatar mr-2 relative">
                     <!-- Facebook -->
                         <tpage-avatar-facebook [size]="48" *ngIf="team.Type == 'Facebook'"
-                            [noAssignedUser]="data.AssignedTo?.UserName ? true : false"
+                            [statusColor]="statusColor"
                             [shape]="'circle'" [psid]="data.ConversationId"
                             [token]="team.ChannelToken">
                         </tpage-avatar-facebook>

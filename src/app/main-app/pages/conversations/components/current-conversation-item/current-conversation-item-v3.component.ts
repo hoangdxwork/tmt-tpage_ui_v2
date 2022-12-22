@@ -1,3 +1,4 @@
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ChangeDetectionStrategy, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, DoCheck } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,7 +7,7 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
-import { Subject, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
@@ -52,6 +53,7 @@ export class CurrentConversationItemV3Component  implements OnInit, OnChanges, A
   countNgafterview = 0;
 
   constructor(private message: TDSMessageService,
+    private partnerService: PartnerService,
     private conversationEventFacade: ConversationEventFacade,
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
@@ -83,6 +85,17 @@ export class CurrentConversationItemV3Component  implements OnInit, OnChanges, A
               this.item.CountUnread = 0;
           }
           this.cdRef.detectChanges();
+      }
+    });
+
+    // TODO: cập nhật màu ring của khung avatar
+    this.partnerService.changeStatus$.subscribe({
+      next: (res: string) => {
+
+        if(this.conversationItem && this.conversationItem.Id == this.item.Id) {
+          this.item.StatusStyle = res;
+        }
+        this.cdRef.detectChanges();
       }
     })
   }

@@ -343,11 +343,14 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       let data = {
           status: `${event.value}_${event.text}`
       }
-
+      this.isLoading = true;
+      
       this.partnerService.updateStatus(this.partner.Id, data).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
             this.message.success('Cập nhật trạng thái khách hàng thành công');
             this.partner.StatusText = event.text;
+            this.partnerService.changeStatus$.emit(event.value);
+            this.isLoading = false;
             this.cdRef.detectChanges();
         },
         error: (error: any) => {
