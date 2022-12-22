@@ -151,11 +151,11 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       }
     })
 
-    //TODO: Tổng bình luận bài viết
-    this.postEvent.lengthLstObject$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (length: any) => {
-          if(length && this.team.Type == CRMTeamType._Facebook && this.data.Data) {
-            (this.data.Data as MDB_Facebook_Mapping_PostDto).count_comments = length;
+    // TODO: Tổng bình luận bài viết
+    this.postEvent.countRealtimeMess$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(res && this.team.Type == CRMTeamType._Facebook && this.data) {
+            this.data.CountComment += 1;
 
             this.cdRef.detectChanges();
           }
