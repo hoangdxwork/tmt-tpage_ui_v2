@@ -38,15 +38,17 @@ export class PackOfDataComponent implements OnInit {
 
   loadInfo() {
     this.isLoading = true;
-    this.tenantService.getInfo()
-      .subscribe(res => {
+    this.tenantService.getInfo().subscribe({
+      next: (res) => {
         this.tenantInfo = res;
         this.loadUsed();
         this.updateUserTime(res?.Tenant?.DateExpired);
-      }, error => {
+      }, 
+      error: (error) => {
         this.isLoading = false;
         this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-      });
+      }
+    });
   }
 
   loadUsed() {

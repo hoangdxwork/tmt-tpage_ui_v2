@@ -1,1 +1,21 @@
-<div echarts [options]="options || {}" [size]="size" [merge]="options"></div>
+<div class="w-full h-fit">
+    <div class="flex flex-row items-center justify-center w-1/2 pl-[5%]">
+        <div class="flex flex-col justify-center w-full">
+            <span class="text-neutral-1-500  font-regular text-left font-sans py-2 flex items-center">
+                <i class="tdsi-paper-fill text-body-1 leading-none mr-2"></i>Tổng đơn hàng tháng trước
+            </span>
+            <div class="flex flex-row items-center">
+                <span class="text-header-1 font-semibold font-sans pr-2">{{ sumPrevious | numberCustom}}</span>
+            </div>
+        </div>
+        <div class="flex flex-col justify-center w-full">
+            <span class="text-neutral-1-500  font-regular text-left font-sans py-2 flex items-center">
+                <i class="tdsi-paper-fill text-body-1 leading-none mr-2"></i>Tổng đơn hàng tháng hiện tại
+            </span>
+            <div class="flex flex-row items-center">
+                <span class="text-header-1 font-semibold font-sans pr-2">{{sumCurrent || 0 | numberCustom }}</span>
+            </div>
+        </div>
+    </div>
+    <div echarts [options]="options || {}" [size]="size" [merge]="options"></div>
+</div>
