@@ -20,6 +20,7 @@ export class ModalTaxComponent implements OnInit {
   lstTax!: AccountTaxDTO[];
   isLoading: boolean = false;
   taxSelect?: AccountTaxDTO;
+  defaultTax: AccountTaxDTO = { Id: 0, Amount: 0, AmountType: "percent", Name: "Thuế GTGT 0%" } as AccountTaxDTO;
 
   constructor(
     private modelRef: TDSModalRef,
@@ -34,11 +35,10 @@ export class ModalTaxComponent implements OnInit {
 
   loadTax() {
     this.isLoading = true;
-    let defaultTax: AccountTaxDTO = { Id: 0, Amount: 0, AmountType: "percent", Name: "Thuế GTGT 0%" } as AccountTaxDTO;
-    this.accountTaxService.getTax().pipe(finalize(() => this.isLoading = false)).subscribe(res => {
 
+    this.accountTaxService.getTax().pipe(finalize(() => this.isLoading = false)).subscribe(res => {
       this.lstTax = [...res.value];
-      this.lstTax.push(defaultTax);
+      this.lstTax.push(this.defaultTax);
 
       this.lstTax.sort((preTax, nextTax) => { return preTax.Amount - nextTax.Amount });//TODO: sắp xếp % thuế theo thứ tự tăng dần
     });
@@ -47,6 +47,8 @@ export class ModalTaxComponent implements OnInit {
   changeTax(event: TDSSafeAny, tax?: AccountTaxDTO) {
     if(event?.checked === true) {
       this.taxSelect = tax;
+    } else {
+      this.taxSelect = this.defaultTax;
     }
   }
 
