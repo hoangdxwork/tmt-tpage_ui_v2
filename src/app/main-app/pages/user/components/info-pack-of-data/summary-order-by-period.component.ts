@@ -22,8 +22,6 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
   axisPreviousData: Date[] = [];
   axisCurrentData: Date[] = [];
   sumOrder!: SummaryOrderDTO;
-  sumPrevious: number = 0;
-  sumCurrent: number = 0;
 
   chartOptions = TDSChartOptions();
 
@@ -210,16 +208,12 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
   loadData() {
     // code mẫu xóa sau khi có dữ liệu
     this.sumOrder = {...this.test};
-    this.sumPrevious = this.sumOrder.Previous.Items.reduce((x,pre) => x + pre?.Count, 0) || 0;
-    this.sumCurrent = this.sumOrder.Current.Items.reduce((x,cur) => x + cur?.Count, 0) || 0;
-    
-    this.isLoading = false;
     this.buildData();
     this.buildSummaryOrderChart();
     //
 
     this.isLoading = true;
-    this.tenantService.getInfo().subscribe({
+    this.tenantService.getInfo().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         if(!res || !res?.Tenant || !res?.Tenant?.DateExpired) return;
     
@@ -232,13 +226,8 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
             if(res?.Previous?.Items && res?.Current?.Items){
 
               this.sumOrder = {...this.test};
-              this.sumPrevious = this.sumOrder.Previous.Items.reduce((x,pre) => x + pre.Count, 0);
-              this.sumCurrent = this.sumOrder.Current.Items.reduce((x,cur) => x + cur.Count, 0);
-
               this.buildData();
               this.buildSummaryOrderChart();
-
-              this.isLoading = false;
             }
 
             this.isLoading = false;

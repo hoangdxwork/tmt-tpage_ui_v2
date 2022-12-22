@@ -1,5 +1,6 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, OnInit } from '@angular/core';
-import { finalize } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { PackOfDataEnum } from 'src/app/main-app/dto/account/account.dto';
 import { AppPackageDTO, PackageDTO, PackagePaymentDTO, TenantInfoDTO, TenantUsedDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
 import { TenantService } from 'src/app/main-app/services/tenant.service';
@@ -9,7 +10,8 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'pack-of-data',
-  templateUrl: './pack-of-data.component.html'
+  templateUrl: './pack-of-data.component.html',
+  providers: [TDSDestroyService]
 })
 export class PackOfDataComponent implements OnInit {
 
@@ -25,7 +27,8 @@ export class PackOfDataComponent implements OnInit {
 
   constructor(
     private tenantService: TenantService,
-    private message: TDSMessageService
+    private message: TDSMessageService,
+    private destroy$: TDSDestroyService
   ) { }
 
   get getPackOfDataEnum() {
@@ -38,7 +41,7 @@ export class PackOfDataComponent implements OnInit {
 
   loadInfo() {
     this.isLoading = true;
-    this.tenantService.getInfo().subscribe({
+    this.tenantService.getInfo().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         this.tenantInfo = res;
         this.loadUsed();
@@ -46,29 +49,36 @@ export class PackOfDataComponent implements OnInit {
       }, 
       error: (error) => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+        this.message.error(error?.error?.message);
       }
     });
   }
 
   loadUsed() {
-    this.tenantService.getUsed()
-      .subscribe(res => {
+    this.tenantService.getUsed().subscribe({
+      next: (res) => {
         this.tenantUsed = res;
         this.loadPackages();
-      }, error => {
+      }, 
+      error: (error) => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-      });
+        this.message.error(error?.error?.message);
+      }
+    });
   }
 
   loadPackages() {
-    this.tenantService.getPackages()
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
+    this.tenantService.getPackages().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
         this.appPackage = res;
         this.getCurrentPackage();
-      });
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err.error?.message);
+      }
+    });
   }
 
   updateUserTime(dateExpired: TDSSafeAny) {
