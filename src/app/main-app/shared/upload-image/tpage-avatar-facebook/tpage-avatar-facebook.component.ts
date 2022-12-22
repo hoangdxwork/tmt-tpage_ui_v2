@@ -18,7 +18,7 @@ export class TpageAvatarFacebookComponent implements OnInit {
   @Input() token!: TDSSafeAny;
   @Input() size: 'md' | 'lg' | 'sm' | 'xl' | number = 'md';
   @Input() shape:'square' | 'circle' = 'circle';
-  @Input() noAssignedUser: boolean = false;
+  @Input() statusColor!: string;
   @Input() hasAvatar!: string;
 
   url!: string;
