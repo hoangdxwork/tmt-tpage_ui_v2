@@ -101,6 +101,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   filterObj : TDSSafeAny;
   lengthDataSource: number = 0;
   isLoadingInsertFromPost: boolean = false;
+  isLoadingiconMess: boolean = false;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -747,7 +748,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
   openMiniChat(data: ChatomniDataItemDto) {
     if(data && this.team){
-        this.isLoading = true;
+        this.isLoadingiconMess = true;
         this.loadMDBByPSId(this.team.Id, data.UserId);
     }
   }
@@ -765,14 +766,14 @@ export class TShopCommentComponent implements OnInit, OnChanges {
         if (res) {
             // let model = this.chatomniMessageFacade.mappingCurrentConversation(res)
             this.currentConversation = { ...res };
-
             this.isOpenDrawer = true;
-            this.isLoading = false;
+            this.isLoadingiconMess = false;
+
             this.cdRef.detectChanges();
         }
       },
       error: (error: any) => {
-          this.isLoading = false;
+          this.isLoadingiconMess = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
       }
     })
