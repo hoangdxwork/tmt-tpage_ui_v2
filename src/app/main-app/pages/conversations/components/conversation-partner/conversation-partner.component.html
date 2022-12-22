@@ -1,5 +1,5 @@
 <tds-spin [spinning]="isLoading" class="flex w-full h-[calc(100vh-109px)] overflow-hidden">
-    
+
   <div *ngIf="partner && conversationItem; else noData">
       <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-hidden overflow-y-auto tds-custom-scroll flex-col flex">
           <!-- Thông tin khách hàng -->
@@ -28,7 +28,7 @@
                         <div class="font-sans font-semibold text-neutral-1-900 text-[20px]">
                             {{partner.Name || conversationItem.Name}}
                         </div>
-                        <button type="button" size="sm" tds-button-icon color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
+                        <button type="button" size="sm" tds-button-icon color="secondary" tds-tooltip="Chỉnh sửa" (click)="onEditPartner()" *ngIf="!isEditPartner">
                             <span class="flex items-center">
                               <i class="tdsi-edit-fill text-xl leading-none text-neutral-1-400"></i>
                             </span>
