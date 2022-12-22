@@ -222,11 +222,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           let index = this.lstObjects.findIndex(x => x.ObjectId == post_id);
 
           if(Number(index) >= 0) {
-            this.lstObjects[index].CountComment += 1;
-            this.lstObjects[index] = {...this.lstObjects[index]};
-
-            this.cdRef.detectChanges();
+              this.lstObjects[index].CountComment += 1;
+              this.lstObjects[index] = {...this.lstObjects[index]};
           }
+
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -604,7 +604,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           if(params_postid == null || params_postid == undefined || params_postid != this.currentPost?.ObjectId) {
             currentObject = this.lstObjects[0];
             this.currentObject = currentObject;
-      
+
             this.selectPost(currentObject);
             this.isLoading = false;
             return;
