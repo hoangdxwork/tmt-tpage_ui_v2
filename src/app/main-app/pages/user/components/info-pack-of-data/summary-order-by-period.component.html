@@ -5,7 +5,7 @@
                 <i class="tdsi-paper-fill text-body-1 leading-none mr-2"></i>Tổng đơn hàng tháng trước
             </span>
             <div class="flex flex-row items-center">
-                <span class="text-header-1 font-semibold font-sans pr-2">{{ sumPrevious | numberCustom}}</span>
+                <span class="text-header-1 font-semibold font-sans pr-2">{{ sumOrder.Previous?.Total | numberCustom}}</span>
             </div>
         </div>
         <div class="flex flex-col justify-center w-full">
@@ -13,7 +13,7 @@
                 <i class="tdsi-paper-fill text-body-1 leading-none mr-2"></i>Tổng đơn hàng tháng hiện tại
             </span>
             <div class="flex flex-row items-center">
-                <span class="text-header-1 font-semibold font-sans pr-2">{{sumCurrent || 0 | numberCustom }}</span>
+                <span class="text-header-1 font-semibold font-sans pr-2">{{ sumOrder.Current?.Total || 0 | numberCustom }}</span>
             </div>
         </div>
     </div>
