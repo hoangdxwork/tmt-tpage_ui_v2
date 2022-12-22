@@ -1,27 +1,29 @@
+import { TenantService } from 'src/app/main-app/services/tenant.service';
+import { takeUntil } from 'rxjs/operators';
 import { TDSMessageService } from 'tds-ui/message';
 import { formatDate } from '@angular/common';
 import { SummaryOrderDTO } from '../../../../dto/dashboard/summary-order.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { EventSummaryService } from '../../../../services/event-summary.service';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { TDSChartOptions, TDSLineChartComponent } from 'tds-report';
-import { TenantInfoDTO, TenantUsedDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
+import { TenantInfoDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
 
 @Component({
   selector: 'summary-order-by-period',
   templateUrl: './summary-order-by-period.component.html',
   providers: [TDSDestroyService]
 })
-export class SummaryOrderByPeriodComponent implements OnInit {
-  @Input() tenantInfo!: TenantInfoDTO;
-  @Input() tenantUsed!: TenantUsedDTO;
-  
+export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
+
   options: any;
   size: any = ['auto', 440];
 
   axisPreviousData: Date[] = [];
   axisCurrentData: Date[] = [];
   sumOrder!: SummaryOrderDTO;
+  sumPrevious: number = 0;
+  sumCurrent: number = 0;
 
   chartOptions = TDSChartOptions();
 
@@ -193,6 +195,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
   isLoading: boolean = false;
 
   constructor(private eventSummaryService: EventSummaryService,
+    private tenantService: TenantService,
     private destroy$: TDSDestroyService,
     private message: TDSMessageService) {}
 
@@ -200,39 +203,109 @@ export class SummaryOrderByPeriodComponent implements OnInit {
     this.loadData();
   }
 
+  ngAfterViewInit(): void {
+    
+  }
+
   loadData() {
     // code mẫu xóa sau khi có dữ liệu
     this.sumOrder = {...this.test};
-              
+    this.sumPrevious = this.sumOrder.Previous.Items.reduce((x,pre) => x + pre?.Count, 0) || 0;
+    this.sumCurrent = this.sumOrder.Current.Items.reduce((x,cur) => x + cur?.Count, 0) || 0;
+    
     this.isLoading = false;
+    this.buildData();
     this.buildSummaryOrderChart();
-    // 
+    //
 
-        // if(!this.tenantInfo?.Tenant || !this.tenantInfo.Tenant.DateExpired) return;
-
-        // let until = new Date(this.tenantInfo.Tenant.DateExpired);
-        // let since = new Date(this.tenantInfo.Tenant.DateExpired);
-        // since = new Date(since.setDate(since.getDate() - 30));
-
-        // this.eventSummaryService.getSummaryOrderByPeriod(since, until).pipe(takeUntil(this.destroy$)).subscribe({
-        //   next: (res) => {
-        //     if(res?.Previous && res?.Current){
-        //       this.emptyData = false;
+    this.isLoading = true;
+    this.tenantService.getInfo().subscribe({
+      next: (res) => {
+        if(!res || !res?.Tenant || !res?.Tenant?.DateExpired) return;
     
-        //       this.sumOrder = {...this.test};
-              
-        //       this.emptyData = false;
-        //       this.isLoading = false;
-        //       this.buildSummaryOrderChart();
-        //     }
-    
-        //     this.isLoading = false;
-        //   },
-        //   error: (err) => {
-        //     this.isLoading = false;
-        //     this.message.error(err.error?.message || 'Đã xảy ra lỗi');
-        //   }
-        // })
+        let until = new Date(res.Tenant.DateExpired);
+        let since = new Date(res.Tenant.DateExpired);
+        since = new Date(since.setDate(since.getDate() - 30));
+
+        this.eventSummaryService.getSummaryOrderByPeriod(since, until).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res:any) => {
+            if(res?.Previous?.Items && res?.Current?.Items){
+
+              this.sumOrder = {...this.test};
+              this.sumPrevious = this.sumOrder.Previous.Items.reduce((x,pre) => x + pre.Count, 0);
+              this.sumCurrent = this.sumOrder.Current.Items.reduce((x,cur) => x + cur.Count, 0);
+
+              this.buildData();
+              this.buildSummaryOrderChart();
+
+              this.isLoading = false;
+            }
+
+            this.isLoading = false;
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.message.error(err.error?.message || 'Không thể tải dữ liệu thống kê đơn hàng');
+          }
+        })
+      }, 
+      error: (error) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message);
+      }
+    });
+  }
+
+  buildData() {
+    let currentDates = this.sumOrder.Current?.Items?.map(x => Number(formatDate(x.Time,'dd','vi_VN')));
+    let previousDates = this.sumOrder.Previous?.Items?.map(x => Number(formatDate(x.Time,'dd','vi_VN')));
+
+    if(currentDates.length > 0 && previousDates.length > 0) {
+      let start = currentDates[0] < previousDates[0] ? currentDates[0] : previousDates[0];
+      let end = currentDates[currentDates.length - 1] > previousDates[previousDates.length - 1] ? currentDates[currentDates.length - 1] : previousDates[previousDates.length - 1];
+      
+      // check giá trị đầu
+      if(start < currentDates[0]) {
+        let first = new Date(this.sumOrder.Current?.Items?.[0].Time);
+
+        while(currentDates[0] - start > 0) {
+          this.sumOrder.Current.Items.unshift({
+            Time: new Date(first.setDate(first.getDate() - 1)),
+            Count: 0
+          })
+
+          start++;
+        }
+      }
+
+      if(start < previousDates[0]) {
+        let first = new Date(this.sumOrder.Previous?.Items?.[0].Time);
+
+        while(previousDates[0] - start > 0) {
+          this.sumOrder.Previous.Items.unshift({
+            Time: new Date(first.setDate(first.getDate() - 1)),
+            Count: 0
+          })
+
+          start++;
+        }
+      }
+
+      // check giá trị cuối
+      let previousLength = this.sumOrder.Previous.Items.length;
+      let currentLength = this.sumOrder.Current.Items.length;
+
+      while(previousLength - currentLength > 0) {
+        let last = new Date(this.sumOrder.Current.Items[currentLength - 1].Time);
+
+        this.sumOrder.Current.Items.push({
+          Time: new Date(last.setDate(last.getDate() + 1)),
+          Count: 0
+        })
+
+        currentLength++;
+      }
+    }
   }
 
   buildSummaryOrderChart() {
@@ -245,6 +318,10 @@ export class SummaryOrderByPeriodComponent implements OnInit {
         orient: 'horizontal',
         icon: 'circle',
       },
+      grid:{
+        left: '5%',
+        right: 0
+      },
       tooltip: {
         axisPointer: {
           type: 'cross'
@@ -255,7 +332,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
           {
             type: 'category',
             axisLabel:{
-              interval: this.sumOrder.Previous?.Items?.length > 10 ? 3 : 0
+              interval: 0
             },
             axisTick: {
               alignWithLabel: true
@@ -268,7 +345,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
           {
             type: 'category',
             axisLabel:{
-              interval: this.sumOrder.Current?.Items?.length > 10 ? 3 : 0
+              interval: 0
             },
             axisTick: {
               alignWithLabel: true
@@ -296,7 +373,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
       },
       series: [
         {
-          name: 'Tháng trước',
+          name: 'Đơn hàng tháng trước',
           type: 'line',
           emphasis: {
             focus: 'series'
@@ -304,7 +381,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
           data: this.sumOrder.Previous?.Items?.map(x => { return x.Count }) || []
         },
         {
-          name: 'Tháng hiện tại',
+          name: 'Đơn hàng tháng hiện tại',
           type: 'line',
           xAxisIndex: 1,
           emphasis: {
