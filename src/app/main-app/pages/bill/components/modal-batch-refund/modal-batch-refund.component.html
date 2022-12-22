@@ -27,7 +27,7 @@
         <tr *ngFor="let item of listUser; let i = index">
           <td>{{ item.Partner?.DisplayName }}</td>
           <td>{{ item.Number || 'N/A' }}</td>
-          <td>{{ (item.AmountTotal | number) || 0 }}</td>
+          <td>{{ (item.AmountTotal | numberCustom) || 0 }}</td>
           <td>
             <div class="w-full">
               <tds-badge *ngIf="item.State ==='paid'" status='primary' text="{{ item.ShowState }}"></tds-badge>

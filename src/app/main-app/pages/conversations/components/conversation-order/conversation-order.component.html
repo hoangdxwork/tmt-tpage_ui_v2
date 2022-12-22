@@ -365,7 +365,7 @@
                                             </tds-form-field>
 
                                             <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                                <span> -{{ saleModel.DiscountAmount | numberCustom  }}đ </span>
+                                                <span> -{{ saleModel.DiscountAmount | numberCustom }}đ </span>
                                             </div>
                                         </div>
 
@@ -378,7 +378,7 @@
                                             </tds-form-field>
 
                                             <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                                <span> -{{ saleModel.DecreaseAmount }}đ </span>
+                                                <span> -{{ saleModel.DecreaseAmount | numberCustom }}đ </span>
                                             </div>
                                         </div>
                                     </div>
@@ -513,7 +513,7 @@
                               </div>
 
                               <div class="px-4 border-l">
-                                  <button *ngIf="!saleModel.TrackingRef && isEnableCalcFee" tds-button-icon color="info" size="sm"  (click)="calcFee()" title="Tính lại tiền ship" type="button">
+                                  <button *ngIf="!saleModel.TrackingRef && isEnableCalcFee" tds-button-icon color="info" size="sm"  (click)="calcFee()" tds-tooltip="Tính lại tiền ship" type="button">
                                       <span class="flex items-center justify-center">
                                           <i class=" tdsi-reload-fill"></i>
                                       </span>
@@ -580,7 +580,7 @@
                                                     [popoverContent]="popoverContentShip_ExtraMoney"
                                                     [popoverFooter]="popoverFooterShip_ExtraMoney" [popoverAutoClose]="true"
                                                     [popoverBackdrop]="true" popoverPlacement="right">
-                                                    {{(child.ExtraMoney | number) || 0}}đ
+                                                    {{(child.ExtraMoney | numberCustom) || 0}}đ
                                                 </button>
 
                                                 <!-- popover button Thuế -->

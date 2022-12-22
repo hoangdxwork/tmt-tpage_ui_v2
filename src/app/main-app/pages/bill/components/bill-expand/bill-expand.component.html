@@ -27,10 +27,10 @@
                   <td class="text-center">{{ i + 1 }}</td>
                   <td>{{ data.ProductNameGet }}</td>
                   <td>{{ data.ProductUOMName }}</td>
-                  <td>{{ (data.ProductUOMQty | number) || 0}}</td>
-                  <td>{{ (data.PriceUnit | number) || 0 }}</td>
-                  <td>{{ (data.Weight | number) || 0 }}</td>
-                  <td class="text-right">{{ (data.PriceTotal |number) || 0 }}</td>
+                  <td>{{ (data.ProductUOMQty | numberCustom) || 0}}</td>
+                  <td>{{ (data.PriceUnit | numberCustom) || 0 }}</td>
+                  <td>{{ (data.Weight | numberCustom) || 0 }}</td>
+                  <td class="text-right">{{ (data.PriceTotal | numberCustom) || 0 }}</td>
                 </tr>
               </ng-template>
             </tbody>
@@ -39,19 +39,19 @@
           <div class="w-1/5 text-right my-4 mr-4">
             <div class="grid grid-cols-3 gap-x-6 gap-y-4 pb-4">
               <span class="text-right">Tổng</span>
-              <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountUntaxed| number) || 0 }}</span>
+              <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountUntaxed| numberCustom) || 0 }}</span>
 
               <span class="text-right">Thuế</span>
-              <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountTax | number) || 0 }}</span>
+              <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountTax | numberCustom) || 0 }}</span>
 
               <span class="text-right font-semibold">Tổng tiền</span>
 
               <span class="text-header-1 font-semibold w-full col-span-2 text-right">
-                  {{ (dataItem.AmountTotal | number) || 0 }}
+                  {{ (dataItem.AmountTotal | numberCustom) || 0 }}
               </span>
 
               <span class="text-right">Nợ</span>
-              <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.Residual | number) || 0 }}</span>
+              <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.Residual | numberCustom) || 0 }}</span>
             </div>
             <button tds-button color="primary" (click)="showPayInvoiceModal(dataItem.Id)" type="button" *ngIf="dataItem.State == 'open'">Thanh toán</button>
           </div>
