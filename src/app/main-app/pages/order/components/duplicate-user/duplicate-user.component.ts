@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CheckDuplicatePartnertDTO, CheckPartnerDTO } from '@app/dto/partner/checked-partner.dto';
-import { PartnerStatusDTO } from '@app/dto/partner/partner.dto';
 import { ODataSaleOnline_OrderModel } from '@app/dto/saleonlineorder/odata-saleonline-order.dto';
 import { CommonService } from '@app/services/common.service';
 import { PartnerService } from '@app/services/partner.service';

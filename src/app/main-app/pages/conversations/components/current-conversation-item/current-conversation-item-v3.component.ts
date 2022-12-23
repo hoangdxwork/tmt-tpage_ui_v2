@@ -88,14 +88,16 @@ export class CurrentConversationItemV3Component  implements OnInit, OnChanges, A
       }
     });
 
-    // TODO: cập nhật màu ring của khung avatar
-    this.partnerService.changeStatus$.subscribe({
-      next: (res: string) => {
+    // TODO: cập nhật màu status
+    this.partnerService.changeStatus$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        if(res.UserId === this.item.UserId) {
+          this.item.StatusStyle = res.Code;
+          this.item.StatusText = res.Name;
 
-        if(this.conversationItem && this.conversationItem.Id == this.item.Id) {
-          this.item.StatusStyle = res;
+          this.item = {...this.item};
+          this.cdRef.detectChanges();
         }
-        this.cdRef.detectChanges();
       }
     })
   }
@@ -111,7 +113,6 @@ export class CurrentConversationItemV3Component  implements OnInit, OnChanges, A
     }
 
     if(changes["item"] && !changes["item"].firstChange) {
-
       this.item = changes["item"].currentValue;
       this.totalWidthTag = this.currentWidthTag.nativeElement.clientWidth;
       this.plusWidthTag = 0;

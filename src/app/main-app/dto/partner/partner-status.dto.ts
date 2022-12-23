@@ -11,6 +11,12 @@ export interface PartnerStatusDTO {
   Name: string;
 }
 
+export interface PartnerChangeStatusDTO {
+  UserId: string;
+  Name: string;
+  Code: string;
+}
+
 export interface PartnerStatusModalDTO {
   Code: string;
   Name: string;

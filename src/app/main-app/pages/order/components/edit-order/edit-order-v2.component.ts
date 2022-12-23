@@ -6,7 +6,7 @@ import { FormGroup } from '@angular/forms';
 import { ProductTemplateUOMLineService } from '../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from '../../../../dto/product/odata-product.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { DeliveryCarrierDTOV2 } from '../../../../dto/delivery-carrier.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef, ViewChild } from '@angular/core';
@@ -137,7 +137,6 @@ export class EditOrderV2Component implements OnInit {
   lstCarrier!: DeliveryCarrierDTOV2[];
   lstInventory!: GetInventoryDTO;
   lstUser!: Array<ApplicationUserDTO>;
-  stateReports!: PartnerStatusDTO[];
   saleConfig!: SaleSettingConfigDto_V2;
   companyCurrents!: CompanyCurrentDTO;
   chatomniEventEmiter: any;
@@ -923,7 +922,7 @@ export class EditOrderV2Component implements OnInit {
     }
   }
 
-  selectStatus(status: PartnerStatusDTO) {
+  selectStatus(status: StatusDTO) {
     if(this.quickOrderModel.PartnerId) {
       let data = {
         status: `${status.value}_${status.text}`

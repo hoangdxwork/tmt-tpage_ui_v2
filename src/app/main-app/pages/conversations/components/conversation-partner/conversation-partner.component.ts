@@ -1,3 +1,4 @@
+import { PartnerChangeStatusDTO } from './../../../../dto/partner/partner-status.dto';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
@@ -7,7 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { MDBFacebookMappingNoteDTO,PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { MDBFacebookMappingNoteDTO, StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
@@ -52,7 +53,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   revenue!: ConversationRevenueDto;
   noteData: any = { items: [] };
 
-  lstPartnerStatus!: Array<PartnerStatusDTO>;
+  lstPartnerStatus!: Array<StatusDTO>;
   innerNote!: string;
   lastInvoice!: Conversation_LastBillDto;
   stateInvoices: GroupBy_ConversationBillDto[] = [];
@@ -235,7 +236,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   loadPartnerStatus() {
     this.commonService.setPartnerStatus();
     this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (res: StatusDTO[]) => {
           this.lstPartnerStatus = [...res];
       },
       error: (error: any) => {
@@ -338,7 +339,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
   }
 
-  selectStatus(event: PartnerStatusDTO) {
+  selectStatus(event: StatusDTO) {
     if(this.partner?.Id && event) {
       let data = {
           status: `${event.value}_${event.text}`
@@ -349,7 +350,16 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         next: () => {
             this.message.success('Cập nhật trạng thái khách hàng thành công');
             this.partner.StatusText = event.text;
-            this.partnerService.changeStatus$.emit(event.value);
+            
+            let status = {
+              UserId: this.conversationItem.UserId,
+              Code: event.value,
+              Name: event.text
+            } as PartnerChangeStatusDTO;
+
+            // TODO: cập nhật thông tin trạng thái cho conversation-all, tds-conversation 
+            this.partnerService.changeStatus$.emit(status);
+
             this.isLoading = false;
             this.cdRef.detectChanges();
         },

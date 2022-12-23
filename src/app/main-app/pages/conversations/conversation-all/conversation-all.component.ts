@@ -1,3 +1,6 @@
+import { PartnerChangeStatusDTO } from './../../../dto/partner/partner-status.dto';
+import { StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { PartnerService } from '@app/services/partner.service';
 import { SortEnum } from './../../../../lib/enum/sort.enum';
 import { SortDataRequestDTO } from './../../../../lib/dto/dataRequest.dto';
 import { ChatmoniSocketEventName } from './../../../services/socket-io/soketio-event';
@@ -92,6 +95,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
+    private partnerService: PartnerService,
     public crmService: CRMTeamService,
     private fbGraphService: FacebookGraphService,
     public activatedRoute: ActivatedRoute,
@@ -402,6 +406,21 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
       }
     })
+
+    //TODO: cập nhật màu partner status cho conversation-item, tds-conversation
+    this.partnerService.changeStatus$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.lstConversation.map(x => {
+          if(x.UserId === res.UserId) {
+            x.StatusStyle = res.Code;
+            x.StatusText = res.Name;
+          }
+        })
+  
+        this.lstConversation = [...this.lstConversation];
+        this.cdRef.detectChanges();
+      }
+    })
   }
 
   loadData(team: any) {
@@ -490,7 +509,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   // TODO: matching đang chọn active
   setCurrentConversationItem(item: ChatomniConversationItemDto) {
     if (TDSHelperObject.hasValue(item)) {
-
+      // TODO: set lại màu status
+      let status = {
+        UserId: item.UserId,
+        Name: item.StatusText,
+        Code: item.StatusStyle
+      } as PartnerChangeStatusDTO;
+      
+      this.partnerService.changeStatus$.emit(status);
+      
       // TODO: lưu lại Storage item đang active để hiện thị tiếp ở message, inbox nếu tồn tại trong danh sách
       this.setStorageConversationId(item.ConversationId)
 

@@ -1,3 +1,4 @@
+import { StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
@@ -24,7 +25,7 @@ export class CommonService extends BaseSevice {
   public priceListItems$ = new BehaviorSubject<any>([]);
 
   lstPartnerStatus: any;
-  private readonly _partnerStatusSubject$ = new ReplaySubject<any>();
+  private readonly _partnerStatusSubject$ = new ReplaySubject<StatusDTO[]>();
 
 
   constructor(private apiService: TCommonService,

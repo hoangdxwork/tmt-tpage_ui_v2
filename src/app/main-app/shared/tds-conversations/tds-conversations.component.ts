@@ -188,10 +188,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       }
     )
 
-    // TODO: cập nhật màu ring của khung avatar
-    this.partnerService.changeStatus$.subscribe({
-      next: (res: string) => {
-        this.statusColor = res;
+    // TODO: cập nhật màu status
+    this.partnerService.changeStatus$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.data.StatusStyle = res.Code;
+        this.data.StatusText = res.Name;
+
+        this.data = {...this.data};
         this.cdRef.detectChanges();
       }
     })
