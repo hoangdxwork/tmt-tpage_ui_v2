@@ -318,11 +318,6 @@ export class AddBillComponent implements OnInit {
           obs.ReceiverDate = obs.ReceiverDate ? new Date(obs.ReceiverDate) : null;
 
           this.updateForm(obs);
-          // TODO: change partner gán thêm các field
-          let partnerId = obs.PartnerId || obs.Partner?.Id;
-          if (partnerId) {
-              this.changePartner(partnerId, '_LOADBILL');
-          }
 
           this.isLoading = false;
       },
