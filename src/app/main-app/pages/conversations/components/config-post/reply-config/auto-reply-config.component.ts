@@ -97,13 +97,14 @@ export class AutoReplyConfigComponent implements OnInit {
     let postId = this.data?.ObjectId;
     
     this.isLoading = true;
+    this.facebookPostService.disableOnSave$.emit(true);
 
     this.facebookPostService.updateAutoReplyConfigs(postId, model).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res: any) => {
           this.message.success(Message.UpdatedSuccess);
           this.isLoading = false;
-
+          this.facebookPostService.disableOnSave$.emit(false);
           this.cdRef.detectChanges();
         }, 
         error:(err) => {
