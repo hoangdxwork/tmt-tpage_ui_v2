@@ -90,7 +90,7 @@
                                 <ng-template #contentLstOrder>
                                   <div class="w-[300px] max-h-[150px] text-body-2 grid grid-cols-1 divide-y overflow-hidden overflow-y-auto tds-panel-scroll">
                                     <div class="flex justify-between px-4 py-2" *ngFor="let itemOrder of item?.Order?.Data">
-                                      <span [ngClass]="(itemOrder?.DateDeleted | dateDeleteOrder) ? '' : 'line-through'" class="text-info-500 font-semibold cursor-pointer" (click)="loadOrderByCode(item, commentOrders[item.Data?.from!.id][0])">{{ itemOrder?.Code }}</span>
+                                      <span [ngClass]="(itemOrder?.DateDeleted | dateDeleteOrder) ? '' : 'line-through'" class="text-info-500 font-semibold cursor-pointer">{{ itemOrder?.Code }}</span>
                                       <span class="text-neutral-1-600 italic text-caption-2">{{ itemOrder?.DateCreated | yiDateTimeFormat }}</span>
                                     </div>
                                   </div>
