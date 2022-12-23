@@ -215,18 +215,20 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       }
     })
 
-     // TODO: Cộng realtime bình luận bài viết
-     this.postEvent.countRealtimeMess$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          let post_id = (this.route.snapshot.queryParams?.post_id || 0) as string;
-          let index = this.lstObjects.findIndex(x => x.ObjectId == post_id);
+    // TODO: Cộng realtime bình luận bài viết
+    this.postEvent.countRealtimeMessage$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: boolean) => {
 
-          if(Number(index) >= 0) {
-              this.lstObjects[index].CountComment += 1;
-              this.lstObjects[index] = {...this.lstObjects[index]};
-          }
+        let post_id = (this.route.snapshot.queryParams?.post_id || 0) as string;
+        let index = this.lstObjects.findIndex(x => x.ObjectId == post_id);
 
-          this.cdRef.detectChanges();
+        if(Number(index) >= 0) {
+            this.lstObjects[index].CountComment += 1;
+            this.lstObjects[index] = {...this.lstObjects[index]};
+
+            this.postEvent.pushCountRealtimeToView$.emit(this.lstObjects[index]);
+            this.cdRef.detectChanges();
+        }
       }
     })
   }
@@ -351,19 +353,19 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     }
 
     if (this.clickReload >= 5 && this.currentTeam?.Type == CRMTeamType._UnofficialTikTok) {
-        this.message.info("Đã kích hoạt cập nhật hội thoại");
-        this.clickReload = 0;
+      this.message.info("Đã kích hoạt cập nhật hội thoại");
+      this.clickReload = 0;
 
-        if (this.currentTeam) {
-            this.tiktokService.refreshListen(this.currentTeam.ChannelId).pipe(takeUntil(this.destroy$)).subscribe({
-              next: res => {
-                this.loadFilterDataSource();
-              },
-              error: error => {
-                this.message.error(error?.error?.message);
-              }
-            })
-        }
+      if (this.currentTeam) {
+        this.tiktokService.refreshListen(this.currentTeam.OwnerId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+              this.loadFilterDataSource();
+          },
+          error: (error: any) => {
+              this.message.error(error?.error?.message);
+          }
+        })
+      }
     } else {
         this.loadFilterDataSource();
     }

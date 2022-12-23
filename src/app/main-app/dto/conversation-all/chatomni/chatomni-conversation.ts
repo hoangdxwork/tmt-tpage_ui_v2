@@ -50,8 +50,6 @@ export interface ChatomniConversationItemDto {
   LatestMessage?: ChatomniConversationMessageDto;
   State?: StateChatbot;
   Message?: string;
-  ChannelId?: any;
-  ChannelType: number;
   StatusText: string;
   StatusStyle: string;
 

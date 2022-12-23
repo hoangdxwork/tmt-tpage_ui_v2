@@ -72,7 +72,31 @@
                                 </div>
                               </div>
 
-                            <span class="text-neutral-1-400 text-right text-caption-1">{{ item.CreatedTime | date:'dd/MM/yyyy HH:mm aa' }}</span>
+                              <div class="flex gap-x-2 items-center">
+                                <button *ngIf="item?.Order" (click)="openPopover(item.Id)" tds-button-flat tds-popover tds-tooltip="Danh sách đơn hàng"
+                                  popoverTrigger="click" [popoverTitle]="titlePopover" [popoverVisible]="isVisible == item.Id"
+                                  [popoverAutoClose]="true" [popoverContent]="contentLstOrder" [popoverBackdrop]="true"
+                                  popoverPlacement="right" color="custom" size="sm" class="bg-neutral-3-50 border-0 focus:ring-transparent">
+                                  <span class="flex gap-1 items-center">
+                                    <i class="tdsi-bag-fill text-[16px] text-primary-1"></i>
+                                    <span class="text-body-2 text-primary-1">({{ item?.Order?.Count }})</span>
+                                  </span>
+                                </button>
+                                <ng-template #titlePopover>
+                                  <div [ngStyle]="{'padding': '0px'}" class="text-body-2 font-semibold">
+                                    Danh sách đơn hàng ({{ item?.Order?.Count }})
+                                  </div>
+                                </ng-template>
+                                <ng-template #contentLstOrder>
+                                  <div class="w-[300px] max-h-[150px] text-body-2 grid grid-cols-1 divide-y overflow-hidden overflow-y-auto tds-panel-scroll">
+                                    <div class="flex justify-between px-4 py-2" *ngFor="let itemOrder of item?.Order?.Data">
+                                      <span [ngClass]="(itemOrder?.DateDeleted | dateDeleteOrder) ? '' : 'line-through'" class="text-info-500 font-semibold cursor-pointer">{{ itemOrder?.Code }}</span>
+                                      <span class="text-neutral-1-600 italic text-caption-2">{{ itemOrder?.DateCreated | yiDateTimeFormat }}</span>
+                                    </div>
+                                  </div>
+                                </ng-template>
+                              <span class="text-neutral-1-400 text-right text-caption-1">{{ item.CreatedTime | date:'dd/MM/yyyy HH:mm aa' }}</span>
+                            </div>
                         </div>
 
                         <!-- nội dung bình luận -->
@@ -100,7 +124,7 @@
                                 </span>
                             </button>
 
-                            <button *ngIf="!isShowModal && !item.ParentId && !item.IsOwner" [loading]="isLoadingiconMess" type="button" tds-button-icon color="secondary" 
+                            <button *ngIf="!isShowModal && !item.ParentId && !item.IsOwner" [loading]="isLoadingiconMess" type="button" tds-button-icon color="secondary"
                                 class="mr-2" size="sm" tooltipTitle="Hội thoại bình luận" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)" [loadingTemplate]="iconMess">
                                   <span class="flex items-center justify-center">
                                       <i class="tdsi-comment-on-fill text-neutral-1-500"></i>
@@ -191,7 +215,7 @@
                                         </div>
                                     </div>
                                 </div>
-                               
+
                             </div>
                         </div>
                     </div>

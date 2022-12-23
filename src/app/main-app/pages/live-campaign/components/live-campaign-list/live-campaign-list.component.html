@@ -2,7 +2,7 @@
   <div class="w-full flex space-x-2 justify-end items-center px-4 py-2.5">
     <div class="w-1/4">
         <tds-form-field class="w-full">
-            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput 
+            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput
                 [(ngModel)]="innerText" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
         </tds-form-field>
@@ -25,9 +25,9 @@
                 <th class="text-center border-r border-b" colspan="3" *ngIf="isHidden('Order')">Đơn hàng</th>
                 <th class="text-center border-r border-b" colspan="3" *ngIf="isHidden('Product')">Sản phẩm</th>
                 <th class="border-r" rowspan="2" *ngIf="isHidden('ResumeTime')">Thống kê gửi tin</th>
-                <th class="border-r" rowspan="2" *ngIf="isHidden('IsActive')">Hoạt động</th>
-                <th class="border-r" rowspan="2" *ngIf="isHidden('DateCreated')">Ngày tạo</th>
-                <th class="border-r" [tdsRight]="true" rowspan="2">Thao tác</th>
+                <th class="border-r text-center" rowspan="2" *ngIf="isHidden('IsActive')">Hoạt động</th>
+                <th class="border-r text-center" rowspan="2" *ngIf="isHidden('DateCreated')">Ngày tạo</th>
+                <th class="border-r text-center" [tdsRight]="true" rowspan="2">Thao tác</th>
             </tr>
             <tr>
                 <th class="border-r text-center" *ngIf="isHidden('Order')">Chờ chốt</th>
@@ -101,14 +101,14 @@
 
                 <!-- Hoạt động -->
                 <td class="border-r"  *ngIf="isHidden('IsActive')">
-                    <div class="text-left w-full">
+                    <div class="text-left w-full flex justify-center">
                         <tds-switch size="md" [checked]="data.IsActive" (change)="onChangeActive($event, data)"></tds-switch>
                     </div>
                 </td>
 
                 <!-- Ngày tạo -->
                 <td class="border-r" *ngIf="isHidden('DateCreated')">
-                    <div class="w-full">
+                    <div class="w-full flex justify-center">
                         <span>{{data.DateCreated | date:'dd/MM/yyyy HH:mm'}}</span>
                     </div>
                 </td>
@@ -116,7 +116,7 @@
                 <!-- Thao tác -->
                 <td [tdsRight]="true" class="border-r"
                     [style]="setOfCheckedId.has(data.Id)?'background-color:#F2FCF5' : '' ">
-                    <div class="flex gap-x-2 w-full">
+                    <div class="flex gap-x-2 w-full justify-center">
                         <button tds-button-icon color="secondary" size="sm" (click)="onDetail(data.Id)" tds-tooltip tooltipTitle="Xem chi tiết">
                             <span class="flex items-center">
                                 <i class="tdsi-eye-open-fill text-neutral-1-500"></i>

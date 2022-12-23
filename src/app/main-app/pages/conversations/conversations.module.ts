@@ -112,7 +112,6 @@ import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-m
 import { CrmMatchingV2Facade } from '../../services/matching-v2-facade/crm-matching-v2.facade';
 import { CrmMatchingV2Service } from '../../services/matching-v2-service/crm-matching-v2.service';
 import { ChatomniConversationService } from '../../services/chatomni-service/chatomni-conversation.service';
-import { CurrentConversationItemV2Component } from './components/current-conversation-item/current-conversation-item-v2.component';
 import { CsPartner_SuggestionHandler } from '../../handler-v2/chatomni-cspartner/prepare-suggestion.handler';
 import { CsPartner_PrepareModelHandler } from '../../handler-v2/chatomni-cspartner/prepare-partner.handler';
 import { CsOrder_SuggestionHandler } from '../../handler-v2/chatomni-csorder/prepare-suggestions.handler';
@@ -257,7 +256,6 @@ const FACADES = [
     ModalPostComponent,
     ModalRenameAttachmentComponent,
     ConversationAllComponent,
-    CurrentConversationItemV2Component,
     ConversationPostComponent,
     ConversationPostOverViewComponent,
     ObjectFacebookPostComponent,

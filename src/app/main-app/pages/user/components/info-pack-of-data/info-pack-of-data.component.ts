@@ -50,8 +50,8 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
   }
 
   buildData(used: TenantUsedDTO) {
-    this.saleOrderCount = used.saleOnlineOrder;
-    this.tenantLimitedCount = this.tenantInfo.Limitations.FastSaleOrder;
+    this.saleOrderCount = used?.saleOnlineOrder || 0;
+    this.tenantLimitedCount = this.tenantInfo?.Limitations?.FastSaleOrder || 0;
 
     let max = Math.max(...[this.saleOrderCount,this.tenantLimitedCount]);
     this.interval = this.getInterval(max);

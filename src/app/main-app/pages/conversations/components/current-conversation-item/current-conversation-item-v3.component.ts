@@ -87,17 +87,6 @@ export class CurrentConversationItemV3Component  implements OnInit, OnChanges, A
           this.cdRef.detectChanges();
       }
     });
-
-    // TODO: cập nhật màu ring của khung avatar
-    this.partnerService.changeStatus$.subscribe({
-      next: (res: string) => {
-
-        if(this.conversationItem && this.conversationItem.Id == this.item.Id) {
-          this.item.StatusStyle = res;
-        }
-        this.cdRef.detectChanges();
-      }
-    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -111,7 +100,6 @@ export class CurrentConversationItemV3Component  implements OnInit, OnChanges, A
     }
 
     if(changes["item"] && !changes["item"].firstChange) {
-
       this.item = changes["item"].currentValue;
       this.totalWidthTag = this.currentWidthTag.nativeElement.clientWidth;
       this.plusWidthTag = 0;
