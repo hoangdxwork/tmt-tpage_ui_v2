@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from "@angular/core";
+import { ChatomniObjectsItemDto } from "@app/dto/conversation-all/chatomni/chatomni-objects.dto";
 
 @Injectable()
 
@@ -12,5 +13,6 @@ export class ConversationPostEvent{
     public isLoadingInsertFromPost$: EventEmitter<boolean> = new EventEmitter();
 
     // TODO: Đếm số comment được realtime trả về
-    public countRealtimeMess$: EventEmitter<boolean> = new EventEmitter();
+    public countRealtimeMessage$: EventEmitter<boolean> = new EventEmitter();
+    public pushCountRealtimeToView$: EventEmitter<ChatomniObjectsItemDto> = new EventEmitter();
 }

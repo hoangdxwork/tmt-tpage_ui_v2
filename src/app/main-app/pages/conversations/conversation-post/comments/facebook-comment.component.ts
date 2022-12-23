@@ -267,15 +267,15 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
         if(this.virtualScroller) {
             this.virtualScroller.scrollToPosition(0);
-        };
+        }
 
     } else {
         this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
         this.vsSocketImports = [...this.vsSocketImports];
         this.lengthDataSource = this.lengthDataSource + 1;
     }
-    this.postEvent.countRealtimeMess$.emit(true);
 
+    this.postEvent.countRealtimeMessage$.emit(true);
     this.cdRef.detectChanges();
   }
 
@@ -593,13 +593,13 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   addReplyComment(item: ChatomniDataItemDto, model: SendMessageModelDTO, data: ChatomniDataItemDto) {
-    if(data){
+    if(data) {
       data.ParentId = model.parent_id;
       data.ObjectId = item.ObjectId;
     }
 
     this.dataSource.Items = [...this.dataSource.Items, ...[data]];
-    this.postEvent.countRealtimeMess$.emit(true);
+    this.postEvent.countRealtimeMessage$.emit(true);
   }
 
   loadPartnerTab(item: ChatomniDataItemDto, orders: CommentOrder[] | any) {

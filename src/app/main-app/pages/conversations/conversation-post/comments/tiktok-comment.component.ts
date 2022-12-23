@@ -270,7 +270,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
         this.lengthDataSource = this.lengthDataSource + 1;
     }
 
-    this.postEvent.countRealtimeMess$.emit(true);
+    this.postEvent.countRealtimeMessage$.emit(true);
     this.cdRef.detectChanges();
   }
 
@@ -580,8 +580,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
 
     let datas = this.dataSource.Items.filter((x: ChatomniDataItemDto)=> x.Id != data.Id); // lọc lại vì nếu sokect trả về trước res
     this.dataSource.Items = [...datas, ...[data]];
-
-    this.postEvent.countRealtimeMess$.emit(true);
+    this.postEvent.countRealtimeMessage$.emit(true);
   }
 
   loadPartnerTab(item: ChatomniDataItemDto, orders: CommentOrder[] | any) {
