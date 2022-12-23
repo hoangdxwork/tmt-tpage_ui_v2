@@ -169,6 +169,18 @@ export interface NlpEntityDto {
   Time: Date;
 }
 
+export interface OrderByCommentDto {
+  Count: number;
+  Data: OrderByCommentItemDto[];
+}
+
+export interface OrderByCommentItemDto {
+  Id: string;
+  Code: string;
+  DateCreated: Date;
+  DateDeleted: Date;
+}
+
 export interface ChatomniDataItemDto {
   Data: any; // ChatomniFacebookDataDto hoặc ChatomniTShopDataDto hoặc  TikTokLiveItemDataDto
   Id: string;
@@ -190,6 +202,7 @@ export interface ChatomniDataItemDto {
   NlpEntities?: NlpEntityDto[] | any[];
 
   Attachments?: any;
+  Order?: OrderByCommentDto | any;
 
   IsShowAvatar?: boolean; // không có trong api trả về, dùng để hiện thị, không hiện avatar nếu tin nhắn trong thời gian ngắn
   isNoPartnerId?:  boolean; // không có trong api trả về, dùng để phân biệt cmt child chưa tìm thấy cmt partner trong list api trả về
