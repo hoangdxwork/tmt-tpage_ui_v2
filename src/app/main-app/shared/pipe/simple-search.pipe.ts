@@ -1,5 +1,5 @@
 import { QuickReplyDTO } from './../../dto/quick-reply.dto.ts/quick-reply.dto';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({  name: 'simpleSearchV2' })
@@ -12,7 +12,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 
       let items = datas?.filter((x: any) => (x.value && x.value.ProductCode && x.value.ProductCode.indexOf(term) !== -1)
         || (x.value && x.value.ProductName && TDSHelperString.stripSpecialChars(x.value.ProductName.toLocaleLowerCase()).trim().indexOf(term) !== -1)
-        || (x.value && x.value.ProductNameGet && TDSHelperString.stripSpecialChars(x.value.ProductNameGet.toLocaleLowerCase()).trim().indexOf(term) !== -1));
+        || (x.value && x.value.ProductNameGet && TDSHelperString.stripSpecialChars(x.value.ProductNameGet.toLocaleLowerCase()).trim().indexOf(term) !== -1)
+        || (x.value && x.value.Tags?.includes(term)));
 
       return items;
   }
