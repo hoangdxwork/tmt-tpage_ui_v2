@@ -301,7 +301,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.tag_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniTagsEventEmitterDto) => {
         if(res) {
-            let index = this.lstConversation.findIndex(x => x.ConversationId == res.ConversationId) as number;
+            let index = this.lstConversation?.findIndex(x => x.ConversationId == res.ConversationId) as number;
             if(Number(index) >= 0) {
                 this.lstConversation[index].Tags = [...res.Tags];
                 this.lstConversation[index] = {...this.lstConversation[index]};
@@ -317,7 +317,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.last_Message_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniLastMessageEventEmitterDto) => {
         if(res) {
-            let index = this.lstConversation.findIndex(x => x.ConversationId == res.ConversationId) as number;
+            let index = this.lstConversation?.findIndex(x => x.ConversationId == res.ConversationId) as number;
             if(Number(index) >= 0) {
                 this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
                 this.lstConversation[index] = {...this.lstConversation[index]};
@@ -333,7 +333,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.countUnreadEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (id: string) => {
         if(id) {
-            let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
+            let index = this.lstConversation?.findIndex(x => x.ConversationId == id) as number;
             if(Number(index) >= 0) {
                 this.lstConversation[index].CountUnread = 0;
                 this.lstConversation[index] = {...this.lstConversation[index]};
@@ -349,7 +349,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.chatbotStateEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (id: string) => {
         if(id) {
-            let index = this.lstConversation.findIndex(x => x.ConversationId == id) as number;
+            let index = this.lstConversation?.findIndex(x => x.ConversationId == id) as number;
             if(Number(index) >= 0) {
                 this.lstConversation[index].State = 0;
                 this.lstConversation[index] = {...this.lstConversation[index]};
@@ -376,11 +376,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       next: (info: ChatomniConversationInfoDto) => {
 
           let csid = info?.Conversation?.ConversationId;
-          let index = this.lstConversation.findIndex(x => x.ConversationId == csid) as number;
+          let index = this.lstConversation?.findIndex(x => x.ConversationId == csid) as number;
 
           if(Number(index) >= 0 && info?.Partner) {
               this.lstConversation[index].HasPhone = info.Partner?.Phone ? true : false;
               this.lstConversation[index].HasAddress = info.Partner?.Street ? true : false;
+
               this.lstConversation[index] = {...this.lstConversation[index]};
               this.lstConversation = [...this.lstConversation];
           }
@@ -395,12 +396,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.chatomniEventEmiterService.assignedToUser$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: ChatomniConversationItemDto) => {
         if(data && data.ConversationId) {
-          let index = this.lstConversation.findIndex(x => x.ConversationId == data.ConversationId) as number;
+          let index = this.lstConversation?.findIndex(x => x.ConversationId == data.ConversationId) as number;
           if(Number(index) >= 0) {
               this.lstConversation[index].AssignedTo = data.AssignedTo;
               this.lstConversation[index] = {...this.lstConversation[index]};
-              this.lstConversation = [...this.lstConversation];
 
+              this.lstConversation = [...this.lstConversation];
               this.cdRef.detectChanges();
           }
         }
@@ -409,16 +410,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     //TODO: cập nhật màu partner status cho conversation-item, tds-conversation
     this.partnerService.changeStatus$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
-        this.lstConversation.map(x => {
-          if(x.UserId === res.UserId) {
-            x.StatusStyle = res.Code;
-            x.StatusText = res.Name;
+      next: (res: PartnerChangeStatusDTO) => {
+          let index = this.lstConversation?.findIndex(x => x.ConversationId == res.UserId) as number;
+          if(Number(index) >= 0) {
+              this.lstConversation[index].StatusText = res.Name;
+              this.lstConversation[index].StatusStyle = res.Code;
+
+              this.lstConversation[index] = {...this.lstConversation[index]};
+              this.lstConversation = [...this.lstConversation];
+              this.cdRef.detectChanges();
           }
-        })
-  
-        this.lstConversation = [...this.lstConversation];
-        this.cdRef.detectChanges();
       }
     })
   }
@@ -515,9 +516,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         Name: item.StatusText,
         Code: item.StatusStyle
       } as PartnerChangeStatusDTO;
-      
+
       this.partnerService.changeStatus$.emit(status);
-      
+
       // TODO: lưu lại Storage item đang active để hiện thị tiếp ở message, inbox nếu tồn tại trong danh sách
       this.setStorageConversationId(item.ConversationId)
 
