@@ -84,6 +84,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   isShowAllNumber: boolean = false;
   visibleDrawerBillDetail: boolean = false;
   idPopoverVisible: string = '';
+  isVisible: string = '';
   order: TDSSafeAny;
 
   lstOfTag: TDSSafeAny[] = [];
@@ -595,6 +596,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   }
 
   loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
+    this.isVisible = '';
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, order, null);
   }
@@ -888,5 +890,9 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
 
         this.vsStartIndex = event.startIndex;
     }
+  }
+
+  openPopover(id: string) {
+    this.isVisible = id;
   }
 }

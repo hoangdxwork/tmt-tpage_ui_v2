@@ -98,18 +98,26 @@
                                   </div>
                               </div>
 
-                              <div class="flex gap-x-4 items-center">
-                                  <button *ngIf="item?.Order" (click)="openPopover(item.Id)" tds-button-flat-icon tds-popover tds-tooltip="Danh sách đơn hàng"
-                                    popoverTrigger="click" popoverTitle="Danh sách đơn hàng" [popoverVisible]="isVisible == item.Id"
+                              <div class="flex gap-x-2 items-center">
+                                  <button *ngIf="item?.Order" (click)="openPopover(item.Id)" tds-button-flat tds-popover tds-tooltip="Danh sách đơn hàng"
+                                    popoverTrigger="click" [popoverTitle]="titlePopover" [popoverVisible]="isVisible == item.Id"
                                     [popoverAutoClose]="true" [popoverContent]="contentLstOrder" [popoverBackdrop]="true"
-                                    popoverPlacement="right" color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
-                                    <span class="tdsi-bag-fill text-[16px] text-primary-1"></span>
+                                    popoverPlacement="right" color="custom" size="sm" class="bg-neutral-3-50 border-0 focus:ring-transparent">
+                                    <span class="flex gap-1 items-center">
+                                      <i class="tdsi-bag-fill text-[16px] text-primary-1"></i>
+                                      <span class="text-body-2 text-primary-1">({{ item?.Order?.Count }})</span>
+                                    </span>
                                   </button>
+                                  <ng-template #titlePopover>
+                                    <div [ngStyle]="{'padding': '0px'}" class="text-body-2 font-semibold">
+                                      Danh sách đơn hàng ({{ item?.Order?.Count }})
+                                    </div>
+                                  </ng-template>
                                   <ng-template #contentLstOrder>
-                                    <div class="w-[300px] h-[150px] text-body-2 overflow-hidden overflow-y-auto tds-panel-scroll">
-                                      <div class="flex justify-between border-b border-neutral-3-200 px-4 py-2" *ngFor="let itemOrder of item?.Order?.Data">
+                                    <div class="w-[300px] max-h-[150px] text-body-2 grid grid-cols-1 divide-y overflow-hidden overflow-y-auto tds-panel-scroll">
+                                      <div class="flex justify-between px-4 py-2" *ngFor="let itemOrder of item?.Order?.Data">
                                         <span [ngClass]="itemOrder?.DateDeleted ? 'line-through' : ''" class="text-info-500 font-semibold cursor-pointer" (click)="loadOrderByCode(item, commentOrders[item.Data?.from!.id][0])">{{ itemOrder?.Code }}</span>
-                                        <span [ngClass]="itemOrder?.DateDeleted ? 'line-through' : ''" class="text-neutral-1-600 italic text-caption-2">{{ itemOrder?.DateCreated | yiDateTimeFormat }}</span>
+                                        <span class="text-neutral-1-600 italic text-caption-2">{{ itemOrder?.DateCreated | yiDateTimeFormat }}</span>
                                       </div>
                                     </div>
                                   </ng-template>
