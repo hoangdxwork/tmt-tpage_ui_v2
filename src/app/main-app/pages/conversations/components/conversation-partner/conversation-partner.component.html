@@ -137,7 +137,7 @@
                               <div [innerHTML]="item.message | safeHtml"></div>
                           </div>
                       </div>
-                      <div class="flex">
+                      <div class="flex" tds-tooltip="Xóa ghi chú">
                           <i class="tdsi-trash-line text-error-500 text-xl cursor-pointer" (click)="removeNote(item.id, i)"></i>
                       </div>
                   </div>
@@ -359,7 +359,7 @@
               </div>
           </div>
 
-          <!-- Khoản trắng ở cuối giao diện -->
+          <!-- TODO Khoản trắng ở cuối giao diện -->
           <div class="flex-auto bg-white mt-1"></div>
       </div>
   </div>
