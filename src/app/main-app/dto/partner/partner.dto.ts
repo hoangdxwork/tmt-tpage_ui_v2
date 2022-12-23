@@ -99,7 +99,7 @@ export interface PartnerWardDTO {
   DistrictCode?: number;
 }
 
-export interface PartnerStatusDTO {
+export interface StatusDTO {
   text: string;
   value: string;
 }

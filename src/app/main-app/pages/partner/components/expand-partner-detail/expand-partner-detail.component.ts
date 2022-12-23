@@ -1,5 +1,5 @@
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { PartnerStatusDTO } from './../../../../dto/partner/partner.dto';
+import { StatusDTO } from './../../../../dto/partner/partner.dto';
 import { finalize, takeUntil } from 'rxjs';
 import { Message } from './../../../../../lib/consts/message.const';
 import { ModalPaymentComponent } from '../modal-payment/modal-payment.component';
@@ -34,7 +34,7 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   pageIndex2 = 1;
   isLoading: boolean = false;
   countDebit: number = 1;
-  lstPartnerStatus!: Array<PartnerStatusDTO>;
+  lstPartnerStatus!: Array<StatusDTO>;
   lstInvocie: Array<PartnerInvoiceDTO> = [];
   countInvocie: number = 1;
   revenues: any = {};
@@ -109,11 +109,11 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   loadPartnerStatus() {
     this.commonService.setPartnerStatus();
     this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-            this.lstPartnerStatus = [...res];
+      next: (res: StatusDTO[]) => {
+          this.lstPartnerStatus = [...res];
         },
         error: (error: any) => {
-            this.message.error(error.error.message || 'Tải trạng thái khách hàng lỗi');
+          this.message.error(error.error.message || 'Tải trạng thái khách hàng lỗi');
         }
     });
   }
@@ -187,7 +187,7 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
     }
   }
 
-  selectStatus(status: PartnerStatusDTO) {
+  selectStatus(status: StatusDTO) {
     if(this.dataPartner.Id) {
       let data = {
         status: `${status.value}_${status.text}`

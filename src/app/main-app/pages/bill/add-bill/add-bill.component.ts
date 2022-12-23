@@ -47,7 +47,7 @@ import { AccountTaxService } from 'src/app/main-app/services/account-tax.service
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
 import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/aship-info-config-provider-data.dto';
 import { UpdateShipExtraHandler } from 'src/app/main-app/handler-v2/aship-v2/update-shipextra.handler';
@@ -91,7 +91,7 @@ export class AddBillComponent implements OnInit {
   lstWareHouses!: Observable<StockWarehouseDTO[]>;
   lstTeams!: Observable<any[]>;
   lstUser!: Observable<ApplicationUserDTO[]>;
-  lstPartnerStatus!: Array<PartnerStatusDTO>;
+  lstPartnerStatus!: Array<StatusDTO>;
   lstTax!: TaxDTO[];
   innerText: string = '';
 
@@ -256,7 +256,7 @@ export class AddBillComponent implements OnInit {
   loadPartnerStatus() {
     this.commonService.setPartnerStatus();
     this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: TDSSafeAny) => {
+      next: (res: StatusDTO[]) => {
         this.lstPartnerStatus = [...res];
       },
       error: error =>{

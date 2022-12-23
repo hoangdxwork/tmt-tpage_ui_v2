@@ -1,5 +1,6 @@
+import { PartnerChangeStatusDTO } from './../dto/partner/partner-status.dto';
 import { EventEmitter, Injectable } from '@angular/core';
-import { FilterObjDTO, PartnerStatusDTO, PartnerStatusModalDTO } from '@app/dto/partner/partner-status.dto';
+import { FilterObjDTO, PartnerStatusModalDTO, PartnerStatusDTO } from '@app/dto/partner/partner-status.dto';
 import { PartnerTimeStampDto } from '@app/dto/partner/partner-timestamp.dto';
 import { FilterDataRequestDTO } from '@core/dto/dataRequest.dto';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -11,7 +12,7 @@ import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerDetailDTO } from '../dto/partner/partner-detail.dto';
 import { ODataRegisterPartnerDTO } from '../dto/partner/partner-register-payment.dto';
-import { CheckInfoPartnerDTO, InputCheckInfoPartnerDTO, PartnerTempDTO, ResRevenueCustomerDTO } from '../dto/partner/partner.dto';
+import { InputCheckInfoPartnerDTO, ResRevenueCustomerDTO } from '../dto/partner/partner.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -25,7 +26,7 @@ export class PartnerService extends BaseSevice {
 
   public partnerStatus: any;
   public partnerStatus$ = new BehaviorSubject<any>(null);
-  public changeStatus$ = new EventEmitter<string>();
+  public changeStatus$ = new EventEmitter<PartnerChangeStatusDTO>();
 
   constructor(private apiService: TCommonService) {
     super(apiService);
