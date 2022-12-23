@@ -411,6 +411,11 @@ export class PostOrderConfigComponent implements OnInit {
               return;
             }
 
+            if(!binaryStr.includes(',') && (binaryStr || '').trim().length > 10) {
+              this.message.error('Dữ liệu không đúng định dạng');
+              return;
+            }
+
             let data = binaryStr?.split(',');
             data = this.onCheckExcludedPhones(data);
 
