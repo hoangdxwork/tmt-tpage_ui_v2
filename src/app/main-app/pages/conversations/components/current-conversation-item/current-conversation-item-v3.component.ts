@@ -87,19 +87,6 @@ export class CurrentConversationItemV3Component  implements OnInit, OnChanges, A
           this.cdRef.detectChanges();
       }
     });
-
-    // TODO: cập nhật màu status
-    this.partnerService.changeStatus$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
-        if(res.UserId === this.item.UserId) {
-          this.item.StatusStyle = res.Code;
-          this.item.StatusText = res.Name;
-
-          this.item = {...this.item};
-          this.cdRef.detectChanges();
-        }
-      }
-    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
