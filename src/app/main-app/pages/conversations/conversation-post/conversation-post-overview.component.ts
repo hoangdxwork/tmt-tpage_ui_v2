@@ -29,7 +29,6 @@ import { LiveCampaignService } from '@app/services/live-campaign.service';
 @Component({
   selector: 'conversation-post-overview',
   templateUrl: './conversation-post-overview.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
@@ -106,7 +105,6 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
   ngOnInit() {
     this.loadDefaultProduct();
-    this.eventEmitter();
 
     if(this.data) {
       let objectId = this.data.ObjectId;
@@ -115,18 +113,19 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       let data = this.liveCampaignService.getLocalStorageDrawer() as any;
 
       let exist = data && TDSHelperString.hasValueString(liveCampaignId) && data.objectId;
-
       if(exist) {
         this.drawerEditLiveCampaign = data.isOpenDrawer;
-
         if(data.isOpenDrawer) {
-          this.openDrawerEditLiveCampaign();
+            this.openDrawerEditLiveCampaign();
         }
       } else {
         this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
       }
+
       this.cdRef.detectChanges();
     }
+
+    this.eventEmitter();
   }
 
   eventEmitter() {
@@ -143,40 +142,33 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
     this.objectFacebookPostEvent.changeUpdateLiveCampaignFromObject$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-          if(res) {
-            this.data.LiveCampaignId = res.LiveCampaignId;
-            this.data.LiveCampaign =  res.LiveCampaign;
+          if(!res) return;
+          this.data.LiveCampaignId = res.LiveCampaignId;
+          this.data.LiveCampaign =  res.LiveCampaign;
 
-            this.data = {...this.data};
-            this.cdRef.detectChanges();
-          }
+          this.data = {...this.data};
+          this.cdRef.detectChanges();
       }
     })
 
     // TODO: Tổng bình luận bài viết
-    this.postEvent.countRealtimeMess$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-
-          if(res && this.team.Type == CRMTeamType._Facebook && this.data) {
-              if(this.isChanged == false) {
-                  this.data.CountComment = this.data.CountComment;
-              } else {
-                  this.data.CountComment = this.data.CountComment + 1;
-              }
-
-              this.isChanged = true;
-              this.cdRef.detectChanges();
-          }
+    this.postEvent.pushCountRealtimeToView$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ChatomniObjectsItemDto) => {
+        if(res && this.data && res.ObjectId == this.data.ObjectId) {
+            this.data.CountComment = res.CountComment;
+            this.cdRef.detectChanges();
+        }
       }
     })
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
-        this.data = {...changes["data"].currentValue};
-        this.innerText.nativeElement.value = '';
-        delete this.keyWords;
-        this.cdRef.detectChanges();
+      this.data = {...changes["data"].currentValue};
+      this.innerText.nativeElement.value = '';
+
+      delete this.keyWords;
+      this.cdRef.detectChanges();
     }
   }
 
