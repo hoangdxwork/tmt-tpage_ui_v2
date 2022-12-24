@@ -33,6 +33,7 @@ import { TDSTableComponent } from 'tds-ui/table';
 @Component({
   selector: 'post-order-config',
   templateUrl: './post-order-config.component.html',
+  styleUrls: ['./post-order-config.component.scss'],
   providers: [TDSDestroyService]
 })
 
@@ -61,7 +62,8 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
   setOfCheckData= new Set<object>();
 
   innerTextValue: string = '';
-  searchValue: string = '';
+  innerNumberValue!: number | null;
+  searchValue: any;
 
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
@@ -216,7 +218,8 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
       Product: null
     } as TextContentToOrderDTO;
 
-    this.searchValue = '';
+    this.searchValue = null;
+    this.innerNumberValue = null;
     this.innerTextValue = '';
 
     this.dataModel.TextContentToOrders = [...this.dataModel.TextContentToOrders,...[item]];
@@ -366,7 +369,8 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
   removeAllTemplate() {
     if(this.dataModel.TextContentToOrders) {
        this.dataModel.TextContentToOrders = [];
-       this.searchValue = '';
+       this.searchValue = null;
+       this.innerNumberValue = null;
        this.innerTextValue = '';
     }
   }
@@ -946,13 +950,34 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
     return exist;
   }
 
-  onSearchProduct() {
-    this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
+  onSearchText(event: any) {
+    this.innerNumberValue = null;
+    this.searchValue = null;
+
+    if(event) {
+      this.innerTextValue = event.value;
+      this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
+    }
   }
 
-  onClear() {
+  onClearFilterText() {
     this.innerTextValue = '';
-    this.searchValue = '';
+    this.searchValue = null;
+  }
+
+  onClearFilterNumber() {
+    this.innerNumberValue = null;
+    this.searchValue = null;
+  }
+
+  onSearchPosition(event: any) {
+    this.innerTextValue = '';
+    this.searchValue = null;
+
+    if(event) {
+      this.innerNumberValue = event.value;
+      this.searchValue = Number(this.innerNumberValue);
+    }
   }
 
   trackByIndex(_: number): number {

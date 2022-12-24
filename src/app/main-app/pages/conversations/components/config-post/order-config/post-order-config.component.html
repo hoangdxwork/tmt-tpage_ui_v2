@@ -152,23 +152,42 @@
         <!-- Config Product -->
         <div class="h-full w-full" *ngIf="dataModel && dataModel.TextContentToOrders && dataModel.TextContentToOrders.length > 0">
             <!-- filter -->
-            <div class="flex-auto ml-2 p-4 bg-neutral-3-50">
-                <tds-form-field class="w-full bg-white">
-                    <input type="text" tdsInput placeholder="Nhập tên, mã code..." [tdsInputDebounce]="500" (inputKeyup)="onSearchProduct()"
-                    autocomplete="off" [(ngModel)]="innerTextValue" [ngModelOptions]="{standalone: true}"/>
-                    <span tdsSuffix *ngIf="innerTextValue" (click)="onClear()"><i class="tdsi-close-fill"></i></span>
-                </tds-form-field>
+            <div class="flex flex-row flex-auto ml-2 p-4 bg-neutral-3-50">
+                <div class="flex flex-row items-center w-1/2 pr-4">
+                    <tds-form-field class="flex flex-auto bg-white">
+                        <input type="text" tdsInput placeholder="Nhập tên, mã sản phẩm, mã chốt đơn, ..." [tdsInputDebounce]="500" (inputKeyup)="onSearchText($event)"
+                        autocomplete="off" [(ngModel)]="innerTextValue" [ngModelOptions]="{standalone: true}"/>
+                        <span tdsPrefix><i class="tdsi-search-fill"></i></span>
+                        <span tdsSuffix *ngIf="innerTextValue" (click)="onClearFilterText()"><i class="tdsi-close-fill"></i></span>
+                    </tds-form-field>
+                </div>
+
+                <div class="flex flex-row items-center w-1/2">
+                    <div class="flex flex-row items-center flex-auto">
+                        <tds-label class="pr-2 whitespace-nowrap">Tìm kiếm theo thứ tự mẫu</tds-label>
+                        <tds-form-field class="flex flex-auto bg-white">
+                            <input type="number" tdsInput placeholder="Nhập số" [tdsInputDebounce]="500" (inputKeyup)="onSearchPosition($event)"
+                            [(ngModel)]="innerNumberValue" [ngModelOptions]="{standalone: true}"/>
+                            <span tdsSuffix *ngIf="innerNumberValue" (click)="onClearFilterNumber()"><i class="tdsi-close-fill"></i></span>
+                        </tds-form-field>
+                        
+                    </div>
+                    <div class="w-[150px] flex items-center justify-end pl-2">Tổng số: 
+                        <span class="font-semibold">{{ (dataModel.TextContentToOrders | simpleSearchProductPostConfig: searchValue)?.length || 0 }}</span>/
+                        <span class="font-semibold">{{ dataModel.TextContentToOrders.length }}</span>
+                    </div>
+                </div>
+                
             </div>
             <!-- Danh sách sản phẩm -->
             <div class="w-full h-[600px] table-textcontentorrder">
                 <tds-table #basicTable
-                    [listData]="dataModel.TextContentToOrders | simpleSearchProductPostConfig: searchValue"
+                    [listData]="searchValue ? (dataModel.TextContentToOrders | simpleSearchProductPostConfig: searchValue) : dataModel.TextContentToOrders"
                     [scroll]="{y:'100%', x:'hidden'}"
                     [showPagination]="false"
                     [frontPagination]="false"
                     [virtualItemSize]="100"
                     [virtualMaxBufferPx]="600"
-                    [loading]="isLoading"
                     [virtualForTrackBy]="trackByIndex">
                     <tbody>
                     <ng-template tds-virtual-scroll let-item let-i="index">
@@ -197,7 +216,7 @@
                                                 </div>
                                             </ng-template>
                                         </div>
-                                        <span class="font-semibold">{{ i }}</span>
+                                        <tds-badge [standalone]="true" [count]="item | indexTextContentOrder:dataModel.TextContentToOrders"></tds-badge>
                                     </div>
 
                                     <div class="pt-6">

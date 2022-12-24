@@ -63,8 +63,13 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({  name: 'simpleSearchProductPostConfig' })
   export class SimpleSearchProductPostConfiglPipe implements PipeTransform {
 
-  public transform(datas: any, term: string) {
+  public transform(datas: any, term: any) {
+    let type = typeof(term);
 
+    if(type == 'number') {
+      let items = datas.filter((x: any) => x.Index == term);
+      return items;
+    } else {
       if (!TDSHelperString.hasValueString(term)) return datas;
 
       term = TDSHelperString.stripSpecialChars(term?.toLocaleLowerCase()).trim();
@@ -76,5 +81,23 @@ import { Pipe, PipeTransform } from '@angular/core';
           || TDSHelperString.stripSpecialChars((item.ContentWithAttributes || '')?.toLocaleLowerCase()).trim().indexOf(term || '') !== -1)
 
       return items;
+    }
+  }
+}
+
+@Pipe({  name: 'indexTextContentOrder' })
+  export class IndexTextContentOrderPipe implements PipeTransform {
+
+  public transform(item: any, datas: any) {
+    let index = 0;
+
+    if(item && item.Product) {
+      let findIndex = datas.findIndex((x:any) => x.Product.ProductId == item.Product.ProductId && x.Product.UOMId == item.Product.UOMId);
+      index = findIndex;
+    } else {
+      index = item.Index;
+    }
+   
+    return index;
   }
 }
