@@ -2,7 +2,7 @@ import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto, ProductTextContentToO
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnInit, Output, ViewContainerRef } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, ViewContainerRef } from "@angular/core";
 import { Observable } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
@@ -27,6 +27,7 @@ import { DataPouchDBDTO } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTmlpAttributesDto } from '@app/dto/product-template/product-attribute.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 
 @Component({
   selector: 'post-order-config',
@@ -37,8 +38,10 @@ import { CRMTeamDTO } from '@app/dto/team/team.dto';
 export class PostOrderConfigComponent implements OnInit {
 
   @Input() data!: ChatomniObjectsItemDto;
-  currentLiveCampaign?: LiveCampaignModel;
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
 
+  currentLiveCampaign?: LiveCampaignModel;
+  
   dataModel!: AutoOrderConfigDTO;
   isLoading: boolean = false;
 
@@ -56,6 +59,8 @@ export class PostOrderConfigComponent implements OnInit {
   currentTeam!: CRMTeamDTO | null;
   dataDefault!: AutoOrderConfigDTO;
   setOfCheckData= new Set<object>();
+  innerTextValue: string = '';
+  searchValue: string = '';
 
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
@@ -211,6 +216,7 @@ export class PostOrderConfigComponent implements OnInit {
     } as any;
 
     this.dataModel.TextContentToOrders.push(item);
+    this.virtualScroller.scrollToIndex(this.dataModel.TextContentToOrders.length);
   }
 
   setIndexToOrder(data: TextContentToOrderDTO[]): number {
@@ -931,5 +937,9 @@ export class PostOrderConfigComponent implements OnInit {
       }
     })
     return exist;
+  }
+
+  onSearchProduct(){
+    this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
   }
 }

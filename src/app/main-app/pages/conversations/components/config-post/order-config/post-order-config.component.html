@@ -150,8 +150,20 @@
           </div>
 
           <!-- Config Product -->
-          <div class="grid grid-cols-2 gap-4" *ngIf="dataModel && dataModel.TextContentToOrders">
-              <div *ngFor="let item of dataModel.TextContentToOrders; let i = index" class="bg-neutral-3-50 rounded-lg pt-3 px-4 pb-4">
+          <div class="flex gap-x-2 items-center flex-auto">
+            <span class="font-semibold">Tìm kiếm sản phẩm:</span>
+            <tds-form-field class="w-1/2">
+                <input tdsInput autocomplete="off"  placeholder="Tìm kiếm theo tên, mã chốt đơn" 
+                    [(ngModel)]="innerTextValue" [required]='true'  [tdsInputDebounce]="750" (inputKeyup)="onSearchProduct()"/>
+            </tds-form-field>
+          </div>
+
+          <virtual-scroller *ngIf="dataModel && dataModel.TextContentToOrders"
+            #scroll [items]="dataModel.TextContentToOrders"
+            [childHeight]="280"
+            [enableUnequalChildrenSizes]="true"
+            [scrollAnimationTime]="750" class="grid grid-cols-2 gap-4 h-[750px] tds-panel-scroll  post-order-config" >
+              <div *ngFor="let item of scroll.viewPortItems | simpleSearchProductPostConfig: searchValue; let i=index" class="bg-neutral-3-50 rounded-lg pt-3 px-4 pb-4">
                   <div *ngIf="item" [ngClass]="!item.IsActive ? 'opacity-70' : ''">
 
                     <div class="flex gap-2.5 items-center">
@@ -251,13 +263,13 @@
               </div>
 
               <div *ngIf="dataModel.TextContentToOrders && dataModel.TextContentToOrders.length > 0">
-                  <button tds-button color="secondary" (click)="addContentToOrders()">
-                      <span class="flex items-center text-primary-1">
-                        <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
-                      </span>
-                  </button>
+                <button tds-button color="secondary" (click)="addContentToOrders()">
+                    <span class="flex items-center text-primary-1">
+                      <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
+                    </span>
+                </button>
               </div>
-          </div>
+          </virtual-scroller>
         </div>
       </div>
 

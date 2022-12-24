@@ -155,3 +155,9 @@ tbody td div, tbody td p, tbody td span, tbody td a, tbody td div div span{
   border-style: dotted;
 }
 
+.post-order-config .scrollable-content {
+  display: grid;
+  grid-template-columns:  1fr 1fr;
+  gap: 10px;
+}
+
