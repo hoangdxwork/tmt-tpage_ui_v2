@@ -39,6 +39,7 @@ export class PostOrderConfigComponent implements OnInit {
   @Input() data!: ChatomniObjectsItemDto;
   currentLiveCampaign?: LiveCampaignModel;
 
+  postId!: string;
   dataModel!: AutoOrderConfigDTO;
   isLoading: boolean = false;
 
@@ -88,10 +89,10 @@ export class PostOrderConfigComponent implements OnInit {
     private liveCampaignService: LiveCampaignService) { }
 
   ngOnInit(): void {
-    if(this.data && this.data.ObjectId) {
-        this.loadData(this.data.ObjectId);
-    }
+    this.postId = this.data?.ObjectId;
+    if(!this.postId) return;
 
+    this.loadData();
     this.loadUser();
     this.loadPartnerStatus();
     this.loadCurrentCompany();
@@ -146,19 +147,14 @@ export class PostOrderConfigComponent implements OnInit {
     this.lstUser$ = this.applicationUserService.getUserActive();
   }
 
-  loadData(postId: string) {
+  loadData() {
     this.isLoading = true;
 
     this.currentTeam = this.crmTeamService.getCurrentTeam();
     if(!this.currentTeam) return;
 
-    this.facebookPostService.getOrderConfig(this.currentTeam?.Id, postId).pipe(takeUntil(this.destroy$)).subscribe({
+    this.facebookPostService.getOrderConfig(this.currentTeam?.Id, this.postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
-          if(!res) {
-            this.message.error('Tải dữ liệu bị lỗi');
-            return;
-          }
-
           this.dataModel = {...res};
           this.setDataDefault(res);
 
@@ -799,12 +795,12 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   onSave() {
-    let model = this.prepareModelOrderConfig();
-
-    if(model == null) {
+    if(!this.postId) {
       this.message.error('Cập nhật thất bại');
       return;
     }
+
+    let model = this.prepareModelOrderConfig();
 
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;

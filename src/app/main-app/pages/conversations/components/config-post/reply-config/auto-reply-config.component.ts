@@ -20,6 +20,7 @@ export class AutoReplyConfigComponent implements OnInit {
 
   @Input() data!: ChatomniObjectsItemDto;
 
+  postId!: string;
   dataModel!: AutoReplyConfigDTO;
   isLoading: boolean = false;
 
@@ -50,20 +51,18 @@ export class AutoReplyConfigComponent implements OnInit {
   ) { }
 
   ngOnInit(){
-    this.loadData(this.data.ObjectId);
+    this.postId = this.data?.ObjectId;
+    if(!this.postId) return;
+
+    this.loadData();
   }
 
-  loadData(postId: string) {
+  loadData() {
     this.isLoading = true;
 
-    this.facebookPostService.getAutoReplyConfigs(postId).pipe(takeUntil(this.destroy$))
+    this.facebookPostService.getAutoReplyConfigs(this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res: AutoReplyConfigDTO) => {
-          if(!res) {
-            this.message.error('Tải dữ liệu bị lỗi');
-            return;
-          }
-
           this.dataModel = {...res};
 
           if(TDSHelperString.hasValueString(res.ContentOfCommentForNotAutoReply)) {
@@ -92,8 +91,6 @@ export class AutoReplyConfigComponent implements OnInit {
   }
 
   prepareModel(): any {
-    if(!this.dataModel) return null;
-
     let model = {...this.dataModel} as AutoReplyConfigDTO;
     model.ContentOfCommentForAutoReply = this.lstCommentAutoReply?.join(',');
     model.ContentOfCommentForNotAutoReply = this.lstCommentNotAutoReply?.join(',');
@@ -102,18 +99,16 @@ export class AutoReplyConfigComponent implements OnInit {
   }
 
   onSave(){
-    let model = this.prepareModel();
-    let postId = this.data?.ObjectId;
-
-    if(model == null) {
+    if(!this.postId) {
       this.message.error('Cập nhật thất bại');
       return;
     }
 
+    let model = this.prepareModel();
     this.isLoading = true;
     this.facebookPostService.onChangeDisable$.emit(true);
 
-    this.facebookPostService.updateAutoReplyConfigs(postId, model).pipe(takeUntil(this.destroy$))
+    this.facebookPostService.updateAutoReplyConfigs(this.postId, model).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res: any) => {
           this.message.success(Message.UpdatedSuccess);

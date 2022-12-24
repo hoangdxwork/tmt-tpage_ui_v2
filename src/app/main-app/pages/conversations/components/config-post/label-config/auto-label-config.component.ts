@@ -24,6 +24,7 @@ export class AutoLabelConfigComponent implements OnInit {
   @Input() data!: ChatomniObjectsItemDto;
 
   dataModel!: AutoLabelConfigDTO;
+  postId!: string;
   lstTagOnPattern: any[] = [];
   isLoading: boolean = false;
 
@@ -38,7 +39,10 @@ export class AutoLabelConfigComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadData(this.data.ObjectId);
+    this.postId = this.data?.ObjectId;
+    if(!this.postId) return;
+    
+    this.loadData();
     this.loadCRMTag();
   }
 
@@ -46,10 +50,10 @@ export class AutoLabelConfigComponent implements OnInit {
     this.lstTags$ = this.crmTagService.dataActive$.pipe(takeUntil(this.destroy$));
   }
 
-  loadData(pageId: string) {
+  loadData() {
     this.isLoading = true;
 
-    this.facebookPostService.getAutoLabelConfigs(pageId).pipe(takeUntil(this.destroy$))
+    this.facebookPostService.getAutoLabelConfigs(this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
           if(!res) {
@@ -101,19 +105,18 @@ export class AutoLabelConfigComponent implements OnInit {
   }
 
   onSave() {
-    let model = this.prepareModel();
-    let postId = this.data?.ObjectId;
-
-    if(model == null) {
+    if(!this.postId) {
       this.message.error('Cập nhật thất bại');
       return;
     }
+
+    let model = this.prepareModel();
 
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
       this.facebookPostService.onChangeDisable$.emit(true);
 
-      this.facebookPostService.updateAutoLabelConfigs(postId, model).pipe(takeUntil(this.destroy$))
+      this.facebookPostService.updateAutoLabelConfigs(this.postId, model).pipe(takeUntil(this.destroy$))
         .subscribe({
           next:(res: any) => {
             this.message.success(Message.UpdatedSuccess);
@@ -132,8 +135,6 @@ export class AutoLabelConfigComponent implements OnInit {
   }
 
   prepareModel() {
-    if(!this.dataModel) return null;
-
     let model = {...this.dataModel} as AutoLabelConfigDTO;
     model.TagOnPattern = this.lstTagOnPattern?.map((tag: any) => {
       return {

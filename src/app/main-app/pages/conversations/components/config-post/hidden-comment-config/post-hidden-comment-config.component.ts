@@ -21,6 +21,7 @@ export class PostHiddenCommentConfigComponent implements OnInit {
   @Input() data!: ChatomniObjectsItemDto;
 
   dataModel!: AutoHiddenConfigDTO;
+  postId!: string;
   lstContentOfCommentForAutoHide: string[] = [];
   isLoading: boolean = false;
 
@@ -33,13 +34,16 @@ export class PostHiddenCommentConfigComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadData(this.data?.ObjectId);
+    this.postId = this.data?.ObjectId;
+    if(!this.postId) return;
+
+    this.loadData();
   }
 
-  loadData(postId: string) {
+  loadData() {
     this.isLoading = true;
 
-    this.facebookPostService.getHiddenCommentConfigs(postId).pipe(takeUntil(this.destroy$))
+    this.facebookPostService.getHiddenCommentConfigs(this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {
           if(!res) {
@@ -78,8 +82,6 @@ export class PostHiddenCommentConfigComponent implements OnInit {
   }
 
   prepareModel() {
-    if(!this.dataModel) return null;
-
     let model = {...this.dataModel} as AutoHiddenConfigDTO;
     model.ContentOfCommentForAutoHide = this.lstContentOfCommentForAutoHide?.length > 0 ? this.lstContentOfCommentForAutoHide?.join(",") : "";
 
@@ -87,18 +89,16 @@ export class PostHiddenCommentConfigComponent implements OnInit {
   }
 
   onSave() {
-    let model = this.prepareModel();
-    let postId = this.data?.ObjectId;
-
-    if(model == null) {
+    if(!this.postId) {
       this.message.error('Cập nhật thất bại');
       return;
     }
 
+    let model = this.prepareModel();
     this.isLoading = true;
     this.facebookPostService.onChangeDisable$.emit(true);
 
-    this.facebookPostService.updateHiddenCommentConfigs(postId, model).pipe(takeUntil(this.destroy$))
+    this.facebookPostService.updateHiddenCommentConfigs(this.postId, model).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {
           this.message.success(Message.UpdatedSuccess);

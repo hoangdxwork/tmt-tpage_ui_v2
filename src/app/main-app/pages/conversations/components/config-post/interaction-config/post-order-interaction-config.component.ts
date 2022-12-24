@@ -22,6 +22,7 @@ export class PostOrderInteractionConfigComponent implements OnInit {
   @Input() data!: ChatomniObjectsItemDto;
 
   dataModel!:AutoOrderConfigDTO;
+  postId!: string;
   isLoading: boolean = false;
   isEditReply: boolean = false;
 
@@ -80,16 +81,19 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     private crmTeamService: CRMTeamService) { }
 
   ngOnInit(): void {
-    this.loadData(this.data.ObjectId);
+    this.postId = this.data?.ObjectId;
+    if(!this.postId) return;
+
+    this.loadData();
   }
 
-  loadData(postId: string) {
+  loadData() {
     this.isLoading = true;
 
     let currentTeam = this.crmTeamService.getCurrentTeam();
     if(!currentTeam) return;
 
-    this.facebookPostService.getOrderConfig(currentTeam.Id ,postId).pipe(takeUntil(this.destroy$))
+    this.facebookPostService.getOrderConfig(currentTeam.Id, this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {
           if(!res) {
@@ -113,8 +117,6 @@ export class PostOrderInteractionConfigComponent implements OnInit {
   }
 
   prepareModel() {
-    if(!this.dataModel) return null;
-
     return {
       IsEnableOrderReplyAuto: this.dataModel.IsEnableOrderReplyAuto,
       IsEnableShopLink: this.dataModel.IsEnableShopLink,
@@ -126,18 +128,16 @@ export class PostOrderInteractionConfigComponent implements OnInit {
   }
 
   onSave() {
-    let model = this.prepareModel();
-    let postId = this.data?.ObjectId;
-
-    if(model == null) {
+    if(!this.postId) {
       this.message.error('Cập nhật thất bại');
       return;
     }
 
+    let model = this.prepareModel();
     this.isLoading = true;
     this.facebookPostService.onChangeDisable$.emit(true);
 
-    this.facebookPostService.updateInteractionConfig(postId, model).pipe(takeUntil(this.destroy$))
+    this.facebookPostService.updateInteractionConfig(this.postId, model).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {
           this.message.success(Message.UpdatedSuccess);

@@ -47,9 +47,6 @@ export class ConfigPostOutletComponent implements OnInit {
     this.facebookPostService.onChangeDisable$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: boolean) => {
         this.isDisable = res;
-      },
-      error: (err: any) =>{
-        this.message.error('Đã xảy ra lỗi');
       }
     })
   }
