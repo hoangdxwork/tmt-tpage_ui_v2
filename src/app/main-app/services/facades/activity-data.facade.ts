@@ -114,7 +114,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
         let objectId = _get(data, `last_activity.comment_obj.object.id`);
 
         if(!partnerId || partnerId == objectId) {
-            this.webhookAddComment(data);
         } else {
             this.webhookAddReplyComment(data);
         }
@@ -198,8 +197,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     let object_id = data.comment.object.id;
 
     let dataAdd = this.convertDataScanFeed(data);
-    this.addCommentItem(pageId, psid, "all", object_id, dataAdd);
-    this.addCommentItem(pageId, psid, "comment", object_id, dataAdd);
   }
 
   messageWithBill(model: any) {
@@ -237,19 +234,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     this.activityFbState.updateMessage(pageId, psid, "message", dataAdd);
   }
 
-  webhookAddComment(model: any) {
-    const pageId = model.page_id || model.account_id;
-    const psid = model.psid || model.to_id;
-
-    const dataAdd = this.convertDataWebhook(model);
-    const objectId = _get(dataAdd, 'comment.object.id');
-
-    if (objectId) {
-      this.addCommentItem(pageId, psid, 'all', objectId, dataAdd);
-      this.addCommentItem(pageId, psid, 'comment', objectId, dataAdd);
-    }
-  }
-
   webhookAddReplyComment(model: any) {
     const data = Object.assign({}, model.last_activity.comment_obj);
     const pageId = model.page_id;
@@ -271,59 +255,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     this.activityFbState.addItemActivity(pageId, psid, "all", dataAdd);
     this.activityFbState.addItemActivity(pageId, psid, "comment", dataAdd);
     this.activityFbState.addItemActivity(pageId, psid, "message", dataAdd);
-  }
-
-  addCommentItem(pageId: string, psid: string, type: string, objectId: string, data: any){
-    const postComment = this.activityFbState.getPost(pageId, psid, type, objectId);
-    const existPsidComment = this.activityFbState.getByPsid(pageId, psid);
-
-    if (postComment && existPsidComment) {
-        this.postIdExist.push(postComment);
-        this.activityFbState.addItemActivity(pageId, psid, type, data);
-    }
-    else {
-      // Add postId loading
-      if(!this.postIdExist.includes(objectId)) {
-        this.postIdExist.push(objectId);
-        this.getPost(pageId, objectId).pipe(takeUntil(this.destroy$)).subscribe((res :any) => {
-          if(res) {
-              this.activityFbState.addPost(pageId, psid, type, objectId, res);
-              this.postExist.push(res);
-          } else {
-              data["comment"] = null;
-          }
-
-          this.activityFbState.addItemActivity(pageId, psid, type, data);
-          this.postIdExist = this.postIdExist.filter(x => x != objectId);
-        }, error => {
-          data["comment"] = null;
-          this.activityFbState.addItemActivity(pageId, psid, type, data);
-          this.postIdExist = this.postIdExist.filter(x => x != objectId);
-        });
-      }
-      //TODO: // Wait 5s
-      else {
-        this.activityFbState.addItemActivity(pageId, psid, type, data);
-        setTimeout(() => {
-          let postExist = this.getPostExist(objectId);
-          if(postExist) {
-              this.activityFbState.addPost(pageId, psid, type, objectId, postExist);
-              this.activityFbState.addItemActivity(pageId, psid, type, data);
-          }
-          else {
-            this.getPost(pageId, objectId).pipe(takeUntil(this.destroy$)).subscribe(res => {
-              this.activityFbState.addPost(pageId, psid, type, objectId, res);
-              this.activityFbState.addItemActivity(pageId, psid, type, data);
-              this.postExist.push(res);
-              this.postIdExist = this.postIdExist.filter(x => x != objectId);
-            }, error => {
-                this.activityFbState.addItemActivity(pageId, psid, type, data);
-                this.postIdExist = this.postIdExist.filter(x => x != objectId);
-            });
-          }
-        }, 5000);
-      }
-    }
   }
 
   convertDataWebhook(data: any) {
@@ -648,20 +579,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     return team;
   }
 
-  private getPost(pageId: string, ids: string): Observable<any> {
-    return Observable.create((observer: any) => {
-      let team = this.getTeamByPageId(pageId) as any;
-      if (team && team.Id) {
-        let model = { TeamId: team.Id, PostIds: [ids] };
-        this.facebookPostService.getByIds(model).subscribe((res: any) => {
-            res && res[0] ? observer.next(res[0]) : observer.next(null);
-            observer.complete();
-        });
-      } else {
-          observer.next(null);
-          observer.complete();
-      }
-    });
+  private getPost(pageId: string, ids: string) {
   }
 
   getPostExist(postId: any) {
