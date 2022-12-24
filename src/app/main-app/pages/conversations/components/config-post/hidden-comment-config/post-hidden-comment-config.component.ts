@@ -46,12 +46,6 @@ export class PostHiddenCommentConfigComponent implements OnInit {
     this.facebookPostService.getHiddenCommentConfigs(this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {
-          if(!res) {
-            this.isLoading = false;
-            this.message.error('Tải dữ liệu bị lỗi');
-            return;
-          }
-
           this.dataModel = {...res};
 
           if(TDSHelperString.hasValueString(res.ContentOfCommentForAutoHide)){

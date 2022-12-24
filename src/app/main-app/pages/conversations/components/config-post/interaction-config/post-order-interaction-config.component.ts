@@ -96,11 +96,6 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     this.facebookPostService.getOrderConfig(currentTeam.Id, this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {
-          if(!res) {
-            this.message.error('Tải dữ liệu bị lỗi');
-            return;
-          }
-
           if(TDSHelperString.hasValueString(res?.OrderReplyTemplate)) {
             res.OrderReplyTemplate = res.OrderReplyTemplate?.replace(/\n/g, '<p><br></p>');
           }

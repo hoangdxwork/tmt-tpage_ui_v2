@@ -56,11 +56,6 @@ export class AutoLabelConfigComponent implements OnInit {
     this.facebookPostService.getAutoLabelConfigs(this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
-          if(!res) {
-            this.message.error('Tải dữ liệu bị lỗi');
-            return;
-          }
-          
           this.dataModel = {...res};
 
           if (TDSHelperArray.hasListValue(this.dataModel?.TagOnPattern)) {
