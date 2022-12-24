@@ -1,336 +1,339 @@
 <tds-spin [spinning]="isLoading" class="h-full w-full">
-    <div class="w-full h-full flex flex-col gap-4" *ngIf="dataModel">
-      <!-- Cau hinh tao don -->
-      <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full">
-          <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Cấu hình tạo đơn tự động</div>
-
-          <div class="flex flex-col gap-y-4 pt-4">
-            <div class="flex flex-col gap-y-4">
-                <div class="flex gap-x-2 items-center">
-                    <tds-switch size="md" [(ngModel)]="dataModel.IsEnableOrderAuto" [ngModelOptions]="{standalone: true}"
-                    (ngModelChange)="changeIsEnableOrderAuto($event)"></tds-switch>
-                    <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật tạo đơn tự động?</div>
-                </div>
-
-                <div class="pl-4 flex gap-x-2 items-center" *ngIf="dataModel.IsEnableOrderAuto">
-                    <tds-switch size="md" [(ngModel)]="dataModel.IsForceOrderWithAllMessage" [ngModelOptions]="{standalone: true}"></tds-switch>
-                    <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tạo tự động với bình luận bất kỳ?</div>
-                </div>
-            </div>
-
-            <div class="flex gap-x-2 items-center">
-                <tds-switch size="md" [(ngModel)]="dataModel.IsOrderCreateOnlyOnce" [ngModelOptions]="{standalone: true}"></tds-switch>
-                <div class="text-body-2 flex items-center"> Chỉ tạo đơn 1 lần
-                    <span class="tdsi-information-fill text-info-500 ml-1" style="font-size: 15px"
-                    tds-tooltip tooltipTitle="Khi khách bình luận trùng mã thì ưu tiên lấy số lượng lớn hơn"></span>
-                </div>
-            </div>
-
-            <div class="flex gap-x-2 items-center">
-                <tds-switch size="md" [(ngModel)]="isImmediateApply" [ngModelOptions]="{standalone: true}"></tds-switch>
-                <div class="text-body-2 font-semibold text-info-500">Áp dụng ngay cho những bình luận đã có?</div>
-            </div>
-
-            <!-- <div class="flex items-center" *ngIf="dataModel.MaxCreateOrder >= 0">
-                <div class="text-body-2 font-semibold text-neutral-1-900 font-sans mr-4">Giới hạn số đơn được tạo</div>
-                <div class="flex w-[152px]">
-                      <tds-input-number [(ngModel)]="dataModel.MaxCreateOrder" [ngModelOptions]="{standalone: true}"
-                      [formatter]="numberWithCommas" [parser]="parserComas" [min]="0" [max]="1000000" [step]="1" placeholder="0"></tds-input-number>
-                </div>
-            </div> -->
-          </div>
-      </div>
-
-      <!-- Dong bo san pham tu chien dich live -->
-      <div class="border border-neutral-3-300 border-solid rounded-xl p-4 flex justify-between w-full h-full" *ngIf="dataModel.IsEnableOrderAuto && currentLiveCampaign && currentLiveCampaign.Id">
-          <div class="flex items-center gap-x-4">
-              <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Đồng bộ sản phẩm từ chiến dịch</div>
-
-              <div class="flex gap-x-1 py-0.5 px-2 bg-base-orange-50 items-center rounded">
-                  <div class="text-caption-1 font-regular text-base-orange-500">{{ currentLiveCampaign.Name }} - chiến dịch mới setting</div>
-                  <div class="flex items-center"><span class="tdsi-arrow-right-line text-base-orange-500 text-md flex items-center"></span></div>
-              </div>
-          </div>
-
-          <button tds-button color="primary" (click)="loadConfigLiveCampaignV2(dataModel.LiveCampaignId)">
-              <span class="flex items-center">
-                  <i class="tdsi-download-fill text-lg leading-none mr-2"></i>Tải cấu hình
-              </span>
-          </button>
-      </div>
-
-      <div *ngIf="dataModel.IsEnableOrderAuto" class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full">
-        <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Tạo đơn với</div>
+  <div class="w-full h-full flex flex-col gap-4" *ngIf="dataModel">
+    <!-- Cau hinh tao don -->
+    <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full">
+        <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Cấu hình tạo đơn tự động</div>
 
         <div class="flex flex-col gap-y-4 pt-4">
-          <div class="flex items-center gap-x-2">
-              <tds-switch size="md" [(ngModel)]="dataModel.IsOnlyOrderWithPartner" [ngModelOptions]="{standalone: true}"></tds-switch>
-              <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Bình luận của khách đã có thông tin (điện thoại, địa chỉ)</div>
-          </div>
-
           <div class="flex flex-col gap-y-4">
-              <div class="flex items-center gap-x-2">
-                  <tds-switch size="md" [(ngModel)]="dataModel.IsOnlyOrderWithPhone" [ngModelOptions]="{standalone: true}"></tds-switch>
-                  <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Bình luận có số điện thoại</div>
-              </div>
-              <div class="flex items-center gap-x-2 pl-4" *ngIf="dataModel.IsOnlyOrderWithPhone">
-                  <tds-switch size="md" [(ngModel)]="dataModel.IsForceOrderWithPhone" [ngModelOptions]="{standalone: true}"></tds-switch>
-                  <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Ép buộc tạo đơn với số điện thoại</div>
+              <div class="flex gap-x-2 items-center">
+                  <tds-switch size="md" [(ngModel)]="dataModel.IsEnableOrderAuto" [ngModelOptions]="{standalone: true}"
+                  (ngModelChange)="changeIsEnableOrderAuto($event)"></tds-switch>
+                  <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật tạo đơn tự động?</div>
               </div>
 
-              <div class="flex items-center gap-x-2 pl-4"
-                  *ngIf="dataModel.IsForceOrderWithPhone && dataModel.IsOnlyOrderWithPhone">
-                      <tds-switch size="md" [(ngModel)]="dataModel.IsForcePrintWithPhone" [ngModelOptions]="{standalone: true}"></tds-switch>
-                      <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Ép buộc in nhiều lần với số điện thoại</div>
+              <div class="pl-4 flex gap-x-2 items-center" *ngIf="dataModel.IsEnableOrderAuto">
+                  <tds-switch size="md" [(ngModel)]="dataModel.IsForceOrderWithAllMessage" [ngModelOptions]="{standalone: true}"></tds-switch>
+                  <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tạo tự động với bình luận bất kỳ?</div>
               </div>
+          </div>
+
+          <div class="flex gap-x-2 items-center">
+              <tds-switch size="md" [(ngModel)]="dataModel.IsOrderCreateOnlyOnce" [ngModelOptions]="{standalone: true}"></tds-switch>
+              <div class="text-body-2 flex items-center"> Chỉ tạo đơn 1 lần
+                  <span class="tdsi-information-fill text-info-500 ml-1" style="font-size: 15px"
+                  tds-tooltip tooltipTitle="Khi khách bình luận trùng mã thì ưu tiên lấy số lượng lớn hơn"></span>
+              </div>
+          </div>
+
+          <div class="flex gap-x-2 items-center">
+              <tds-switch size="md" [(ngModel)]="isImmediateApply" [ngModelOptions]="{standalone: true}"></tds-switch>
+              <div class="text-body-2 font-semibold text-info-500">Áp dụng ngay cho những bình luận đã có?</div>
+          </div>
+
+          <!-- <div class="flex items-center" *ngIf="dataModel.MaxCreateOrder >= 0">
+              <div class="text-body-2 font-semibold text-neutral-1-900 font-sans mr-4">Giới hạn số đơn được tạo</div>
+              <div class="flex w-[152px]">
+                    <tds-input-number [(ngModel)]="dataModel.MaxCreateOrder" [ngModelOptions]="{standalone: true}"
+                    [formatter]="numberWithCommas" [parser]="parserComas" [min]="0" [max]="1000000" [step]="1" placeholder="0"></tds-input-number>
+              </div>
+          </div> -->
+        </div>
+    </div>
+
+    <!-- Dong bo san pham tu chien dich live -->
+    <div class="border border-neutral-3-300 border-solid rounded-xl p-4 flex justify-between w-full h-full" *ngIf="dataModel.IsEnableOrderAuto && currentLiveCampaign && currentLiveCampaign.Id">
+        <div class="flex items-center gap-x-4">
+            <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Đồng bộ sản phẩm từ chiến dịch</div>
+
+            <div class="flex gap-x-1 py-0.5 px-2 bg-base-orange-50 items-center rounded">
+                <div class="text-caption-1 font-regular text-base-orange-500">{{ currentLiveCampaign.Name }} - chiến dịch mới setting</div>
+                <div class="flex items-center"><span class="tdsi-arrow-right-line text-base-orange-500 text-md flex items-center"></span></div>
+            </div>
+        </div>
+
+        <button tds-button color="primary" (click)="loadConfigLiveCampaignV2(dataModel.LiveCampaignId)">
+            <span class="flex items-center">
+                <i class="tdsi-download-fill text-lg leading-none mr-2"></i>Tải cấu hình
+            </span>
+        </button>
+    </div>
+
+    <div *ngIf="dataModel.IsEnableOrderAuto" class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full">
+      <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Tạo đơn với</div>
+
+      <div class="flex flex-col gap-y-4 pt-4">
+        <div class="flex items-center gap-x-2">
+            <tds-switch size="md" [(ngModel)]="dataModel.IsOnlyOrderWithPartner" [ngModelOptions]="{standalone: true}"></tds-switch>
+            <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Bình luận của khách đã có thông tin (điện thoại, địa chỉ)</div>
+        </div>
+
+        <div class="flex flex-col gap-y-4">
+            <div class="flex items-center gap-x-2">
+                <tds-switch size="md" [(ngModel)]="dataModel.IsOnlyOrderWithPhone" [ngModelOptions]="{standalone: true}"></tds-switch>
+                <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Bình luận có số điện thoại</div>
+            </div>
+            <div class="flex items-center gap-x-2 pl-4" *ngIf="dataModel.IsOnlyOrderWithPhone">
+                <tds-switch size="md" [(ngModel)]="dataModel.IsForceOrderWithPhone" [ngModelOptions]="{standalone: true}"></tds-switch>
+                <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Ép buộc tạo đơn với số điện thoại</div>
             </div>
 
-            <div class="flex items-center" *ngIf="dataModel.IsEnableOrderAuto">
-                <div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Bình luận có độ dài lớn hơn (Ký tự) : </div>
-                <div class="flex w-40">
-                    <tds-input-number [min]="0" [max]="20000" [step]="1" placeholder="0"
-                      [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}"
-                      [(ngModel)]="dataModel.MinLengthToOrder"></tds-input-number>
-                </div>
+            <div class="flex items-center gap-x-2 pl-4"
+                *ngIf="dataModel.IsForceOrderWithPhone && dataModel.IsOnlyOrderWithPhone">
+                    <tds-switch size="md" [(ngModel)]="dataModel.IsForcePrintWithPhone" [ngModelOptions]="{standalone: true}"></tds-switch>
+                    <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Ép buộc in nhiều lần với số điện thoại</div>
             </div>
+          </div>
 
-          <div class="flex items-center">
-              <div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Chốt tự động với nội dung:</div>
-              <div class="flex items-center gap-x-2.5">
-                  <button tds-button color="secondary" (click)="addContentToOrders()">
-                      <span class="flex items-center text-primary-1">
-                          <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
-                      </span>
-                  </button>
-
-                  <button tds-button color="secondary" (click)="changeMoreTemplate()">
-                      <span class="flex items-center text-accent-9">
-                          <i class="tdsi-plus-fill text-lg leading-none mr-2 text-accent-9"></i>Thêm mẫu hàng loạt
-                      </span>
-                  </button>
-
-                  <button tds-button color="secondary" (click)="removeAllTemplate()" [disabled]="dataModel.TextContentToOrders && dataModel.TextContentToOrders.length == 0">
-                      <span class="flex items-center text-accent-3">
-                          <i class="tdsi-trash-fill text-lg leading-none mr-2 text-accent-3"></i>Xóa hết mẫu
-                      </span>
-                  </button>
+          <div class="flex items-center" *ngIf="dataModel.IsEnableOrderAuto">
+              <div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Bình luận có độ dài lớn hơn (Ký tự) : </div>
+              <div class="flex w-40">
+                  <tds-input-number [min]="0" [max]="20000" [step]="1" placeholder="0"
+                    [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}"
+                    [(ngModel)]="dataModel.MinLengthToOrder"></tds-input-number>
               </div>
           </div>
 
-          <!-- Thêm mẫu hàng loạt -->
-          <div class="border border-neutral-3-300 border-solid rounded-xl py-3 px-4 " *ngIf="isVisibleRangeGenerate">
-              <div class="grid grid-cols-2 gap-4">
-                  <tds-form-field>
-                      <tds-label>Từ bắt đầu <span class="text-neutral-1-300">( không áp dụng )</span> </tds-label>
-                      <input tdsInput [(ngModel)]="prefixMoreTemplate" autocomplete="off" placeholder="Nhập từ bắt đầu" [ngModelOptions]="{standalone: true}"/>
-                  </tds-form-field>
-
-                  <tds-form-field>
-                      <tds-label>Từ kết thúc <span class="text-neutral-1-300">( không áp dụng )</span> </tds-label>
-                      <input tdsInput [(ngModel)]="suffixMoreTemplate" autocomplete="off" placeholder="Nhập từ kết thúc" [ngModelOptions]="{standalone: true}"/>
-                  </tds-form-field>
-
-                  <tds-form-field>
-                      <tds-label>Từ số</tds-label>
-                      <tds-input-number [(ngModel)]="fromMoreTemplate" [ngModelOptions]="{standalone: true}" [min]="0" [max]="20000" [step]="1" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas">
-                      </tds-input-number>
-                  </tds-form-field>
-
-                  <tds-form-field>
-                      <tds-label>Đến số</tds-label>
-                      <tds-input-number [(ngModel)]="toMoreTemplate" [ngModelOptions]="{standalone: true}" [min]="1" [max]="20000" [step]="1" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas">
-                      </tds-input-number>
-                  </tds-form-field>
-              </div>
-
-              <div class="flex justify-end gap-2.5 pt-4">
-                  <button tds-button color="secondary" class="min-w-[100px]" (click)="onCannelMoreTemplate()">Hủy bỏ</button>
-                  <button tds-button color="primary" class="min-w-[100px]" (click)="generateRangeTemplates()">Tạo mẫu</button>
-              </div>
-          </div>
-
-          <!-- Config Product -->
-          <div class="flex gap-x-2 items-center flex-auto">
-            <span class="font-semibold">Tìm kiếm sản phẩm:</span>
-            <tds-form-field class="w-1/2">
-                <input tdsInput autocomplete="off"  placeholder="Tìm kiếm theo tên, mã chốt đơn" 
-                    [(ngModel)]="innerTextValue" [required]='true'  [tdsInputDebounce]="750" (inputKeyup)="onSearchProduct()"/>
-            </tds-form-field>
-          </div>
-
-          <virtual-scroller *ngIf="dataModel && dataModel.TextContentToOrders"
-            #scroll [items]="dataModel.TextContentToOrders"
-            [childHeight]="280"
-            [enableUnequalChildrenSizes]="true"
-            [scrollAnimationTime]="750" class="grid grid-cols-2 gap-4 h-[750px] tds-panel-scroll  post-order-config" >
-              <div *ngFor="let item of scroll.viewPortItems | simpleSearchProductPostConfig: searchValue; let i=index" class="bg-neutral-3-50 rounded-lg pt-3 px-4 pb-4">
-                  <div *ngIf="item" [ngClass]="!item.IsActive ? 'opacity-70' : ''">
-
-                    <div class="flex gap-2.5 items-center">
-                      <tds-badge [count]="iconTemplate" *ngIf="!item.Product" (click)="showModalListProduct(i)">
-                          <a class="tdsi-box-fill text-lg text-neutral-1-500 p-0.5"></a>
-                      </tds-badge>
-
-                      <ng-template #iconTemplate>
-                        <span class="tdsi-add-fill text-primary-1 absolute bottom-1 right-1 cursor-pointer
-                              inline-block transform translate-x-1/2 translate-y-1/2 text-[12px] p-0.5 bg-neutral-3-50 rounded-full">
-                        </span>
-                      </ng-template>
-
-                      <div class="text-info-500 text-body-2 font-semibold" *ngIf="item.Product as product; else notProduct">
-                          {{ product.ProductName || product.ProductNameGet }} / {{ (product.Price || 0) | numberCustom }}
-                          <span *ngIf="!item.IsActive" class="text-accent-3" style="font-style: italic;">(Đã tắt)</span>
-                      </div>
-
-                      <ng-template #notProduct>
-                          <div class="text-info-500 text-body-2 font-semibold" (click)="showModalListProduct(i)">Chưa gán sản phẩm
-                          </div>
-                      </ng-template>
-                    </div>
-
-                    <div class="pt-6">
-                      <div class="flex rounded-md gap-x-1">
-                        <tds-form-field class="w-full">
-                            <tds-select [ngModel]="(item.Content | stringToStringArray) || []"
-                                (ngModelChange)="selectContent($event, item)" [disabled]="item.IsActive ? false : true"
-                                [ngModelOptions]="{standalone: true}"  placeholder='Nội dung nhập'
-                                mode="tags" [maxTagCount]="10" [backdrop]="true">
-                            </tds-select>
-                        </tds-form-field>
-                      </div>
-                    </div>
-
-                    <div *ngIf="item.Product">
-                      <div class="pt-4 flex items-center">
-                        <div class="text-neutral-1-900 font-semibold text-body-2 w-1/4">Số lượng tối đa</div>
-                        <div class="w-3/4">
-                            <tds-form-field class="w-full">
-                                <tds-input-number [min]="0"
-                                  [max]="20000" [step]="1" [disabled]="item.IsActive ? false : true"
-                                  placeholder="0"  [(ngModel)]="item.Product.Quantity" [ngModelOptions]="{standalone: true}"
-                                  [formatter]="numberWithCommas" [parser]="parserComas">
-                                </tds-input-number>
-                            </tds-form-field>
-                        </div>
-                      </div>
-
-                      <div class="pt-3">
-                        <tds-checkbox [(ngModel)]="item.Product.IsEnableRegexAttributeValues" [ngModelOptions]="{standalone: true}"
-                              (ngModelChange)="enableRegexAttributeValues($event, item)" [disabled]="item.IsActive ? false : true">
-                              Kiểm tra thuộc tính?
-                              <span *ngIf="item.Product.DescriptionAttributeValues">({{item.Product.DescriptionAttributeValues | json}})</span>
-                        </tds-checkbox>
-                      </div>
-
-                      <div class="pt-3" *ngIf="item.Product.IsEnableRegexAttributeValues &&
-                        item.Product.DescriptionAttributeValues && item.Product.DescriptionAttributeValues.length > 0">
-                        <div class="flex rounded-md gap-x-1">
-                            <tds-form-field class="w-full">
-                                <tds-select [ngModel]="(item.ContentWithAttributes | stringToStringArray) || []" [ngModelOptions]="{standalone: true}"
-                                    (ngModelChange)="selectContentWithAttributes($event, item)" [disabled]="item.IsActive ? false : true"
-                                    placeholder='Nội dung nhập' mode="tags" [maxTagCount]="10" [backdrop]="true">
-                                </tds-select>
-                            </tds-form-field>
-                        </div>
-                      </div>
-
-                      <div class="pt-3">
-                        <tds-checkbox [(ngModel)]="item.Product.IsEnableRegexQty" [ngModelOptions]="{standalone: true}"
-                            (ngModelChange)="enableRegexQty($event, item)" [disabled]="item.IsActive ? false : true">
-                            Bật xử lý số lượng?
-                        </tds-checkbox>
-                      </div>
-
-                      <!-- <div class="pt-3">
-                          <tds-checkbox [(ngModel)]="item.Product.IsEnableOrderMultiple"
-                              (ngModelChange)="enableOrderMultiple($event, item)" [disabled]="item.IsActive ? false : true">
-                              Cho phép chốt nhiều lần (nhưng không cho trùng nội dung chốt)
-                          </tds-checkbox>
-                      </div> -->
-                    </div>
-
-                    <!-- Xóa mẫu -->
-                    <div class="pt-6">
-                        <button tds-button color="secondary" type="button" (click)="removeItemTemplate(item)"
-                            class="rounded-md border border-accent-3 border-solid w-full flex justify-center">
-
-                            <span class="flex items-center text-accent-3 text-body-2 font-semibold">
-                              <i class="tdsi-trash-fill text-lg leading-none mr-2 text-accent-3"></i>Xóa mẫu
-                            </span>
-                        </button>
-                    </div>
-                  </div>
-              </div>
-
-              <div *ngIf="dataModel.TextContentToOrders && dataModel.TextContentToOrders.length > 0">
+        <div class="flex items-center">
+            <div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Chốt tự động với nội dung:</div>
+            <div class="flex items-center gap-x-2.5">
                 <button tds-button color="secondary" (click)="addContentToOrders()">
                     <span class="flex items-center text-primary-1">
-                      <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
+                        <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
                     </span>
                 </button>
-              </div>
-          </virtual-scroller>
+
+                <button tds-button color="secondary" (click)="changeMoreTemplate()">
+                    <span class="flex items-center text-accent-9">
+                        <i class="tdsi-plus-fill text-lg leading-none mr-2 text-accent-9"></i>Thêm mẫu hàng loạt
+                    </span>
+                </button>
+
+                <button tds-button color="secondary" (click)="removeAllTemplate()" [disabled]="dataModel.TextContentToOrders && dataModel.TextContentToOrders.length == 0">
+                    <span class="flex items-center text-accent-3">
+                        <i class="tdsi-trash-fill text-lg leading-none mr-2 text-accent-3"></i>Xóa hết mẫu
+                    </span>
+                </button>
+            </div>
         </div>
-      </div>
 
-      <div *ngIf="dataModel.IsEnableOrderAuto" class="border border-neutral-3-300 border-solid rounded-lg p-4 w-full h-full">
-          <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Không tạo đơn với</div>
+        <!-- Thêm mẫu hàng loạt -->
+        <div class="border border-neutral-3-300 border-solid rounded-xl py-3 px-4 " *ngIf="isVisibleRangeGenerate">
+            <div class="grid grid-cols-2 gap-4">
+                <tds-form-field>
+                    <tds-label>Từ bắt đầu <span class="text-neutral-1-300">( không áp dụng )</span> </tds-label>
+                    <input tdsInput [(ngModel)]="prefixMoreTemplate" autocomplete="off" placeholder="Nhập từ bắt đầu" [ngModelOptions]="{standalone: true}"/>
+                </tds-form-field>
 
-          <div class="pt-4 grid grid-cols-2 gap-x-4">
-            <tds-form-field>
-                <tds-label>Khách hàng thuộc trạng thái</tds-label>
-                <tds-select valueField="text" textField="text" placeholder='Nhập nội dung và nhấn [Enter]' [valuePrimitive]="false"
-                    [data]="lstPartnerStatus" mode="tags" [maxTagCount]="10" [ngModelOptions]="{standalone: true}" [backdrop]="true"
-                    [ngModel]="dataModel.ExcludedStatusNames" (ngModelChange)="changeExcludedStatusNames($event)">
-                </tds-select>
-            </tds-form-field>
+                <tds-form-field>
+                    <tds-label>Từ kết thúc <span class="text-neutral-1-300">( không áp dụng )</span> </tds-label>
+                    <input tdsInput [(ngModel)]="suffixMoreTemplate" autocomplete="off" placeholder="Nhập từ kết thúc" [ngModelOptions]="{standalone: true}"/>
+                </tds-form-field>
 
-            <tds-form-field>
-                <tds-label>Bình luận có nội dung</tds-label>
-                    <tds-select [ngModel]="(dataModel.TextContentToExcludeOrder | stringToStringArray) || []" placeholder='Nhập nội dung và nhấn [Enter]'
-                        mode="tags" [maxTagCount]="10" [backdrop]="true" (ngModelChange)="changeTextContentToExcludeOrder($event)" [ngModelOptions]="{standalone: true}">
-                </tds-select>
-            </tds-form-field>
-          </div>
-          <div class="pt-4 ">
-              <tds-label>Danh sách số điện thoại seeding</tds-label>
-              <div class="flex gap-x-4 pt-2 items-center">
-                  <tds-form-field class="w-full">
-                      <tds-select [ngModel]="dataModel.ExcludedPhones" placeholder='Nhập nội dung và nhấn [Enter]' [backdrop]="true"
-                          mode="tags" [maxTagCount]="10" (ngModelChange)="changeExcludedPhones($event)" [ngModelOptions]="{standalone: true}">
-                      </tds-select>
-                  </tds-form-field>
+                <tds-form-field>
+                    <tds-label>Từ số</tds-label>
+                    <tds-input-number [(ngModel)]="fromMoreTemplate" [ngModelOptions]="{standalone: true}" [min]="0" [max]="20000" [step]="1" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas">
+                    </tds-input-number>
+                </tds-form-field>
 
-                  <button tds-button-icon color="secondary">
-                      <input type="file" (change)="addExcludedPhone($event)" id="ip_add_excel_phone" class="hidden">
-                      <label class="tdsi-note-fill flex items-center text-neutral-1-500" for="ip_add_excel_phone"></label>
-                  </button>
+                <tds-form-field>
+                    <tds-label>Đến số</tds-label>
+                    <tds-input-number [(ngModel)]="toMoreTemplate" [ngModelOptions]="{standalone: true}" [min]="1" [max]="20000" [step]="1" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas">
+                    </tds-input-number>
+                </tds-form-field>
+            </div>
 
-                  <button tds-button-icon color="secondary">
-                      <input type="file" (change)="addExcludedPhone($event)" id="ip_add_txt_phone" class="hidden">
-                      <label class="tdsi-excel-fill flex items-center text-neutral-1-500" for="ip_add_txt_phone"></label>
-                  </button>
-              </div>
-          </div>
-      </div>
+            <div class="flex justify-end gap-2.5 pt-4">
+                <button tds-button color="secondary" class="min-w-[100px]" (click)="onCannelMoreTemplate()">Hủy bỏ</button>
+                <button tds-button color="primary" class="min-w-[100px]" (click)="generateRangeTemplates()">Tạo mẫu</button>
+            </div>
+        </div>
 
-      <div *ngIf="dataModel.IsEnableOrderAuto" class="border border-neutral-3-300 border-solid rounded-lg p-4 w-full h-full">
-        <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Phân công hội thoại tự động</div>
-        <div class="flex flex-col gap-y-4 pt-4">
-          <div class="flex gap-x-2 items-center">
-            <tds-switch [(ngModel)]="dataModel.IsEnableAutoAssignUser" size="md" [ngModelOptions]="{standalone: true}"></tds-switch>
-            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật phân công đơn hàng tự động cho nhân viên?</div>
-          </div>
+        <!-- Config Product -->
+        <div class="h-full w-full" *ngIf="dataModel && dataModel.TextContentToOrders">
+           <div class="w-full h-[600px] table-textcontentorrder">
+              <tds-table #basicTable
+                [listData]="dataModel.TextContentToOrders"
+                [scroll]="{y:'100%', x:'hidden'}"
+                [showPagination]="false"
+                [frontPagination]="false"
+                [virtualItemSize]="100"
+                [loading]="isLoading"
+                [virtualForTrackBy]="trackByIndex">
+                <tbody>
+                  <ng-template tds-virtual-scroll let-item let-i="index">
+                      <tr *ngIf="item" class="p-4 h-full w-full">
+                          <div class="bg-neutral-3-50 rounded-lg p-4 h-full w-full" [ngClass]="!item.IsActive ? 'opacity-70' : ''">
 
-          <tds-form-field *ngIf="dataModel.IsEnableAutoAssignUser">
-            <tds-label> Chọn nhân viên để phân công: </tds-label>
-            <tds-select valueField="Id" textField="Name" [ngModel]="dataModel.Users" mode="tags" [maxTagCount]="10" [valuePrimitive]="false"
-              placeholder='Chọn nhân viên' [ngModelOptions]="{standalone: true}" [backdrop]="true"
-              [allowClear]="true" [data]="(lstUser$ | async) || []" mode="multiple" (ngModelChange)="changeUsers($event)">
-            </tds-select>
-          </tds-form-field>
+                            <div class="flex gap-2.5 items-center">
+                                <tds-badge [count]="iconTemplate" *ngIf="!item.Product" (click)="showModalListProduct(i)">
+                                    <a class="tdsi-box-fill text-lg text-neutral-1-500 p-0.5"></a>
+                                </tds-badge>
+
+                                <ng-template #iconTemplate>
+                                  <span class="tdsi-add-fill text-primary-1 absolute bottom-1 right-1 cursor-pointer
+                                        inline-block transform translate-x-1/2 translate-y-1/2 text-[12px] p-0.5 bg-neutral-3-50 rounded-full">
+                                  </span>
+                                </ng-template>
+
+                                <div class="text-info-500 text-body-2 font-semibold" *ngIf="item.Product as product; else notProduct">
+                                    {{ product.ProductName || product.ProductNameGet }} / {{ (product.Price || 0) | numberCustom }}
+                                    <span *ngIf="!item.IsActive" class="text-accent-3" style="font-style: italic;">(Đã tắt)</span>
+                                </div>
+
+                                <ng-template #notProduct>
+                                    <div class="text-info-500 text-body-2 font-semibold" (click)="showModalListProduct(i)">Chưa gán sản phẩm
+                                    </div>
+                                </ng-template>
+                            </div>
+
+                            <div class="pt-6">
+                                <div class="flex rounded-md gap-x-1">
+                                  <tds-form-field class="w-full">
+                                      <tds-select [ngModel]="(item.Content | stringToStringArray) || []"
+                                          (ngModelChange)="selectContent($event, item)" [disabled]="item.IsActive ? false : true"
+                                          [ngModelOptions]="{standalone: true}"  placeholder='Nội dung nhập'
+                                          mode="tags" [maxTagCount]="10" [backdrop]="true">
+                                      </tds-select>
+                                  </tds-form-field>
+                                </div>
+                            </div>
+
+                            <div *ngIf="item.Product">
+                              <div class="pt-4 flex items-center">
+                                  <div class="text-neutral-1-900 font-semibold text-body-2 w-1/4">Số lượng tối đa</div>
+                                  <div class="w-3/4">
+                                      <tds-form-field class="w-full">
+                                          <tds-input-number [min]="0"
+                                            [max]="20000" [step]="1" [disabled]="item.IsActive ? false : true"
+                                            placeholder="0"  [(ngModel)]="item.Product.Quantity" [ngModelOptions]="{standalone: true}"
+                                            [formatter]="numberWithCommas" [parser]="parserComas">
+                                          </tds-input-number>
+                                      </tds-form-field>
+                                  </div>
+                              </div>
+
+                              <div class="pt-3">
+                                <tds-checkbox [(ngModel)]="item.Product.IsEnableRegexAttributeValues" [ngModelOptions]="{standalone: true}"
+                                      (ngModelChange)="enableRegexAttributeValues($event, item)" [disabled]="item.IsActive ? false : true">
+                                      Kiểm tra thuộc tính?
+                                      <span *ngIf="item.Product.DescriptionAttributeValues">({{item.Product.DescriptionAttributeValues | json}})</span>
+                                </tds-checkbox>
+                              </div>
+
+                              <div class="pt-3" *ngIf="item.Product.IsEnableRegexAttributeValues &&
+                                item.Product.DescriptionAttributeValues && item.Product.DescriptionAttributeValues.length > 0">
+                                <div class="flex rounded-md gap-x-1">
+                                    <tds-form-field class="w-full">
+                                        <tds-select [ngModel]="(item.ContentWithAttributes | stringToStringArray) || []" [ngModelOptions]="{standalone: true}"
+                                            (ngModelChange)="selectContentWithAttributes($event, item)" [disabled]="item.IsActive ? false : true"
+                                            placeholder='Nội dung nhập' mode="tags" [maxTagCount]="10" [backdrop]="true">
+                                        </tds-select>
+                                    </tds-form-field>
+                                </div>
+                              </div>
+
+                              <div class="pt-3">
+                                <tds-checkbox [(ngModel)]="item.Product.IsEnableRegexQty" [ngModelOptions]="{standalone: true}"
+                                    (ngModelChange)="enableRegexQty($event, item)" [disabled]="item.IsActive ? false : true">
+                                    Bật xử lý số lượng?
+                                </tds-checkbox>
+                              </div>
+
+                              <!-- <div class="pt-3">
+                                  <tds-checkbox [(ngModel)]="item.Product.IsEnableOrderMultiple"
+                                      (ngModelChange)="enableOrderMultiple($event, item)" [disabled]="item.IsActive ? false : true">
+                                      Cho phép chốt nhiều lần (nhưng không cho trùng nội dung chốt)
+                                  </tds-checkbox>
+                              </div> -->
+                            </div>
+
+                            <!-- Xóa mẫu -->
+                            <div class="pt-6">
+                                <button tds-button color="secondary" type="button" (click)="removeItemTemplate(item)"
+                                    class="rounded-md border border-accent-3 border-solid w-full flex justify-center">
+
+                                    <span class="flex items-center text-accent-3 text-body-2 font-semibold">
+                                      <i class="tdsi-trash-fill text-lg leading-none mr-2 text-accent-3"></i>Xóa mẫu
+                                    </span>
+                                </button>
+                            </div>
+                          </div>
+                      </tr>
+                  </ng-template>
+                </tbody>
+              </tds-table>
+           </div>
+
+           <div *ngIf="dataModel.TextContentToOrders && dataModel.TextContentToOrders.length > 0">
+              <button tds-button color="secondary" (click)="addContentToOrders()">
+                  <span class="flex items-center text-primary-1">
+                    <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
+                  </span>
+              </button>
+           </div>
         </div>
       </div>
     </div>
+
+    <div *ngIf="dataModel.IsEnableOrderAuto" class="border border-neutral-3-300 border-solid rounded-lg p-4 w-full h-full">
+        <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Không tạo đơn với</div>
+
+        <div class="pt-4 grid grid-cols-2 gap-x-4">
+          <tds-form-field>
+              <tds-label>Khách hàng thuộc trạng thái</tds-label>
+              <tds-select valueField="text" textField="text" placeholder='Nhập nội dung và nhấn [Enter]' [valuePrimitive]="false"
+                  [data]="lstPartnerStatus" mode="tags" [maxTagCount]="10" [ngModelOptions]="{standalone: true}" [backdrop]="true"
+                  [ngModel]="dataModel.ExcludedStatusNames" (ngModelChange)="changeExcludedStatusNames($event)">
+              </tds-select>
+          </tds-form-field>
+
+          <tds-form-field>
+              <tds-label>Bình luận có nội dung</tds-label>
+                  <tds-select [ngModel]="(dataModel.TextContentToExcludeOrder | stringToStringArray) || []" placeholder='Nhập nội dung và nhấn [Enter]'
+                      mode="tags" [maxTagCount]="10" [backdrop]="true" (ngModelChange)="changeTextContentToExcludeOrder($event)" [ngModelOptions]="{standalone: true}">
+              </tds-select>
+          </tds-form-field>
+        </div>
+        <div class="pt-4 ">
+            <tds-label>Danh sách số điện thoại seeding</tds-label>
+            <div class="flex gap-x-4 pt-2 items-center">
+                <tds-form-field class="w-full">
+                    <tds-select [ngModel]="dataModel.ExcludedPhones" placeholder='Nhập nội dung và nhấn [Enter]' [backdrop]="true"
+                        mode="tags" [maxTagCount]="10" (ngModelChange)="changeExcludedPhones($event)" [ngModelOptions]="{standalone: true}">
+                    </tds-select>
+                </tds-form-field>
+
+                <button tds-button-icon color="secondary">
+                    <input type="file" (change)="addExcludedPhone($event)" id="ip_add_excel_phone" class="hidden">
+                    <label class="tdsi-note-fill flex items-center text-neutral-1-500" for="ip_add_excel_phone"></label>
+                </button>
+
+                <button tds-button-icon color="secondary">
+                    <input type="file" (change)="addExcludedPhone($event)" id="ip_add_txt_phone" class="hidden">
+                    <label class="tdsi-excel-fill flex items-center text-neutral-1-500" for="ip_add_txt_phone"></label>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="dataModel.IsEnableOrderAuto" class="border border-neutral-3-300 border-solid rounded-lg p-4 w-full h-full">
+      <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Phân công hội thoại tự động</div>
+      <div class="flex flex-col gap-y-4 pt-4">
+        <div class="flex gap-x-2 items-center">
+          <tds-switch [(ngModel)]="dataModel.IsEnableAutoAssignUser" size="md" [ngModelOptions]="{standalone: true}"></tds-switch>
+          <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật phân công đơn hàng tự động cho nhân viên?</div>
+        </div>
+
+        <tds-form-field *ngIf="dataModel.IsEnableAutoAssignUser">
+          <tds-label> Chọn nhân viên để phân công: </tds-label>
+          <tds-select valueField="Id" textField="Name" [ngModel]="dataModel.Users" mode="tags" [maxTagCount]="10" [valuePrimitive]="false"
+            placeholder='Chọn nhân viên' [ngModelOptions]="{standalone: true}" [backdrop]="true"
+            [allowClear]="true" [data]="(lstUser$ | async) || []" mode="multiple" (ngModelChange)="changeUsers($event)">
+          </tds-select>
+        </tds-form-field>
+      </div>
+    </div>
+  </div>
 </tds-spin>
 
