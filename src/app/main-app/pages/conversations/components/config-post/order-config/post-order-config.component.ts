@@ -209,6 +209,9 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
       Product: null
     } as TextContentToOrderDTO;
 
+    this.searchValue = '';
+    this.innerTextValue = '';
+
     this.dataModel.TextContentToOrders = [...this.dataModel.TextContentToOrders,...[item]];
     this.tdsTableComponent?.cdkVirtualScrollViewport?.scrollTo({ bottom: 0, behavior: 'smooth'});
   }
@@ -351,6 +354,8 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
   removeAllTemplate() {
     if(this.dataModel.TextContentToOrders) {
        this.dataModel.TextContentToOrders = [];
+       this.searchValue = '';
+       this.innerTextValue = '';
     }
   }
 
@@ -927,6 +932,11 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
 
   onSearchProduct() {
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
+  }
+
+  onClear() {
+    this.innerTextValue = '';
+    this.searchValue = '';
   }
 
   trackByIndex(_: number): number {
