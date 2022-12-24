@@ -1,3 +1,4 @@
+import { OrderByCommentItemDto } from './../../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { EnumSendMessageType } from './../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { CommentOrderPost, CommentOrder } from '../../../../dto/conversation/post/comment-order-post.dto';
 import { FacebookCommentService } from '../../../../services/facebook-comment.service';
@@ -613,7 +614,18 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     this.prepareLoadTab(item, order, null);
   }
 
-  loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
+  loadOrderByComment(item: ChatomniDataItemDto, order: OrderByCommentItemDto | any) {
+    let model = {
+      id: order.Id,
+      code: order.Code,
+      session: 0,
+      index: 0
+    } as CommentOrder
+
+    this.loadOrderByCode(item, model);
+  }
+
+  loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any) {
     this.isVisible = '';
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, order, null);
