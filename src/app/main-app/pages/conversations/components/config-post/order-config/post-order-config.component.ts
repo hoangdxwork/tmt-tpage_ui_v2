@@ -756,8 +756,6 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   prepareModelOrderConfig() {
-    if(!this.dataModel) return null;
-
     let model = {} as any;
     this.currentTeam = this.crmTeamService.getCurrentTeam();
 
