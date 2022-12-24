@@ -164,20 +164,21 @@
 
                 <div class="flex flex-row items-center w-1/2">
                     <div class="flex flex-row items-center flex-auto">
-                        <tds-label class="pr-2 whitespace-nowrap">Tìm kiếm theo thứ tự mẫu</tds-label>
+                        <tds-label class="pr-2 whitespace-nowrap">Tìm kiếm theo thứ tự</tds-label>
                         <tds-form-field class="flex flex-auto bg-white">
                             <input type="number" tdsInput placeholder="Nhập số" [tdsInputDebounce]="500" (inputKeyup)="onSearchPosition($event)"
                             [(ngModel)]="innerNumberValue" [ngModelOptions]="{standalone: true}"/>
                             <span tdsSuffix *ngIf="innerNumberValue" (click)="onClearFilterNumber()"><i class="tdsi-close-fill"></i></span>
                         </tds-form-field>
-                        
+
                     </div>
-                    <div class="w-[150px] flex items-center justify-end pl-2">Tổng số: 
+                    <div class="w-[150px] flex items-center justify-end pl-2">
+                        <span class="mr-2">Tổng số: </span>
                         <span class="font-semibold">{{ (dataModel.TextContentToOrders | simpleSearchProductPostConfig: searchValue)?.length || 0 }}</span>/
                         <span class="font-semibold">{{ dataModel.TextContentToOrders.length }}</span>
                     </div>
                 </div>
-                
+
             </div>
             <!-- Danh sách sản phẩm -->
             <div class="w-full h-[600px] table-textcontentorrder">
