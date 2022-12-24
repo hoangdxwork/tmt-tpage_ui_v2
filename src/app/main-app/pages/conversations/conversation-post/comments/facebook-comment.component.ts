@@ -88,6 +88,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   isShowAllNumber: boolean = false;
   visibleDrawerBillDetail: boolean = false;
   idPopoverVisible: string = '';
+  isVisible: string = '';
   order: TDSSafeAny;
 
   lstOfTag: TDSSafeAny[] = [];
@@ -266,15 +267,15 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
         if(this.virtualScroller) {
             this.virtualScroller.scrollToPosition(0);
-        };
+        }
 
     } else {
         this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
         this.vsSocketImports = [...this.vsSocketImports];
         this.lengthDataSource = this.lengthDataSource + 1;
     }
-    this.postEvent.countRealtimeMess$.emit(true);
-    
+
+    this.postEvent.countRealtimeMessage$.emit(true);
     this.cdRef.detectChanges();
   }
 
@@ -592,13 +593,13 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   addReplyComment(item: ChatomniDataItemDto, model: SendMessageModelDTO, data: ChatomniDataItemDto) {
-    if(data){
+    if(data) {
       data.ParentId = model.parent_id;
       data.ObjectId = item.ObjectId;
     }
 
     this.dataSource.Items = [...this.dataSource.Items, ...[data]];
-    this.postEvent.countRealtimeMess$.emit(true);
+    this.postEvent.countRealtimeMessage$.emit(true);
   }
 
   loadPartnerTab(item: ChatomniDataItemDto, orders: CommentOrder[] | any) {
@@ -613,6 +614,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
+    this.isVisible = '';
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, order, null);
   }
@@ -771,7 +773,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
       },
       error: (error: any) => {
           this.isLoadingiconMess = false;
-          
+
           this.message.error(error?.error?.message);
           this.cdRef.detectChanges();
       }
@@ -844,7 +846,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
       content: CreateTagModalComponent,
       viewContainerRef: this.viewContainerRef,
     });
-    
+
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (result: TDSSafeAny)=>{
         if(result){
@@ -914,5 +916,9 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
         this.vsStartIndex = event.startIndex;
     }
+  }
+
+  openPopover(id: string) {
+    this.isVisible = id;
   }
 }

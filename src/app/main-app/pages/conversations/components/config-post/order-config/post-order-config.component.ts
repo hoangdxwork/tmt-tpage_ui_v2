@@ -803,6 +803,8 @@ export class PostOrderConfigComponent implements OnInit {
 
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
+      this.facebookPostService.disableOnSave$.emit(true);
+      
       this.facebookPostService.updateOrderConfig(this.data.ObjectId, this.isImmediateApply, model).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           this.isLoading = false;
@@ -814,7 +816,8 @@ export class PostOrderConfigComponent implements OnInit {
           }
           let data = this.setData(this.dataModel);
           this.setDataDefault(data);
-
+          this.facebookPostService.disableOnSave$.emit(false);
+          
           this.cdRef.detectChanges();
         },
         error:(error) => {

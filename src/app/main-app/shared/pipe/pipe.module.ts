@@ -31,7 +31,7 @@ import { CompareToday } from './compare-today.pipe';
 import { StringToStringArrayPipe } from './string-stringArray.pipe';
 import { TagStatusColorPipe} from './tag-status-color.pipe';
 import { CheckTagSelectedCommnetPipe, CheckTagSelectedPipe, IndexSimpleDetailLiveCampainPipe } from './check-tag-selected.pipe';
-import { ConverseTimePipe } from './converse-time.pipe';
+import { ConverseTimePipe, DateDeleteOrderPipe } from './converse-time.pipe';
 import { BBcodeConvertPipe } from './bbcode-convert.pipe';
 import { LatestMessageTypePipe } from './lastest-message-type.pipe';
 import { NumericalOrder } from './numerical-order.pipe';
@@ -120,7 +120,8 @@ const cmp =[
   ImageLazyLoadPipe,
   CheckSocketTeamTypePipe,
   GetChannelAvatarPipe,
-  SimpleSearchProductPostConfiglPipe
+  SimpleSearchProductPostConfiglPipe,
+  DateDeleteOrderPipe
 ]
 
 @NgModule({

@@ -104,13 +104,15 @@ export class AutoLabelConfigComponent implements OnInit {
 
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
+      this.facebookPostService.disableOnSave$.emit(true);
 
       this.facebookPostService.updateAutoLabelConfigs(postId, model).pipe(takeUntil(this.destroy$))
         .subscribe({
           next:(res: any) => {
             this.message.success(Message.UpdatedSuccess);
             this.isLoading = false;
-
+            
+            this.facebookPostService.disableOnSave$.emit(false);
             this.cdRef.detectChanges();
           },
           error:(err) => {

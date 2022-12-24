@@ -85,6 +85,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   isShowAllNumber: boolean = false;
   visibleDrawerBillDetail: boolean = false;
   idPopoverVisible: string = '';
+  isVisible: string = '';
   order: TDSSafeAny;
 
   lstOfTag: TDSSafeAny[] = [];
@@ -274,7 +275,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
         this.lengthDataSource = this.lengthDataSource + 1;
     }
 
-    this.postEvent.countRealtimeMess$.emit(true);
+    this.postEvent.countRealtimeMessage$.emit(true);
     this.cdRef.detectChanges();
   }
 
@@ -474,7 +475,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
       error: error => {
           item.Data.is_reply = false;
           this.isReplyingComment = false;
-          
+
           this.message.error(error.error?.message);
           this.cdRef.detectChanges();
       }
@@ -546,14 +547,16 @@ export class TShopCommentComponent implements OnInit, OnChanges {
         this.chatomniCommentService.replyCommentTshop(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res: ChatomniDataItemDto[]) => {
               res.map((x: ChatomniDataItemDto)=> {
-                x["Status"] = ChatomniStatus.Done;
-                x.Type = this.team.Type == CRMTeamType._TShop? 91 : 0;
-                x.Data.Actor.Name = this.team.Name;
-                let data = { ...x};
-                this.addReplyComment(item, modelv2, data);
 
-                item.Data.is_reply = false;
-                this.isReplyingComment = false;
+                  x["Status"] = ChatomniStatus.Done;
+                  x.Type = this.team.Type == CRMTeamType._TShop? 91 : 0;
+                  x.Data.Actor.Name = this.team.Name;
+                  let data = { ...x};
+
+                  this.addReplyComment(item, modelv2, data);
+
+                  item.Data.is_reply = false;
+                  this.isReplyingComment = false;
               })
 
               this.message.success("Trả lời bình luận thành công.");
@@ -573,7 +576,6 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   prepareModelV2(message: string): any {
     const model = {} as ChatomniSendMessageModelDto;
     model.Message = message;
-
     return model;
   }
 
@@ -585,8 +587,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
     let datas = this.dataSource.Items.filter((x: ChatomniDataItemDto)=> x.Id != data.Id); // lọc lại vì nếu sokect trả về trước res
     this.dataSource.Items = [...datas, ...[data]];
-
-    this.postEvent.countRealtimeMess$.emit(true);
+    this.postEvent.countRealtimeMessage$.emit(true);
   }
 
   loadPartnerTab(item: ChatomniDataItemDto, orders: CommentOrder[] | any) {
@@ -601,6 +602,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   }
 
   loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
+    this.isVisible = '';
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, order, null);
   }
@@ -899,5 +901,9 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
         this.vsStartIndex = event.startIndex;
     }
+  }
+
+  openPopover(id: string) {
+    this.isVisible = id;
   }
 }

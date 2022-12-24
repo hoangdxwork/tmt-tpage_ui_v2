@@ -84,6 +84,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   isShowAllNumber: boolean = false;
   visibleDrawerBillDetail: boolean = false;
   idPopoverVisible: string = '';
+  isVisible: string = '';
   order: TDSSafeAny;
 
   lstOfTag: TDSSafeAny[] = [];
@@ -270,7 +271,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
         this.lengthDataSource = this.lengthDataSource + 1;
     }
 
-    this.postEvent.countRealtimeMess$.emit(true);
+    this.postEvent.countRealtimeMessage$.emit(true);
     this.cdRef.detectChanges();
   }
 
@@ -580,8 +581,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
 
     let datas = this.dataSource.Items.filter((x: ChatomniDataItemDto)=> x.Id != data.Id); // lọc lại vì nếu sokect trả về trước res
     this.dataSource.Items = [...datas, ...[data]];
-
-    this.postEvent.countRealtimeMess$.emit(true);
+    this.postEvent.countRealtimeMessage$.emit(true);
   }
 
   loadPartnerTab(item: ChatomniDataItemDto, orders: CommentOrder[] | any) {
@@ -596,6 +596,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
   }
 
   loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
+    this.isVisible = '';
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, order, null);
   }
@@ -889,5 +890,9 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
 
         this.vsStartIndex = event.startIndex;
     }
+  }
+
+  openPopover(id: string) {
+    this.isVisible = id;
   }
 }

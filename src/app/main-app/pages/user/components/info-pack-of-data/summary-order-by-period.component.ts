@@ -24,172 +24,6 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
   sumOrder!: SummaryOrderDTO;
 
   chartOptions = TDSChartOptions();
-
-  //Dữ liệu mẫu
-  test:any = {
-    "Current": {
-      "Total": 16543,
-      "Items": [
-        {
-          "Time": "2022-12-11T07:00:00+07:00",
-          "Count": 33
-        },
-        {
-          "Time": "2022-12-12T07:00:00+07:00",
-          "Count": 2815
-        },
-        {
-          "Time": "2022-12-13T07:00:00+07:00",
-          "Count": 2255
-        },
-        {
-          "Time": "2022-12-14T07:00:00+07:00",
-          "Count": 3304
-        },
-        {
-          "Time": "2022-12-15T07:00:00+07:00",
-          "Count": 2717
-        },
-        {
-          "Time": "2022-12-16T07:00:00+07:00",
-          "Count": 1132
-        },
-        {
-          "Time": "2022-12-17T07:00:00+07:00",
-          "Count": 1934
-        },
-        {
-          "Time": "2022-12-18T07:00:00+07:00",
-          "Count": 205
-        },
-        {
-          "Time": "2022-12-19T07:00:00+07:00",
-          "Count": 2148
-        }
-      ]
-    },
-    "Previous": {
-      "Total": 68234,
-      "Items": [
-        {
-          "Time": "2022-11-13T07:00:00+07:00",
-          "Count": 248
-        },
-        {
-          "Time": "2022-11-14T07:00:00+07:00",
-          "Count": 2649
-        },
-        {
-          "Time": "2022-11-15T07:00:00+07:00",
-          "Count": 2445
-        },
-        {
-          "Time": "2022-11-16T07:00:00+07:00",
-          "Count": 2280
-        },
-        {
-          "Time": "2022-11-17T07:00:00+07:00",
-          "Count": 2473
-        },
-        {
-          "Time": "2022-11-18T07:00:00+07:00",
-          "Count": 867
-        },
-        {
-          "Time": "2022-11-19T07:00:00+07:00",
-          "Count": 2024
-        },
-        {
-          "Time": "2022-11-20T07:00:00+07:00",
-          "Count": 2506
-        },
-        {
-          "Time": "2022-11-21T07:00:00+07:00",
-          "Count": 1392
-        },
-        {
-          "Time": "2022-11-22T07:00:00+07:00",
-          "Count": 2265
-        },
-        {
-          "Time": "2022-11-23T07:00:00+07:00",
-          "Count": 1613
-        },
-        {
-          "Time": "2022-11-24T07:00:00+07:00",
-          "Count": 2457
-        },
-        {
-          "Time": "2022-11-25T07:00:00+07:00",
-          "Count": 1898
-        },
-        {
-          "Time": "2022-11-26T07:00:00+07:00",
-          "Count": 3144
-        },
-        {
-          "Time": "2022-11-27T07:00:00+07:00",
-          "Count": 2286
-        },
-        {
-          "Time": "2022-11-28T07:00:00+07:00",
-          "Count": 3025
-        },
-        {
-          "Time": "2022-11-29T07:00:00+07:00",
-          "Count": 2537
-        },
-        {
-          "Time": "2022-11-30T07:00:00+07:00",
-          "Count": 1478
-        },
-        {
-          "Time": "2022-12-01T07:00:00+07:00",
-          "Count": 1283
-        },
-        {
-          "Time": "2022-12-02T07:00:00+07:00",
-          "Count": 2471
-        },
-        {
-          "Time": "2022-12-03T07:00:00+07:00",
-          "Count": 2811
-        },
-        {
-          "Time": "2022-12-04T07:00:00+07:00",
-          "Count": 3278
-        },
-        {
-          "Time": "2022-12-05T07:00:00+07:00",
-          "Count": 3736
-        },
-        {
-          "Time": "2022-12-06T07:00:00+07:00",
-          "Count": 3506
-        },
-        {
-          "Time": "2022-12-07T07:00:00+07:00",
-          "Count": 2659
-        },
-        {
-          "Time": "2022-12-08T07:00:00+07:00",
-          "Count": 3056
-        },
-        {
-          "Time": "2022-12-09T07:00:00+07:00",
-          "Count": 2147
-        },
-        {
-          "Time": "2022-12-10T07:00:00+07:00",
-          "Count": 3226
-        },
-        {
-          "Time": "2022-12-11T07:00:00+07:00",
-          "Count": 2474
-        }
-      ]
-    }
-  }
   isLoading: boolean = false;
 
   constructor(private eventSummaryService: EventSummaryService,
@@ -206,26 +40,18 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
   }
 
   loadData() {
-    // code mẫu xóa sau khi có dữ liệu
-    this.sumOrder = {...this.test};
-    this.buildData();
-    this.buildSummaryOrderChart();
-    //
-
     this.isLoading = true;
     this.tenantService.getInfo().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-        if(!res || !res?.Tenant || !res?.Tenant?.DateExpired) return;
-    
-        let until = new Date(res.Tenant.DateExpired);
-        let since = new Date(res.Tenant.DateExpired);
-        since = new Date(since.setDate(since.getDate() - 30));
 
-        this.eventSummaryService.getSummaryOrderByPeriod(since, until).pipe(takeUntil(this.destroy$)).subscribe({
+        if(!res || !res?.Tenant || !res?.Tenant?.DateExpired) return;
+        let period = this.getPackPeriod(res?.Tenant?.DateExpired);
+
+        this.eventSummaryService.getSummaryOrderByPeriod(period?.since, period?.until).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res:any) => {
             if(res?.Previous?.Items && res?.Current?.Items){
 
-              this.sumOrder = {...this.test};
+              this.sumOrder = {...res};
               this.buildData();
               this.buildSummaryOrderChart();
             }
@@ -251,7 +77,6 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
 
     if(currentDates.length > 0 && previousDates.length > 0) {
       let start = currentDates[0] < previousDates[0] ? currentDates[0] : previousDates[0];
-      let end = currentDates[currentDates.length - 1] > previousDates[previousDates.length - 1] ? currentDates[currentDates.length - 1] : previousDates[previousDates.length - 1];
       
       // check giá trị đầu
       if(start < currentDates[0]) {
@@ -362,7 +187,7 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
       },
       series: [
         {
-          name: 'Đơn hàng tháng trước',
+          name: 'Đơn hàng chu kỳ trước',
           type: 'line',
           emphasis: {
             focus: 'series'
@@ -370,7 +195,7 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
           data: this.sumOrder.Previous?.Items?.map(x => { return x.Count }) || []
         },
         {
-          name: 'Đơn hàng tháng hiện tại',
+          name: 'Đơn hàng chu kỳ hiện tại',
           type: 'line',
           xAxisIndex: 1,
           emphasis: {
@@ -382,6 +207,23 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
     }
 
     this.options = this.chartOptions.LineChartOption(chartComponent);
-    this.isLoading = false;
+  }
+
+  getPackPeriod(DateExpired: Date) {
+    let period = {
+      since: new Date(new Date(DateExpired).setDate(new Date(DateExpired).getDate() - 29)),
+      until: new Date(DateExpired)
+    }
+
+    let dateTmp = period.since;
+    let now = new Date();
+
+    while(now <= period.since) {
+      period.until = new Date(dateTmp.setDate(dateTmp.getDate() - 1));
+      period.since = new Date(dateTmp.setDate(dateTmp.getDate() - 29));
+      dateTmp = period.since;
+    }
+
+    return period;
   }
 }

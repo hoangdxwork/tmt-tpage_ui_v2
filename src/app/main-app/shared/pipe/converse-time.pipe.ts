@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { formatDate } from "@angular/common";
 import { Pipe, PipeTransform } from "@angular/core";
 import * as _ from "lodash";
@@ -16,5 +17,25 @@ export class ConverseTimePipe implements PipeTransform {
     let time = new Date().setHours(hour,minute);
 
     return formatDate(new Date(time),'h:mm a',en_US.locale);
+  }
+}
+
+@Pipe({
+  name: "dateDeleteOrder"
+})
+
+export class DateDeleteOrderPipe implements PipeTransform {
+
+  transform(date: any) {
+    if(date == null) {
+      return true;
+    }
+
+    let format = formatDate(new Date(date), 'dddd-MM-dd', en_US.locale);
+    if(format === '0101-01-01') {
+      return true;
+    }
+
+    return false;
   }
 }
