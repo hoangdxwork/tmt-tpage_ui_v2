@@ -208,9 +208,10 @@ export class PostOrderConfigComponent implements OnInit {
       ContentWithAttributes: null,
       IsActive: true,
       Product: null
-    } as any;
+    } as TextContentToOrderDTO;
 
-    this.dataModel.TextContentToOrders.push(item);
+    this.dataModel.TextContentToOrders = [...this.dataModel.TextContentToOrders,...[item]];
+    // this.trackByIndex(item.Index, item);
   }
 
   setIndexToOrder(data: TextContentToOrderDTO[]): number {
@@ -947,7 +948,7 @@ export class PostOrderConfigComponent implements OnInit {
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
   }
 
-  trackByIndex(_: number, data: any): number {
-    return data.Index;
+  trackByIndex(_: number): number {
+    return _;
   }
 }
