@@ -39,9 +39,6 @@ export class AutoLabelConfigComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.postId = this.data?.ObjectId;
-    if(!this.postId) return;
-    
     this.loadData();
     this.loadCRMTag();
   }
@@ -51,8 +48,10 @@ export class AutoLabelConfigComponent implements OnInit {
   }
 
   loadData() {
-    this.isLoading = true;
+    this.postId = this.data?.ObjectId;
+    if(!this.postId) return;
 
+    this.isLoading = true;
     this.facebookPostService.getAutoLabelConfigs(this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {

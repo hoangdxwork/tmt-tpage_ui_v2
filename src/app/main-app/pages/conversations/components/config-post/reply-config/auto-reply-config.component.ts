@@ -51,15 +51,14 @@ export class AutoReplyConfigComponent implements OnInit {
   ) { }
 
   ngOnInit(){
-    this.postId = this.data?.ObjectId;
-    if(!this.postId) return;
-
     this.loadData();
   }
 
   loadData() {
-    this.isLoading = true;
+    this.postId = this.data?.ObjectId;
+    if(!this.postId) return;
 
+    this.isLoading = true;
     this.facebookPostService.getAutoReplyConfigs(this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res: AutoReplyConfigDTO) => {

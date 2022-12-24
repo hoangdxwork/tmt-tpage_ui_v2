@@ -81,17 +81,15 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     private crmTeamService: CRMTeamService) { }
 
   ngOnInit(): void {
-    this.postId = this.data?.ObjectId;
-    if(!this.postId) return;
-
     this.loadData();
   }
 
   loadData() {
-    this.isLoading = true;
-
+    this.postId = this.data?.ObjectId;
     let currentTeam = this.crmTeamService.getCurrentTeam();
-    if(!currentTeam) return;
+
+    if(!this.postId || !currentTeam) return;
+    this.isLoading = true;
 
     this.facebookPostService.getOrderConfig(currentTeam.Id, this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({

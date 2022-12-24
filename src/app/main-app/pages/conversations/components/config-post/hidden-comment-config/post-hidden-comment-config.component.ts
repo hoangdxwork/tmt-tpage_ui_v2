@@ -34,15 +34,14 @@ export class PostHiddenCommentConfigComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.postId = this.data?.ObjectId;
-    if(!this.postId) return;
-
     this.loadData();
   }
 
   loadData() {
+    this.postId = this.data?.ObjectId;
+    if(!this.postId) return;
+    
     this.isLoading = true;
-
     this.facebookPostService.getHiddenCommentConfigs(this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {

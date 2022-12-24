@@ -94,9 +94,6 @@ export class PostOrderConfigComponent implements OnInit {
     private liveCampaignService: LiveCampaignService) { }
 
   ngOnInit(): void {
-    this.postId = this.data?.ObjectId;
-    if(!this.postId) return;
-
     this.loadData();
     this.loadUser();
     this.loadPartnerStatus();
@@ -153,10 +150,11 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   loadData() {
-    this.isLoading = true;
-
+    this.postId = this.data?.ObjectId;
     this.currentTeam = this.crmTeamService.getCurrentTeam();
-    if(!this.currentTeam) return;
+
+    if(!this.postId || !this.currentTeam) return;
+    this.isLoading = true;
 
     this.facebookPostService.getOrderConfig(this.currentTeam?.Id, this.postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
