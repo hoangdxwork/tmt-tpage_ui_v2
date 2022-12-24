@@ -211,7 +211,8 @@ export class PostOrderConfigComponent implements OnInit {
     } as TextContentToOrderDTO;
 
     this.dataModel.TextContentToOrders = [...this.dataModel.TextContentToOrders,...[item]];
-    // this.trackByIndex(item.Index, item);
+    this.searchValue = '';
+    this.innerTextValue = '';
   }
 
   setIndexToOrder(data: TextContentToOrderDTO[]): number {
@@ -351,6 +352,8 @@ export class PostOrderConfigComponent implements OnInit {
   removeAllTemplate() {
     if(this.dataModel.TextContentToOrders) {
        this.dataModel.TextContentToOrders = [];
+       this.searchValue = '';
+       this.innerTextValue = '';
     }
   }
 
@@ -946,6 +949,11 @@ export class PostOrderConfigComponent implements OnInit {
 
   onSearchProduct() {
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
+  }
+
+  onClear() {
+    this.innerTextValue = '';
+    this.searchValue = '';
   }
 
   trackByIndex(_: number): number {
