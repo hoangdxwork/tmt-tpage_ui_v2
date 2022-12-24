@@ -1,4 +1,3 @@
-import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
@@ -36,8 +35,7 @@ export class ConfigPostOutletComponent implements OnInit {
 
   constructor(private modalRef: TDSModalRef,
     private facebookPostService: FacebookPostService,
-    private destroy$: TDSDestroyService,
-    private message: TDSMessageService){ }
+    private destroy$: TDSDestroyService){ }
 
   ngOnInit(): void {
     this.eventEmitter();
