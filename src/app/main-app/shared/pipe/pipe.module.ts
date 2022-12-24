@@ -41,7 +41,7 @@ import { getColorStatusShowStatePipe, GetColorStatusStatePipe, GetOrderStatusPip
 import { OnSetWidthTagPipe } from './set-width-tagpipe';
 import { AvatarRandomPipe, GetAvatarCarrier, RandomColorPipe } from './get-avatar-carrier.pipe';
 import { HighlightSearchPipe } from './highlightSearch.pipe';
-import { SimpleSearchV2Pipe, SimpleSearchLiveCampaignDetailPipe, SimpleSearchQuickRepplyPipe, SimpleSearchProductPostConfiglPipe } from './simple-search.pipe';
+import { SimpleSearchV2Pipe, SimpleSearchLiveCampaignDetailPipe, SimpleSearchQuickRepplyPipe, SimpleSearchProductPostConfiglPipe, IndexTextContentOrderPipe } from './simple-search.pipe';
 import { ReduceSystemMessagePipe } from './reduce-system-message.pipe';
 import { SeenedMessagePipe } from './coversation-message.pipe';
 import { FilterIndexDBLivePipe } from './filter-indexdb-live.pipe';
@@ -121,7 +121,8 @@ const cmp =[
   CheckSocketTeamTypePipe,
   GetChannelAvatarPipe,
   SimpleSearchProductPostConfiglPipe,
-  DateDeleteOrderPipe
+  DateDeleteOrderPipe,
+  IndexTextContentOrderPipe
 ]
 
 @NgModule({
