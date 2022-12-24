@@ -180,18 +180,18 @@
                                             <tds-badge [count]="iconTemplate" *ngIf="!item.Product" (click)="showModalListProduct(i)">
                                                 <a class="tdsi-box-fill text-lg text-neutral-1-500 p-0.5"></a>
                                             </tds-badge>
-    
+
                                             <ng-template #iconTemplate>
                                             <span class="tdsi-add-fill text-primary-1 absolute bottom-1 right-1 cursor-pointer
                                                     inline-block transform translate-x-1/2 translate-y-1/2 text-[12px] p-0.5 bg-neutral-3-50 rounded-full">
                                             </span>
                                             </ng-template>
-    
+
                                             <div class="text-info-500 text-body-2 font-semibold" *ngIf="item.Product as product; else notProduct">
                                                 {{ product.ProductName || product.ProductNameGet }} / {{ (product.Price || 0) | numberCustom }}
                                                 <span *ngIf="!item.IsActive" class="text-accent-3" style="font-style: italic;">(Đã tắt)</span>
                                             </div>
-    
+
                                             <ng-template #notProduct>
                                                 <div class="text-info-500 text-body-2 font-semibold" (click)="showModalListProduct(i)">Chưa gán sản phẩm
                                                 </div>

@@ -1,3 +1,4 @@
+import { UOM } from './../../../../../dto/product-template/product-tempalte.dto';
 import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto, ProductTextContentToOrderDto } from './../../../../../dto/live-campaign/content-to-order.dto';
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
@@ -162,6 +163,12 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
           this.dataModel.TextContentToOrders = [];
           if(res.TextContentToOrders && res.TextContentToOrders.length > 0) {
               this.dataModel.TextContentToOrders = [...res.TextContentToOrders];
+
+              let index = 0;
+              this.dataModel.TextContentToOrders.map(x => {
+                  index = index + 1;
+                  x.Index = index;
+              })
           }
 
           if(res.LiveCampaignId) {
@@ -339,9 +346,14 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
   }
 
   removeItemTemplate(item: TextContentToOrderDTO) {
-    let datas = this.dataModel.TextContentToOrders.filter(x => x.Index !== item.Index);
-    this.dataModel.TextContentToOrders = [...datas];
+    let datas = [] as any[];
+    if(item && item.Product) {
+        datas = this.dataModel.TextContentToOrders?.filter(x => !(x.Product?.ProductId == item.Product.ProductId && x.Product?.UOMId == item.Product.UOMId));
+    } else {
+        datas = this.dataModel.TextContentToOrders.filter(x => x.Index !== item.Index);
+    }
 
+    this.dataModel.TextContentToOrders = [...datas];
     let index = 0;
     this.dataModel.TextContentToOrders.map(x => {
       index = index + 1;
@@ -380,21 +392,25 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    let index = this.dataModel.TextContentToOrders?.length || 0;
     for(let i = this.fromMoreTemplate; i <= this.toMoreTemplate; i++) {
-      let idx = this.dataModel.TextContentToOrders?.length;
+      index = index + 1;
       let content = `${this.prefixMoreTemplate}${i}${this.suffixMoreTemplate}`;
 
-      this.dataModel.TextContentToOrders.push({
-        Index: idx++,
+      let item = {
+        Index: index,
         Content: content,
         ContentWithAttributes: null,
         IsActive: true,
         Product: null
-      })
+      }
+
+      this.dataModel.TextContentToOrders = [...this.dataModel.TextContentToOrders, ...[item]];
     }
 
     this.dataModel.TextContentToOrders = [...this.dataModel.TextContentToOrders];
     this.message.info(Message.ConversationPost.AddMoreTemplateSuccess);
+    this.tdsTableComponent?.cdkVirtualScrollViewport?.scrollTo({ bottom: 0, behavior: 'smooth'});
   }
 
   addExcludedPhone(event: any) {
