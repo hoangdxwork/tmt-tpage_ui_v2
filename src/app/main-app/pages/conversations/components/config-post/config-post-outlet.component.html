@@ -49,5 +49,5 @@
 
 <div *tdsModalFooter class="w-full flex justify-end p-4 gap-x-4">
         <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
-        <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+        <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()" [disabled]="disableOnSave">Lưu</button>
 </div>

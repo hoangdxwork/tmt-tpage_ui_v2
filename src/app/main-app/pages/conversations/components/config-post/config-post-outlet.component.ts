@@ -1,3 +1,6 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { takeUntil } from 'rxjs';
+import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { TDSTabChangeEvent } from 'tds-ui/tabs';
 import { AutoLabelConfigComponent } from './label-config/auto-label-config.component';
 import { AutoReplyConfigComponent } from './reply-config/auto-reply-config.component';
@@ -6,15 +9,16 @@ import { PostOrderInteractionConfigComponent } from './interaction-config/post-o
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { PostOrderConfigComponent } from './order-config/post-order-config.component';
 import { TDSModalRef } from 'tds-ui/modal';
-import { Component, Input, ViewChild} from "@angular/core";
+import { Component, Input, OnInit, ViewChild} from "@angular/core";
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
   selector: 'config-post-outlet',
   templateUrl: './config-post-outlet.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class ConfigPostOutletComponent  {
+export class ConfigPostOutletComponent implements OnInit {
 
   @ViewChild(PostOrderConfigComponent) postOrderConfig!: TDSSafeAny;
   @ViewChild(PostOrderInteractionConfigComponent) postOrderInteractionConfig!: TDSSafeAny;
@@ -27,8 +31,23 @@ export class ConfigPostOutletComponent  {
 
   selectedIndex: number = 0;
   selectedIndexChanged: number = 0;
+  disableOnSave: boolean = false;
 
-  constructor(private modalRef: TDSModalRef){ }
+  constructor(private modalRef: TDSModalRef,
+    private facebookPostService: FacebookPostService,
+    private destroy$: TDSDestroyService){ }
+
+  ngOnInit(): void {
+    this.eventEmitter();
+  }
+
+  eventEmitter() {
+    this.facebookPostService.disableOnSave$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.disableOnSave = res;
+      }
+    })
+  }
 
   onSave(){
     switch(this.selectedIndex){
@@ -43,7 +62,7 @@ export class ConfigPostOutletComponent  {
       case 4:
         return this.autoLabelConfig.onSave();
     }
-    return
+    return;
   }
 
   onCannel(){
@@ -59,7 +78,7 @@ export class ConfigPostOutletComponent  {
       case 4:
         return this.autoLabelConfig.onCannel();
     }
-    return
+    return;
   }
 
   onSelectChange(event: TDSTabChangeEvent) {
