@@ -42,7 +42,7 @@ export class PostOrderConfigComponent implements OnInit {
 
   postId!: string;
   currentLiveCampaign?: LiveCampaignModel;
-  
+
   dataModel!: AutoOrderConfigDTO;
   isLoading: boolean = false;
 
@@ -60,6 +60,7 @@ export class PostOrderConfigComponent implements OnInit {
   currentTeam!: CRMTeamDTO | null;
   dataDefault!: AutoOrderConfigDTO;
   setOfCheckData= new Set<object>();
+
   innerTextValue: string = '';
   searchValue: string = '';
 
@@ -214,7 +215,6 @@ export class PostOrderConfigComponent implements OnInit {
     } as any;
 
     this.dataModel.TextContentToOrders.push(item);
-    this.virtualScroller.scrollToIndex(this.dataModel.TextContentToOrders.length);
   }
 
   setIndexToOrder(data: TextContentToOrderDTO[]): number {
@@ -634,13 +634,14 @@ export class PostOrderConfigComponent implements OnInit {
             let id = this.currentLiveCampaign?.Id as string;
             this.loadConfigLiveCampaignV2(id);
           }
-          this.isLoading = false;
 
+          this.isLoading = false;
           this.cdRef.detectChanges();
       },
       error: (err: any) => {
         this.isLoading = false;
         this.message.error(err?.error?.message);
+        this.cdRef.detectChanges();
       }
     })
   }
@@ -945,5 +946,9 @@ export class PostOrderConfigComponent implements OnInit {
 
   onSearchProduct(){
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
+  }
+
+  trackByIndex(_: number, data: any): number {
+    return data.Index;
   }
 }
