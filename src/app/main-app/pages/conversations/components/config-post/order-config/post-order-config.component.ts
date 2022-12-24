@@ -2,7 +2,7 @@ import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto, ProductTextContentToO
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, ViewContainerRef } from "@angular/core";
+import { ChangeDetectorRef, Component,  Input, OnInit,  ViewContainerRef } from "@angular/core";
 import { Observable } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
@@ -15,7 +15,7 @@ import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { AutoOrderConfigDTO, AutoOrderProductDTO, TextContentToOrderDTO } from '@app/dto/configs/post/post-order-config.dto';
+import { AutoOrderConfigDTO, TextContentToOrderDTO } from '@app/dto/configs/post/post-order-config.dto';
 import * as XLSX from 'xlsx';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ProductService } from '@app/services/product.service';
@@ -27,7 +27,6 @@ import { DataPouchDBDTO } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTmlpAttributesDto } from '@app/dto/product-template/product-attribute.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
-import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 
 @Component({
   selector: 'post-order-config',
@@ -38,11 +37,8 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 export class PostOrderConfigComponent implements OnInit {
 
   @Input() data!: ChatomniObjectsItemDto;
-  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
 
-  postId!: string;
   currentLiveCampaign?: LiveCampaignModel;
-
   dataModel!: AutoOrderConfigDTO;
   isLoading: boolean = false;
 
@@ -71,9 +67,8 @@ export class PostOrderConfigComponent implements OnInit {
     return value;
   } ;
 
-  parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
+  parserComas = (value: TDSSafeAny) => {
+    if(value != null){
       return TDSHelperString.replaceAll(value,'.','');
     }
     return value;
@@ -111,7 +106,7 @@ export class PostOrderConfigComponent implements OnInit {
           }
       },
       error: (error: any) => {
-        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+          this.message.error(error?.error?.message);
       }
     });
   }
@@ -123,7 +118,7 @@ export class PostOrderConfigComponent implements OnInit {
           this.lstInventory = res;
       },
       error:(err) => {
-          this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
+          this.message.error(err?.error?.message);
       }
     });
   }
@@ -151,14 +146,14 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   loadData() {
-    this.postId = this.data?.ObjectId;
+    let objectId = this.data?.ObjectId;
     this.currentTeam = this.crmTeamService.getCurrentTeam();
+    if(!objectId || !this.currentTeam) return;
 
-    if(!this.postId || !this.currentTeam) return;
     this.isLoading = true;
-
-    this.facebookPostService.getOrderConfig(this.currentTeam?.Id, this.postId).pipe(takeUntil(this.destroy$)).subscribe({
+    this.facebookPostService.getOrderConfig(this.currentTeam?.Id, objectId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
+
           this.dataModel = {...res};
           this.setDataDefault(res);
 
@@ -193,7 +188,8 @@ export class PostOrderConfigComponent implements OnInit {
       },
       error: (err: any) => {
           this.isLoading = false;
-          this.message.error( err?.error?.message || 'Đã xảy ra lỗi');
+          this.message.error(err?.error?.message);
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -235,7 +231,6 @@ export class PostOrderConfigComponent implements OnInit {
   changeTextContentToExcludeOrder(event: string[]) {
     let strs = [...this.checkInputMatch2(event)];
     let text = strs?.join(',') || null;
-
     this.dataModel.TextContentToExcludeOrder = text as any;
   }
 
@@ -460,7 +455,6 @@ export class PostOrderConfigComponent implements OnInit {
 
             this.dataModel.ExcludedPhones = result;
             event.target.value = null;
-
             break;
           }
       };
@@ -648,7 +642,7 @@ export class PostOrderConfigComponent implements OnInit {
 
   changeIsEnableOrderAuto(event: boolean) {
     let exist = event == true && this.dataModel && this.dataModel.TextContentToOrders
-    && this.dataModel.TextContentToOrders.length == 0 && this.currentLiveCampaign?.Id;
+       && this.dataModel.TextContentToOrders.length == 0 && this.currentLiveCampaign?.Id;
     if(exist) {
         let id = this.currentLiveCampaign?.Id as string;
         this.loadConfigLiveCampaignV2(id);
@@ -689,6 +683,7 @@ export class PostOrderConfigComponent implements OnInit {
       error: (err: any) => {
           this.isLoading = false;
           this.message.error(err?.error?.message);
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -794,12 +789,14 @@ export class PostOrderConfigComponent implements OnInit {
     if(model.Users == null){
       model.IsEnableAutoAssignUser = false;
     }
+
     return model;
   }
 
   onSave() {
-    if(!this.postId) {
-      this.message.error('Cập nhật thất bại');
+    let objectId = this.data?.ObjectId;
+    if(!objectId) {
+      this.message.error('Không tìm thấy id bài viết');
       return;
     }
 
@@ -808,26 +805,28 @@ export class PostOrderConfigComponent implements OnInit {
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
       this.facebookPostService.onChangeDisable$.emit(true);
-      
-      this.facebookPostService.updateOrderConfig(this.data.ObjectId, this.isImmediateApply, model).pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res) => {
+
+      this.facebookPostService.updateOrderConfig(objectId, this.isImmediateApply, model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res) => {
           this.isLoading = false;
 
           if(this.isImmediateApply) {
-              this.notificationService.success('Cập nhật cấu hình thành công', 'Áp dụng ngay cho những bình luận đã có');
+              this.notificationService.success('Cập nhật cấu hình chốt đơn thành công', 'Áp dụng ngay cho những bình luận đã có');
           } else {
-              this.message.success('Cập nhật cấu hình thành công');
+              this.message.success('Cập nhật cấu hình chốt đơn thành công');
           }
+
           let data = this.setData(this.dataModel);
           this.setDataDefault(data);
+
           this.facebookPostService.onChangeDisable$.emit(false);
-          
           this.cdRef.detectChanges();
         },
         error:(error) => {
             this.isLoading = false;
             this.facebookPostService.onChangeDisable$.emit(false);
-            this.message.error(`${error?.error?.message || 'Đã xảy ra lỗi'}`);
+            this.message.error(error?.error?.message);
+            this.cdRef.detectChanges();
         }
       });
     }
@@ -936,7 +935,7 @@ export class PostOrderConfigComponent implements OnInit {
   checkTextContentToOrders() {
     this.setOfCheckData
     let exist = true;
-    this.dataModel.TextContentToOrders.map(x=> {
+    this.dataModel.TextContentToOrders.map(x => {
       if(!this.setOfCheckData.has(x)) {
         exist = false;
       }
@@ -944,7 +943,7 @@ export class PostOrderConfigComponent implements OnInit {
     return exist;
   }
 
-  onSearchProduct(){
+  onSearchProduct() {
     this.searchValue = TDSHelperString.stripSpecialChars(this.innerTextValue?.toLocaleLowerCase()).trim();
   }
 

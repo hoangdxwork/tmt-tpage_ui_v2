@@ -21,7 +21,6 @@ export class PostHiddenCommentConfigComponent implements OnInit {
   @Input() data!: ChatomniObjectsItemDto;
 
   dataModel!: AutoHiddenConfigDTO;
-  postId!: string;
   lstContentOfCommentForAutoHide: string[] = [];
   isLoading: boolean = false;
 
@@ -30,20 +29,18 @@ export class PostHiddenCommentConfigComponent implements OnInit {
     private message: TDSMessageService,
     private facebookPostService: FacebookPostService,
     private destroy$: TDSDestroyService,
-    private cdRef: ChangeDetectorRef
-  ) { }
+    private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.loadData();
   }
 
   loadData() {
-    this.postId = this.data?.ObjectId;
-    if(!this.postId) return;
-    
+    let objectId = this.data?.ObjectId;
+    if(!objectId) return;
+
     this.isLoading = true;
-    this.facebookPostService.getHiddenCommentConfigs(this.postId).pipe(takeUntil(this.destroy$))
-      .subscribe({
+    this.facebookPostService.getHiddenCommentConfigs(objectId).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           this.dataModel = {...res};
 
@@ -56,9 +53,10 @@ export class PostHiddenCommentConfigComponent implements OnInit {
         },
         error:(err) => {
           this.isLoading = false;
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadHiddenCommentConfig);
+          this.message.error(err?.error?.message);
+          this.cdRef.detectChanges();
         }
-      });
+    });
   }
 
   changeContentOfCommentForAutoHide(event:string[]){
@@ -66,7 +64,7 @@ export class PostHiddenCommentConfigComponent implements OnInit {
     event.forEach(x => {
       if(x.includes(',')){
         this.message.error('Ký tự không hợp lệ');
-        
+
         event.pop();
       }
     });
@@ -82,8 +80,9 @@ export class PostHiddenCommentConfigComponent implements OnInit {
   }
 
   onSave() {
-    if(!this.postId) {
-      this.message.error('Cập nhật thất bại');
+    let objectId = this.data?.ObjectId;
+    if(!objectId) {
+      this.message.error('Không tìm thấy id bài viết');
       return;
     }
 
@@ -91,21 +90,21 @@ export class PostHiddenCommentConfigComponent implements OnInit {
     this.isLoading = true;
     this.facebookPostService.onChangeDisable$.emit(true);
 
-    this.facebookPostService.updateHiddenCommentConfigs(this.postId, model).pipe(takeUntil(this.destroy$))
-      .subscribe({
+    this.facebookPostService.updateHiddenCommentConfigs(objectId, model).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
-          this.message.success(Message.UpdatedSuccess);
-          this.isLoading = false;
-          
-          this.facebookPostService.onChangeDisable$.emit(false);
-          this.cdRef.detectChanges();
+            this.isLoading = false;
+            this.message.success("Cập nhật ẩn bình luận thành công");
+
+            this.facebookPostService.onChangeDisable$.emit(false);
+            this.cdRef.detectChanges();
         },
         error:(error) => {
-          this.isLoading = false;
-          this.facebookPostService.onChangeDisable$.emit(false);
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+            this.isLoading = false;
+            this.facebookPostService.onChangeDisable$.emit(false);
+            this.message.error(error?.error?.message);
+            this.cdRef.detectChanges();
         }
-      });
+    });
   }
 
   onCannel() {

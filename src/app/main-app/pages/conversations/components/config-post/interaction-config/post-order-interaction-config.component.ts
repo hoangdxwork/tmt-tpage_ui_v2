@@ -5,7 +5,6 @@ import { takeUntil } from 'rxjs/operators';
 import { ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
-import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
@@ -22,7 +21,6 @@ export class PostOrderInteractionConfigComponent implements OnInit {
   @Input() data!: ChatomniObjectsItemDto;
 
   dataModel!:AutoOrderConfigDTO;
-  postId!: string;
   isLoading: boolean = false;
   isEditReply: boolean = false;
 
@@ -85,28 +83,29 @@ export class PostOrderInteractionConfigComponent implements OnInit {
   }
 
   loadData() {
-    this.postId = this.data?.ObjectId;
+    let objectId = this.data?.ObjectId;
     let currentTeam = this.crmTeamService.getCurrentTeam();
 
-    if(!this.postId || !currentTeam) return;
+    if(!objectId || !currentTeam) return;
     this.isLoading = true;
 
-    this.facebookPostService.getOrderConfig(currentTeam.Id, this.postId).pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next:(res) => {
-          if(TDSHelperString.hasValueString(res?.OrderReplyTemplate)) {
-            res.OrderReplyTemplate = res.OrderReplyTemplate?.replace(/\n/g, '<p><br></p>');
-          }
+    this.facebookPostService.getOrderConfig(currentTeam.Id, objectId).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res) => {
 
-          this.dataModel = {...res};
-          this.isLoading = false;
-          this.cdRef.detectChanges();
-        },
-        error:(err) => {
-          this.isLoading = false;
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadInteractionConfig);
+        if(TDSHelperString.hasValueString(res?.OrderReplyTemplate)) {
+          res.OrderReplyTemplate = res.OrderReplyTemplate?.replace(/\n/g, '<p><br></p>');
         }
-      });
+
+        this.dataModel = {...res};
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      },
+      error:(err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message);
+        this.cdRef.detectChanges();
+      }
+    });
   }
 
   prepareModel() {
@@ -121,8 +120,9 @@ export class PostOrderInteractionConfigComponent implements OnInit {
   }
 
   onSave() {
-    if(!this.postId) {
-      this.message.error('Cập nhật thất bại');
+    let objectId = this.data?.ObjectId;
+    if(!objectId) {
+      this.message.error('Không tìm thấy id bài viết');
       return;
     }
 
@@ -130,19 +130,19 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     this.isLoading = true;
     this.facebookPostService.onChangeDisable$.emit(true);
 
-    this.facebookPostService.updateInteractionConfig(this.postId, model).pipe(takeUntil(this.destroy$))
-      .subscribe({
+    this.facebookPostService.updateInteractionConfig(objectId, model).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
-          this.message.success(Message.UpdatedSuccess);
           this.isLoading = false;
-          
+          this.message.success('Cập nhật cấu hình tương tác chốt đơn thành công');
+
           this.facebookPostService.onChangeDisable$.emit(false);
           this.cdRef.detectChanges();
         },
         error:(error) => {
           this.isLoading = false;
           this.facebookPostService.onChangeDisable$.emit(false);
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+          this.message.error(error?.error?.message);
+          this.cdRef.detectChanges();
         }
       });
   }

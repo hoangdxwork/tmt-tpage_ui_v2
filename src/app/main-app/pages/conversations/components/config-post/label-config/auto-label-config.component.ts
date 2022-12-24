@@ -24,10 +24,8 @@ export class AutoLabelConfigComponent implements OnInit {
   @Input() data!: ChatomniObjectsItemDto;
 
   dataModel!: AutoLabelConfigDTO;
-  postId!: string;
   lstTagOnPattern: any[] = [];
   isLoading: boolean = false;
-
   lstTags$!: Observable<CRMTagDTO[]>;
 
   constructor(private message: TDSMessageService,
@@ -35,8 +33,7 @@ export class AutoLabelConfigComponent implements OnInit {
     private facebookPostService: FacebookPostService,
     private crmTagService: CRMTagService,
     private destroy$: TDSDestroyService,
-    private cdRef: ChangeDetectorRef
-  ) { }
+    private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -48,32 +45,32 @@ export class AutoLabelConfigComponent implements OnInit {
   }
 
   loadData() {
-    this.postId = this.data?.ObjectId;
-    if(!this.postId) return;
+    let objectId = this.data?.ObjectId;
+    if(!objectId) return;
 
     this.isLoading = true;
-    this.facebookPostService.getAutoLabelConfigs(this.postId).pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res) => {
-          this.dataModel = {...res};
+    this.facebookPostService.getAutoLabelConfigs(objectId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.dataModel = {...res};
 
-          if (TDSHelperArray.hasListValue(this.dataModel?.TagOnPattern)) {
-            this.lstTagOnPattern = this.dataModel.TagOnPattern?.map(tag => {
-              return {
-                CrmTag: tag.CrmTag,
-                CrmKey: tag.CrmKey?.split(",") || []
-              }
-            });
-          }
-          
-          this.isLoading = false;
-          this.cdRef.detectChanges();
-        },
-        error:(err) => {
-          this.isLoading = false;
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadLabelConfig);
+        if (TDSHelperArray.hasListValue(this.dataModel?.TagOnPattern)) {
+          this.lstTagOnPattern = this.dataModel.TagOnPattern?.map(tag => {
+            return {
+              CrmTag: tag.CrmTag,
+              CrmKey: tag.CrmKey?.split(",") || []
+            }
+          });
         }
-      });
+
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      },
+      error:(err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message);
+        this.cdRef.detectChanges();
+      }
+    });
   }
 
   addCRMKeyTag(){
@@ -99,8 +96,9 @@ export class AutoLabelConfigComponent implements OnInit {
   }
 
   onSave() {
-    if(!this.postId) {
-      this.message.error('Cập nhật thất bại');
+    let objectId = this.data.ObjectId;
+    if(!objectId) {
+      this.message.error('Không tìm thấy id bài viết');
       return;
     }
 
@@ -110,21 +108,21 @@ export class AutoLabelConfigComponent implements OnInit {
       this.isLoading = true;
       this.facebookPostService.onChangeDisable$.emit(true);
 
-      this.facebookPostService.updateAutoLabelConfigs(this.postId, model).pipe(takeUntil(this.destroy$))
-        .subscribe({
+      this.facebookPostService.updateAutoLabelConfigs(objectId, model).pipe(takeUntil(this.destroy$)).subscribe({
           next:(res: any) => {
-            this.message.success(Message.UpdatedSuccess);
             this.isLoading = false;
-            
+            this.message.success('Cập nhật gán thẻ hội thoại thành công');
+
             this.facebookPostService.onChangeDisable$.emit(false);
             this.cdRef.detectChanges();
           },
           error:(err) => {
             this.isLoading = false;
             this.facebookPostService.onChangeDisable$.emit(false);
-            this.message.error(`${err?.error?.message || JSON.stringify(err)}` || Message.ConversationPost.updateConfigFail);
+            this.message.error(err?.error?.message);
+            this.cdRef.detectChanges();
           }
-        });
+      });
     }
   }
 
