@@ -7,7 +7,7 @@ import { ChatomniSendMessageModelDto } from '../../../../dto/conversation-all/ch
 import { ChatomniMessageFacade } from '../../../../services/chatomni-facade/chatomni-message.facade';
 import { ChatomniSendMessageService } from '../../../../services/chatomni-service/chatomni-send-message.service';
 import { CRMTeamType } from '../../../../dto/team/chatomni-channel.dto';
-import { ChatomniMessageType, ChatomniStatus } from '../../../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniMessageType, ChatomniStatus, OrderByCommentItemDto } from '../../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { ResponseAddMessCommentDtoV2 } from '../../../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
@@ -21,7 +21,6 @@ import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -45,6 +44,9 @@ import { OrderPartnerByLivecampaignDto } from '@app/dto/partner/order-partner-li
 import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
 import { LiveCampaignFastSaleOrderDataDto } from '@app/dto/socket-io/livecampain-fastsaleorder.dto';
+import { formatDate } from '@angular/common';
+import { en_US, vi_VN } from "tds-ui/i18n";
+
 @Component({
   selector: 'tshop-comment',
   templateUrl: './tshop-comment.component.html',
@@ -601,8 +603,32 @@ export class TShopCommentComponent implements OnInit, OnChanges {
     this.prepareLoadTab(item, order, null);
   }
 
-  loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
+  getFormatDate(date: any) {
+    return formatDate(new Date(date), 'dddd-MM-dd', en_US.locale);
+  }
+
+  loadOrderItemByComment(item: ChatomniDataItemDto, order: OrderByCommentItemDto | any) {
+    if(order.DateDeleted) {
+      let format = this.getFormatDate(order.DateDeleted);
+      if(format != '0101-01-01') {
+          this.message.info('Đơn hàng không tồn tại');
+          return;
+      }
+    }
+
+    let model = {
+        id: order.Id,
+        code: order.Code,
+        session: 0,
+        index: 0
+    } as CommentOrder;
+
     this.isVisible = '';
+    this.idPopoverVisible = '';
+    this.loadOrderByCode(item, model);
+  }
+
+  loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, order, null);
   }
@@ -864,6 +890,9 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {
+    this.isVisible = '';
+    this.idPopoverVisible = '';
+
     let exisData = this.dataSource && this.dataSource.Items && this.dataSource.Items.length > 0 && event && event.scrollStartPosition > 0;
     if(exisData) {
         const vsEnd = Number(this.dataSource.Items.length - 1 ) == Number(event.endIndex) && !this.disableNextUrl as boolean;
@@ -879,6 +908,9 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   }
 
   vsStart(event: NgxVirtualScrollerDto) {
+    this.isVisible = '';
+    this.idPopoverVisible = '';
+
     if(event && Number(event.startIndex) >= 0) {
         // TODO: mapping dữ liệu socket ko có trong danh sách
         let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1  && event.startIndex <= 2
@@ -896,7 +928,6 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
                 this.cdRef.detectChanges();
             }, 350);
-
         }
 
         this.vsStartIndex = event.startIndex;
