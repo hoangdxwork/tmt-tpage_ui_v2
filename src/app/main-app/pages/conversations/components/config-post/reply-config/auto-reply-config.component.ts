@@ -20,6 +20,7 @@ export class AutoReplyConfigComponent implements OnInit {
 
   @Input() data!: ChatomniObjectsItemDto;
 
+  postId!: string;
   dataModel!: AutoReplyConfigDTO;
   isLoading: boolean = false;
 
@@ -50,24 +51,29 @@ export class AutoReplyConfigComponent implements OnInit {
   ) { }
 
   ngOnInit(){
-    this.loadData(this.data.ObjectId);
+    this.loadData();
   }
 
-  loadData(postId: string) {
-    this.isLoading = true;
+  loadData() {
+    this.postId = this.data?.ObjectId;
+    if(!this.postId) return;
 
-    this.facebookPostService.getAutoReplyConfigs(postId).pipe(takeUntil(this.destroy$))
+    this.isLoading = true;
+    this.facebookPostService.getAutoReplyConfigs(this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res: AutoReplyConfigDTO) => {
           this.dataModel = {...res};
-          this.lstCommentNotAutoReply = res.ContentOfCommentForNotAutoReply && res.ContentOfCommentForNotAutoReply !== '' ? res.ContentOfCommentForNotAutoReply?.split(",") : [];
+
+          if(TDSHelperString.hasValueString(res.ContentOfCommentForNotAutoReply)) {
+            this.lstCommentNotAutoReply = res.ContentOfCommentForNotAutoReply?.split(",");
+          }
 
           this.isLoading = false;
           this.cdRef.detectChanges();
         },
         error:(err) => {
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadReplyConfig);
           this.isLoading = false;
+          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadReplyConfig);
         }
       });
   }
@@ -84,8 +90,7 @@ export class AutoReplyConfigComponent implements OnInit {
   }
 
   prepareModel(): any {
-    let model = Object.assign(this.dataModel) as AutoReplyConfigDTO;
-
+    let model = {...this.dataModel} as AutoReplyConfigDTO;
     model.ContentOfCommentForAutoReply = this.lstCommentAutoReply?.join(',');
     model.ContentOfCommentForNotAutoReply = this.lstCommentNotAutoReply?.join(',');
 
@@ -93,23 +98,27 @@ export class AutoReplyConfigComponent implements OnInit {
   }
 
   onSave(){
-    let model = this.prepareModel();
-    let postId = this.data?.ObjectId;
-    
-    this.isLoading = true;
-    this.facebookPostService.disableOnSave$.emit(true);
+    if(!this.postId) {
+      this.message.error('Cập nhật thất bại');
+      return;
+    }
 
-    this.facebookPostService.updateAutoReplyConfigs(postId, model).pipe(takeUntil(this.destroy$))
+    let model = this.prepareModel();
+    this.isLoading = true;
+    this.facebookPostService.onChangeDisable$.emit(true);
+
+    this.facebookPostService.updateAutoReplyConfigs(this.postId, model).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res: any) => {
           this.message.success(Message.UpdatedSuccess);
           this.isLoading = false;
-          this.facebookPostService.disableOnSave$.emit(false);
+          this.facebookPostService.onChangeDisable$.emit(false);
           this.cdRef.detectChanges();
         }, 
         error:(err) => {
           this.message.error(`${err?.error?.message || JSON.stringify(err)}` || Message.ConversationPost.updateConfigFail);
           this.isLoading = false;
+          this.facebookPostService.onChangeDisable$.emit(false);
         }
       });
   }

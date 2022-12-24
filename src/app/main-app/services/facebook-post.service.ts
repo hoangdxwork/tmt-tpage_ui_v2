@@ -24,7 +24,7 @@ export class FacebookPostService extends BaseSevice {
   queryObj: any;
 
   public onLoadedPost$: EventEmitter<any> = new EventEmitter();
-  public disableOnSave$: EventEmitter<boolean> = new EventEmitter<boolean>();
+  public onChangeDisable$: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   private readonly _keyCacheDefaultProductPost = '_keycache_default_product_post';
 

@@ -24,6 +24,7 @@ export class AutoLabelConfigComponent implements OnInit {
   @Input() data!: ChatomniObjectsItemDto;
 
   dataModel!: AutoLabelConfigDTO;
+  postId!: string;
   lstTagOnPattern: any[] = [];
   isLoading: boolean = false;
 
@@ -38,7 +39,7 @@ export class AutoLabelConfigComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadData(this.data.ObjectId);
+    this.loadData();
     this.loadCRMTag();
   }
 
@@ -46,45 +47,44 @@ export class AutoLabelConfigComponent implements OnInit {
     this.lstTags$ = this.crmTagService.dataActive$.pipe(takeUntil(this.destroy$));
   }
 
-  loadData(pageId: string) {
-    this.isLoading = true;
+  loadData() {
+    this.postId = this.data?.ObjectId;
+    if(!this.postId) return;
 
-    this.facebookPostService.getAutoLabelConfigs(pageId).pipe(takeUntil(this.destroy$))
+    this.isLoading = true;
+    this.facebookPostService.getAutoLabelConfigs(this.postId).pipe(takeUntil(this.destroy$))
       .subscribe({
-        next:res => {
+        next: (res) => {
           this.dataModel = {...res};
 
           if (TDSHelperArray.hasListValue(this.dataModel?.TagOnPattern)) {
-            this.lstTagOnPattern = this.dataModel.TagOnPattern.map(tag => {
+            this.lstTagOnPattern = this.dataModel.TagOnPattern?.map(tag => {
               return {
                 CrmTag: tag.CrmTag,
                 CrmKey: tag.CrmKey?.split(",") || []
               }
             });
           }
-
+          
           this.isLoading = false;
-
           this.cdRef.detectChanges();
         },
         error:(err) => {
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadLabelConfig);
           this.isLoading = false;
-
-          this.cdRef.detectChanges();
+          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadLabelConfig);
         }
       });
   }
 
   addCRMKeyTag(){
-    this.lstTagOnPattern.push({
+    this.lstTagOnPattern?.push({
       CrmTag: null,
       CrmKey: []
     })
   }
 
   deleteCRMKeyTag(index: number) {
-    this.lstTagOnPattern.splice(index, 1);
+    this.lstTagOnPattern?.splice(index, 1);
   }
 
   changeTagOnPattern(event:string[], index: number) {
@@ -95,40 +95,42 @@ export class AutoLabelConfigComponent implements OnInit {
       }
     });
 
-    this.lstTagOnPattern[index].CrmKey = [...event];
+    this.lstTagOnPattern[index]!.CrmKey = [...event];
   }
 
   onSave() {
+    if(!this.postId) {
+      this.message.error('Cập nhật thất bại');
+      return;
+    }
+
     let model = this.prepareModel();
-    let postId = this.data?.ObjectId;
 
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
-      this.facebookPostService.disableOnSave$.emit(true);
+      this.facebookPostService.onChangeDisable$.emit(true);
 
-      this.facebookPostService.updateAutoLabelConfigs(postId, model).pipe(takeUntil(this.destroy$))
+      this.facebookPostService.updateAutoLabelConfigs(this.postId, model).pipe(takeUntil(this.destroy$))
         .subscribe({
           next:(res: any) => {
             this.message.success(Message.UpdatedSuccess);
             this.isLoading = false;
             
-            this.facebookPostService.disableOnSave$.emit(false);
+            this.facebookPostService.onChangeDisable$.emit(false);
             this.cdRef.detectChanges();
           },
           error:(err) => {
-            this.message.error(`${err?.error?.message || JSON.stringify(err)}` || Message.ConversationPost.updateConfigFail);
             this.isLoading = false;
-
-            this.cdRef.detectChanges();
+            this.facebookPostService.onChangeDisable$.emit(false);
+            this.message.error(`${err?.error?.message || JSON.stringify(err)}` || Message.ConversationPost.updateConfigFail);
           }
         });
     }
   }
 
-  prepareModel(): AutoLabelConfigDTO {
+  prepareModel() {
     let model = {...this.dataModel} as AutoLabelConfigDTO;
-
-    model.TagOnPattern = this.lstTagOnPattern.map((tag: any) => {
+    model.TagOnPattern = this.lstTagOnPattern?.map((tag: any) => {
       return {
         CrmTag: tag.CrmTag,
         CrmKey: tag.CrmKey?.join(",") || null
@@ -139,15 +141,15 @@ export class AutoLabelConfigComponent implements OnInit {
   }
 
   isCheckValue(model: AutoLabelConfigDTO): number {
-    let isAssignOnPattern = model.AssignOnPattern;
+    let isAssignOnPattern = model?.AssignOnPattern;
 
     if(isAssignOnPattern === true) {
-      if(!TDSHelperArray.hasListValue(model.TagOnPattern)) {
+      if(!TDSHelperArray.hasListValue(model?.TagOnPattern)) {
         this.message.error(Message.ConversationPost.TagOnPatternEmpty);
         return 0;
       }
 
-      let checkTagOnPattern = model.TagOnPattern.findIndex(x => !TDSHelperString.hasValueString(x.CrmKey) || !TDSHelperObject.hasValue(x.CrmTag)) as number;
+      let checkTagOnPattern = model?.TagOnPattern?.findIndex(x => !TDSHelperString.hasValueString(x.CrmKey) || !TDSHelperObject.hasValue(x.CrmTag)) as number;
 
       if(checkTagOnPattern > -1) {
         this.message.error(Message.ConversationPost.TagOnPatternEmpty);

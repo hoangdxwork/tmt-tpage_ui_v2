@@ -1,3 +1,4 @@
+import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
@@ -31,20 +32,21 @@ export class ConfigPostOutletComponent implements OnInit {
 
   selectedIndex: number = 0;
   selectedIndexChanged: number = 0;
-  disableOnSave: boolean = false;
+  isDisable: boolean = false;
 
   constructor(private modalRef: TDSModalRef,
     private facebookPostService: FacebookPostService,
-    private destroy$: TDSDestroyService){ }
+    private destroy$: TDSDestroyService,
+    private message: TDSMessageService){ }
 
   ngOnInit(): void {
     this.eventEmitter();
   }
 
   eventEmitter() {
-    this.facebookPostService.disableOnSave$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
-        this.disableOnSave = res;
+    this.facebookPostService.onChangeDisable$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: boolean) => {
+        this.isDisable = res;
       }
     })
   }
