@@ -51,40 +51,42 @@ export class AutoLabelConfigComponent implements OnInit {
 
     this.facebookPostService.getAutoLabelConfigs(pageId).pipe(takeUntil(this.destroy$))
       .subscribe({
-        next:res => {
+        next: (res) => {
+          if(!res) {
+            this.message.error('Tải dữ liệu bị lỗi');
+            return;
+          }
+          
           this.dataModel = {...res};
 
           if (TDSHelperArray.hasListValue(this.dataModel?.TagOnPattern)) {
-            this.lstTagOnPattern = this.dataModel.TagOnPattern.map(tag => {
+            this.lstTagOnPattern = this.dataModel.TagOnPattern?.map(tag => {
               return {
                 CrmTag: tag.CrmTag,
                 CrmKey: tag.CrmKey?.split(",") || []
               }
             });
           }
-
+          
           this.isLoading = false;
-
           this.cdRef.detectChanges();
         },
         error:(err) => {
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadLabelConfig);
           this.isLoading = false;
-
-          this.cdRef.detectChanges();
+          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadLabelConfig);
         }
       });
   }
 
   addCRMKeyTag(){
-    this.lstTagOnPattern.push({
+    this.lstTagOnPattern?.push({
       CrmTag: null,
       CrmKey: []
     })
   }
 
   deleteCRMKeyTag(index: number) {
-    this.lstTagOnPattern.splice(index, 1);
+    this.lstTagOnPattern?.splice(index, 1);
   }
 
   changeTagOnPattern(event:string[], index: number) {
@@ -95,16 +97,21 @@ export class AutoLabelConfigComponent implements OnInit {
       }
     });
 
-    this.lstTagOnPattern[index].CrmKey = [...event];
+    this.lstTagOnPattern[index]!.CrmKey = [...event];
   }
 
   onSave() {
     let model = this.prepareModel();
     let postId = this.data?.ObjectId;
 
+    if(model == null) {
+      this.message.error('Cập nhật thất bại');
+      return;
+    }
+
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
-      this.facebookPostService.disableOnSave$.emit(true);
+      this.facebookPostService.onChangeDisable$.emit(true);
 
       this.facebookPostService.updateAutoLabelConfigs(postId, model).pipe(takeUntil(this.destroy$))
         .subscribe({
@@ -112,23 +119,23 @@ export class AutoLabelConfigComponent implements OnInit {
             this.message.success(Message.UpdatedSuccess);
             this.isLoading = false;
             
-            this.facebookPostService.disableOnSave$.emit(false);
+            this.facebookPostService.onChangeDisable$.emit(false);
             this.cdRef.detectChanges();
           },
           error:(err) => {
-            this.message.error(`${err?.error?.message || JSON.stringify(err)}` || Message.ConversationPost.updateConfigFail);
             this.isLoading = false;
-
-            this.cdRef.detectChanges();
+            this.facebookPostService.onChangeDisable$.emit(false);
+            this.message.error(`${err?.error?.message || JSON.stringify(err)}` || Message.ConversationPost.updateConfigFail);
           }
         });
     }
   }
 
-  prepareModel(): AutoLabelConfigDTO {
-    let model = {...this.dataModel} as AutoLabelConfigDTO;
+  prepareModel() {
+    if(!this.dataModel) return null;
 
-    model.TagOnPattern = this.lstTagOnPattern.map((tag: any) => {
+    let model = {...this.dataModel} as AutoLabelConfigDTO;
+    model.TagOnPattern = this.lstTagOnPattern?.map((tag: any) => {
       return {
         CrmTag: tag.CrmTag,
         CrmKey: tag.CrmKey?.join(",") || null
@@ -139,15 +146,15 @@ export class AutoLabelConfigComponent implements OnInit {
   }
 
   isCheckValue(model: AutoLabelConfigDTO): number {
-    let isAssignOnPattern = model.AssignOnPattern;
+    let isAssignOnPattern = model?.AssignOnPattern;
 
     if(isAssignOnPattern === true) {
-      if(!TDSHelperArray.hasListValue(model.TagOnPattern)) {
+      if(!TDSHelperArray.hasListValue(model?.TagOnPattern)) {
         this.message.error(Message.ConversationPost.TagOnPatternEmpty);
         return 0;
       }
 
-      let checkTagOnPattern = model.TagOnPattern.findIndex(x => !TDSHelperString.hasValueString(x.CrmKey) || !TDSHelperObject.hasValue(x.CrmTag)) as number;
+      let checkTagOnPattern = model?.TagOnPattern?.findIndex(x => !TDSHelperString.hasValueString(x.CrmKey) || !TDSHelperObject.hasValue(x.CrmTag)) as number;
 
       if(checkTagOnPattern > -1) {
         this.message.error(Message.ConversationPost.TagOnPatternEmpty);

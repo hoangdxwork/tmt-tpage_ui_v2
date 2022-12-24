@@ -59,15 +59,23 @@ export class AutoReplyConfigComponent implements OnInit {
     this.facebookPostService.getAutoReplyConfigs(postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res: AutoReplyConfigDTO) => {
+          if(!res) {
+            this.message.error('Tải dữ liệu bị lỗi');
+            return;
+          }
+
           this.dataModel = {...res};
-          this.lstCommentNotAutoReply = res.ContentOfCommentForNotAutoReply && res.ContentOfCommentForNotAutoReply !== '' ? res.ContentOfCommentForNotAutoReply?.split(",") : [];
+
+          if(TDSHelperString.hasValueString(res.ContentOfCommentForNotAutoReply)) {
+            this.lstCommentNotAutoReply = res.ContentOfCommentForNotAutoReply?.split(",");
+          }
 
           this.isLoading = false;
           this.cdRef.detectChanges();
         },
         error:(err) => {
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadReplyConfig);
           this.isLoading = false;
+          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadReplyConfig);
         }
       });
   }
@@ -84,8 +92,9 @@ export class AutoReplyConfigComponent implements OnInit {
   }
 
   prepareModel(): any {
-    let model = Object.assign(this.dataModel) as AutoReplyConfigDTO;
+    if(!this.dataModel) return null;
 
+    let model = {...this.dataModel} as AutoReplyConfigDTO;
     model.ContentOfCommentForAutoReply = this.lstCommentAutoReply?.join(',');
     model.ContentOfCommentForNotAutoReply = this.lstCommentNotAutoReply?.join(',');
 
@@ -95,21 +104,27 @@ export class AutoReplyConfigComponent implements OnInit {
   onSave(){
     let model = this.prepareModel();
     let postId = this.data?.ObjectId;
-    
+
+    if(model == null) {
+      this.message.error('Cập nhật thất bại');
+      return;
+    }
+
     this.isLoading = true;
-    this.facebookPostService.disableOnSave$.emit(true);
+    this.facebookPostService.onChangeDisable$.emit(true);
 
     this.facebookPostService.updateAutoReplyConfigs(postId, model).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res: any) => {
           this.message.success(Message.UpdatedSuccess);
           this.isLoading = false;
-          this.facebookPostService.disableOnSave$.emit(false);
+          this.facebookPostService.onChangeDisable$.emit(false);
           this.cdRef.detectChanges();
         }, 
         error:(err) => {
           this.message.error(`${err?.error?.message || JSON.stringify(err)}` || Message.ConversationPost.updateConfigFail);
           this.isLoading = false;
+          this.facebookPostService.onChangeDisable$.emit(false);
         }
       });
   }

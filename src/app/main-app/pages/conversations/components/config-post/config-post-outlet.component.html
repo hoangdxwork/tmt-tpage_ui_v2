@@ -13,7 +13,7 @@
               </div>
           </div>
         </div>
-      </div>
+</div>
 
 <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex" class="border border-neutral-2-200 rounded-md text-body-2 text-neutral-1-900" (selectChange)="onSelectChange($event)">
         <tds-tab title="Chốt đơn" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
@@ -47,7 +47,9 @@
         </tds-tab>
 </tds-tabset>
 
-<div *tdsModalFooter class="w-full flex justify-end p-4 gap-x-4">
+<div class="w-full flex justify-end pt-4 px-4 gap-x-4">
         <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
-        <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()" [disabled]="disableOnSave">Lưu</button>
+        <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()" [disabled]="isDisable">Lưu</button>
 </div>
+
+<div *tdsModalFooter></div>

@@ -1,3 +1,4 @@
+import { TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs/operators';
 import { ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
@@ -32,28 +33,33 @@ export class PostHiddenCommentConfigComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadHiddenComment(this.data.ObjectId);
+    this.loadData(this.data?.ObjectId);
   }
 
-  loadHiddenComment(postId: string) {
+  loadData(postId: string) {
     this.isLoading = true;
 
     this.facebookPostService.getHiddenCommentConfigs(postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {
+          if(!res) {
+            this.isLoading = false;
+            this.message.error('Tải dữ liệu bị lỗi');
+            return;
+          }
+
           this.dataModel = {...res};
-          
-          if(res.ContentOfCommentForAutoHide){
+
+          if(TDSHelperString.hasValueString(res.ContentOfCommentForAutoHide)){
             this.lstContentOfCommentForAutoHide = res.ContentOfCommentForAutoHide.split(",");
           }
 
           this.isLoading = false;
-
           this.cdRef.detectChanges();
         },
         error:(err) => {
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadHiddenCommentConfig);
           this.isLoading = false;
+          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadHiddenCommentConfig);
         }
       });
   }
@@ -72,9 +78,10 @@ export class PostHiddenCommentConfigComponent implements OnInit {
   }
 
   prepareModel() {
-    let model = {...this.dataModel} as AutoHiddenConfigDTO;
+    if(!this.dataModel) return null;
 
-    model.ContentOfCommentForAutoHide = this.lstContentOfCommentForAutoHide.length > 0 ? this.lstContentOfCommentForAutoHide.join(",") : "";
+    let model = {...this.dataModel} as AutoHiddenConfigDTO;
+    model.ContentOfCommentForAutoHide = this.lstContentOfCommentForAutoHide?.length > 0 ? this.lstContentOfCommentForAutoHide?.join(",") : "";
 
     return model;
   }
@@ -83,8 +90,13 @@ export class PostHiddenCommentConfigComponent implements OnInit {
     let model = this.prepareModel();
     let postId = this.data?.ObjectId;
 
+    if(model == null) {
+      this.message.error('Cập nhật thất bại');
+      return;
+    }
+
     this.isLoading = true;
-    this.facebookPostService.disableOnSave$.emit(true);
+    this.facebookPostService.onChangeDisable$.emit(true);
 
     this.facebookPostService.updateHiddenCommentConfigs(postId, model).pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -92,12 +104,13 @@ export class PostHiddenCommentConfigComponent implements OnInit {
           this.message.success(Message.UpdatedSuccess);
           this.isLoading = false;
           
-          this.facebookPostService.disableOnSave$.emit(false);
+          this.facebookPostService.onChangeDisable$.emit(false);
           this.cdRef.detectChanges();
         },
         error:(error) => {
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
           this.isLoading = false;
+          this.facebookPostService.onChangeDisable$.emit(false);
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
         }
       });
   }

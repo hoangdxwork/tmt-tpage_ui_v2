@@ -84,7 +84,7 @@ export class PostOrderInteractionConfigComponent implements OnInit {
   }
 
   loadData(postId: string) {
-    this.isLoading = false;
+    this.isLoading = true;
 
     let currentTeam = this.crmTeamService.getCurrentTeam();
     if(!currentTeam) return;
@@ -92,29 +92,35 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     this.facebookPostService.getOrderConfig(currentTeam.Id ,postId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next:(res) => {
-          if(TDSHelperString.hasValueString(res.OrderReplyTemplate)) {
-              res.OrderReplyTemplate = res.OrderReplyTemplate.replace(/\n/g, '<p><br></p>');
+          if(!res) {
+            this.message.error('Tải dữ liệu bị lỗi');
+            return;
           }
 
-          this.dataModel = res;
+          if(TDSHelperString.hasValueString(res?.OrderReplyTemplate)) {
+            res.OrderReplyTemplate = res.OrderReplyTemplate?.replace(/\n/g, '<p><br></p>');
+          }
+
+          this.dataModel = {...res};
           this.isLoading = false;
           this.cdRef.detectChanges();
         },
         error:(err) => {
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadInteractionConfig);
           this.isLoading = false;
-          this.cdRef.detectChanges();
+          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadInteractionConfig);
         }
       });
   }
 
   prepareModel() {
+    if(!this.dataModel) return null;
+
     return {
-        IsEnableOrderReplyAuto: this.dataModel.IsEnableOrderReplyAuto,
-        IsEnableShopLink: this.dataModel.IsEnableShopLink,
-        IsOrderAutoReplyOnlyOnce: this.dataModel.IsOrderAutoReplyOnlyOnce,
-        OrderReplyTemplate: this.dataModel.OrderReplyTemplate,
-        ShopLabel: this.dataModel.ShopLabel,
+      IsEnableOrderReplyAuto: this.dataModel.IsEnableOrderReplyAuto,
+      IsEnableShopLink: this.dataModel.IsEnableShopLink,
+      IsOrderAutoReplyOnlyOnce: this.dataModel.IsOrderAutoReplyOnlyOnce,
+      OrderReplyTemplate: this.dataModel.OrderReplyTemplate,
+      ShopLabel: this.dataModel.ShopLabel,
       ShopLabel2: this.dataModel.ShopLabel2
     } as AutoOrderConfigDTO;
   }
@@ -123,8 +129,13 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     let model = this.prepareModel();
     let postId = this.data?.ObjectId;
 
+    if(model == null) {
+      this.message.error('Cập nhật thất bại');
+      return;
+    }
+
     this.isLoading = true;
-    this.facebookPostService.disableOnSave$.emit(true);
+    this.facebookPostService.onChangeDisable$.emit(true);
 
     this.facebookPostService.updateInteractionConfig(postId, model).pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -132,12 +143,13 @@ export class PostOrderInteractionConfigComponent implements OnInit {
           this.message.success(Message.UpdatedSuccess);
           this.isLoading = false;
           
-          this.facebookPostService.disableOnSave$.emit(false);
+          this.facebookPostService.onChangeDisable$.emit(false);
           this.cdRef.detectChanges();
         },
         error:(error) => {
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
           this.isLoading = false;
+          this.facebookPostService.onChangeDisable$.emit(false);
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
         }
       });
   }

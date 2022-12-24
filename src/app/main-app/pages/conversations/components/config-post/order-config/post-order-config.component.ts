@@ -102,8 +102,8 @@ export class PostOrderConfigComponent implements OnInit {
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: CompanyCurrentDTO) => {
           this.companyCurrents = res;
-          if(this.companyCurrents.DefaultWarehouseId) {
-              this.loadInventoryWarehouseId(this.companyCurrents.DefaultWarehouseId);
+          if(this.companyCurrents?.DefaultWarehouseId) {
+              this.loadInventoryWarehouseId(this.companyCurrents?.DefaultWarehouseId);
           }
       },
       error: (error: any) => {
@@ -154,6 +154,11 @@ export class PostOrderConfigComponent implements OnInit {
 
     this.facebookPostService.getOrderConfig(this.currentTeam?.Id, postId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: AutoOrderConfigDTO) => {
+          if(!res) {
+            this.message.error('Tải dữ liệu bị lỗi');
+            return;
+          }
+
           this.dataModel = {...res};
           this.setDataDefault(res);
 
@@ -189,7 +194,6 @@ export class PostOrderConfigComponent implements OnInit {
       error: (err: any) => {
           this.isLoading = false;
           this.message.error( err?.error?.message || 'Đã xảy ra lỗi');
-          this.cdRef.detectChanges();
       }
     });
   }
@@ -322,8 +326,8 @@ export class PostOrderConfigComponent implements OnInit {
   enableRegexQty(event: boolean, item: TextContentToOrderDTO){
     let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
     if(Number(idx) >=0) {
-      this.dataModel.TextContentToOrders[idx].Product!.IsEnableRegexQty = event;
-      this.dataModel.TextContentToOrders[idx].Product = {...this.dataModel.TextContentToOrders[idx].Product} as any;
+      this.dataModel.TextContentToOrders[idx]!.Product!.IsEnableRegexQty = event;
+      this.dataModel.TextContentToOrders[idx]!.Product = {...this.dataModel.TextContentToOrders[idx]!.Product} as any;
     }
   }
 
@@ -534,7 +538,7 @@ export class PostOrderConfigComponent implements OnInit {
           let item = {...this.prepareProduct(product, index)} as TextContentToOrderDTO;
 
           let content = this.generateTagDetail(product.DefaultCode, product.OrderTag, null, null);
-          let contentRange = this.dataModel.TextContentToOrders[index].Content;
+          let contentRange = this.dataModel.TextContentToOrders[index]!.Content;
           if(contentRange) {
               contentRange = contentRange.split(',');
               content = [...contentRange, ...content];
@@ -756,6 +760,8 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   prepareModelOrderConfig() {
+    if(!this.dataModel) return null;
+
     let model = {} as any;
     this.currentTeam = this.crmTeamService.getCurrentTeam();
 
@@ -795,9 +801,14 @@ export class PostOrderConfigComponent implements OnInit {
   onSave() {
     let model = this.prepareModelOrderConfig();
 
+    if(model == null) {
+      this.message.error('Cập nhật thất bại');
+      return;
+    }
+
     if(this.isCheckValue(model) === 1) {
       this.isLoading = true;
-      this.facebookPostService.disableOnSave$.emit(true);
+      this.facebookPostService.onChangeDisable$.emit(true);
       
       this.facebookPostService.updateOrderConfig(this.data.ObjectId, this.isImmediateApply, model).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
@@ -810,12 +821,13 @@ export class PostOrderConfigComponent implements OnInit {
           }
           let data = this.setData(this.dataModel);
           this.setDataDefault(data);
-          this.facebookPostService.disableOnSave$.emit(false);
+          this.facebookPostService.onChangeDisable$.emit(false);
           
           this.cdRef.detectChanges();
         },
         error:(error) => {
             this.isLoading = false;
+            this.facebookPostService.onChangeDisable$.emit(false);
             this.message.error(`${error?.error?.message || 'Đã xảy ra lỗi'}`);
         }
       });
