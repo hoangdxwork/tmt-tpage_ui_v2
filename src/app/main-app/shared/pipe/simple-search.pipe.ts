@@ -93,11 +93,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 
     if(item && item.Product) {
       let findIndex = datas.findIndex((x:any) => x.Product.ProductId == item.Product.ProductId && x.Product.UOMId == item.Product.UOMId);
-      index = findIndex;
+      index = findIndex + 1;
     } else {
       index = item.Index;
     }
-   
+
     return index;
   }
 }
