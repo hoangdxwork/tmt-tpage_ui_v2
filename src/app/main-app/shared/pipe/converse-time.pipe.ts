@@ -1,7 +1,5 @@
-import { format } from 'date-fns';
 import { formatDate } from "@angular/common";
 import { Pipe, PipeTransform } from "@angular/core";
-import * as _ from "lodash";
 import { en_US, vi_VN } from "tds-ui/i18n";
 
 @Pipe({

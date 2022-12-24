@@ -341,7 +341,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   onRefresh(event: any) {
     this.clickReload += 1;
 
-    this.queryObj = { } as any;
+    this.queryObj = {} as any;
     this.isRefreshing = true;
     this.innerText.nativeElement.value = '';
     this.disableNextUrl = false;
@@ -352,28 +352,32 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       this.virtualScroller.scrollToPosition(0);
     }
 
-    if (this.clickReload >= 5 && this.currentTeam?.Type == CRMTeamType._UnofficialTikTok) {
-      this.message.info("Đã kích hoạt cập nhật hội thoại");
-      this.clickReload = 0;
-
-      if (this.currentTeam) {
-        this.tiktokService.refreshListen(this.currentTeam.OwnerId).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res: any) => {
-              this.loadFilterDataSource();
-          },
-          error: (error: any) => {
-              this.message.error(error?.error?.message);
-          }
-        })
+    let exist = (this.clickReload == 3) && this.currentTeam && this.currentTeam?.Type == CRMTeamType._UnofficialTikTok;
+    if (exist) {
+      let ownerId = this.currentTeam?.OwnerId as any;
+      if(!TDSHelperString.hasValueString(ownerId)) {
+          this.message.error('Không tìm thấy OwnerId, không thể kích hoạt cập nhật hội thoại');
+          return;
       }
+
+      this.tiktokService.refreshListen(ownerId).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.clickReload = 0;
+            this.message.info("Đã kích hoạt cập nhật hội thoại");
+            this.loadFilterDataSource();
+        },
+        error: (error: any) => {
+            this.clickReload = 0;
+            this.message.error(error?.error?.message);
+        }
+      })
     } else {
-        this.loadFilterDataSource();
+      this.loadFilterDataSource();
     }
 
-  setTimeout(() => {
-    this.clickReload = 0;
-  }, 3 * 1000);
-
+    setTimeout(() => {
+      this.clickReload = 0;
+    }, 3 * 1000);
   }
 
   loadData(){
