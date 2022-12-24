@@ -158,96 +158,97 @@
                 [showPagination]="false"
                 [frontPagination]="false"
                 [virtualItemSize]="100"
+                [virtualMaxBufferPx]="600"
                 [loading]="isLoading"
                 [virtualForTrackBy]="trackByIndex">
                 <tbody>
                   <ng-template tds-virtual-scroll let-item let-i="index">
-                      <tr *ngIf="item" class="p-4 h-full w-full">
-                          <div class="bg-neutral-3-50 rounded-lg p-4 h-full w-full" [ngClass]="!item.IsActive ? 'opacity-70' : ''">
+                      <tr *ngIf="item" class="p-2 h-full w-full min-h-[300px]">
+                          <div class="bg-neutral-3-50 rounded-lg p-4 h-full w-full flex flex-col justify-between" [ngClass]="!item.IsActive ? 'opacity-70' : ''">
+                            <div class="h-auto w-full">
+                                <div class="flex gap-2.5 items-center">
+                                    <tds-badge [count]="iconTemplate" *ngIf="!item.Product" (click)="showModalListProduct(i)">
+                                        <a class="tdsi-box-fill text-lg text-neutral-1-500 p-0.5"></a>
+                                    </tds-badge>
 
-                            <div class="flex gap-2.5 items-center">
-                                <tds-badge [count]="iconTemplate" *ngIf="!item.Product" (click)="showModalListProduct(i)">
-                                    <a class="tdsi-box-fill text-lg text-neutral-1-500 p-0.5"></a>
-                                </tds-badge>
+                                    <ng-template #iconTemplate>
+                                    <span class="tdsi-add-fill text-primary-1 absolute bottom-1 right-1 cursor-pointer
+                                            inline-block transform translate-x-1/2 translate-y-1/2 text-[12px] p-0.5 bg-neutral-3-50 rounded-full">
+                                    </span>
+                                    </ng-template>
 
-                                <ng-template #iconTemplate>
-                                  <span class="tdsi-add-fill text-primary-1 absolute bottom-1 right-1 cursor-pointer
-                                        inline-block transform translate-x-1/2 translate-y-1/2 text-[12px] p-0.5 bg-neutral-3-50 rounded-full">
-                                  </span>
-                                </ng-template>
-
-                                <div class="text-info-500 text-body-2 font-semibold" *ngIf="item.Product as product; else notProduct">
-                                    {{ product.ProductName || product.ProductNameGet }} / {{ (product.Price || 0) | numberCustom }}
-                                    <span *ngIf="!item.IsActive" class="text-accent-3" style="font-style: italic;">(Đã tắt)</span>
-                                </div>
-
-                                <ng-template #notProduct>
-                                    <div class="text-info-500 text-body-2 font-semibold" (click)="showModalListProduct(i)">Chưa gán sản phẩm
+                                    <div class="text-info-500 text-body-2 font-semibold" *ngIf="item.Product as product; else notProduct">
+                                        {{ product.ProductName || product.ProductNameGet }} / {{ (product.Price || 0) | numberCustom }}
+                                        <span *ngIf="!item.IsActive" class="text-accent-3" style="font-style: italic;">(Đã tắt)</span>
                                     </div>
-                                </ng-template>
-                            </div>
 
-                            <div class="pt-6">
-                                <div class="flex rounded-md gap-x-1">
-                                  <tds-form-field class="w-full">
-                                      <tds-select [ngModel]="(item.Content | stringToStringArray) || []"
-                                          (ngModelChange)="selectContent($event, item)" [disabled]="item.IsActive ? false : true"
-                                          [ngModelOptions]="{standalone: true}"  placeholder='Nội dung nhập'
-                                          mode="tags" [maxTagCount]="10" [backdrop]="true">
-                                      </tds-select>
-                                  </tds-form-field>
+                                    <ng-template #notProduct>
+                                        <div class="text-info-500 text-body-2 font-semibold" (click)="showModalListProduct(i)">Chưa gán sản phẩm
+                                        </div>
+                                    </ng-template>
                                 </div>
-                            </div>
 
-                            <div *ngIf="item.Product">
-                              <div class="pt-4 flex items-center">
-                                  <div class="text-neutral-1-900 font-semibold text-body-2 w-1/4">Số lượng tối đa</div>
-                                  <div class="w-3/4">
-                                      <tds-form-field class="w-full">
-                                          <tds-input-number [min]="0"
-                                            [max]="20000" [step]="1" [disabled]="item.IsActive ? false : true"
-                                            placeholder="0"  [(ngModel)]="item.Product.Quantity" [ngModelOptions]="{standalone: true}"
-                                            [formatter]="numberWithCommas" [parser]="parserComas">
-                                          </tds-input-number>
-                                      </tds-form-field>
-                                  </div>
-                              </div>
-
-                              <div class="pt-3">
-                                <tds-checkbox [(ngModel)]="item.Product.IsEnableRegexAttributeValues" [ngModelOptions]="{standalone: true}"
-                                      (ngModelChange)="enableRegexAttributeValues($event, item)" [disabled]="item.IsActive ? false : true">
-                                      Kiểm tra thuộc tính?
-                                      <span *ngIf="item.Product.DescriptionAttributeValues">({{item.Product.DescriptionAttributeValues | json}})</span>
-                                </tds-checkbox>
-                              </div>
-
-                              <div class="pt-3" *ngIf="item.Product.IsEnableRegexAttributeValues &&
-                                item.Product.DescriptionAttributeValues && item.Product.DescriptionAttributeValues.length > 0">
-                                <div class="flex rounded-md gap-x-1">
+                                <div class="pt-6">
+                                    <div class="flex rounded-md gap-x-1">
                                     <tds-form-field class="w-full">
-                                        <tds-select [ngModel]="(item.ContentWithAttributes | stringToStringArray) || []" [ngModelOptions]="{standalone: true}"
-                                            (ngModelChange)="selectContentWithAttributes($event, item)" [disabled]="item.IsActive ? false : true"
-                                            placeholder='Nội dung nhập' mode="tags" [maxTagCount]="10" [backdrop]="true">
+                                        <tds-select [ngModel]="(item.Content | stringToStringArray) || []"
+                                            (ngModelChange)="selectContent($event, item)" [disabled]="item.IsActive ? false : true"
+                                            [ngModelOptions]="{standalone: true}"  placeholder='Nội dung nhập'
+                                            mode="tags" [maxTagCount]="10" [backdrop]="true">
                                         </tds-select>
                                     </tds-form-field>
+                                    </div>
                                 </div>
-                              </div>
 
-                              <div class="pt-3">
-                                <tds-checkbox [(ngModel)]="item.Product.IsEnableRegexQty" [ngModelOptions]="{standalone: true}"
-                                    (ngModelChange)="enableRegexQty($event, item)" [disabled]="item.IsActive ? false : true">
-                                    Bật xử lý số lượng?
-                                </tds-checkbox>
-                              </div>
+                                <div *ngIf="item.Product">
+                                <div class="pt-4 flex items-center">
+                                    <div class="text-neutral-1-900 font-semibold text-body-2 w-1/4">Số lượng tối đa</div>
+                                    <div class="w-3/4">
+                                        <tds-form-field class="w-full">
+                                            <tds-input-number [min]="0"
+                                                [max]="20000" [step]="1" [disabled]="item.IsActive ? false : true"
+                                                placeholder="0"  [(ngModel)]="item.Product.Quantity" [ngModelOptions]="{standalone: true}"
+                                                [formatter]="numberWithCommas" [parser]="parserComas">
+                                            </tds-input-number>
+                                        </tds-form-field>
+                                    </div>
+                                </div>
 
-                              <!-- <div class="pt-3">
-                                  <tds-checkbox [(ngModel)]="item.Product.IsEnableOrderMultiple"
-                                      (ngModelChange)="enableOrderMultiple($event, item)" [disabled]="item.IsActive ? false : true">
-                                      Cho phép chốt nhiều lần (nhưng không cho trùng nội dung chốt)
-                                  </tds-checkbox>
-                              </div> -->
+                                <div class="pt-3">
+                                    <tds-checkbox [(ngModel)]="item.Product.IsEnableRegexAttributeValues" [ngModelOptions]="{standalone: true}"
+                                        (ngModelChange)="enableRegexAttributeValues($event, item)" [disabled]="item.IsActive ? false : true">
+                                        Kiểm tra thuộc tính?
+                                        <span *ngIf="item.Product.DescriptionAttributeValues">({{item.Product.DescriptionAttributeValues | json}})</span>
+                                    </tds-checkbox>
+                                </div>
+
+                                <div class="pt-3" *ngIf="item.Product.IsEnableRegexAttributeValues &&
+                                    item.Product.DescriptionAttributeValues && item.Product.DescriptionAttributeValues.length > 0">
+                                    <div class="flex rounded-md gap-x-1">
+                                        <tds-form-field class="w-full">
+                                            <tds-select [ngModel]="(item.ContentWithAttributes | stringToStringArray) || []" [ngModelOptions]="{standalone: true}"
+                                                (ngModelChange)="selectContentWithAttributes($event, item)" [disabled]="item.IsActive ? false : true"
+                                                placeholder='Nội dung nhập' mode="tags" [maxTagCount]="10" [backdrop]="true">
+                                            </tds-select>
+                                        </tds-form-field>
+                                    </div>
+                                </div>
+
+                                <div class="pt-3">
+                                    <tds-checkbox [(ngModel)]="item.Product.IsEnableRegexQty" [ngModelOptions]="{standalone: true}"
+                                        (ngModelChange)="enableRegexQty($event, item)" [disabled]="item.IsActive ? false : true">
+                                        Bật xử lý số lượng?
+                                    </tds-checkbox>
+                                </div>
+
+                                <!-- <div class="pt-3">
+                                    <tds-checkbox [(ngModel)]="item.Product.IsEnableOrderMultiple"
+                                        (ngModelChange)="enableOrderMultiple($event, item)" [disabled]="item.IsActive ? false : true">
+                                        Cho phép chốt nhiều lần (nhưng không cho trùng nội dung chốt)
+                                    </tds-checkbox>
+                                </div> -->
+                                </div>
                             </div>
-
                             <!-- Xóa mẫu -->
                             <div class="pt-6">
                                 <button tds-button color="secondary" type="button" (click)="removeItemTemplate(item)"
@@ -265,7 +266,7 @@
               </tds-table>
            </div>
 
-           <div *ngIf="dataModel.TextContentToOrders && dataModel.TextContentToOrders.length > 0">
+           <div *ngIf="dataModel.TextContentToOrders && dataModel.TextContentToOrders.length > 0" class="pt-2">
               <button tds-button color="secondary" (click)="addContentToOrders()">
                   <span class="flex items-center text-primary-1">
                     <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
