@@ -22,55 +22,6 @@ export class CRMMatchingService extends BaseSevice {
 
   constructor(private apiService: TCommonService) {
     super(apiService);
-      this.setQuery();
-  }
-
-  get(url?: string): Observable<any>{
-    if (url) {
-        return this.getLink(url);
-    } else {
-      let queryString = Object.keys(this.queryObj).map(key => {
-          return key + '=' + this.queryObj[key]
-      }).join('&');
-
-      const api: CoreAPIDTO = {
-          url: `${this._BASE_URL}/${this.baseRestApi}?${queryString}`,
-          method: CoreApiMethodType.get
-      }
-      return this.apiService.getData<TDSSafeAny>(api, null)
-        .pipe(map((res: any) => {
-            this.onResolveData(res);
-            return res;
-      }));
-    }
-  }
-
-  getLink(url: string): Observable<any> {
-    const api: CoreAPIDTO = {
-        url: `${url}`,
-        method: CoreApiMethodType.get
-    }
-    return this.apiService.getData<TDSSafeAny>(api, null)
-      .pipe(map((res: any) => {
-          this.onResolveData(res);
-          return res;
-      }));
-  }
-
-  refetch(psid: string, pageId: string): Observable<any> {
-    const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/refetch?page_id=${pageId}`,
-        method: CoreApiMethodType.get
-    }
-    return this.apiService.getData<TDSSafeAny>(api, null);
-  }
-
-  markSeen(page_id: string, fbid: string, type: string, assign_user_id: string): Observable<any> {
-    const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/${fbid}/markseen`,
-        method: CoreApiMethodType.post
-    }
-    return this.apiService.getData<TDSSafeAny>(api, { page_id: page_id, type: type, assign_user_id: assign_user_id });
   }
 
   markSeenV2(teamId: number, csid: string): Observable<any> {
@@ -81,7 +32,6 @@ export class CRMMatchingService extends BaseSevice {
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
-
 
   addNote(psid: string, data: MDBFacebookMappingNoteDTO) {
     const api: CoreAPIDTO = {
@@ -115,38 +65,6 @@ export class CRMMatchingService extends BaseSevice {
     }
 
     return this.apiService.getData<undefined>(api, null);
-  }
-
-  addMessage(psid: string, data: TDSSafeAny) {
-    const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/rest/v1.0/crmactivity/${psid}/addmessage`,
-      method: CoreApiMethodType.post,
-    }
-    return this.apiService.getData<TDSSafeAny>(api, data);
-  }
-
-  addQuickReplyComment(data: TDSSafeAny) {
-    const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/rest/v1.0/crmactivity/quickreplycomment`,
-      method: CoreApiMethodType.post,
-    }
-    return this.apiService.getData<TDSSafeAny>(api, data);
-  }
-
-  private setQuery(query?: any) {
-    this.queryObj = query || {
-        page: 1,
-        limit: 20
-    };
-  }
-
-  private onResolveData(res: any) {
-    if (!this.allItems) {
-        this.allItems = [];
-    }
-    this.dataResponse = res;
-    this.currentItems = res.Items;
-    this.allItems = ArrayHelper.makeUniqueArray(this.allItems, res.Items, "Id");
   }
 
   getMDBByPSId(pageId: TDSSafeAny, psid: string) {
