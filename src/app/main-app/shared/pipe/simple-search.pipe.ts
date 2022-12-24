@@ -10,10 +10,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 
       term = TDSHelperString.stripSpecialChars(term.toLocaleLowerCase()).trim();
 
-      let items = datas?.filter((x: any) => (x.value && x.value.ProductCode && x.value.ProductCode.indexOf(term) !== -1)
-        || (x.value && x.value.ProductName && TDSHelperString.stripSpecialChars(x.value.ProductName.toLocaleLowerCase()).trim().indexOf(term) !== -1)
-        || (x.value && x.value.ProductNameGet && TDSHelperString.stripSpecialChars(x.value.ProductNameGet.toLocaleLowerCase()).trim().indexOf(term) !== -1)
-        || (x.value && x.value.Tags?.includes(term)));
+      let items = datas?.filter((x: any) => (x.value && x.value.ProductCode && (x.value.ProductCode || '').indexOf(term || '') !== -1)
+        || (x.value && x.value.ProductName && TDSHelperString.stripSpecialChars((x.value.ProductName || '').toLocaleLowerCase()).trim().indexOf(term || '') !== -1)
+        || (x.value && x.value.ProductNameGet && TDSHelperString.stripSpecialChars((x.value.ProductNameGet || '').toLocaleLowerCase()).trim().indexOf(term || '') !== -1)
+        || (x.value && (x.value.Tags || '')?.includes(term || '')));
 
       return items;
   }
@@ -28,9 +28,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 
       term = TDSHelperString.stripSpecialChars(term.toLocaleLowerCase()).trim();
       let items = datas.filter((item: any) =>
-          TDSHelperString.stripSpecialChars(item.ProductName?.toLocaleLowerCase()).trim().indexOf(term) !== -1
-          || item.ProductCode?.indexOf(term) !== -1
-          || TDSHelperString.stripSpecialChars(item.UOMName?.toLocaleLowerCase()).trim().indexOf(term) !== -1);
+          TDSHelperString.stripSpecialChars((item.ProductName || '')?.toLocaleLowerCase()).trim().indexOf(term || '') !== -1
+          || (item.ProductCode || '')?.indexOf(term || '') !== -1
+          || TDSHelperString.stripSpecialChars((item.UOMName || '')?.toLocaleLowerCase()).trim().indexOf(term || '') !== -1);
 
       return items;
   }
@@ -64,17 +64,16 @@ import { Pipe, PipeTransform } from '@angular/core';
   export class SimpleSearchProductPostConfiglPipe implements PipeTransform {
 
   public transform(datas: any, term: string) {
-debugger
+
       if (!TDSHelperString.hasValueString(term)) return datas;
 
-      term = TDSHelperString.stripSpecialChars(term.toLocaleLowerCase()).trim();
-      let items = datas.filter((item: any) =>
-          TDSHelperString.stripSpecialChars(item.Product?.ProductName?.toLocaleLowerCase()).trim().indexOf(term) !== -1
-          || item.Product?.ProductCode?.indexOf(term) !== -1
-          || TDSHelperString.stripSpecialChars(item.Product?.UOMName?.toLocaleLowerCase()).trim().indexOf(term) !== -1
-          || TDSHelperString.stripSpecialChars(item.Content?.toLocaleLowerCase()).trim().indexOf(term) !== -1
-          || TDSHelperString.stripSpecialChars(item.ContentWithAttributes?.toLocaleLowerCase()).trim().indexOf(term) !== -1)
-
+      term = TDSHelperString.stripSpecialChars(term?.toLocaleLowerCase()).trim();
+      let items = datas?.filter((item: any) =>
+          TDSHelperString.stripSpecialChars((item.Product?.ProductName || '')?.toLocaleLowerCase()).trim().indexOf(term || '') !== -1
+          || (item.Product?.ProductCode || '')?.indexOf(term || '') !== -1
+          || TDSHelperString.stripSpecialChars((item.Product?.UOMName || '')?.toLocaleLowerCase()).trim().indexOf(term || '') !== -1
+          || TDSHelperString.stripSpecialChars((item.Content || '')?.toLocaleLowerCase()).trim().indexOf(term || '') !== -1
+          || TDSHelperString.stripSpecialChars((item.ContentWithAttributes || '')?.toLocaleLowerCase()).trim().indexOf(term || '') !== -1)
 
       return items;
   }
