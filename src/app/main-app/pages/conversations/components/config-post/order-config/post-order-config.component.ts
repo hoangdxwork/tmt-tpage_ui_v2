@@ -2,7 +2,7 @@ import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto, ProductTextContentToO
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectorRef, Component,  Input, OnInit,  ViewContainerRef } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component,  Input, OnInit,  ViewChild,  ViewContainerRef } from "@angular/core";
 import { Observable } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
@@ -27,6 +27,7 @@ import { DataPouchDBDTO } from '@app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTmlpAttributesDto } from '@app/dto/product-template/product-attribute.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { CRMTeamDTO } from '@app/dto/team/team.dto';
+import { TDSTableComponent } from 'tds-ui/table';
 
 @Component({
   selector: 'post-order-config',
@@ -34,9 +35,10 @@ import { CRMTeamDTO } from '@app/dto/team/team.dto';
   providers: [TDSDestroyService]
 })
 
-export class PostOrderConfigComponent implements OnInit {
+export class PostOrderConfigComponent implements OnInit, AfterViewInit {
 
   @Input() data!: ChatomniObjectsItemDto;
+  @ViewChild('basicTable', { static: false }) tdsTableComponent?: TDSTableComponent<any>;
 
   currentLiveCampaign?: LiveCampaignModel;
   dataModel!: AutoOrderConfigDTO;
@@ -195,31 +197,23 @@ export class PostOrderConfigComponent implements OnInit {
   }
 
   addContentToOrders() {
-    let exist = this.dataModel.TextContentToOrders.find(x => x.Product == null);
-    if(exist) {
-        this.message.error('Vui lòng hoàn thiện mẫu trống trước khi thêm mới');
-        return;
-    }
+    let model = this.dataModel;
+    if(this.isCheckValue(model) == 0) return;
 
-    let idx = Number(this.setIndexToOrder(this.dataModel.TextContentToOrders));
+    let idx = this.dataModel.TextContentToOrders?.length;
     let item = {
-      Index: idx++,
+      Index: idx + 1,
       Content: null,
       ContentWithAttributes: null,
       IsActive: true,
       Product: null
     } as TextContentToOrderDTO;
 
-    this.dataModel.TextContentToOrders = [...this.dataModel.TextContentToOrders,...[item]];
     this.searchValue = '';
     this.innerTextValue = '';
-  }
 
-  setIndexToOrder(data: TextContentToOrderDTO[]): number {
-    let indexs = data?.map(x => x.Index);
-    if(indexs && indexs.length > 0)
-        return Math.max(...indexs) + 1;
-    return 1;
+    this.dataModel.TextContentToOrders = [...this.dataModel.TextContentToOrders,...[item]];
+    this.tdsTableComponent?.cdkVirtualScrollViewport?.scrollTo({ bottom: 0, behavior: 'smooth'});
   }
 
   // Khách hàng không thuộc trạng thái
@@ -347,6 +341,14 @@ export class PostOrderConfigComponent implements OnInit {
   removeItemTemplate(item: TextContentToOrderDTO) {
     let datas = this.dataModel.TextContentToOrders.filter(x => x.Index !== item.Index);
     this.dataModel.TextContentToOrders = [...datas];
+
+    let index = 0;
+    this.dataModel.TextContentToOrders.map(x => {
+      index = index + 1;
+      x.Index = index;
+    })
+
+    this.dataModel.TextContentToOrders = [...this.dataModel.TextContentToOrders];
   }
 
   removeAllTemplate() {
@@ -379,7 +381,7 @@ export class PostOrderConfigComponent implements OnInit {
     }
 
     for(let i = this.fromMoreTemplate; i <= this.toMoreTemplate; i++) {
-      let idx = Number(this.setIndexToOrder(this.dataModel.TextContentToOrders));
+      let idx = this.dataModel.TextContentToOrders?.length;
       let content = `${this.prefixMoreTemplate}${i}${this.suffixMoreTemplate}`;
 
       this.dataModel.TextContentToOrders.push({
@@ -532,8 +534,8 @@ export class PostOrderConfigComponent implements OnInit {
       next: (res: any) => {
 
           delete res['@odata.context'];
-          const product = {...res} as ProductTmlpAttributesDto;
-          let item = {...this.prepareProduct(product, index)} as TextContentToOrderDTO;
+          let product = {...res} as ProductTmlpAttributesDto;
+          let item = this.prepareProduct(product) as TextContentToOrderDTO;
 
           let content = this.generateTagDetail(product.DefaultCode, product.OrderTag, null, null);
           let contentRange = this.dataModel.TextContentToOrders[index]!.Content;
@@ -541,8 +543,8 @@ export class PostOrderConfigComponent implements OnInit {
               contentRange = contentRange.split(',');
               content = [...contentRange, ...content];
           }
-          item.Content = content?.join(',');
 
+          item.Content = content?.join(',');
           let productTmpl = product.ProductTmpl;
           if(product.AttributeValues && product.AttributeValues.length > 0 && productTmpl) {
               let attribute = this.generateTagDetail(productTmpl.DefaultCode, productTmpl.OrderTag, null, null);
@@ -553,7 +555,7 @@ export class PostOrderConfigComponent implements OnInit {
               x.Product?.ProductId == item.Product?.ProductId && x.Product?.UOMId == item.Product?.UOMId);
 
           if(findIndex >= 0) {
-              this.message.info('Sản phẩm này đã tồn tại trong cấu hình');
+              this.notificationService.error('Gán sản phẩm thất bại', `Mẫu số chốt đơn ${findIndex + 1} đã tồn tại sản phẩm này`);
           } else {
               this.dataModel.TextContentToOrders[index] = {...item};
           }
@@ -646,7 +648,7 @@ export class PostOrderConfigComponent implements OnInit {
 
   changeIsEnableOrderAuto(event: boolean) {
     let exist = event == true && this.dataModel && this.dataModel.TextContentToOrders
-       && this.dataModel.TextContentToOrders.length == 0 && this.currentLiveCampaign?.Id;
+    && this.dataModel.TextContentToOrders.length == 0 && this.currentLiveCampaign?.Id;
     if(exist) {
         let id = this.currentLiveCampaign?.Id as string;
         this.loadConfigLiveCampaignV2(id);
@@ -675,8 +677,12 @@ export class PostOrderConfigComponent implements OnInit {
           }
 
           this.dataModel.TextContentToOrders = [];
+          let index = 0;
           model.TextContentToOrders?.map((x: TextContentToOrderV2Dto) => {
               let item = {...x} as TextContentToOrderDTO;
+              index = index + 1;
+              item.Index = index;
+
               this.dataModel.TextContentToOrders.push(item);
           });
 
@@ -692,19 +698,15 @@ export class PostOrderConfigComponent implements OnInit {
     })
   }
 
-  prepareProduct(model: ProductTmlpAttributesDto, line?: number) {
-    let indexs = this.dataModel.TextContentToOrders.map(x => x.Index);
+  prepareProduct(model: ProductTmlpAttributesDto) {
+    let idx = this.dataModel.TextContentToOrders?.length;
     let item = {
-        Index: Number(Math.max(...indexs)),
+        Index: idx,
         IsActive: true,
         Content: '',
         ContentWithAttributes: '',
         Product: null
     } as TextContentToOrderDTO;
-
-    if(line && line >= 0) {
-        item.Index = line;
-    }
 
     let productModel = {
         ProductId: model.Id,
@@ -805,53 +807,34 @@ export class PostOrderConfigComponent implements OnInit {
     }
 
     let model = this.prepareModelOrderConfig();
+    if(this.isCheckValue(model) == 0) return;
 
-    if(this.isCheckValue(model) === 1) {
-      this.isLoading = true;
-      this.facebookPostService.onChangeDisable$.emit(true);
+    this.isLoading = true;
+    this.facebookPostService.onChangeDisable$.emit(true);
 
-      this.facebookPostService.updateOrderConfig(objectId, this.isImmediateApply, model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res) => {
-          this.isLoading = false;
+    this.facebookPostService.updateOrderConfig(objectId, this.isImmediateApply, model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.isLoading = false;
 
-          if(this.isImmediateApply) {
-              this.notificationService.success('Cập nhật cấu hình chốt đơn thành công', 'Áp dụng ngay cho những bình luận đã có');
-          } else {
-              this.message.success('Cập nhật cấu hình chốt đơn thành công');
-          }
-
-          let data = this.setData(this.dataModel);
-          this.setDataDefault(data);
-
-          this.facebookPostService.onChangeDisable$.emit(false);
-          this.cdRef.detectChanges();
-        },
-        error:(error) => {
-            this.isLoading = false;
-            this.facebookPostService.onChangeDisable$.emit(false);
-            this.message.error(error?.error?.message);
-            this.cdRef.detectChanges();
-        }
-      });
-    }
-  }
-
-  isCheckValue(model: AutoOrderConfigDTO): number {
-    if(TDSHelperArray.hasListValue(model.TextContentToOrders)) {
-      let findIndex = model.TextContentToOrders.findIndex(x => !TDSHelperString.hasValueString(x?.Content)) as number;
-
-      if(Number(findIndex) >= 0) {
-        let product = model.TextContentToOrders[findIndex].Product;
-        if(product) {
-            this.notificationService.info('Mã chốt đơn không hợp lệ', `${product?.ProductName} dữ liệu không hợp lệ`, { duration: 3000});
+        if(this.isImmediateApply) {
+            this.notificationService.success('Cập nhật cấu hình chốt đơn thành công', 'Áp dụng ngay cho những bình luận đã có');
         } else {
-            this.message.error('Vui lòng nhập nội dung mẫu đầy đủ');
+            this.message.success('Cập nhật cấu hình chốt đơn thành công');
         }
-        return 0;
-      }
-    }
 
-    return 1;
+        let data = this.setData(this.dataModel);
+        this.setDataDefault(data);
+
+        this.facebookPostService.onChangeDisable$.emit(false);
+        this.cdRef.detectChanges();
+      },
+      error:(error) => {
+          this.isLoading = false;
+          this.facebookPostService.onChangeDisable$.emit(false);
+          this.message.error(error?.error?.message);
+          this.cdRef.detectChanges();
+      }
+    });
   }
 
   onCannel() {
@@ -959,4 +942,35 @@ export class PostOrderConfigComponent implements OnInit {
   trackByIndex(_: number): number {
     return _;
   }
+
+  isCheckValue(model: AutoOrderConfigDTO) {
+    if(model.TextContentToOrders && model.TextContentToOrders.length > 0) {
+
+      for(let i = 0; i < model.TextContentToOrders.length; i++) {
+          let item = model.TextContentToOrders[i];
+          let existProduct = item.Product && item.Product.ProductId && item.Product.UOMId;
+          if(!existProduct) {
+              this.notificationService.error(`Mẫu chốt đơn số ${i + 1} không hợp lệ`, 'Không có sản phẩm nào được chọn');
+              return 0;
+          }
+
+          let existContent = TDSHelperString.hasValueString(model.TextContentToOrders[i].Content) && model.TextContentToOrders[i].Content.length > 0;
+          if(!existContent) {
+              this.notificationService.error(`Mẫu chốt đơn số ${i + 1} không hợp lệ`, 'Content không được để trống');
+              return 0;
+          }
+      }
+
+      return 1;
+    }
+    return 1;
+  }
+
+  ngAfterViewInit(): void {
+    this.tdsTableComponent?.cdkVirtualScrollViewport?.scrolledIndexChange
+      .pipe(takeUntil(this.destroy$)).subscribe((data: number) => {
+        console.log('scroll index to', data);
+      });
+  }
+
 }
