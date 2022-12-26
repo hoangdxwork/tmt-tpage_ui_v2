@@ -991,13 +991,13 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
           let item = model.TextContentToOrders[i];
           let existProduct = item.Product && item.Product.ProductId && item.Product.UOMId;
           if(!existProduct) {
-              this.notificationService.error(`Mẫu chốt đơn số ${i + 1} không hợp lệ`, 'Không có sản phẩm nào được chọn');
+              this.notificationService.error(`Mẫu chốt đơn số ${i + 1} không hợp lệ`, 'Không có sản phẩm nào được chọn', { duration: 9000 });
               return 0;
           }
 
           let existContent = TDSHelperString.hasValueString(model.TextContentToOrders[i].Content) && model.TextContentToOrders[i].Content.length > 0;
           if(!existContent) {
-              this.notificationService.error(`Mẫu chốt đơn số ${i + 1} không hợp lệ`, 'Content không được để trống');
+              this.notificationService.error(`Mẫu chốt đơn số ${i + 1} không hợp lệ`, 'Content không được để trống', { duration: 9000 });
               return 0;
           }
       }

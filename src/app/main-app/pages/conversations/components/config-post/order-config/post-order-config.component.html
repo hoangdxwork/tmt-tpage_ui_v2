@@ -167,7 +167,7 @@
                         <tds-label class="pr-2 whitespace-nowrap">Tìm kiếm theo thứ tự</tds-label>
                         <tds-form-field class="flex flex-auto bg-white">
                             <input type="number" tdsInput placeholder="Nhập số" [tdsInputDebounce]="500" (inputKeyup)="onSearchPosition($event)"
-                            [(ngModel)]="innerNumberValue" [ngModelOptions]="{standalone: true}"/>
+                            autocomplete="off" [(ngModel)]="innerNumberValue" [ngModelOptions]="{standalone: true}"/>
                             <span tdsSuffix *ngIf="innerNumberValue" (click)="onClearFilterNumber()"><i class="tdsi-close-fill"></i></span>
                         </tds-form-field>
 
@@ -189,12 +189,16 @@
                     [frontPagination]="false"
                     [virtualItemSize]="100"
                     [virtualMaxBufferPx]="600"
+                    [loadingDelay]="500"
                     [virtualForTrackBy]="trackByIndex">
                     <tbody>
                     <ng-template tds-virtual-scroll let-item let-i="index">
                         <tr *ngIf="item" class="p-2 h-full w-full min-h-[300px]">
-                            <div class="bg-neutral-3-50 rounded-lg p-4 h-full w-full flex flex-col justify-between" [ngClass]="!item.IsActive ? 'opacity-70' : ''">
-                                <div class="h-auto w-full">
+                            <div class="bg-neutral-3-50 rounded-lg p-4 h-full w-full flex flex-col justify-between" [ngClass]="!item.IsActive ? 'border border-neutral-1-200' : ''">
+                                <div class="h-auto w-full relative">
+                                    <div *ngIf="!item.IsActive" class="absolute bg-neutral-3-50 bg-opacity-70 inset-0 flex justify-center items-center">
+                                        <span class="text-accent-3 font-semibold italic z-50 text-body-1">(Đã tắt)</span>
+                                    </div>
                                     <div class="flex justify-between items-center">
                                         <div class="flex flex-auto gap-2.5 items-center">
                                             <tds-badge [count]="iconTemplate" *ngIf="!item.Product" (click)="showModalListProduct(i)">
@@ -209,7 +213,6 @@
 
                                             <div class="text-info-500 text-body-2 font-semibold" *ngIf="item.Product as product; else notProduct">
                                                 {{ product.ProductName || product.ProductNameGet }} / {{ (product.Price || 0) | numberCustom }}
-                                                <span *ngIf="!item.IsActive" class="text-accent-3" style="font-style: italic;">(Đã tắt)</span>
                                             </div>
 
                                             <ng-template #notProduct>
@@ -217,7 +220,8 @@
                                                 </div>
                                             </ng-template>
                                         </div>
-                                        <tds-badge [standalone]="true" [count]="item | indexTextContentOrder:dataModel.TextContentToOrders"></tds-badge>
+                                        <span class=" bg-primary-1 dark:bg-d-primary-1 text-white block font-semibold h-5 leading-5 min-w-5 overflow-hidden py-0 relative 
+                                                rounded-full text-center text-xs whitespace-nowrap tds-badge-count px-2">{{item | indexTextContentOrder:dataModel.TextContentToOrders}}</span>
                                     </div>
 
                                     <div class="pt-6">
