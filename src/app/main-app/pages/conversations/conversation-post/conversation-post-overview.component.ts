@@ -29,6 +29,7 @@ import { LiveCampaignService } from '@app/services/live-campaign.service';
 @Component({
   selector: 'conversation-post-overview',
   templateUrl: './conversation-post-overview.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 

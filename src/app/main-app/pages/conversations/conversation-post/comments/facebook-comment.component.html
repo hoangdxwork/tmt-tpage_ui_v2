@@ -79,7 +79,7 @@
                                         <ng-template #invContent>
                                             <div class="flex flex-wrap min-w-[200px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
                                                 <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]; let i = index">
-                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)" (click)="onOpenDrawerBillDetail(inv)">
+                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)" class="hover:underline decoration-primary-1" (click)="onOpenDrawerBillDetail(inv)">
                                                         <span class="text-primary-1 font-semibold cursor-pointer" style="font-size: 14px">{{ inv.Number || 'N/A' }}</span>
                                                         <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
                                                     </span>

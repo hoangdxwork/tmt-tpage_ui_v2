@@ -67,6 +67,8 @@ import { Pipe, PipeTransform } from '@angular/core';
     let type = typeof(term);
 
     if(type == 'number') {
+      if (!term) return datas;
+
       let items = datas.filter((x: any) => x.Index == term);
       return items;
     } else {
