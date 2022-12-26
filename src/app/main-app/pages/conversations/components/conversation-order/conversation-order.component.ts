@@ -134,6 +134,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   pageIndex = 1;
   isLoadingNextdata: boolean = false;
   clickPrint: string = '';
+  tiktokUniqueId: any = null;
 
   numberWithCommas = (value:TDSSafeAny) => {
     if(value != null){
@@ -307,6 +308,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
             case CRMTeamType._UnofficialTikTok:
                 this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromTiktokComment(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
+                this.tiktokUniqueId = res.Data?.uniqueId;
               break;
           }
 
@@ -324,6 +326,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
             if(!TDSHelperObject.hasValue(this.team)) {
               this.team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+            }
+
+            let channelType = this.team.Type;
+            if(channelType == CRMTeamType._UnofficialTikTok) {
+                this.tiktokUniqueId = res.Data?.uniqueId;
             }
 
             res.comment = res.comment as ChatomniDataItemDto;
@@ -1611,6 +1618,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     let id = order.Id as string;
     let message = this.type == 'post' ? this.commentPost?.Message : null;
+
+    // Tiktok khi print gán uid là UniqueId
+    let channelType = this.team?.Type;
+    if(channelType == CRMTeamType._UnofficialTikTok) {
+        order.Facebook_UserId = this.tiktokUniqueId;
+    }
 
     if(this.clickPrint == '_click_print') {
       this.orderPrintService.printId(id, this.quickOrderModel, message);
