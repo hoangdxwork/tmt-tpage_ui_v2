@@ -1,33 +1,37 @@
-import { TenantService } from 'src/app/main-app/services/tenant.service';
 import { takeUntil } from 'rxjs/operators';
 import { TDSMessageService } from 'tds-ui/message';
 import { formatDate } from '@angular/common';
 import { SummaryOrderDTO } from '../../../../dto/dashboard/summary-order.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { EventSummaryService } from '../../../../services/event-summary.service';
-import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TDSChartOptions, TDSLineChartComponent } from 'tds-report';
-import { TenantInfoDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
 
 @Component({
   selector: 'summary-order-by-period',
   templateUrl: './summary-order-by-period.component.html',
   providers: [TDSDestroyService]
 })
-export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
+export class SummaryOrderByPeriodComponent implements OnInit {
 
   options: any;
   size: any = ['auto', 440];
 
   axisPreviousData: Date[] = [];
   axisCurrentData: Date[] = [];
+
+  axisData: number[] = [];
+  currentData: any[] = [];
+  previousData: any[] = [];
+  currentMonth!: number;
+  previousMonth!: number;
+  interval: number = 0;
   sumOrder!: SummaryOrderDTO;
 
   chartOptions = TDSChartOptions();
   isLoading: boolean = false;
 
   constructor(private eventSummaryService: EventSummaryService,
-    private tenantService: TenantService,
     private destroy$: TDSDestroyService,
     private message: TDSMessageService) {}
 
@@ -35,91 +39,68 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
     this.loadData();
   }
 
-  ngAfterViewInit(): void {
-    
-  }
-
   loadData() {
     this.isLoading = true;
-    this.tenantService.getInfo().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
+    let since = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    let until = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
-        if(!res || !res?.Tenant || !res?.Tenant?.DateExpired) return;
-        let period = this.getPackPeriod(res?.Tenant?.DateExpired);
+    this.eventSummaryService.getSummaryOrderByPeriod(since, until).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res:any) => {
+        if(res?.Previous?.Items && res?.Current?.Items){
 
-        this.eventSummaryService.getSummaryOrderByPeriod(period?.since, period?.until).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res:any) => {
-            if(res?.Previous?.Items && res?.Current?.Items){
+          this.sumOrder = {...res};
+          this.buildData();
+          this.buildSummaryOrderChart();
+        }
 
-              this.sumOrder = {...res};
-              this.buildData();
-              this.buildSummaryOrderChart();
-            }
-
-            this.isLoading = false;
-          },
-          error: (err) => {
-            this.isLoading = false;
-            this.message.error(err.error?.message || 'Không thể tải dữ liệu thống kê đơn hàng');
-          }
-        })
-      }, 
-      error: (error) => {
         this.isLoading = false;
-        this.message.error(error?.error?.message);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err.error?.message || 'Không thể tải dữ liệu thống kê đơn hàng');
       }
-    });
+    })
   }
 
   buildData() {
-    let currentDates = this.sumOrder.Current?.Items?.map(x => Number(formatDate(x.Time,'dd','vi_VN')));
-    let previousDates = this.sumOrder.Previous?.Items?.map(x => Number(formatDate(x.Time,'dd','vi_VN')));
+    this.axisData = [];
+    this.previousData = [];
+    this.currentData = [];
 
-    if(currentDates.length > 0 && previousDates.length > 0) {
-      let start = currentDates[0] < previousDates[0] ? currentDates[0] : previousDates[0];
-      
-      // check giá trị đầu
-      if(start < currentDates[0]) {
-        let first = new Date(this.sumOrder.Current?.Items?.[0].Time);
+    this.currentMonth = new Date().getMonth() + 1;
+    this.previousMonth = new Date().getMonth();
 
-        while(currentDates[0] - start > 0) {
-          this.sumOrder.Current.Items.unshift({
-            Time: new Date(first.setDate(first.getDate() - 1)),
-            Count: 0
-          })
+    let currentItems = this.sumOrder?.Current?.Items?.filter(x => this.currentMonth == (new Date(x.Time).getMonth() + 1));
+    let previousItems = this.sumOrder?.Previous?.Items?.filter(x => this.previousMonth == (new Date(x.Time).getMonth() + 1));
+    // bổ sung các ngày còn thiếu trong danh sách
+    currentItems = this.converseList(currentItems);
+    previousItems = this.converseList(previousItems);
 
-          start++;
+    for (let i = 1; i <= 31; i++) {
+      let existCurrent = currentItems.find(x => Number(formatDate(x.Time,'dd','vi_VN')) == i);
+      let existPrevious = previousItems.find(x => Number(formatDate(x.Time,'dd','vi_VN')) == i);
+
+      if(existCurrent || existPrevious) {
+        // khởi tạo data axis
+        this.axisData.push(i);
+        // khởi tạo data series
+        if(existCurrent) {
+          this.currentData.push(existCurrent.Count);
+        } else {
+          this.currentData.push(0);
         }
-      }
-
-      if(start < previousDates[0]) {
-        let first = new Date(this.sumOrder.Previous?.Items?.[0].Time);
-
-        while(previousDates[0] - start > 0) {
-          this.sumOrder.Previous.Items.unshift({
-            Time: new Date(first.setDate(first.getDate() - 1)),
-            Count: 0
-          })
-
-          start++;
+  
+        if(existPrevious) {
+          this.previousData.push(existPrevious.Count);
+        } else {
+          this.previousData.push(0);
         }
-      }
-
-      // check giá trị cuối
-      let previousLength = this.sumOrder.Previous.Items.length;
-      let currentLength = this.sumOrder.Current.Items.length;
-
-      while(previousLength - currentLength > 0) {
-        let last = new Date(this.sumOrder.Current.Items[currentLength - 1].Time);
-
-        this.sumOrder.Current.Items.push({
-          Time: new Date(last.setDate(last.getDate() + 1)),
-          Count: 0
-        })
-
-        currentLength++;
       }
     }
+
+    //Tính interval
+    let max = Math.max(...this.previousData,...this.currentData);
+    this.interval = this.getInterval(max);
   }
 
   buildSummaryOrderChart() {
@@ -137,8 +118,9 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
         right: 0
       },
       tooltip: {
+        trigger: 'axis',
         axisPointer: {
-          type: 'cross'
+          type: 'line'
         }
       },
       axis:{
@@ -154,7 +136,7 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
             axisLine: {
               onZero: false
             },
-            data: this.sumOrder.Previous?.Items?.map(x => formatDate(x.Time, 'dd/MM', 'vi_VN'))
+            data: this.axisData.map(x => { return `${x}/${this.previousMonth}` })
           },
           {
             type: 'category',
@@ -167,12 +149,13 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
             axisLine: {
               onZero: false
             },
-            data: this.sumOrder.Current?.Items?.map(x => formatDate(x.Time, 'dd/MM', 'vi_VN'))
+            data: this.axisData.map(x => { return `${x}/${this.currentMonth}` })
           }
         ],
         yAxis: [
           {
             type: 'value',
+            interval: this.interval,
             axisLine: {
               show: true
             },
@@ -187,21 +170,24 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
       },
       series: [
         {
-          name: 'Đơn hàng chu kỳ trước',
+          name: `Đơn hàng chu kỳ trước`,
           type: 'line',
+          xAxisIndex: 0,
+          showSymbol: false,
           emphasis: {
             focus: 'series'
           },
-          data: this.sumOrder.Previous?.Items?.map(x => { return x.Count }) || []
+          data: this.previousData || []
         },
         {
-          name: 'Đơn hàng chu kỳ hiện tại',
+          name: `Đơn hàng chu kỳ hiện tại`,
           type: 'line',
           xAxisIndex: 1,
+          showSymbol: false,
           emphasis: {
             focus: 'series'
           },
-          data: this.sumOrder.Current?.Items?.map(x => { return x.Count }) || []
+          data: this.currentData || []
         },
       ]
     }
@@ -209,21 +195,44 @@ export class SummaryOrderByPeriodComponent implements OnInit, AfterViewInit {
     this.options = this.chartOptions.LineChartOption(chartComponent);
   }
 
-  getPackPeriod(DateExpired: Date) {
-    let period = {
-      since: new Date(new Date(DateExpired).setDate(new Date(DateExpired).getDate() - 29)),
-      until: new Date(DateExpired)
+  converseList(items: any[]) {
+    let lstItems: any[] = [];
+
+    let firstItem = new Date(items[0].Time).getDate();
+    let lastItem = new Date(items[items.length - 1].Time).getDate();
+    let previousDate = new Date(items[0].Time);
+
+    for (let i = firstItem; i <= lastItem; i++) {
+      let exist = items.find(x => new Date(x.Time).getDate() == i);
+
+      if(exist) {
+        previousDate = new Date(exist.Time);
+        lstItems.push(exist);
+      } else {
+        // Thêm các ngày còn thiếu
+        lstItems.push({
+          Time: new Date(previousDate.setDate(previousDate.getDate() + 1)),
+          Count: 0
+        })
+      }
     }
 
-    let dateTmp = period.since;
-    let now = new Date();
+    return lstItems;
+  }
 
-    while(now <= period.since) {
-      period.until = new Date(dateTmp.setDate(dateTmp.getDate() - 1));
-      period.since = new Date(dateTmp.setDate(dateTmp.getDate() - 29));
-      dateTmp = period.since;
+  getInterval(maxSeriesValue: number){
+    // TODO: lấy 7 khoảng thời gian giữa 2 mốc trên trục
+    let interval = this.prepareInterval(maxSeriesValue/7);
+
+    return interval;
+  }
+
+  prepareInterval(interval: number){
+    let i = 10;
+    while((interval/i) > 10) {
+      i *= 10;
     }
 
-    return period;
+    return Math.ceil(interval / i) * i;
   }
 }

@@ -158,27 +158,32 @@
                             <p class="description" *ngIf="(data.Data | facebookType).description" showMore [text]="(data.Data | facebookType).description" [length]="400"></p>
                         </div>
 
-                        <div *ngIf="data.LiveCampaign">
-                            <tds-tag size="sm" class="!bg-base-orange-50 !text-base-orange-500" (click)="showModalLiveCampaign(data, team.Type, data.LiveCampaign.Id)">
-                                <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip [tooltipTitle]="data.LiveCampaign.Name">
-                                    <span class="flex-auto truncate">{{ data.LiveCampaign.Name }}</span>
-                                    <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
-                                </span>
-                            </tds-tag>
-                        </div>
-
-                        <div *ngIf="!data.LiveCampaign">
-                            <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
-                                (click)="openTag(data, team.Type)"
-                                [popoverVisible]="indClickTag == data.Id" popoverTrigger="click"
-                                [popoverAutoClose]="false" [popoverBackdrop]="true"
-                                popoverPlacement="right"
-                                class="!bg-neutral-3-100 !text-neutral-1-600">
-                                <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
-                                    <span class="flex-auto truncate">Chọn chiến dịch</span>
-                                    <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
-                                </span>
-                            </tds-tag>
+                        <div class="flex gap-x-2 items-center">
+                            <div *ngIf="data.LiveCampaign">
+                                <tds-tag size="sm" class="!bg-base-orange-50 !text-base-orange-500" (click)="showModalLiveCampaign(data, team.Type, data.LiveCampaign.Id)">
+                                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip [tooltipTitle]="data.LiveCampaign.Name">
+                                        <span class="flex-auto truncate">{{ data.LiveCampaign.Name }}</span>
+                                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                                    </span>
+                                </tds-tag>
+                            </div>
+    
+                            <div *ngIf="!data.LiveCampaign">
+                                <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
+                                    (click)="openTag(data, team.Type)"
+                                    [popoverVisible]="indClickTag == data.Id" popoverTrigger="click"
+                                    [popoverAutoClose]="false" [popoverBackdrop]="true"
+                                    popoverPlacement="right"
+                                    class="!bg-neutral-3-100 !text-neutral-1-600">
+                                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
+                                        <span class="flex-auto truncate">Chọn chiến dịch</span>
+                                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                                    </span>
+                                </tds-tag>
+                            </div>
+                            <button tds-button-icon color="primary" size="sm" tds-tooltip="Áp dụng ngay cho những bình luận đã có" (click)="onRescanAutoOrder()">
+                                <i class="tdsi-comment-on-fill"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="post-picture w-1/4 flex justify-end" *ngIf="(data.Data | facebookType).picture">

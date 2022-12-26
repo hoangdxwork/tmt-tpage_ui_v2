@@ -134,6 +134,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   pageIndex = 1;
   isLoadingNextdata: boolean = false;
   clickPrint: string = '';
+  tiktokUniqueId: any = null;
 
   numberWithCommas = (value:TDSSafeAny) => {
     if(value != null){
@@ -307,6 +308,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
             case CRMTeamType._UnofficialTikTok:
                 this.insertFromPostModel = {...this.csOrder_PrepareModelHandler.prepareInsertFromTiktokComment(res, this.saleOnlineSettings, this.companyCurrents)} as InsertFromPostDto;
+                this.tiktokUniqueId = res.Data?.uniqueId;
               break;
           }
 
@@ -324,6 +326,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
             if(!TDSHelperObject.hasValue(this.team)) {
               this.team = this.crmTeamService.getCurrentTeam() as CRMTeamDTO;
+            }
+
+            let channelType = this.team.Type;
+            if(channelType == CRMTeamType._UnofficialTikTok) {
+                this.tiktokUniqueId = res.Data?.uniqueId;
             }
 
             res.comment = res.comment as ChatomniDataItemDto;
@@ -369,27 +376,26 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
         if(obs !== InventoryChangeType._TAB_ORDER) return;
-
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
 
         if(warehouseId > 0) {
           this.productService.lstInventory = null;
-
-          this.productService.setInventoryWarehouseId(warehouseId);
-          this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+          this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-              this.inventories = {};
-              this.inventories = res;
+                if(res) {
+                    this.inventories = {};
+                    this.inventories = res;
+                }
 
-              if(this.response) {
-                this.mappingProduct(this.response);
-              }
+                if(this.response) {
+                    this.mappingProduct(this.response);
+                }
             },
             error: (err: any) => {
-              this.message.error(err?.error?.message);
-              if(this.response) {
-                this.mappingProduct(this.response);
-              }
+                this.message.error(err?.error?.message);
+                if(this.response) {
+                    this.mappingProduct(this.response);
+                }
             }
           });
         }
@@ -1611,6 +1617,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     let id = order.Id as string;
     let message = this.type == 'post' ? this.commentPost?.Message : null;
+
+    // Tiktok khi print gán uid là UniqueId
+    let channelType = this.team?.Type;
+    if(channelType == CRMTeamType._UnofficialTikTok) {
+        order.Facebook_UserId = this.tiktokUniqueId;
+    }
 
     if(this.clickPrint == '_click_print') {
       this.orderPrintService.printId(id, this.quickOrderModel, message);

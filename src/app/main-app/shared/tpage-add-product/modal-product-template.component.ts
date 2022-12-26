@@ -269,8 +269,8 @@ export class ModalProductTemplateComponent implements OnInit {
             // TODO: gọi cập nhật tồn kho
             let id = data.productTmpl.Id;
             let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
-            this.productTemplateFacade.stockChangeProductQty(id, mapping, this.type);
 
+            this.productTemplateFacade.stockChangeProductQty(id, mapping, this.type);
             this.modalRef.destroy(type ? data : null);
             this.isLoading = false;
         },
@@ -294,7 +294,7 @@ export class ModalProductTemplateComponent implements OnInit {
       componentParams: {}
     });
 
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if(result) {
         this.lstCategory = [...[result],...this.lstCategory];
       }
@@ -310,7 +310,7 @@ export class ModalProductTemplateComponent implements OnInit {
     });
 
 
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if(result) {
         switch(type) {
           case 'UOM':
@@ -377,7 +377,7 @@ export class ModalProductTemplateComponent implements OnInit {
         }
       });
 
-      modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
           this.isLoading = true;
           this.lstAttributes = [...result];
@@ -422,7 +422,7 @@ export class ModalProductTemplateComponent implements OnInit {
         }
       });
 
-      modal.afterClose.subscribe((result: ConfigProductVariant) => {
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ConfigProductVariant) => {
         if (TDSHelperObject.hasValue(result)) {
           this.lstVariants.map((item, index) => {
             if (item.AttributeValues[0]?.Id == result.AttributeValues[0]?.Id) {
@@ -453,7 +453,7 @@ export class ModalProductTemplateComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if(TDSHelperObject.hasValue(result)) {
         if(result) {
           this.lstUOMCategory = [...[result],...this.lstUOMCategory];
@@ -495,13 +495,6 @@ export class ModalProductTemplateComponent implements OnInit {
     // TODO: check kí tự đặc biệt
     if(matchRex || (TDSHelperString.isString(pop) && !TDSHelperString.hasValueString(pop.toLocaleLowerCase().trim()))) {
         this.message.warning('Ký tự không hợp lệ');
-        datas = datas.filter(x => x!= pop);
-    }
-
-    let exist = pop ? this.lstCheckOrderTags.filter(x=>x.toLocaleLowerCase().trim() == pop.toLocaleLowerCase().trim())[0]: false;
-
-    if(exist) {
-        this.message.warning(`Mã chốt đơn ${pop} bị trùng trong danh sách sản phẩm vừa thêm.`);
         datas = datas.filter(x => x!= pop);
     }
 

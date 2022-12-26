@@ -29,6 +29,7 @@ import { LiveCampaignService } from '@app/services/live-campaign.service';
 @Component({
   selector: 'conversation-post-overview',
   templateUrl: './conversation-post-overview.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ TDSDestroyService ]
 })
 
@@ -476,4 +477,14 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     this.liveCampaignService.setLocalStorageDrawer(this.data.ObjectId, liveCampaignId, false);
   }
 
+  onRescanAutoOrder() {
+    this.facebookPostService.rescanAutoOrder(this.data?.ObjectId, this.team?.Id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: res => {
+        this.message.success('Áp dụng thành công');
+      },
+      error: error => {
+        this.message.error(error?.error?.message);
+      }
+    })
+  }
 }

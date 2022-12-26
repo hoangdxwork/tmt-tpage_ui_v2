@@ -155,3 +155,15 @@ tbody td div, tbody td p, tbody td span, tbody td a, tbody td div div span{
   border-style: dotted;
 }
 
+.table-textcontentorrder .cdk-virtual-scroll-viewport table tbody {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.table-textcontentorrder .cdk-virtual-scroll-viewport table tbody tr {
+  max-width: 50%;
+  flex: 0 0 50%;
+  height: auto;
+}

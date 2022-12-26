@@ -1,53 +1,55 @@
 <div *tdsModalTitle class="">
-        <div class="w-full flex flex-row-reverse items-center justify-between">
-          <div class="tds-modal-close justify-self-end pl-2">
-              <span class="tds-modal-close-x flex">
-                <button (click)="onCannel()" class="border-0 box-border dark:hover:bg-d-neutral-3-300 dark:text-d-neutral-1-500 focus:outline-none h-7 hover:bg-neutral-3-50 hover:rounded-md inline-flex items-center justify-center leading-4 p-1.5 relative text-base text-neutral-1-500 whitespace-nowrap">
-                  <i class="tdsi-close-fill"></i>
-                </button>
-              </span>
-            </div>
-          <div tds-modal-title="" class="tds-modal-header flex-auto tds-modal-title">
-              <div class="text-title-1 text-neutral-1-900 dark:text-d-neutral-1-900 font-semibold break-words">
-                Cấu hình bài viết - {{date}}
-              </div>
-          </div>
+    <div class="w-full flex flex-row-reverse items-center justify-between">
+      <div class="tds-modal-close justify-self-end pl-2">
+          <span class="tds-modal-close-x flex">
+              <button (click)="onCannel()" class="border-0 box-border dark:hover:bg-d-neutral-3-300 dark:text-d-neutral-1-500 focus:outline-none h-7 hover:bg-neutral-3-50 hover:rounded-md inline-flex items-center justify-center leading-4 p-1.5 relative text-base text-neutral-1-500 whitespace-nowrap">
+                <i class="tdsi-close-fill"></i>
+              </button>
+          </span>
         </div>
+      <div tds-modal-title="" class="tds-modal-header flex-auto tds-modal-title">
+          <div class="text-title-1 text-neutral-1-900 dark:text-d-neutral-1-900 font-semibold break-words">
+              Cấu hình bài viết - {{date}}
+          </div>
       </div>
+    </div>
+</div>
 
 <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex" class="border border-neutral-2-200 rounded-md text-body-2 text-neutral-1-900" (selectChange)="onSelectChange($event)">
-        <tds-tab title="Chốt đơn" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
-                <div class="p-4" [ngClass]="selectedIndex == 0 ? '' : 'hidden'">
-                        <post-order-config [data]="data" ></post-order-config>
-                </div>
-        </tds-tab>
+    <tds-tab title="Chốt đơn" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
+        <div class="p-4" [ngClass]="selectedIndex == 0 ? '' : 'hidden'">
+                <post-order-config [data]="data" ></post-order-config>
+        </div>
+    </tds-tab>
 
-        <tds-tab title="Tương tác chốt đơn" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
-                <div class="p-4" *ngIf="selectedIndex == 1">
-                        <post-order-interaction-config [data]="data"></post-order-interaction-config>
-                </div>
-        </tds-tab>
+    <tds-tab title="Tương tác chốt đơn" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
+        <div class="p-4" *ngIf="selectedIndex == 1">
+                <post-order-interaction-config [data]="data"></post-order-interaction-config>
+        </div>
+    </tds-tab>
 
-        <tds-tab title="Ẩn bình luận" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
-                <div class="p-4" *ngIf="selectedIndex == 2">
-                        <post-hidden-comment-config [data]="data"></post-hidden-comment-config>
-                </div>
-        </tds-tab>
+    <tds-tab title="Ẩn bình luận" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
+        <div class="p-4" *ngIf="selectedIndex == 2">
+                <post-hidden-comment-config [data]="data"></post-hidden-comment-config>
+        </div>
+    </tds-tab>
 
-        <tds-tab title="Phản hồi bình luận" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll  border-t border-neutral-2-200">
-                <div class="p-4" *ngIf="selectedIndex == 3">
-                        <auto-reply-config [data]="data"></auto-reply-config>
-                </div>
-        </tds-tab>
+    <tds-tab title="Phản hồi bình luận" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll  border-t border-neutral-2-200">
+        <div class="p-4" *ngIf="selectedIndex == 3">
+                <auto-reply-config [data]="data"></auto-reply-config>
+        </div>
+    </tds-tab>
 
-        <tds-tab title="Gán thẻ hội thoại" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll  border-t border-neutral-2-200">
-                <div class="p-4" *ngIf="selectedIndex == 4">
-                        <auto-label-config [data]="data"></auto-label-config>
-                </div>
-        </tds-tab>
+    <tds-tab title="Gán thẻ hội thoại" clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll  border-t border-neutral-2-200">
+        <div class="p-4" *ngIf="selectedIndex == 4">
+                <auto-label-config [data]="data"></auto-label-config>
+        </div>
+    </tds-tab>
 </tds-tabset>
 
-<div *tdsModalFooter class="w-full flex justify-end p-4 gap-x-4">
-        <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
-        <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+<div class="w-full flex justify-end pt-4 px-4 gap-x-4">
+    <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
+    <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()" [disabled]="isDisable">Lưu</button>
 </div>
+
+<div *tdsModalFooter></div>

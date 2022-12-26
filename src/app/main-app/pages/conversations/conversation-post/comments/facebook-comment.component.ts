@@ -1,3 +1,4 @@
+import { OrderByCommentItemDto } from './../../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { EnumSendMessageType } from './../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { CommentOrderPost, CommentOrder } from '../../../../dto/conversation/post/comment-order-post.dto';
 import { FacebookCommentService } from '../../../../services/facebook-comment.service';
@@ -47,6 +48,8 @@ import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/
 import { MessageSocketioDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
 import { LiveCampaignFastSaleOrderDataDto } from '@app/dto/socket-io/livecampain-fastsaleorder.dto';
+import { formatDate } from '@angular/common';
+import { en_US, vi_VN } from "tds-ui/i18n";
 
 @Component({
   selector: 'facebook-comment',
@@ -613,8 +616,32 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     this.prepareLoadTab(item, order, null);
   }
 
-  loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any){
+  getFormatDate(date: any) {
+    return formatDate(new Date(date), 'dddd-MM-dd', en_US.locale);
+  }
+
+  loadOrderItemByComment(item: ChatomniDataItemDto, order: OrderByCommentItemDto | any) {
+    if(order.DateDeleted) {
+      let format = this.getFormatDate(order.DateDeleted);
+      if(format != '0101-01-01') {
+          this.message.info('Đơn hàng không tồn tại');
+          return;
+      }
+    }
+
+    let model = {
+        id: order.Id,
+        code: order.Code,
+        session: 0,
+        index: 0
+    } as CommentOrder;
+
     this.isVisible = '';
+    this.idPopoverVisible = '';
+    this.loadOrderByCode(item, model);
+  }
+
+  loadOrderByCode(item: ChatomniDataItemDto, order: CommentOrder | any) {
     this.conversationOrderFacade.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.prepareLoadTab(item, order, null);
   }
@@ -879,6 +906,9 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {
+    this.isVisible = '';
+    this.idPopoverVisible ='';
+
     let exisData = this.dataSource && this.dataSource.Items && this.dataSource.Items.length > 0 && event && event.scrollStartPosition > 0;
     if(exisData) {
         const vsEnd = Number(this.dataSource.Items.length - 1 ) == Number(event.endIndex) && !this.disableNextUrl as boolean;
@@ -894,6 +924,9 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   }
 
   vsStart(event: NgxVirtualScrollerDto) {
+    this.isVisible = '';
+    this.idPopoverVisible = '';
+
     if(event && Number(event.startIndex) >= 0) {
         // TODO: mapping dữ liệu socket ko có trong danh sách
         let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1  && event.startIndex <= 2
@@ -911,7 +944,6 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
                 this.cdRef.detectChanges();
             }, 350);
-
         }
 
         this.vsStartIndex = event.startIndex;

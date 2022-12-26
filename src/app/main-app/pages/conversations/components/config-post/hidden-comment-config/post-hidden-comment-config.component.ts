@@ -1,3 +1,4 @@
+import { TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs/operators';
 import { ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
@@ -28,34 +29,34 @@ export class PostHiddenCommentConfigComponent implements OnInit {
     private message: TDSMessageService,
     private facebookPostService: FacebookPostService,
     private destroy$: TDSDestroyService,
-    private cdRef: ChangeDetectorRef
-  ) { }
+    private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.loadHiddenComment(this.data.ObjectId);
+    this.loadData();
   }
 
-  loadHiddenComment(postId: string) {
-    this.isLoading = true;
+  loadData() {
+    let objectId = this.data?.ObjectId;
+    if(!objectId) return;
 
-    this.facebookPostService.getHiddenCommentConfigs(postId).pipe(takeUntil(this.destroy$))
-      .subscribe({
+    this.isLoading = true;
+    this.facebookPostService.getHiddenCommentConfigs(objectId).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           this.dataModel = {...res};
-          
-          if(res.ContentOfCommentForAutoHide){
+
+          if(TDSHelperString.hasValueString(res.ContentOfCommentForAutoHide)){
             this.lstContentOfCommentForAutoHide = res.ContentOfCommentForAutoHide.split(",");
           }
 
           this.isLoading = false;
-
           this.cdRef.detectChanges();
         },
         error:(err) => {
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadHiddenCommentConfig);
           this.isLoading = false;
+          this.message.error(err?.error?.message);
+          this.cdRef.detectChanges();
         }
-      });
+    });
   }
 
   changeContentOfCommentForAutoHide(event:string[]){
@@ -63,7 +64,7 @@ export class PostHiddenCommentConfigComponent implements OnInit {
     event.forEach(x => {
       if(x.includes(',')){
         this.message.error('Ký tự không hợp lệ');
-        
+
         event.pop();
       }
     });
@@ -73,31 +74,37 @@ export class PostHiddenCommentConfigComponent implements OnInit {
 
   prepareModel() {
     let model = {...this.dataModel} as AutoHiddenConfigDTO;
-
-    model.ContentOfCommentForAutoHide = this.lstContentOfCommentForAutoHide.length > 0 ? this.lstContentOfCommentForAutoHide.join(",") : "";
+    model.ContentOfCommentForAutoHide = this.lstContentOfCommentForAutoHide?.length > 0 ? this.lstContentOfCommentForAutoHide?.join(",") : "";
 
     return model;
   }
 
   onSave() {
+    let objectId = this.data?.ObjectId;
+    if(!objectId) {
+      this.message.error('Không tìm thấy id bài viết');
+      return;
+    }
+
     let model = this.prepareModel();
-    let postId = this.data?.ObjectId;
-
     this.isLoading = true;
+    this.facebookPostService.onChangeDisable$.emit(true);
 
-    this.facebookPostService.updateHiddenCommentConfigs(postId, model).pipe(takeUntil(this.destroy$))
-      .subscribe({
+    this.facebookPostService.updateHiddenCommentConfigs(objectId, model).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
-          this.message.success(Message.UpdatedSuccess);
-          this.isLoading = false;
+            this.isLoading = false;
+            this.message.success("Cập nhật ẩn bình luận thành công");
 
-          this.cdRef.detectChanges();
+            this.facebookPostService.onChangeDisable$.emit(false);
+            this.cdRef.detectChanges();
         },
         error:(error) => {
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-          this.isLoading = false;
+            this.isLoading = false;
+            this.facebookPostService.onChangeDisable$.emit(false);
+            this.message.error(error?.error?.message);
+            this.cdRef.detectChanges();
         }
-      });
+    });
   }
 
   onCannel() {

@@ -26,17 +26,15 @@ export class AutoReplyConfigComponent implements OnInit {
   lstCommentAutoReply: string[] = [];
   lstCommentNotAutoReply: string[] = [];
 
-  numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
+  numberWithCommas =(value:TDSSafeAny) => {
+    if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     return value;
-  } ;
-  
+  };
+
   parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null){
       return TDSHelperString.replaceAll(value,'.','');
     }
     return value;
@@ -46,28 +44,32 @@ export class AutoReplyConfigComponent implements OnInit {
     private message: TDSMessageService,
     private facebookPostService: FacebookPostService,
     private destroy$: TDSDestroyService,
-    private cdRef: ChangeDetectorRef,
-  ) { }
+    private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(){
-    this.loadData(this.data.ObjectId);
+    this.loadData();
   }
 
-  loadData(postId: string) {
-    this.isLoading = true;
+  loadData() {
+    let objectId  = this.data?.ObjectId;
+    if(!objectId) return;
 
-    this.facebookPostService.getAutoReplyConfigs(postId).pipe(takeUntil(this.destroy$))
-      .subscribe({
+    this.isLoading = true;
+    this.facebookPostService.getAutoReplyConfigs(objectId).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: AutoReplyConfigDTO) => {
+
           this.dataModel = {...res};
-          this.lstCommentNotAutoReply = res.ContentOfCommentForNotAutoReply && res.ContentOfCommentForNotAutoReply !== '' ? res.ContentOfCommentForNotAutoReply?.split(",") : [];
+          if(TDSHelperString.hasValueString(res.ContentOfCommentForNotAutoReply)) {
+            this.lstCommentNotAutoReply = res.ContentOfCommentForNotAutoReply?.split(",");
+          }
 
           this.isLoading = false;
           this.cdRef.detectChanges();
         },
         error:(err) => {
-          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadReplyConfig);
           this.isLoading = false;
+          this.message.error(err?.error?.message || Message.ConversationPost.CanNotLoadReplyConfig);
+          this.cdRef.detectChanges();
         }
       });
   }
@@ -84,7 +86,7 @@ export class AutoReplyConfigComponent implements OnInit {
   }
 
   prepareModel(): any {
-    let model = Object.assign(this.dataModel) as AutoReplyConfigDTO;
+    let model = {...this.dataModel} as AutoReplyConfigDTO;
 
     model.ContentOfCommentForAutoReply = this.lstCommentAutoReply?.join(',');
     model.ContentOfCommentForNotAutoReply = this.lstCommentNotAutoReply?.join(',');
@@ -93,27 +95,35 @@ export class AutoReplyConfigComponent implements OnInit {
   }
 
   onSave(){
+    let objectId = this.data?.ObjectId;
+    if(!objectId) {
+      this.message.error('Không tìm thấy id bài viết');
+      return;
+    }
+
     let model = this.prepareModel();
-    let postId = this.data?.ObjectId;
-    
     this.isLoading = true;
+    this.facebookPostService.onChangeDisable$.emit(true);
 
-    this.facebookPostService.updateAutoReplyConfigs(postId, model).pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next:(res: any) => {
-          this.message.success(Message.UpdatedSuccess);
-          this.isLoading = false;
+    this.facebookPostService.updateAutoReplyConfigs(objectId, model).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        this.isLoading = false;
+        this.message.success('Cập nhật phản hồi bình luận thành công');
 
-          this.cdRef.detectChanges();
-        }, 
-        error:(err) => {
-          this.message.error(`${err?.error?.message || JSON.stringify(err)}` || Message.ConversationPost.updateConfigFail);
-          this.isLoading = false;
-        }
-      });
+        this.facebookPostService.onChangeDisable$.emit(false);
+        this.cdRef.detectChanges();
+      },
+      error:(err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message);
+
+        this.facebookPostService.onChangeDisable$.emit(false);
+        this.cdRef.detectChanges();
+      }
+    });
   }
 
   onCannel() {
-    this.modalRef.destroy(null);
+      this.modalRef.destroy(null);
   }
 }

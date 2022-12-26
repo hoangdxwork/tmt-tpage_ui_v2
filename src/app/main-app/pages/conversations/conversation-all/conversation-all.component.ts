@@ -178,11 +178,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           case ChatmoniSocketEventName.chatomniOnMessage:
               let exist = res.Data && res.Data.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId;
-              if(exist && this.lstConversation && res.Data?.Message) {
+              if(exist && this.lstConversation && res.Data?.Message && !res.Data.Message.IsOwner) {
 
                   switch(this.type) {
                       case 'message':
-                          let existMessage = res.Data.Message.MessageType == (ChatomniMessageType.FacebookMessage || ChatomniMessageType.TShopMessage) && !res.Data.Message.IsOwner;
+                          let existMessage = res.Data.Message.MessageType == (ChatomniMessageType.FacebookMessage || ChatomniMessageType.TShopMessage);
                           if(existMessage) {
                               this.setSocketChatomniOnMessage(res);
                           }
@@ -314,20 +314,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     })
 
     // TODO: Cập nhật hội thoại cuối cùng
-    this.chatomniEventEmiterService.last_Message_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniLastMessageEventEmitterDto) => {
-        if(res) {
-            let index = this.lstConversation?.findIndex(x => x.ConversationId == res.ConversationId) as number;
-            if(Number(index) >= 0) {
-                this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
-                this.lstConversation[index] = {...this.lstConversation[index]};
-                this.lstConversation = [...this.lstConversation];
-
-                this.cdRef.detectChanges();
-            }
-        }
-      }
-    })
+    // this.chatomniEventEmiterService.last_Message_ConversationEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: (res: ChatomniLastMessageEventEmitterDto) => {
+    //     if(res) {
+    //         let index = this.lstConversation?.findIndex(x => x.ConversationId == res.ConversationId) as number;
+    //         if(Number(index) >= 0) {
+    //             this.lstConversation[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
+    //             this.lstConversation[index] = {...this.lstConversation[index]};
+    //             this.lstConversation = [...this.lstConversation];
+    //             this.cdRef.detectChanges();
+    //         }
+    //     }
+    //   }
+    // })
 
     // TODO: Cập nhật đã xem tin nhắn
     this.chatomniEventEmiterService.countUnreadEmiter$.pipe(takeUntil(this.destroy$)).subscribe({
