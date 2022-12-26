@@ -13,9 +13,9 @@
             <thead>
               <tr>
                 <th width="64px" class="text-center">STT</th>
-                <th>Sản phẩm</th>
+                <th [width]="'500px'">Sản phẩm</th>
                 <th>Đơn vị tính</th>
-                <th>Số lượng</th>
+                <th [align]="'center'">Số lượng</th>
                 <th>Đơn giá</th>
                 <th>Khối lượng(kg)</th>
                 <th class="text-right">Thành tiền</th>
@@ -25,9 +25,13 @@
               <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                 <tr>
                   <td class="text-center">{{ i + 1 }}</td>
-                  <td>{{ data.ProductNameGet }}</td>
+                  <td>
+                    <div class="flex-auto max-w-[450px] truncate">
+                      {{ data.ProductNameGet }}
+                    </div>
+                  </td>
                   <td>{{ data.ProductUOMName }}</td>
-                  <td>{{ (data.ProductUOMQty | numberCustom) || 0}}</td>
+                  <td [align]="'center'">{{ (data.ProductUOMQty | numberCustom) || 0}}</td>
                   <td>{{ (data.PriceUnit | numberCustom) || 0 }}</td>
                   <td>{{ (data.Weight | numberCustom) || 0 }}</td>
                   <td class="text-right">{{ (data.PriceTotal | numberCustom) || 0 }}</td>

@@ -704,26 +704,26 @@
       <!-- Danh sách sản phẩm -->
       <div class="h-full w-full" *ngIf="dataModel && dataModel.State != 'draft'">
           <div class="h-full w-full">
-              <div class="rounded-xl pt-2 px-3 bg-white h-full flex flex-auto gap-y-2 text-body-2 text-neutral-1-900">
+              <div class="rounded-xl pt-3 bg-white h-full flex flex-auto gap-y-2 text-body-2 text-neutral-1-900">
                 <tds-table templateMode #TableAddBill [listData]="_form['controls'].OrderLines.value"
                     [scroll]="{y:'auto', x:'auto'}" [showPagination]="false" >
                   <thead>
                     <tr>
-                      <th>STT</th>
-                      <th>Sản Phẩm</th>
-                      <th>Số lượng</th>
-                      <th>Đơn giá</th>
-                      <th *ngIf="saleConfig?.SaleSetting?.GroupPriceRecent == true">Giá gần đây</th>
-                      <th *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1">Giảm giá</th>
-                      <th *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">KL(g)</th>
-                      <th>Thành tiền</th>
+                      <th [width]="'64px'" [align]="'center'">STT</th>
+                      <th [width]="'500px'">Sản Phẩm</th>
+                      <th [width]="'150px'" [align]="'center'">Số lượng</th>
+                      <th [width]="'150px'" [align]="'center'">Đơn giá</th>
+                      <th [width]="'150px'" [align]="'right'" *ngIf="saleConfig?.SaleSetting?.GroupPriceRecent == true">Giá gần đây</th>
+                      <th [width]="'150px'" [align]="'right'" *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1">Giảm giá</th>
+                      <th [width]="'150px'" [align]="'right'" *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">KL(g)</th>
+                      <th [width]="'150px'" [align]="'right'">Thành tiền</th>
                     </tr>
                   </thead>
                   <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="TableAddBill.data">
                       <tr>
                         <!-- STT -->
-                        <td>{{ i + 1 }}</td>
+                        <td [align]="'center'">{{ i + 1 }}</td>
                         <!-- Sản phẩm -->
                         <td>
                           <div class="flex flex-col">
@@ -750,15 +750,15 @@
                           </div>
                         </td>
                         <!-- Số lượng -->
-                        <td> {{ data.ProductUOMQty || 0 | numberCustom }}</td>
+                        <td [align]="'center'"> {{ data.ProductUOMQty || 0 | numberCustom }}</td>
                         <!-- Đơn giá -->
-                        <td> {{ data.PriceUnit || 0 | numberCustom }}</td>
+                        <td [align]="'center'"> {{ data.PriceUnit || 0 | numberCustom }}</td>
                         <!-- Giá gần đây -->
-                        <td *ngIf="saleConfig?.SaleSetting?.GroupPriceRecent == true" class="text-center">
+                        <td [align]="'right'" *ngIf="saleConfig?.SaleSetting?.GroupPriceRecent == true" class="text-center">
                           {{ data.PriceRecent || 0 | numberCustom }}
                         </td>
                         <!-- Giảm giá -->
-                        <td *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1">
+                        <td [align]="'right'" *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1">
                           <span color="secondary">
                             <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'">
                               {{ data.Discount || 0 | numberCustom }}%
@@ -769,9 +769,9 @@
                           </span>
                         </td>
                         <!-- Khối lượng -->
-                        <td *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ data.Weight >= 0 ? (data.Weight * 1000)*(data.ProductUOMQty || 0) : 0 }}</td>
+                        <td [align]="'right'" *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ data.Weight >= 0 ? (data.Weight * 1000)*(data.ProductUOMQty || 0) : 0 }}</td>
                         <!-- Thành tiền -->
-                        <td>{{ data.PriceTotal || 0 | numberCustom  }}</td>
+                        <td [align]="'right'">{{ data.PriceTotal || 0 | numberCustom  }}</td>
                       </tr>
                     </ng-template>
                     <tr class="hover:bg-white border-b-0">
@@ -812,7 +812,7 @@
       </div>
 
       <div class="flex gap-x-4 h-full" *ngIf="dataModel && dataModel.State == 'draft'">
-          <div class="xl:w-1/3 2xl:w-1/3 h-full">
+          <div class="w-1/3 h-full">
               <list-product-tmp
                 [type]="'order'"
                 [priceListItems]="priceListItems"
@@ -821,20 +821,20 @@
               </list-product-tmp>
           </div>
 
-          <div class="xl:w-2/3 2xl:w-2/3 h-full">
+          <div class="w-2/3 h-full">
             <div class="rounded-xl bg-white flex h-full w-full gap-y-2 py-3 text-body-2 text-neutral-1-900">
               <tds-table templateMode #TableAddBill [scroll]="{y: 'auto', x: 'auto'}" [showPagination]="false">
                 <thead>
                   <tr>
-                    <th [width]="'50px'" [tdsLeft]="true">STT</th>
-                    <th [width]="'240px'" [tdsLeft]="true">Sản Phẩm</th>
+                    <th [width]="'50px'">STT</th>
+                    <th [width]="'240px'">Sản Phẩm</th>
                     <th [width]="'120px'">Số lượng</th>
                     <th [width]="'120px'">Đơn giá</th>
                     <!-- <th [width]="'100px'">Giá gần đây</th> -->
-                    <th [width]="'100px'" *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1">Giảm giá</th>
-                    <th *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1" [width]="'100px'" class="truncate">KL(g)</th>
-                    <th [width]="'100px'">Thành tiền</th>
-                    <th [width]="'100px'" [tdsRight]="true">
+                    <th [width]="'100px'" *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1" [align]="'center'">Giảm giá</th>
+                    <th *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1" [width]="'100px'" [align]="'right'" class="truncate">KL(g)</th>
+                    <th [width]="'100px'" [align]="'right'">Thành tiền</th>
+                    <th [width]="'100px'">
                       <div class="flex items-center justify-end">
                         <button tds-button-icon color="error" tds-tooltip="Xóa hết" size="sm" type="button" (click)="removeAllOrderLines()">
                           <span class="flex items-center">
@@ -847,15 +847,15 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let data of _form['controls'].OrderLines.value; let i= index">
-                    <td [tdsLeft]="true">{{ i + 1 }}</td>
-                    <td [tdsLeft]="true">
+                    <td>{{ i + 1 }}</td>
+                    <td>
                       <div class="flex flex-col">
-                        <span class="font-semibold 2xl:max-w-[250px] xl:max-w-[200px] truncate" tds-tooltip="{{ data.ProductNameGet }}">{{ data.ProductNameGet }}</span>
+                        <span class="font-semibold max-w-[200px] truncate" tds-tooltip="{{ data.ProductNameGet }}">{{ data.ProductNameGet }}</span>
                         <span class="text-neutral-1-400">Đơn vị: {{ data.ProductUOMName }}</span>
-                        <span class="text-neutral-1-400 flex" tds-popover popoverTrigger="click"
-                          [popoverContent]="popoverAddNote" [popoverAutoClose]="true" [popoverBackdrop]="true"
-                          popoverPlacement="left">
-                          <i class="tdsi-edit-fill mr-2 mt-1 cursor-pointer"></i>
+                        <span class="text-neutral-1-400 flex">
+                          <i tds-popover popoverTrigger="click" [popoverContent]="popoverAddNote"
+                          [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left"
+                          class="tdsi-edit-fill mr-2 mt-1 cursor-pointer"></i>
                           <div class="w-[100px]" showMore [length]="30" [text]="data.Note ||'Nhập ghi chú'">
                           </div>
                         </span>
@@ -907,13 +907,13 @@
                     <td *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1" class="text-center">
                       <div class="relative">
                         <span class="underline decoration-dotted cursor-pointer text-neutral-1-400 hover:text-info-500 hover:decoration-info-500"
-                          *ngIf="data.Type === 'percent'" 
+                          *ngIf="data.Type === 'percent'"
                           (click)="openDiscountProductPopover(data)">
                           {{ data.Discount || 0 | numberCustom }} %
                         </span>
 
                         <span class="underline decoration-dotted cursor-pointer text-neutral-1-400 hover:text-info-500 hover:decoration-info-500"
-                          *ngIf="data.Type === 'fixed'" 
+                          *ngIf="data.Type === 'fixed'"
                           (click)="openDiscountProductPopover(data)">
                           {{ data.Discount_Fixed || 0 | numberCustom }} đ
                         </span>
@@ -962,9 +962,9 @@
                       </div>
                     </td>
                     <!-- Khối lượng -->
-                    <td *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ (data.Weight >= 0 ? (data.Weight * 1000)*(data.ProductUOMQty || 0) : 0) | numberCustom }}</td>
-                    <td>{{ (data.PriceTotal || 0) | numberCustom }} đ</td>
-                    <td [tdsRight]="true">
+                    <td [align]="'right'" *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1">{{ (data.Weight >= 0 ? (data.Weight * 1000)*(data.ProductUOMQty || 0) : 0) | numberCustom }}</td>
+                    <td [align]="'right'">{{ (data.PriceTotal || 0) | numberCustom }} đ</td>
+                    <td>
                       <div class="flex gap-x-2 justify-end">
                         <button tds-button-icon color="primary" size="sm" type="button" tds-tooltip="Sao chép"
                           (click)="copyOrderLine(data, i)">
