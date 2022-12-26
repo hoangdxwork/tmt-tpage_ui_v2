@@ -376,27 +376,26 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
         if(obs !== InventoryChangeType._TAB_ORDER) return;
-
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
 
         if(warehouseId > 0) {
           this.productService.lstInventory = null;
-
-          this.productService.setInventoryWarehouseId(warehouseId);
-          this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+          this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-              this.inventories = {};
-              this.inventories = res;
+                if(res) {
+                    this.inventories = {};
+                    this.inventories = res;
+                }
 
-              if(this.response) {
-                this.mappingProduct(this.response);
-              }
+                if(this.response) {
+                    this.mappingProduct(this.response);
+                }
             },
             error: (err: any) => {
-              this.message.error(err?.error?.message);
-              if(this.response) {
-                this.mappingProduct(this.response);
-              }
+                this.message.error(err?.error?.message);
+                if(this.response) {
+                    this.mappingProduct(this.response);
+                }
             }
           });
         }

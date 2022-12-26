@@ -1,9 +1,8 @@
+import { OnDestroy } from '@angular/core';
 import { ProductCategoryService } from './../../services/product-category.service';
 import { ConfigCateg } from './../../dto/configs/product/config-product-default.dto';
 import { ProductTemplateService } from './../../services/product-template.service';
-import { ProductDTOV2 } from './../../dto/product/odata-product.dto';
 import { Message } from 'src/app/lib/consts/message.const';
-import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from '../../dto/product-pouchDB/product-pouchDB.dto';
@@ -20,8 +19,9 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableComponent } from 'tds-ui/table';
 import { ProductService } from '@app/services/product.service';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
-import { StringHelperV2 } from '../helper/string.helper';
+import { Subject } from 'rxjs';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: 'list-product-tmp-v2',
@@ -85,7 +85,6 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
   isShowFilterCategId: boolean = false;
   categoryList: ConfigCateg[] = [];
   categIdFilter!: ConfigCateg | TDSSafeAny;
-
   response: any;
 
   constructor(private productIndexDBService: ProductIndexDBService,
@@ -96,9 +95,9 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
       private productService: ProductService,
       public apiService: TCommonService,
       private cdRef : ChangeDetectorRef,
-      private destroy$: TDSDestroyService,
       private liveCampaignService: LiveCampaignService,
       private viewContainerRef: ViewContainerRef,
+      private destroy$: TDSDestroyService,
       private productTemplateFacade: ProductTemplateFacade,
       private productTemplateService: ProductTemplateService,
       private productCategoryService: ProductCategoryService) {
@@ -136,31 +135,31 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
 
   eventEmitter() {
     this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (obs: any) => {
-        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
-        if(warehouseId > 0) {
+        next: (obs: any) => {
+          let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+          if(warehouseId > 0) {
 
-          this.productService.lstInventory = null;
-          this.productService.setInventoryWarehouseId(warehouseId);
+            this.productService.lstInventory = null;
+            this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+              next: (res: any) => {
+                if(res) {
+                    this.inventories = {};
+                    this.inventories = res;
+                }
 
-          this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: any) => {
-              this.inventories = {};
-              this.inventories = res;
-
-              if(this.response) {
+                if(this.response) {
                   this.mappingProductToLive(this.response);
+                }
+              },
+              error: (err: any) => {
+                this.message.error(err?.error?.message);
+                if(this.response) {
+                    this.mappingProductToLive(this.response);
+                }
               }
-            },
-            error: (err: any) => {
-              this.message.error(err?.error?.message);
-              if(this.response) {
-                  this.mappingProductToLive(this.response);
-              }
-            }
-          });
+            });
+          }
         }
-      }
     })
   }
 

@@ -144,26 +144,26 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
         if(obs !== InventoryChangeType._EDIT_LIVECAMPAIGN_POST) return;
-
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+
         if(warehouseId > 0) {
           this.productService.lstInventory = null;
-
-          this.productService.setInventoryWarehouseId(warehouseId);
-          this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+          this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-              this.inventories = {};
-              this.inventories = res;
+                if(res) {
+                    this.inventories = {};
+                    this.inventories = res;
+                }
 
-              if(this.response) {
-                this.mappingProductToLive(this.response);
-              }
+                if(this.response) {
+                    this.mappingProductToLive(this.response);
+                }
             },
             error: (err: any) => {
-              this.message.error(err?.error?.message);
-              if(this.response) {
-                this.mappingProductToLive(this.response);
-              }
+                this.message.error(err?.error?.message);
+                if(this.response) {
+                    this.mappingProductToLive(this.response);
+                }
             }
           });
         }
@@ -511,7 +511,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
         }
     });
 
-    modal.afterClose.subscribe((response: any) => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((response: any) => {
       if(!response) return;
       this.response = {...response} as SyncCreateProductTemplateDto;
     })
@@ -769,7 +769,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
     });
 
-    modal.afterClose.subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next:(res) => {
         if(res) {
           this.loadQuickReply();
@@ -840,9 +840,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   onSave() {
-    if(this.isCheckValue() === 0) {
-        return;
-    }
+    if(this.isCheckValue() === 0) return;
     if(this.isLoading) return;
 
     this.isLoading = true;
