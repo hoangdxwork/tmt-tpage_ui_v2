@@ -92,6 +92,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   widthConversation!: number;
   clickReload: number = 0;
+  refreshTimer: TDSSafeAny;
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -340,6 +341,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   onRefresh(event: any) {
     this.clickReload += 1;
+    this.destroyTimer();
 
     this.queryObj = {} as any;
     this.isRefreshing = true;
@@ -357,6 +359,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       let ownerId = this.currentTeam?.OwnerId as any;
       if(!TDSHelperString.hasValueString(ownerId)) {
           this.message.error('Không tìm thấy OwnerId, không thể kích hoạt cập nhật hội thoại');
+          this.isRefreshing = false;
           return;
       }
 
@@ -372,7 +375,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
       })
     } else {
-      this.loadFilterDataSource();
+      this.refreshTimer = setTimeout(() => {
+        this.loadFilterDataSource(); 
+      }, 350)
     }
 
     setTimeout(() => {
@@ -613,6 +618,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
             this.selectPost(currentObject);
             this.isLoading = false;
+            this.isRefreshing = false;
             return;
           }
 
@@ -773,6 +779,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         document.body.removeChild(selBox);
         this.message.info('Đã copy số điện thoại');
       }
+    }
+  }
+
+  destroyTimer() {
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
     }
   }
 }
