@@ -296,7 +296,7 @@ export class DrawerAddProductComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if(result) {
         this.lstCategory = [...[result],...this.lstCategory];
       }
@@ -311,7 +311,7 @@ export class DrawerAddProductComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if(result) {
         if(type == 'UOM') {
           this._form.controls["UOM"].setValue(result.Name);
@@ -377,7 +377,7 @@ export class DrawerAddProductComponent implements OnInit {
         }
       });
 
-      modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
           this.isLoading = true;
           this.lstAttributes = [...result];
@@ -426,7 +426,7 @@ export class DrawerAddProductComponent implements OnInit {
         }
       });
 
-      modal.afterClose.subscribe((result: ConfigProductVariant) => {
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ConfigProductVariant) => {
         if (TDSHelperObject.hasValue(result)) {
           this.lstVariants.map((item, index) => {
             if (item.AttributeValues[0]?.Id == result.AttributeValues[0]?.Id) {
@@ -457,7 +457,7 @@ export class DrawerAddProductComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if(result) {
         this.lstUOMCategory = [...[result],...this.lstUOMCategory];
       }
@@ -470,7 +470,7 @@ export class DrawerAddProductComponent implements OnInit {
     this.lstVariants[i].OrderTag = strs.length > 0 ? [...strs] : null;
     this.lstVariants[i] = this.lstVariants[i];
     this.lstVariants = [...this.lstVariants];
-    
+
     // this.lstVariants[i].Tags = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
 
     this.lstCheckOrderTags = this.getOrderTagsVariants(this.lstVariants);

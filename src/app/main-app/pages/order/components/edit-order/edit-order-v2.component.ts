@@ -202,26 +202,26 @@ export class EditOrderV2Component implements OnInit {
     this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
         if(obs !== InventoryChangeType._EDIT_ORDER) return;
-
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+
         if(warehouseId > 0) {
           this.productService.lstInventory = null;
-
-          this.productService.setInventoryWarehouseId(warehouseId);
-          this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+          this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-              this.inventories = {};
-              this.inventories = res;
+                if(res) {
+                    this.inventories = {};
+                    this.inventories = res;
+                }
 
-              if(this.response) {
-                this.mappingProduct(this.response);
-              }
+                if(this.response) {
+                    this.mappingProduct(this.response);
+                }
             },
             error: (err: any) => {
-              this.message.error(err?.error?.message);
-              if(this.response) {
-                this.mappingProduct(this.response);
-              }
+                this.message.error(err?.error?.message);
+                if(this.response) {
+                    this.mappingProduct(this.response);
+                }
             }
           });
         }
@@ -454,9 +454,11 @@ export class EditOrderV2Component implements OnInit {
         }
     });
 
-    modal.afterClose.subscribe(res => {
-      if(!res) return;
-      this.response = {...res} as SyncCreateProductTemplateDto;
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if(!res) return;
+          this.response = {...res} as SyncCreateProductTemplateDto;
+      }
     })
   }
 
@@ -726,6 +728,7 @@ export class EditOrderV2Component implements OnInit {
     this.saleOnline_OrderService.update(id, model).pipe(mergeMap((x) => {
           return this.saleOnline_OrderService.getById(id);
       }))
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: any): any => {
 
@@ -1121,7 +1124,7 @@ export class EditOrderV2Component implements OnInit {
       }
     });
 
-    modal.afterClose.subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (result: ResultCheckAddressDTO) => {
         if(result){
           this.onLoadSuggestion(result);

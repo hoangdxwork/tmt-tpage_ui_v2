@@ -124,7 +124,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     this.loadCurrentCompany(); //TODO: load dữ liệu tồn kho
     this.productLastV2(); //TODO: load danh sách sản phẩm từ cache
-    // this.loadDetailExistByProductIds();
 
     this.onEventSocket();
     this.eventEmitter();
@@ -198,22 +197,22 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
         if(warehouseId > 0) {
 
           this.productService.lstInventory = null;
-          this.productService.setInventoryWarehouseId(warehouseId);
-
-          this.productService.getInventoryWarehouseId().pipe(takeUntil(this.destroy$)).subscribe({
+          this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-              this.inventories = {};
-              this.inventories = res;
+                if(res) {
+                    this.inventories = {};
+                    this.inventories = res;
+                }
 
-              if(this.response) {
-                this.mappingProductToLive(this.response);
-              }
+                if(this.response) {
+                    this.mappingProductToLive(this.response);
+                }
             },
             error: (err: any) => {
-              this.message.error(err?.error?.message);
-              if(this.response) {
-                this.mappingProductToLive(this.response);
-              }
+                this.message.error(err?.error?.message);
+                if(this.response) {
+                    this.mappingProductToLive(this.response);
+                }
             }
           });
         }
@@ -639,6 +638,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   productLastV2() {
     this.isLoadingProduct = true;
     this.indexDbStorage = [];
+
     this.productIndexDBService.setCacheDBRequest();
     this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: KeyCacheIndexDBDTO) => {
@@ -721,7 +721,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
       }
     });
 
-    modal.afterClose.subscribe((response: any) => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((response: any) => {
       if(!response) return;
       this.response = response;
     });
