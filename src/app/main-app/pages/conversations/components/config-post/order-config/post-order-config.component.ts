@@ -844,6 +844,8 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
 
         let data = this.setData(this.dataModel);
         this.setDataDefault(data);
+        this.onClearFilterText();
+        this.onClearFilterNumber();
 
         this.facebookPostService.onChangeDisable$.emit(false);
         this.cdRef.detectChanges();
