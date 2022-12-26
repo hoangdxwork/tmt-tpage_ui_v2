@@ -207,7 +207,7 @@ export class FilterOptionsComponent implements OnInit {
 
   checkActive(): boolean {
     let exist = TDSHelperArray.hasListValue(this.filterObj.tags) || TDSHelperArray.hasListValue(this.filterObj.status)
-      || TDSHelperString.hasValueString(this.filterObj.hasTracking) || TDSHelperString.hasValueString(this.filterObj.carrierDeliveryType)
+      || TDSHelperString.hasValueString(this.filterObj.hasTracking)
 
     if (exist) {
       return true
@@ -227,8 +227,7 @@ export class FilterOptionsComponent implements OnInit {
     this.filterObj = {
       tags: [],
       status: [],
-      deliveryId: -1,
-      carrierDeliveryType: '',
+      carrierId: -1,
       hasTracking: null,
       searchText: '',
       dateRange: {
