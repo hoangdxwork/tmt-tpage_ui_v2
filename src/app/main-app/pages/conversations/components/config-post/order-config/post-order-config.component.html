@@ -181,14 +181,15 @@
 
             </div>
             <!-- Danh sách sản phẩm -->
-            <div class="w-full h-[600px] table-textcontentorrder">
+            <div class="w-full table-textcontentorrder" 
+                [ngClass]="(searchValue ? (dataModel.TextContentToOrders | simpleSearchProductPostConfig: searchValue) : dataModel.TextContentToOrders).length < 3 ? 'h-[346px]' : 'h-[692px]'">
                 <tds-table #basicTable
                     [listData]="searchValue ? (dataModel.TextContentToOrders | simpleSearchProductPostConfig: searchValue) : dataModel.TextContentToOrders"
-                    [scroll]="{y:'100%', x:'hidden'}"
+                    [scroll]="{ y:'100%', x:'hidden' }"
                     [showPagination]="false"
                     [frontPagination]="false"
                     [virtualItemSize]="100"
-                    [virtualMaxBufferPx]="600"
+                    [virtualMaxBufferPx]="692"
                     [virtualForTrackBy]="trackByIndex">
                     <tbody>
                     <ng-template tds-virtual-scroll let-item let-i="index">
@@ -207,8 +208,9 @@
                                             </span>
                                             </ng-template>
 
-                                            <div class="text-info-500 text-body-2 font-semibold" *ngIf="item.Product as product; else notProduct">
-                                                {{ product.ProductName || product.ProductNameGet }} / {{ (product.Price || 0) | numberCustom }}
+                                            <div class="text-info-500 text-body-2 font-semibold flex items-center" *ngIf="item.Product as product; else notProduct" 
+                                                tds-tooltip="{{ product.ProductName || product.ProductNameGet }}">
+                                                <div class="truncate max-w-[250px]">{{ product.ProductName || product.ProductNameGet }}</div> / {{ (product.Price || 0) | numberCustom }}
                                                 <span *ngIf="!item.IsActive" class="text-accent-3" style="font-style: italic;">(Đã tắt)</span>
                                             </div>
 
@@ -217,7 +219,7 @@
                                                 </div>
                                             </ng-template>
                                         </div>
-                                        <tds-badge [standalone]="true" [count]="item | indexTextContentOrder:dataModel.TextContentToOrders"></tds-badge>
+                                        <tds-tag status="primary" class="!rounded-full">{{ item | indexTextContentOrder:dataModel.TextContentToOrders }}</tds-tag>
                                     </div>
 
                                     <div class="pt-6">
