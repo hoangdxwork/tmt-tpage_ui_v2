@@ -477,4 +477,14 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     this.liveCampaignService.setLocalStorageDrawer(this.data.ObjectId, liveCampaignId, false);
   }
 
+  onRescanAutoOrder() {
+    this.facebookPostService.rescanAutoOrder(this.data?.ObjectId, this.team?.Id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: res => {
+        this.message.success('Áp dụng thành công');
+      },
+      error: error => {
+        this.message.error(error?.error?.message);
+      }
+    })
+  }
 }

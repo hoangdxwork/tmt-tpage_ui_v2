@@ -151,4 +151,13 @@ export class FacebookPostService extends BaseSevice {
 
     return this.apiService.getData<TBotRequestCallbackFailedDTO[]>(api, null);
   }
+
+  rescanAutoOrder(postId: string, teamId: number) {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/rescanautoorder?teamId=${teamId}`,
+      method: CoreApiMethodType.post
+    }
+
+    return this.apiService.getData<TBotRequestCallbackFailedDTO[]>(api, null);
+  }
 }

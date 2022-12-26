@@ -530,13 +530,6 @@ export class DrawerAddProductComponent implements OnInit {
         datas = datas.filter(x => x!= pop);
     }
 
-    let exist = pop ? this.lstCheckOrderTags.filter(x=>x.toLocaleLowerCase().trim() == pop.toLocaleLowerCase().trim())[0]: false;
-
-    if(exist) {
-        this.message.warning(`Mã chốt đơn ${pop} bị trùng trong danh sách sản phẩm vừa thêm.`);
-        datas = datas.filter(x => x!= pop);
-    }
-
     return datas;
   }
 
