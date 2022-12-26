@@ -41,9 +41,10 @@ export class SummaryOrderByPeriodComponent implements OnInit {
 
   loadData() {
     this.isLoading = true;
-    let period = this.getPackPeriod();
+    let since = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    let until = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
-    this.eventSummaryService.getSummaryOrderByPeriod(period?.since, period?.until).pipe(takeUntil(this.destroy$)).subscribe({
+    this.eventSummaryService.getSummaryOrderByPeriod(since, until).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res:any) => {
         if(res?.Previous?.Items && res?.Current?.Items){
 
@@ -86,22 +87,19 @@ export class SummaryOrderByPeriodComponent implements OnInit {
         if(existCurrent) {
           this.currentData.push(existCurrent.Count);
         } else {
-          this.currentData.push(undefined);
+          this.currentData.push(0);
         }
   
         if(existPrevious) {
           this.previousData.push(existPrevious.Count);
         } else {
-          this.previousData.push(undefined);
+          this.previousData.push(0);
         }
       }
     }
 
     //Tính interval
-    let previousCount = previousItems.map(x => x.Count);
-    let currentCount = currentItems.map(x => x.Count);
-
-    let max = Math.max(...previousCount,...currentCount);
+    let max = Math.max(...this.previousData,...this.currentData);
     this.interval = this.getInterval(max);
   }
 
@@ -172,18 +170,20 @@ export class SummaryOrderByPeriodComponent implements OnInit {
       },
       series: [
         {
-          name: `Đơn hàng gói trước`,
+          name: `Đơn hàng chu kỳ trước`,
           type: 'line',
           xAxisIndex: 0,
+          showSymbol: false,
           emphasis: {
             focus: 'series'
           },
           data: this.previousData || []
         },
         {
-          name: `Đơn hàng gói hiện tại`,
+          name: `Đơn hàng chu kỳ hiện tại`,
           type: 'line',
           xAxisIndex: 1,
+          showSymbol: false,
           emphasis: {
             focus: 'series'
           },
@@ -193,31 +193,6 @@ export class SummaryOrderByPeriodComponent implements OnInit {
     }
 
     this.options = this.chartOptions.LineChartOption(chartComponent);
-  }
-
-  getPackPeriod() {
-    let since = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    let until = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-    
-    // let period = {
-    //   since: new Date(new Date(dateExpired).setDate(new Date(dateExpired).getDate() - 29)),
-    //   until: new Date(dateExpired)
-    // }
-
-    // let dateTmp = period.since;
-    // let now = new Date();
-
-    // while(now <= period.since) {
-    //   period.until = new Date(dateTmp.setDate(dateTmp.getDate() - 1));
-    //   period.since = new Date(dateTmp.setDate(dateTmp.getDate() - 29));
-    //   dateTmp = period.since;
-    // }
-    let period = {
-      since: since,
-      until: until
-    }
-
-    return period;
   }
 
   converseList(items: any[]) {
