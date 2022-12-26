@@ -179,6 +179,7 @@ export class CsOrder_PrepareModelHandler {
     x.Facebook_PostId = comment.ObjectId;
     x.Facebook_UserName = data?.nickname;
     x.PartnerName = data?.nickname;
+    x.Facebook_UserId = comment.UserId;
 
     //TODO: check sản phẩm mặc định
     let product = this.facebookPostService.getDefaultProductPost() as Detail_QuickSaleOnlineOrder;
