@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <tds-spin [spinning]="isProcessing || isRefreshing" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full pt-1">
+        <tds-spin [spinning]="isProcessing || isRefreshing || isLoadingUpdate" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full pt-1">
             <!-- Danh sách bài viết -->
             <virtual-scroller #scroll *ngIf="lstObjects && lstObjects.length > 0;"
                 [items]="lstObjects" class="tds-custom-scroll w-full h-full"
@@ -135,7 +135,7 @@
     </div>
 
     <!-- Thông tin bài viết -->
-    <div *ngIf="currentPost && currentTeam" class="w-[80%] h-full flex">
+    <div *ngIf="currentPost && currentTeam && !isLoadingUpdate" class="w-[80%] h-full flex">
         <!--Chọn bài viết để hiển thị chi tiết-->
         <div class="w-[62.5%] flex flex-col h-full overflow-hidden">
             <conversation-post-overview class="w-full h-full" [data]="currentPost" [team]="currentTeam" [widthConversation]="widthConversation"></conversation-post-overview>
@@ -190,12 +190,12 @@
     </div>
 
     <!-- Đang load dữ liệu bài viết -->
-    <div class="w-[80%] h-full flex" *ngIf="(!currentPost || !currentObject) && isLoading">
+    <div class="w-[80%] h-full flex" *ngIf="((!currentPost || !currentObject) && isLoading) || isLoadingUpdate">
         <div csLoadingPost class="h-full w-full"></div>
     </div>
 
     <!-- Không có dữ liệu bài viết -->
-    <div class="flex-auto flex" *ngIf="!currentPost && !currentObject && !isLoading">
+    <div class="flex-auto flex" *ngIf="!currentPost && !currentObject && !isLoading && !isLoadingUpdate">
         <div class="flex-auto flex flex-col justify-center items-center bg-white">
             <img src="../../../../../assets/imagesv2/conversation/noDataConversationItem.png">
             <span class="text-heading-3 font-semibold w-2/5 text-center pt-12">TPage - Giải pháp bán hàng toàn diện cho bán hàng đa kênh</span>

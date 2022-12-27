@@ -1,3 +1,4 @@
+import { CRMTeamType } from './../../../dto/team/chatomni-channel.dto';
 import { PartnerChangeStatusDTO } from './../../../dto/partner/partner-status.dto';
 import { StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { PartnerService } from '@app/services/partner.service';
@@ -92,6 +93,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   totalConversations: number = 0;
   userLogged: any;
   orderCode: any;
+  refreshTimer: TDSSafeAny;
+  isLoadingUpdate: boolean = false;
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -616,6 +619,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onRefresh(event: boolean){
     this.clickReload += 1;
+    this.destroyTimer();
 
     if(this.virtualScroller) {
         this.virtualScroller.refresh();
@@ -629,23 +633,34 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.isProcessing = false;
     this.disableNextUrl = false;
 
-    if (this.clickReload >= 5) {
+    let exist = (this.clickReload == 3) && this.currentTeam && this.currentTeam?.Type == CRMTeamType._Facebook
+    if (exist) {
+        this.isLoadingUpdate = true;
         this.message.info("Đã kích hoạt cập nhật hội thoại");
-        this.clickReload = 0;
+        let mess = this.message.create('loading', `Đang cập nhật hội thoại`, { duration: 60000 });
 
-        if (this.currentTeam) {
-          this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (res) => {
-                  this.loadData(this.currentTeam);
-                  this.message.success('Yêu cầu cập nhật thành công');
-              },
-              error: (error) => {
-                  this.message.success('Yêu cầu cập nhật thất bại');
-              }
-          });
-        }
+        this.facebookRESTService.rescan(this.currentTeam?.ChannelId, 2).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res) => {
+                this.clickReload = 0;
+                this.isLoadingUpdate = false;
+
+                this.message.remove(mess?.messageId);
+                this.message.success('Yêu cầu cập nhật hội thoại thành công');
+                this.loadData(this.currentTeam);
+            },
+            error: (error) => {
+                this.clickReload = 0;
+                this.isLoadingUpdate = false;
+
+                this.message.remove(mess?.messageId);
+                this.message.success(error?.error?.message || 'Yêu cầu cập nhật hội thoại thất bại');
+            }
+        });
     } else {
-        this.loadFilterDataSource();
+        this.isProcessing = true;
+        this.refreshTimer = setTimeout(() => {
+          this.loadFilterDataSource();
+        }, 350)
     }
 
     setTimeout(() => {
@@ -1001,5 +1016,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
+  destroyTimer() {
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+    }
+  }
 }
 
