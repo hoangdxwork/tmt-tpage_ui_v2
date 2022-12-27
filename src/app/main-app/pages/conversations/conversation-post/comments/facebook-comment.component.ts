@@ -1,3 +1,6 @@
+import { Item } from './../../../../dto/dashboard/summary-order.dto';
+import { Child } from './../../../../dto/team/all-facebook-child.dto';
+import { Extra } from './../../../../dto/fastsaleorder/calculate-listFee.dto';
 import { OrderByCommentItemDto } from './../../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { EnumSendMessageType } from './../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { CommentOrderPost, CommentOrder } from '../../../../dto/conversation/post/comment-order-post.dto';
@@ -399,16 +402,31 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
         next: (res: ChatomniDataDto) => {
             this.dataSource = { ...res };
             this.dataSource.Items = [...this.dataSource.Items];
+
+            let dataChilds: ChatomniDataItemDto[] =  [];
+            this.dataSource.Items.map((x: ChatomniDataItemDto) => {
+                let exist = x && x.Data?.id && this.dataSource.Extras && this.dataSource.Extras.Childs &&
+                    this.dataSource.Extras.Childs[x.Data?.id] && Object.keys(this.dataSource.Extras.Childs[x.Data?.id]).length > 0;
+                if(exist) {
+                    let childs = this.dataSource.Extras.Childs[x.Data?.id];
+                    if(childs && childs.length > 0) {
+                        dataChilds = [...(dataChilds || []), ...childs];
+                    }
+                }
+            })
+
+            if(dataChilds && dataChilds.length > 0) {
+              this.dataSource.Items = [...this.dataSource.Items, ...dataChilds];
+            }
+
             this.lengthDataSource = this.dataSource.Items.length;
             this.isLoading = false;
-
-            this.cdRef.markForCheck();
+            this.cdRef.detectChanges();
         },
         error: (error: any) => {
             this.isLoading = false;
-
             this.message.error(error?.error?.message);
-            this.cdRef.markForCheck();
+            this.cdRef.detectChanges();
         }
       })
     }
@@ -742,8 +760,9 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
-
           if(res && res.Items && res.Items.length > 0) {
+
+              this.dataSource!.Extras = res.Extras;
               this.dataSource.Items = [...(res.Items || [])];
 
               this.dataSource.Items = [...this.dataSource.Items];
@@ -751,6 +770,22 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
           } else {
               this.disableNextUrl = true;// check dk dừng phân trang
+          }
+
+          let dataChilds: ChatomniDataItemDto[] =  [];
+          this.dataSource.Items.map((x: ChatomniDataItemDto) => {
+              let exist = x && x.Data?.id && this.dataSource.Extras && this.dataSource.Extras.Childs &&
+                  this.dataSource.Extras.Childs[x.Data?.id] && Object.keys(this.dataSource.Extras.Childs[x.Data?.id]).length > 0;
+              if(exist) {
+                  let childs = this.dataSource.Extras.Childs[x.Data?.id];
+                  if(childs && childs.length > 0) {
+                      dataChilds = [...(dataChilds || []), ...childs];
+                  }
+              }
+          })
+
+          if(dataChilds && dataChilds.length > 0) {
+            this.dataSource.Items = [...this.dataSource.Items, ...dataChilds];
           }
 
           this.isLoadingNextdata = false;
