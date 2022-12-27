@@ -769,7 +769,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.calculateFeeAship(model);
   }
 
-  onSelectShipServiceId (serviceId: string) {
+  onSelectShipServiceId(serviceId: string) {
     if(serviceId) {
       let exist = this.shipServices.filter((x: any) => x.ServiceId === serviceId)[0];
       if(exist) {
@@ -1623,7 +1623,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     if(channelType == CRMTeamType._UnofficialTikTok) {
         order.Facebook_UserId = this.tiktokUniqueId;
     }
-
+    
     if(this.clickPrint == '_click_print') {
       this.orderPrintService.printId(id, this.quickOrderModel, message);
       this.clickPrint = '';

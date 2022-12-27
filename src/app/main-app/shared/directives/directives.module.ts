@@ -1,3 +1,4 @@
+import { CsLoadingOrderDirective } from './cs-loading-order.directive';
 import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 import { CsLoadingPostDirective } from './cs-loading-post.directive';
 import { CsLoadingObjectDirective } from './cs-loading-object.directive';
@@ -18,7 +19,8 @@ const DIRECTIVES = [
   CsLoadingObjectDirective,
   CsLoadingPostDirective,
   CsLoadingPartnerDirective,
-  CsLoadingConversationDirective
+  CsLoadingConversationDirective,
+  CsLoadingOrderDirective
 ]
 
 @NgModule({
