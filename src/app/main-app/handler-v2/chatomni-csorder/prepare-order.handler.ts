@@ -137,8 +137,8 @@ export class CsOrder_PrepareModelHandler {
         }
     }
 
-    if(x.Facebook_Comments?.[0] && saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
-        x.Note = `{before}${x.Facebook_Comments[0].message || comment.Data?.message}`;
+    if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
+        x.Note = `{before}${comment.Message || comment.Data?.message}`;
     }
 
     return {...x};
@@ -218,7 +218,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
-        x.Note = `{before}${comment.Data?.message || comment.Message}`;
+        x.Note = `{before}${comment?.Data?.comment || comment.Message}`;
     }
 
     return {...x};
@@ -275,7 +275,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
-        x.Note = `{before}${comment.Message}`;
+        x.Note = `{before}${comment.Message || comment.Data?.Content?.Text}`;
     }
 
     return {...x};
