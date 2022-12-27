@@ -1,3 +1,4 @@
+import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ModalLiveCampaignBillComponent } from './../../../live-campaign/components/modal-live-campaign-bill/modal-live-campaign-bill.component';
 import { ModalLiveCampaignOrderComponent } from './../../../live-campaign/components/modal-live-campaign-order/modal-live-campaign-order.component';
 import { animate } from '@angular/animations';
@@ -193,6 +194,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   eventEmitter() {
     this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
+        if(obs !== InventoryChangeType._DRAWER_ADD_PRODUCT) return;
+        
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         if(warehouseId > 0) {
 
@@ -205,7 +208,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
                 }
 
                 if(this.response) {
-                    this.mappingProductToLive(this.response);
+                  this.mappingProductToLive(this.response);
                 }
             },
             error: (err: any) => {
