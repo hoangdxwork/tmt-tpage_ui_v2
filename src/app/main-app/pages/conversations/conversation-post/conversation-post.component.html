@@ -69,11 +69,10 @@
                 [enableUnequalChildrenSizes]="true"
                 [checkResizeInterval]="750">
 
-                <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1 min-w-[158px]"
-                    [ngClass]="(currentPost && currentPost.ObjectId == item.ObjectId) ? 'cursor-no-drop' : 'cursor-pointer'">
+                <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1 min-w-[158px]">
 
                     <div *ngIf="item && currentTeam!.Type == 'Facebook'">
-                        <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
+                        <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event, '_click')">
                         </object-facebook-post>
                     </div>
 

@@ -99,6 +99,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   isLoadingUpdate: boolean = false;
 
   extrasChilds: { [id: string] : ExtrasChildsDto[] } = {};
+  clickExtras = {} as any;
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -453,7 +454,32 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       return;
     }
 
-    let index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+    let parentObject: string = '';
+    let extras = Object.keys(this.extrasChilds);
+
+    if(extras && extras.length > 0) {
+      extras.map(x => {
+        let exist = this.extrasChilds[x] && this.extrasChilds[x].length > 0;
+        if(exist) {
+          let existChild = this.extrasChilds[x]?.filter(x => x.ObjectId == params_postid)[0];
+          if(existChild) {
+              parentObject = x;
+              delete this.clickExtras[parentObject];
+              this.postChilds = [];
+          }
+        }
+      })
+    }
+
+    let objectId: string = '';
+    if(parentObject) {
+        this.currentPost = null as any;
+        objectId = parentObject;
+    } else {
+        objectId = params_postid;
+    }
+
+    let index = this.lstObjects.findIndex(x => x.ObjectId == objectId);
     if(Number(index) >= 0) {
       currentObject = this.lstObjects[index];
 
@@ -461,7 +487,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       if(exist) {
           this.currentObject = currentObject;
           this.selectPost(currentObject);
-
           this.isLoading = false;
           return;
       }
@@ -480,6 +505,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.currentObject = currentObject;
           this.lstObjects = [...[currentObject], ...this.lstObjects];
 
+
           this.selectPost(currentObject);
           this.isLoading = false;
           this.cdRef.detectChanges();
@@ -496,21 +522,24 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     })
   }
 
-  selectPost(item: ChatomniObjectsItemDto | any): any {
-    if(item && item.Data && (item.ObjectId != this.currentPost?.ObjectId)){
-
-        // TODO: lưu lại Storage item đang active khi click menu khá
+  selectPost(item: ChatomniObjectsItemDto | any, type?: string): any {
+    if(item && item.Data) {
         this.setStoragePostId(item.ObjectId);
         this.currentPost = item;
 
-        //TODO: Facebook load danh sách bài viết con từ bài viết chính
-        switch(this.currentTeam?.Type ){
+        switch(this.currentTeam?.Type ) {
             case CRMTeamType._Facebook:
-                let exitsChilds = this.extrasChilds && this.extrasChilds[item.ObjectId] && Object.keys(this.extrasChilds[item.ObjectId]).length > 0;
+                let exitsChilds = type == '_click' && this.extrasChilds && this.extrasChilds[item.ObjectId] && Object.keys(this.extrasChilds[item.ObjectId]).length > 0;
 
                 if(exitsChilds) {
                   let dataChilds = this.extrasChilds[item.ObjectId];
-                  this.postChilds = [...dataChilds];
+                  if(this.clickExtras[item.ObjectId]) {
+                      this.postChilds = [];
+                      delete this.clickExtras[item.ObjectId];
+                  } else {
+                      this.postChilds = [...dataChilds];
+                      this.clickExtras[item.ObjectId] = true;
+                  }
                 }
             break;
 
@@ -618,6 +647,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.lstObjects = [];
     this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, this.queryObj).subscribe({
       next: (res: ChatomniObjectsDto) => {
+
           this.lstObjects  = [...res.Items];
           let currentObject = {} as any;
           let params_postid = this.getStoragePostId();
@@ -632,7 +662,23 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             return;
           }
 
-          let index = this.lstObjects.findIndex(x => x.ObjectId == this.currentPost?.ObjectId);
+          let existChild = this.postChilds.filter(x => x.ObjectId == params_postid)[0];
+          let parentObject: string = '';
+          if(existChild) {
+              parentObject = existChild.Data?.parent_id;
+              delete this.clickExtras[parentObject];
+              this.postChilds = [];
+          }
+
+          let objectId: string = '';
+          if(parentObject) {
+            this.currentPost = null as any;
+            objectId = parentObject;
+          } else {
+            objectId = this.currentPost?.ObjectId;
+          }
+
+          let index = this.lstObjects.findIndex(x => x.ObjectId == objectId);
           if(Number(index) < 0 && !this.isFilter) {
               let teamId = this.currentTeam?.Id as number;
               let objectId = this.currentPost?.ObjectId;
@@ -645,13 +691,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               this.chatomniObjectService.getById(objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (res: ChatomniObjectsItemDto) => {
                     currentObject = {...res};
+
                     let item = this.lstObjects.filter(x => x.ObjectId == objectId)[0];
-                    if(item) {
-                      return;
-                    }
+                    if(item) return;
 
                     this.lstObjects = [...[currentObject], ...this.lstObjects];
-
                     this.isLoading = false;
                 },
                 error: (error: any) => {
@@ -659,6 +703,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                     this.message.error(error?.error?.message);
                 }
               })
+          } else {
+              this.currentPost = this.lstObjects[index];
+              this.setStoragePostId(this.currentPost.ObjectId);
           }
 
           setTimeout(() => {
