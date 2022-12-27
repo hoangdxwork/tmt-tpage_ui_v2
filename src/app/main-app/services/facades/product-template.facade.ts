@@ -17,7 +17,7 @@ export class ProductTemplateFacade {
 
   stockChangeProductQty(id: any, mapping: any[], type: string) {
     this.productTemplateService.getProductTemplateByIdV2(id).subscribe({
-       next: (res: any) => {
+       next: (obs: any) => {
 
           let model = {
               ProductTmplId: id
@@ -26,7 +26,6 @@ export class ProductTemplateFacade {
           this.productTemplateService.stockChangeProductQty({ model: model }).subscribe({
             next: (res: any) => {
                 delete res['@odata.context'];
-
                 let value = [...res.value] as StockChangeProductQtyDto[];
 
                 value.map((x:any, index: number) => {

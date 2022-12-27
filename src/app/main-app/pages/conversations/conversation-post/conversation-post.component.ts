@@ -363,20 +363,21 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           return;
       }
 
+      this.message.info("Đã kích hoạt cập nhật hội thoại");
       this.tiktokService.refreshListen(ownerId).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             this.clickReload = 0;
-            this.message.info("Đã kích hoạt cập nhật hội thoại");
+            this.message.success('Yêu cầu cập nhật hội thoại thành công');
             this.loadFilterDataSource();
         },
         error: (error: any) => {
             this.clickReload = 0;
-            this.message.error(error?.error?.message);
+            this.message.error(error?.error?.message || 'Yêu cầu cập nhật thất bại');
         }
       })
     } else {
       this.refreshTimer = setTimeout(() => {
-        this.loadFilterDataSource(); 
+        this.loadFilterDataSource();
       }, 350)
     }
 
