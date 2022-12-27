@@ -1,3 +1,6 @@
+import { Object } from './../../../dto/conversation/make-activity.dto';
+import { Child } from './../../../dto/team/all-facebook-child.dto';
+import { ExtrasChildsDto } from './../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { TiktokService } from './../../../services/tiktok-service/tiktok.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
@@ -94,6 +97,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   clickReload: number = 0;
   refreshTimer: TDSSafeAny;
   isLoadingUpdate: boolean = false;
+
+  extrasChilds: { [id: string] : ExtrasChildsDto[] } = {};
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -412,6 +417,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       next: (res: ChatomniObjectsDto) => {
           if(res && res.Items) {
               this.lstObjects = [...res.Items];
+              this.extrasChilds =  { ...res.Extras?.Childs}
               this.prepareParamsUrl();
           }
 
@@ -500,19 +506,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         //TODO: Facebook load danh sách bài viết con từ bài viết chính
         switch(this.currentTeam?.Type ){
             case CRMTeamType._Facebook:
+                let exitsChilds = this.extrasChilds && this.extrasChilds[item.ObjectId] && Object.keys(this.extrasChilds[item.ObjectId]).length > 0;
 
-              let x = item.Data as MDB_Facebook_Mapping_PostDto;
-              let postChildId = (x.parent_id || item.fbid);
-              if(this.currentTeam!.Id && TDSHelperString.hasValueString(postChildId)) {
-
-                this.facebookPostService.getByPostParent(this.currentTeam!.Id, postChildId).pipe(takeUntil(this.destroy$)).subscribe({
-                  next: (res: any) => {
-                    if(res && TDSHelperArray.hasListValue(res.Items)) {
-                        this.postChilds = [...res.Items];
-                    }
-                  }
-                });
-              }
+                if(exitsChilds) {
+                  let dataChilds = this.extrasChilds[item.ObjectId];
+                  this.postChilds = [...dataChilds];
+                }
             break;
 
             case CRMTeamType._TShop:
