@@ -235,7 +235,7 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
           this.cdRef.markForCheck();
       }
     });
-    
+
   }
 
   isErrorAttachment(att: Datum, dataItem: ChatomniDataItemDto){
@@ -775,8 +775,6 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
   }
 
   detail() {
-    console.log("Chi tiết");
-
   }
 
   open_galleryTshop(att: any) {

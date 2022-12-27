@@ -293,32 +293,32 @@
                         <ng-template #empty></ng-template>
                     </div>
                     <div class="w-full flex justify-end py-4 pr-4 border-b border-neutral-2-100">
-                        <div class="w-1/2 text-right flex flex-col">
-                            <div class="flex mb-5">
+                        <div class="w-1/2 text-right flex flex-col gap-3.5">
+                            <div class="flex items-center">
                                 <span class="w-1/2"> Tổng số lượng</span>
                                 <span class="w-1/2 font-semibold">{{ productUOMQtyTotal || 0 | numberCustom }} </span>
                             </div>
-                            <div class="flex mb-5" *ngIf="dataModel && (dataModel.Discount > 0 || dataModel.DecreaseAmount > 0 || dataModel.AmountTax > 0)">
+                            <div class="flex items-center" *ngIf="dataModel && (dataModel.Discount > 0 || dataModel.DecreaseAmount > 0 || dataModel.AmountTax > 0)">
                                 <span class="w-1/2"> Tổng trước thuế</span>
                                 <span class="w-1/2 font-semibold"> {{ productPriceTotal || 0 | numberCustom }} đ</span>
                             </div>
-                            <div class="flex mb-5" *ngIf="dataModel.DiscountAmount > 0">
+                            <div class="flex items-center" *ngIf="dataModel.DiscountAmount > 0">
                                 <span class="w-1/2"> Chiết khấu ({{dataModel.Discount || 0}}%)</span>
                                 <span class="w-1/2 font-semibold"> {{ dataModel.DiscountAmount || 0 | numberCustom }} đ</span>
                             </div>
-                            <div class="flex mb-5" *ngIf="dataModel.DecreaseAmount > 0">
+                            <div class="flex items-center" *ngIf="dataModel.DecreaseAmount > 0">
                                 <span class="w-1/2"> Giảm giá</span>
                                 <span class="w-1/2 font-semibold"> {{ dataModel.DecreaseAmount || 0 | numberCustom }} đ</span>
                             </div>
-                            <div class="flex mb-5" *ngIf="dataModel.AmountTax > 0">
+                            <div class="flex items-center" *ngIf="dataModel.AmountTax > 0">
                                 <span class="w-1/2"> Thuế ({{ dataModel.Tax?.Amount | numberCustom }}%)</span>
                                 <span class="w-1/2 font-semibold"> {{ dataModel.AmountTax || 0 | numberCustom }} đ</span>
                             </div>
-                            <div class="flex mb-5 border-b border-neutral-2-100">
+                            <div class="flex items-center border-b border-neutral-2-100 pb-2">
                                 <span class="w-1/2 font-semibold">Tổng tiền</span>
                                 <span class="w-1/2 text-header-1 font-semibold">{{dataModel.AmountTotal || 0 | numberCustom }} đ</span>
                             </div>
-                            <div class="flex mb-5" *ngFor="let payment of payments; let i = index">
+                            <div class="flex items-center" *ngFor="let payment of payments; let i = index">
                                 <span class="w-1/2 flex items-center  justify-end" >
                                     <span class="tdsi-information-fill mr-2 text-info-500 text-xl leading-5" type="button"
                                         tds-button tds-popover popoverTrigger="click" popoverTitle="Thông tin thanh toán" [popoverBackdrop]="true"
@@ -352,7 +352,7 @@
                                     </div>
                                 </ng-template>
                             </div>
-                            <div class="flex" *ngIf="dataModel.State != ('draft' || 'cancel')">
+                            <div class="flex items-center" *ngIf="dataModel.State != ('draft' || 'cancel')">
                                 <span class="w-1/2">Còn nợ</span>
                                 <span class="w-1/2 text-header-1 text-error-400 font-semibold">{{dataModel.Residual || 0 | numberCustom }} đ</span>
                             </div>
