@@ -123,6 +123,8 @@ export interface ChatomniFacebookDataDto {
   message_tags: MessageTag[];
   phone: string;
   webhook_attachments: FacebookWebhookAttachmentDto[] | any[];
+  object_id?: string;
+  parent_id?: string;
 
   // các dữ liệu bổ sung để check client
   has_admin_required?: boolean;
