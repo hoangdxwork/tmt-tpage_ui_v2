@@ -330,7 +330,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
             let channelType = this.team.Type;
             if(channelType == CRMTeamType._UnofficialTikTok) {
-                this.tiktokUniqueId = res.Data?.uniqueId;
+                this.tiktokUniqueId = res.comment?.Data?.uniqueId;
             }
 
             res.comment = res.comment as ChatomniDataItemDto;
@@ -352,7 +352,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
                   this.postEvent.spinLoadingTab$.emit(false);
                   this.isLoading = false;
 
-                  this.message.error(`${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
+                  this.message.error(`${error?.error?.message}`);
                   this.cdRef.detectChanges();
               }
             })
@@ -769,7 +769,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.calculateFeeAship(model);
   }
 
-  onSelectShipServiceId (serviceId: string) {
+  onSelectShipServiceId(serviceId: string) {
     if(serviceId) {
       let exist = this.shipServices.filter((x: any) => x.ServiceId === serviceId)[0];
       if(exist) {

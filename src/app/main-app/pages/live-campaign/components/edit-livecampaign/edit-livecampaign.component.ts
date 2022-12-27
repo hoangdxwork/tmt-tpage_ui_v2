@@ -1,4 +1,4 @@
-import { TextContentToOrderDTO } from '@app/dto/configs/post/post-order-config.dto';
+import { ProductTemplateService } from './../../../../services/product-template.service';
 import { PrepareAddCampaignHandler } from './../../../../handler-v2/live-campaign-handler/prepare-add-campaign.handler';
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from '@app/dto/live-campaign/livecampaign-simple.dto';
 import { SharedService } from './../../../../services/shared.service';
@@ -12,7 +12,6 @@ import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
-import { StringHelperV2 } from 'src/app/main-app/shared/helper/string.helper';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
@@ -96,6 +95,7 @@ export class EditLiveCampaignComponent implements OnInit {
     private notificationService: TDSNotificationService,
     private sharedService: SharedService,
     private prepareHandler: PrepareAddCampaignHandler,
+    private productTemplateService: ProductTemplateService,
     private cdRef: ChangeDetectorRef) {
       this.createForm();
   }
@@ -135,6 +135,15 @@ export class EditLiveCampaignComponent implements OnInit {
     this.loadUser();
     this.loadQuickReply();
     this.loadCurrentCompany();
+    this.eventEmitter();
+  }
+
+  eventEmitter() {
+    this.productTemplateService.onLoadingLiveCampaign$.subscribe({
+      next: (res: boolean) => {
+        this.isLoading = res;
+      }
+    });
   }
 
   loadData() {

@@ -298,7 +298,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           name: quickOrderModel.Facebook_UserName,
           partnerCode: quickOrderModel.PartnerCode,
           phone: quickOrderModel.Telephone,
-          uid: quickOrderModel.Facebook_UserId,
+          uid: quickOrderModel.Facebook_UserId || quickOrderModel.Facebook_ASUserId,
           product: product || "",
           address: quickOrderModel.Address,
           userName: quickOrderModel.User ? quickOrderModel.User?.Name : "",

@@ -45,7 +45,7 @@
                                             <tds-avatar [tdsSrc]="data.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="60" class="rounded-xl"></tds-avatar>
                                         </div>
                                         <div class="flex flex-col w-full overflow-hidden">
-                                            <span class="font-semibold w-full min-w-[120px] truncate mb-1"
+                                            <span class="font-semibold w-full min-w-[100px] truncate mb-1"
                                                 tds-tooltip="{{ data.ProductNameGet }}">{{ data.ProductNameGet }}</span>
 
                                             <!-- <div *ngIf="data?.AttributeValues?.length > 0" class="flex items-center gap-x-1 mb-1">
@@ -118,19 +118,19 @@
                                                 <span class="text-primary-1">{{ data.UOMName }}</span>
                                             </div>
                                             <div class="flex flex-auto">
-                                                <span class="text-neutral-1-400 font-regular text-body-2 flex flex-row items-center gap-x-1"> 
+                                                <span class="text-neutral-1-400 font-regular text-body-2 flex flex-row items-center gap-x-1">
                                                     Tồn kho:
                                                     <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">
                                                         {{ inventories[data.ProductId]?.QtyAvailable || 0 }}
                                                     </span>
-                                                    <tds-spinner [color]="'primary'" class="w-2.5 h-2.5" 
+                                                    <tds-spinner [color]="'primary'" class="w-2.5 h-2.5"
                                                         *ngIf="!inventories || (inventories && !inventories[data.ProductId])"></tds-spinner>
                                                 </span>
                                                 <span class="px-2">/</span>
-                                                <span class="text-neutral-1-400 font-regular text-body-2 flex flex-row items-center gap-x-1"> 
+                                                <span class="text-neutral-1-400 font-regular text-body-2 flex flex-row items-center gap-x-1">
                                                     Tồn dự báo:
                                                     <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">{{ inventories[data.ProductId]?.VirtualAvailable || 0 }}</span>
-                                                    <tds-spinner [color]="'primary'" class="w-2.5 h-2.5" 
+                                                    <tds-spinner [color]="'primary'" class="w-2.5 h-2.5"
                                                         *ngIf="!inventories || (inventories && !inventories[data.ProductId])"></tds-spinner>
                                                 </span>
                                             </div>
@@ -165,6 +165,13 @@
                                             (click)="showModalLiveCampaignBill(data.Id, data.TotalFastSaleOrder!)">
                                             <span class="flex items-center justify-center">
                                                 <i class="tdsi-group-2-line text-base"></i>
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div *ngIf="isShowEdit" class="flex flex-row items-center w-full">
+                                        <p class="text-body-2 mr-2">Giới hạn trên đơn:
+                                            <span class="truncate font-semibold">
+                                                {{ data.LimitedQuantity || 0 | numberCustom }}
                                             </span>
                                         </p>
                                     </div>

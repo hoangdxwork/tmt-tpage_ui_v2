@@ -1,6 +1,6 @@
 import { ODataComboProductTemplateDTO } from './../dto/product/product-combo.dto';
 import { ODataProductInventoryDTO } from './../dto/configs/product/config-odata-product.dto';
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { ProductTemplateV2DTO } from "../dto/product-template/product-tempalte.dto";
@@ -18,6 +18,7 @@ export class ProductTemplateService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/product";
 
   public _keyCacheGrid: string = 'product-page:grid_product:settings';
+  public onLoadingLiveCampaign$ = new EventEmitter<boolean>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)

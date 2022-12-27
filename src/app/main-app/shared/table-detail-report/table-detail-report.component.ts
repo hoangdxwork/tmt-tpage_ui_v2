@@ -1,3 +1,5 @@
+import { InventoryChangeType } from './../../dto/product-pouchDB/product-pouchDB.dto';
+import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { EditLiveCampaignPostComponent } from '@app/shared/edit-livecampaign-post/edit-livecampaign-post.component';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { LiveCampaignSimpleDetail } from '@app/dto/live-campaign/livecampaign-simple.dto';
@@ -73,12 +75,14 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
       private destroy$: TDSDestroyService,
       private liveCampaignService: LiveCampaignService,
       private cdr: ChangeDetectorRef,
-      private notificationService: TDSNotificationService) { }
+      private notificationService: TDSNotificationService,
+      private productTemplateFacade: ProductTemplateFacade) { }
 
   ngOnInit(): void {
     this.validateData();
     this.loadCurrentCompany();
     this.loadData(this.pageSize, this.pageIndex);
+    this.eventEmitter();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -89,6 +93,31 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
       this.loadCurrentCompany();
       this.loadData(this.pageSize, this.pageIndex);
     }
+  }
+
+  eventEmitter() {
+    //TODO: load tồn kho cho sản phẩm mới tạo
+    this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (obs: any) => {
+        if(obs !== InventoryChangeType._EDIT_LIVECAMPAIGN_POST) return;
+        let warehouseId = this.companyCurrents?.DefaultWarehouseId;
+
+        if(warehouseId > 0) {
+          this.productService.lstInventory = null;
+          this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                if(res) {
+                    this.inventories = {};
+                    this.inventories = res;
+                }
+            },
+            error: (err: any) => {
+                this.message.error(err?.error?.message);
+            }
+          });
+        }
+      }
+    })
   }
 
   validateData() {
@@ -135,7 +164,7 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
         }
       },
       error: (error: any) => {
-          this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+          this.message.error(error?.error?.message || 'Tải thông tin công ty mặc định đã xảy ra lỗi');
       }
     });
   }

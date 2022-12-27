@@ -123,7 +123,7 @@ export class AutoReplyConfigComponent implements OnInit {
     });
   }
 
-  onCannel() {
+  onCancel() {
       this.modalRef.destroy(null);
   }
 }

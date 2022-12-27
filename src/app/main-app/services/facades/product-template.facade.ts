@@ -1,3 +1,4 @@
+import { map, mergeMap } from 'rxjs/operators';
 import { EventEmitter, Injectable } from "@angular/core";
 import { StockChangeProductQtyDto } from "@app/dto/product-template/stock-change-productqty.dto";
 import { TDSMessageService } from "tds-ui/message";
@@ -15,9 +16,9 @@ export class ProductTemplateFacade {
       private productTemplateService: ProductTemplateService) {
   }
 
-  stockChangeProductQty(id: any, mapping: any[], type: string) {
+  stockChangeProductQtyVV(id: any, mapping: any[], type: string) {
     this.productTemplateService.getProductTemplateByIdV2(id).subscribe({
-       next: (res: any) => {
+       next: (obs: any) => {
 
           let model = {
               ProductTmplId: id
@@ -26,7 +27,6 @@ export class ProductTemplateFacade {
           this.productTemplateService.stockChangeProductQty({ model: model }).subscribe({
             next: (res: any) => {
                 delete res['@odata.context'];
-
                 let value = [...res.value] as StockChangeProductQtyDto[];
 
                 value.map((x:any, index: number) => {
@@ -72,6 +72,45 @@ export class ProductTemplateFacade {
             this.message.error(error?.error?.message);
             this.onStockChangeProductQty$.emit(type);
         }
+      })
+  }
+
+  stockChangeProductQty(id: any, mapping: any[], type: string) {
+    this.productTemplateService.onLoadingLiveCampaign$.emit(true);
+    
+    this.productTemplateService.getProductTemplateByIdV2(id).pipe(
+      mergeMap((obs) => {
+          let model = { ProductTmplId: id };
+          return this.productTemplateService.stockChangeProductQty({ model: model }).pipe(map(stockChangeOdata => stockChangeOdata));
+      }),
+      mergeMap((stockChangeOdata: any) => {
+          let valueStock = [...stockChangeOdata.value] as StockChangeProductQtyDto[];
+
+          valueStock?.map((x:any, index: number) => {
+              x.LocationId = x.Location?.Id;
+              if(mapping && mapping.length > 0) {
+                  x.NewQuantity = mapping[index];
+              }
+          });
+
+          return this.productTemplateService.postChangeQtyProduct({ model: valueStock }).pipe(map(productOdata => productOdata));
+      }),
+      mergeMap((productOdata: any) => {
+          let valueProduct = [...productOdata.value] as any[];
+          let ids = valueProduct?.map((x: any) => x.Id);
+
+          let model2 = { ids: ids };
+          return this.productTemplateService.changeProductQtyIds(model2).pipe(map(qtyIds => qtyIds));
+      }))
+      .subscribe({
+          next: (qtyIds: any) => {
+              this.onStockChangeProductQty$.emit(type);
+              this.message.info('Cập nhật tồn kho thành công');
+          },
+          error: (error: any) => {
+              this.message.error(error?.error?.message);
+              this.onStockChangeProductQty$.emit(type);
+          }
       })
   }
 }

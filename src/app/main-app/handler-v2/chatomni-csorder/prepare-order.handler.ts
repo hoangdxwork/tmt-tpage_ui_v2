@@ -138,7 +138,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
-        x.Note = `{before}${comment.Data?.message}`;
+        x.Note = `{before}${comment.Message || comment.Data?.message}`;
     }
 
     return {...x};
@@ -218,7 +218,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
-        x.Note = `{before}${comment.Message}`;
+        x.Note = `{before}${comment?.Data?.comment || comment.Message}`;
     }
 
     return {...x};
@@ -275,7 +275,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
-        x.Note = `{before}${comment.Message}`;
+        x.Note = `{before}${comment.Message || comment.Data?.Content?.Text}`;
     }
 
     return {...x};

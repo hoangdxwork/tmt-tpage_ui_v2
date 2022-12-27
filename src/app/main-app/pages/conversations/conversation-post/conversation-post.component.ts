@@ -1,3 +1,6 @@
+import { Object } from './../../../dto/conversation/make-activity.dto';
+import { Child } from './../../../dto/team/all-facebook-child.dto';
+import { ExtrasChildsDto } from './../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { TiktokService } from './../../../services/tiktok-service/tiktok.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
@@ -93,6 +96,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   widthConversation!: number;
   clickReload: number = 0;
   refreshTimer: TDSSafeAny;
+  isLoadingUpdate: boolean = false;
+
+  extrasChilds: { [id: string] : ExtrasChildsDto[] } = {};
+  clickExtras = {} as any;
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -356,28 +363,38 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
     let exist = (this.clickReload == 3) && this.currentTeam && this.currentTeam?.Type == CRMTeamType._UnofficialTikTok;
     if (exist) {
-      let ownerId = this.currentTeam?.OwnerId as any;
-      if(!TDSHelperString.hasValueString(ownerId)) {
-          this.message.error('Không tìm thấy OwnerId, không thể kích hoạt cập nhật hội thoại');
-          this.isRefreshing = false;
-          return;
-      }
-
-      this.tiktokService.refreshListen(ownerId).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-            this.clickReload = 0;
-            this.message.info("Đã kích hoạt cập nhật hội thoại");
-            this.loadFilterDataSource();
-        },
-        error: (error: any) => {
-            this.clickReload = 0;
-            this.message.error(error?.error?.message);
+        let ownerId = this.currentTeam?.OwnerId as any;
+        if(!TDSHelperString.hasValueString(ownerId)) {
+            this.message.error('Không tìm thấy OwnerId, không thể kích hoạt cập nhật hội thoại');
+            this.isRefreshing = false;
+            return;
         }
-      })
+
+        this.isLoadingUpdate = true;
+        this.message.info("Đã kích hoạt cập nhật hội thoại");
+        let mess = this.message.create('loading', `Đang cập nhật hội thoại`, { duration: 60000 });
+
+        this.tiktokService.refreshListen(ownerId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+              this.clickReload = 0;
+              this.isLoadingUpdate = false;
+
+              this.message.remove(mess?.messageId);
+              this.message.success('Yêu cầu cập nhật hội thoại thành công');
+              this.loadData();
+          },
+          error: (error: any) => {
+              this.clickReload = 0;
+              this.isLoadingUpdate = false;
+
+              this.message.remove(mess?.messageId);
+              this.message.error(error?.error?.message || 'Yêu cầu cập nhật thất bại');
+          }
+        })
     } else {
-      this.refreshTimer = setTimeout(() => {
-        this.loadFilterDataSource(); 
-      }, 350)
+        this.refreshTimer = setTimeout(() => {
+          this.loadFilterDataSource();
+        }, 350)
     }
 
     setTimeout(() => {
@@ -401,6 +418,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       next: (res: ChatomniObjectsDto) => {
           if(res && res.Items) {
               this.lstObjects = [...res.Items];
+              this.extrasChilds =  { ...res.Extras?.Childs}
               this.prepareParamsUrl();
           }
 
@@ -436,7 +454,32 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       return;
     }
 
-    let index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+    let parentObject: string = '';
+    let extras = Object.keys(this.extrasChilds);
+
+    if(extras && extras.length > 0) {
+      extras.map(x => {
+        let exist = this.extrasChilds[x] && this.extrasChilds[x].length > 0;
+        if(exist) {
+          let existChild = this.extrasChilds[x]?.filter(x => x.ObjectId == params_postid)[0];
+          if(existChild) {
+              parentObject = x;
+              delete this.clickExtras[parentObject];
+              this.postChilds = [];
+          }
+        }
+      })
+    }
+
+    let objectId: string = '';
+    if(parentObject) {
+        this.currentPost = null as any;
+        objectId = parentObject;
+    } else {
+        objectId = params_postid;
+    }
+
+    let index = this.lstObjects.findIndex(x => x.ObjectId == objectId);
     if(Number(index) >= 0) {
       currentObject = this.lstObjects[index];
 
@@ -444,7 +487,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       if(exist) {
           this.currentObject = currentObject;
           this.selectPost(currentObject);
-
           this.isLoading = false;
           return;
       }
@@ -463,6 +505,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.currentObject = currentObject;
           this.lstObjects = [...[currentObject], ...this.lstObjects];
 
+
           this.selectPost(currentObject);
           this.isLoading = false;
           this.cdRef.detectChanges();
@@ -479,29 +522,25 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     })
   }
 
-  selectPost(item: ChatomniObjectsItemDto | any): any {
-    if(item && item.Data && (item.ObjectId != this.currentPost?.ObjectId)){
-
-        // TODO: lưu lại Storage item đang active khi click menu khá
+  selectPost(item: ChatomniObjectsItemDto | any, type?: string): any {
+    if(item && item.Data) {
         this.setStoragePostId(item.ObjectId);
         this.currentPost = item;
 
-        //TODO: Facebook load danh sách bài viết con từ bài viết chính
-        switch(this.currentTeam?.Type ){
+        switch(this.currentTeam?.Type ) {
             case CRMTeamType._Facebook:
+                let exitsChilds = type == '_click' && this.extrasChilds && this.extrasChilds[item.ObjectId] && Object.keys(this.extrasChilds[item.ObjectId]).length > 0;
 
-              let x = item.Data as MDB_Facebook_Mapping_PostDto;
-              let postChildId = (x.parent_id || item.fbid);
-              if(this.currentTeam!.Id && TDSHelperString.hasValueString(postChildId)) {
-
-                this.facebookPostService.getByPostParent(this.currentTeam!.Id, postChildId).pipe(takeUntil(this.destroy$)).subscribe({
-                  next: (res: any) => {
-                    if(res && TDSHelperArray.hasListValue(res.Items)) {
-                        this.postChilds = [...res.Items];
-                    }
+                if(exitsChilds) {
+                  let dataChilds = this.extrasChilds[item.ObjectId];
+                  if(this.clickExtras[item.ObjectId]) {
+                      this.postChilds = [];
+                      delete this.clickExtras[item.ObjectId];
+                  } else {
+                      this.postChilds = [...dataChilds];
+                      this.clickExtras[item.ObjectId] = true;
                   }
-                });
-              }
+                }
             break;
 
             case CRMTeamType._TShop:
@@ -608,6 +647,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.lstObjects = [];
     this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, this.queryObj).subscribe({
       next: (res: ChatomniObjectsDto) => {
+
           this.lstObjects  = [...res.Items];
           let currentObject = {} as any;
           let params_postid = this.getStoragePostId();
@@ -622,7 +662,23 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             return;
           }
 
-          let index = this.lstObjects.findIndex(x => x.ObjectId == this.currentPost?.ObjectId);
+          let existChild = this.postChilds.filter(x => x.ObjectId == params_postid)[0];
+          let parentObject: string = '';
+          if(existChild) {
+              parentObject = existChild.Data?.parent_id;
+              delete this.clickExtras[parentObject];
+              this.postChilds = [];
+          }
+
+          let objectId: string = '';
+          if(parentObject) {
+            this.currentPost = null as any;
+            objectId = parentObject;
+          } else {
+            objectId = this.currentPost?.ObjectId;
+          }
+
+          let index = this.lstObjects.findIndex(x => x.ObjectId == objectId);
           if(Number(index) < 0 && !this.isFilter) {
               let teamId = this.currentTeam?.Id as number;
               let objectId = this.currentPost?.ObjectId;
@@ -635,13 +691,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               this.chatomniObjectService.getById(objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
                 next: (res: ChatomniObjectsItemDto) => {
                     currentObject = {...res};
+
                     let item = this.lstObjects.filter(x => x.ObjectId == objectId)[0];
-                    if(item) {
-                      return;
-                    }
+                    if(item) return;
 
                     this.lstObjects = [...[currentObject], ...this.lstObjects];
-
                     this.isLoading = false;
                 },
                 error: (error: any) => {
@@ -649,6 +703,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                     this.message.error(error?.error?.message);
                 }
               })
+          } else {
+              this.currentPost = this.lstObjects[index];
+              this.setStoragePostId(this.currentPost.ObjectId);
           }
 
           setTimeout(() => {
