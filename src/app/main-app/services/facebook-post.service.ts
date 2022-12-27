@@ -55,7 +55,7 @@ export class FacebookPostService extends BaseSevice {
   }
 
   getByPostParent(teamId: number, postId: string): Observable<any> {
-    let queryString = Object.keys(this.queryObj).map(key => {
+    let queryString = Object.keys(this.queryObj || {}).map(key => {
       return key + '=' + this.queryObj[key]
     }).join('&');
 

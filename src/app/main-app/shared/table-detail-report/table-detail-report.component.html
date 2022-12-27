@@ -11,11 +11,10 @@
             <thead>
                 <tr>
                 <th [width]="'6%'">STT</th>
-                <th [width]="'29%'">Sản phẩm ({{count || 0}})</th>
-                <th [width]="'19%'">Đơn hàng</th>
-                <th [width]="isShowEdit?'w-[16%]':'w-[19%]'">Số lượng</th>
-                <th [width]="'12%'" class="text-center">Giới hạn trên đơn</th>
-                <th [width]="isShowEdit?'w-[15%]':'w-[20%]'" [align]="'right'">Giá bán</th>
+                <th [width]="'35%'">Sản phẩm ({{count || 0}})</th>
+                <th [width]="'21%'">Đơn hàng</th>
+                <th [width]="isShowEdit?'w-[16%]':'w-[21%]'">Số lượng</th>
+                <th [width]="isShowEdit?'w-[12%]':'w-[17%]'">Giá bán</th>
                 <th *ngIf="isShowEdit" [width]="'10%'" class="text-center">
                     <button type="button" class="ml-1" tds-button-icon color="secondary" size="sm" (click)="refreshData()" tds-tooltip tooltipTitle="Reload">
                         <span class="flex items-center text-neutral-1-500">
@@ -40,7 +39,7 @@
                                 <td class="py-2 px-4 w-[6%]">{{ data.Index }}</td>
 
                                 <!-- Sản phẩm -->
-                                <td class="py-2 px-4  w-[29%]">
+                                <td class="py-2 px-4  w-[35%]">
                                     <div class="flex flex-row gap-x-3 flex-auto">
                                         <div>
                                             <tds-avatar [tdsSrc]="data.ImageUrl" [isAvatar]="false" [shape]="'square'" [size]="60" class="rounded-xl"></tds-avatar>
@@ -140,7 +139,7 @@
                                 </td>
 
                                 <!-- Đơn hàng -->
-                                <td class="py-2 px-4" [ngClass]="isShowEdit?'w-[20%]':'w-[22%]'">
+                                <td class="py-2 px-4 w-[21%]">
                                     <div class="flex flex-row items-center w-full">
                                         <p class="text-body-2 mr-2">Đơn hàng chờ:
                                             <span tds-tooltip tooltipTitle="{{ data.TotalSaleOnlineOrder || 0 }}" class="font-semibold">
@@ -169,10 +168,17 @@
                                             </span>
                                         </p>
                                     </div>
+                                    <div *ngIf="isShowEdit" class="flex flex-row items-center w-full">
+                                        <p class="text-body-2 mr-2">Giới hạn trên đơn:
+                                            <span class="truncate font-semibold">
+                                                {{ data.LimitedQuantity || 0 | numberCustom }}
+                                            </span>
+                                        </p>
+                                    </div>
                                 </td>
 
                                 <!-- Số lượng -->
-                                <td class="py-2 px-4" [ngClass]="isShowEdit?'w-[14%]':'w-[22%]'">
+                                <td class="py-2 px-4" [ngClass]="isShowEdit?'w-[16%]':'w-[21%]'">
                                     <div *ngIf="isEditDetails[data.Id]">
                                         <tds-form-field>
                                             <tds-input-number [min]="0" [step]="1" [(ngModel)]="data.Quantity"
@@ -230,12 +236,8 @@
                                     </div>
                                 </td>
 
-                                <td class="text-center w-[12%]">
-                                  <span class="text-body-2"> {{ data.LimitedQuantity || 0 | numberCustom }} </span>
-                                </td>
-
                                 <!-- Giá bán -->
-                                <td class="py-2 px-2 text-right" [ngClass]="isShowEdit?'w-[12%]':'w-[18%]'">
+                                <td class="py-2 px-2" [ngClass]="isShowEdit?'w-[12%]':'w-[17%]'">
                                     <div *ngIf="isEditDetails[data.Id]">
                                         <tds-form-field>
                                             <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.Price"
