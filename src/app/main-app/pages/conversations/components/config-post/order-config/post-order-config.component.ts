@@ -375,7 +375,7 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onCannelMoreTemplate() {
+  onCancelMoreTemplate() {
     this.prefixMoreTemplate = '';
     this.suffixMoreTemplate = '';
     this.fromMoreTemplate = 0;
@@ -859,7 +859,7 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onCannel() {
+  onCancel() {
     if(!this.prepareCheckDrity()) {
       this.modalService.info({
         title: 'Thông báo',

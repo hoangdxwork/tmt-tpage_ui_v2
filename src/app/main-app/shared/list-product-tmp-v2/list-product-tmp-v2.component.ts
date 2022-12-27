@@ -149,12 +149,17 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
 
                 if(this.response) {
                   this.mappingProductToLive(this.response);
+                } else {
+                  this.productTemplateService.onLoadingLiveCampaign$.emit(false);
                 }
               },
               error: (err: any) => {
                 this.message.error(err?.error?.message);
+
                 if(this.response) {
-                    this.mappingProductToLive(this.response);
+                  this.mappingProductToLive(this.response);
+                } else {
+                  this.productTemplateService.onLoadingLiveCampaign$.emit(false);
                 }
               }
             });
@@ -360,9 +365,11 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
               })
 
               this.onLoadProductToLiveCampaign.emit([...items]);
+              this.productTemplateService.onLoadingLiveCampaign$.emit(false);
           },
           error: (error: any) => {
               this.message.error(error?.error?.message);
+              this.productTemplateService.onLoadingLiveCampaign$.emit(false);
           }
         })
     }

@@ -27,7 +27,6 @@ export class ConfigPostOutletComponent implements OnInit {
   @ViewChild(AutoLabelConfigComponent) autoLabelConfig!: TDSSafeAny;
 
   @Input() data!: ChatomniObjectsItemDto;
-  @Input() date!: string;
 
   selectedIndex: number = 0;
   selectedIndexChanged: number = 0;
@@ -65,18 +64,18 @@ export class ConfigPostOutletComponent implements OnInit {
     return;
   }
 
-  onCannel(){
+  onCancel(){
     switch(this.selectedIndex){
       case 0:
-        return this.postOrderConfig.onCannel();
+        return this.postOrderConfig.onCancel();
       case 1:
-        return this.postOrderInteractionConfig.onCannel();
+        return this.postOrderInteractionConfig.onCancel();
       case 2:
-        return this.postHiddenCommentConfig.onCannel();
+        return this.postHiddenCommentConfig.onCancel();
       case 3:
-        return this.autoReplyConfig.onCannel();
+        return this.autoReplyConfig.onCancel();
       case 4:
-        return this.autoLabelConfig.onCannel();
+        return this.autoLabelConfig.onCancel();
     }
     return;
   }
