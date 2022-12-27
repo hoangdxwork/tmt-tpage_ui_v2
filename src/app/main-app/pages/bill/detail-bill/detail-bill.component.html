@@ -261,31 +261,31 @@
                         <tds-table #tableProduct [listData]="dataModel.OrderLines" [showPagination]="false" [pageSize]="dataModel.OrderLines.length" [noResult]="empty">
                             <thead>
                                 <tr>
-                                    <th>STT</th>
-                                    <th>Sản phẩm</th>
-                                    <th>Đơn vị tính</th>
-                                    <th>Số lượng</th>
-                                    <th>Đơn giá</th>
-                                    <th>Giảm giá</th>
-                                    <th>Thành tiền</th>
+                                    <th [align]="'center'">STT</th>
+                                    <th [width]="'300px'">Sản phẩm</th>
+                                    <th [align]="'center'">Đơn vị tính</th>
+                                    <th [align]="'center'">Số lượng</th>
+                                    <th [align]="'right'">Đơn giá</th>
+                                    <th [align]="'right'">Giảm giá</th>
+                                    <th [align]="'right'">Thành tiền</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <ng-template ngFor let-data let-i="index" [ngForOf]="tableProduct.data">
                                     <tr>
-                                        <td>{{ i + 1 }}</td>
+                                        <td [align]="'center'">{{ i + 1 }}</td>
                                         <td>
-                                            <div class="w-[300px] truncate" tds-tooltip="{{data.Product.NameGet}}">{{ data.Product.NameGet }}</div>
+                                            <div class="w-[250px] truncate" tds-tooltip="{{data.Product.NameGet}}">{{ data.Product.NameGet }}</div>
                                             <p class="text-caption-1 italic text-info-500" *ngIf="data.User && data.User.Name">Nhân viên: {{ data.User.Name || '---' }}</p>
                                         </td>
-                                        <td>{{ data.ProductUOMName }}</td>
-                                        <td>{{ data.ProductUOMQty | numberCustom }}</td>
-                                        <td>{{ data.PriceUnit | numberCustom }} đ</td>
-                                        <td>
+                                        <td [align]="'center'">{{ data.ProductUOMName }}</td>
+                                        <td [align]="'center'">{{ data.ProductUOMQty | numberCustom }}</td>
+                                        <td [align]="'right'">{{ data.PriceUnit | numberCustom }} đ</td>
+                                        <td [align]="'right'">
                                             <span *ngIf="data.Type == 'percent'">{{ data.Discount }} %</span>
                                             <span *ngIf="data.Type == 'fixed'">{{ data.Discount_Fixed }} đ</span>
                                         </td>
-                                        <td>{{ data.PriceTotal | numberCustom }} đ</td>
+                                        <td [align]="'right'">{{ data.PriceTotal | numberCustom }} đ</td>
                                     </tr>
                                 </ng-template>
                             </tbody>
