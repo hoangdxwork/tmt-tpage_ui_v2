@@ -146,7 +146,7 @@ export class ConfigAddProductComponent implements OnInit {
     this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
-     
+
         if(warehouseId > 0) {
             this.productService.lstInventory = null;
             this.loadInventoryWarehouseId(warehouseId);
@@ -271,7 +271,7 @@ export class ConfigAddProductComponent implements OnInit {
         }
       })
   }
-  
+
   loadProductTypeList() {
     this.productTypeList = [
       { value: 'product', text: 'Có thể lưu trữ' },
@@ -502,48 +502,48 @@ export class ConfigAddProductComponent implements OnInit {
 
   addProduct() {
     let model = this.prepareModel();
-    if (model.Name) {
-      this.productTemplateService.insertProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
-          {
-            next: (res: TDSSafeAny) => {
-              this.message.success(Message.InsertSuccess);
-              this.loadDataIndexDBCache();
-
-              let id = res.Id;
-              let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
-              this.productTemplateFacade.stockChangeProductQtyV2(id, mapping, '');
-  
-            },
-            error: err => {
-              this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);
-              this.isLoading = false;
-            }
-          }
-        );
+    if(!model?.Name) {
+      this.message.error('Vui lòng nhập tên sản phẩm');
+      return;
     }
+
+    this.productTemplateService.insertProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: TDSSafeAny) => {
+          this.message.success(Message.InsertSuccess);
+          this.loadDataIndexDBCache();
+
+          let id = res.Id;
+          let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
+          this.productTemplateFacade.stockChangeProductQty(id, mapping, '');
+
+        },
+        error: err => {
+          this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);
+          this.isLoading = false;
+        }
+    });
   }
 
   editProduct() {
     let model = this.prepareModel();
-
-    if (model.Name) {
-      this.productTemplateService.updateProductTemplate(model)
-        .pipe(takeUntil(this.destroy$)).subscribe(
-          {
-            next: (res: TDSSafeAny) => {
-              this.message.success(Message.UpdatedSuccess);
-              this.loadDataIndexDBCache();
-              this.isLoading = false;
-
-              this.router.navigateByUrl('/configs/products');
-            },
-            error: err => {
-              this.message.error(err?.error?.message || Message.UpdatedFail);
-              this.isLoading = false;
-            }
-          }
-        );
+    if(!model?.Name) {
+      this.message.error('Vui lòng nhập tên sản phẩm');
+      return;
     }
+
+    this.productTemplateService.updateProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: TDSSafeAny) => {
+          this.message.success(Message.UpdatedSuccess);
+          this.loadDataIndexDBCache();
+          this.isLoading = false;
+
+          this.router.navigateByUrl('/configs/products');
+        },
+        error: err => {
+          this.message.error(err?.error?.message || Message.UpdatedFail);
+          this.isLoading = false;
+        }
+    });
   }
 
   prepareModel() {
@@ -575,21 +575,7 @@ export class ConfigAddProductComponent implements OnInit {
     if (this.id) {
       this.editProduct();
     } else {
-      if (this.dataModel) {
-        this.addProduct();
-      } else {
-        this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
-          {
-            next: (res: TDSSafeAny) => {
-              delete res['@odata.context'];
-              this.dataModel = { ...res };
-              this.addProduct();
-            },
-            error: err => {
-              this.message.error(err?.error?.message || Message.CanNotLoadData);
-            }
-          });
-      }
+      this.addProduct();
     }
   }
   //#endregion Handle
@@ -606,7 +592,7 @@ export class ConfigAddProductComponent implements OnInit {
       }
     });
 
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result){
         this._form.controls["InitInventory"].setValue(result);
       }
@@ -627,15 +613,14 @@ export class ConfigAddProductComponent implements OnInit {
         }
       });
 
-      modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperArray.hasListValue(result)) {
           this.lstAttributes = [...result];
           let model = this.prepareModel();
           let suggestModel = AddProductHandler.prepareSuggestModel(model);
           suggestModel.AttributeLines = [...result];
 
-          this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe(
-            {
+          this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe({
               next: (res) => {
                 this.lstVariants = [...res.value];
                 this.lstVariants.map(attr => {
@@ -659,7 +644,6 @@ export class ConfigAddProductComponent implements OnInit {
 
   showEditVariantsModal(data: ConfigProductVariant) {
     let name = this._form.controls["Name"].value;
-
     if (name) {
       let model = this.prepareModel();
       let suggestModel = AddProductHandler.prepareSuggestModel(model);
@@ -677,7 +661,7 @@ export class ConfigAddProductComponent implements OnInit {
         }
       });
 
-      modal.afterClose.subscribe((result: ConfigProductVariant) => {
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ConfigProductVariant) => {
         if (TDSHelperObject.hasValue(result)) {
           this.lstVariants.map((item) => {
             if (item.Id == result.Id) {
@@ -702,7 +686,7 @@ export class ConfigAddProductComponent implements OnInit {
       }
     });
 
-    modal.componentInstance?.getProductCombo$.subscribe(result => {
+    modal.componentInstance?.getProductCombo$.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if(data){
         this.lstProductCombo[index || 0] = result;
       }else{
@@ -840,5 +824,4 @@ export class ConfigAddProductComponent implements OnInit {
       }
     });
   }
-  //#endregion Modal
 }
