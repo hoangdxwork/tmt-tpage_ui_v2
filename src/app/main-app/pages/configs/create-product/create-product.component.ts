@@ -511,7 +511,7 @@ export class ConfigAddProductComponent implements OnInit {
 
               let id = res.Id;
               let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
-              this.productTemplateFacade.stockChangeProductQty(id, mapping, '');
+              this.productTemplateFacade.stockChangeProductQtyV2(id, mapping, '');
   
             },
             error: err => {

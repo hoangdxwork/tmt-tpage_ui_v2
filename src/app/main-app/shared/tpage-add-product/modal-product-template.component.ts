@@ -270,7 +270,7 @@ export class ModalProductTemplateComponent implements OnInit {
             let id = data.productTmpl.Id;
             let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
 
-            this.productTemplateFacade.stockChangeProductQty(id, mapping, this.type);
+            this.productTemplateFacade.stockChangeProductQtyV2(id, mapping, this.type);
             this.modalRef.destroy(type ? data : null);
             this.isLoading = false;
         },
