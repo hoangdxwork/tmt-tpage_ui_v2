@@ -76,6 +76,8 @@ export class ProductTemplateFacade {
   }
 
   stockChangeProductQty(id: any, mapping: any[], type: string) {
+    this.productTemplateService.onLoadingLiveCampaign$.emit(true);
+    
     this.productTemplateService.getProductTemplateByIdV2(id).pipe(
       mergeMap((obs) => {
           let model = { ProductTmplId: id };

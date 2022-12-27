@@ -1,3 +1,4 @@
+import { ProductTemplateService } from './../../../../services/product-template.service';
 import { ODataLiveCampaignModelDTO } from './../../../../dto/live-campaign/odata-live-campaign-model.dto';
 import { ODataLiveCampaignService } from './../../../../services/mock-odata/odata-live-campaign.service';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -106,6 +107,7 @@ export class AddLiveCampaignV2Component implements OnInit {
     private notificationService: TDSNotificationService,
     private prepareHandler: PrepareAddCampaignHandler,
     private cdRef: ChangeDetectorRef,
+    private productTemplateService: ProductTemplateService,
     private odataLiveCampaignService: ODataLiveCampaignService) {
       this.createForm();
   }
@@ -145,6 +147,15 @@ export class AddLiveCampaignV2Component implements OnInit {
     this.loadUser();
     this.loadQuickReply();
     this.loadCurrentCompany();
+    this.eventEmitter();
+  }
+
+  eventEmitter() {
+    this.productTemplateService.onLoadingLiveCampaign$.subscribe({
+      next: (res: boolean) => {
+        this.isLoading = res;
+      }
+    });
   }
 
   loadLiveCampaignId() {

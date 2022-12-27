@@ -147,7 +147,7 @@ export class PostOrderInteractionConfigComponent implements OnInit {
       });
   }
 
-  onCannel() {
+  onCancel() {
     this.modalRef.destroy(null);
   }
 }

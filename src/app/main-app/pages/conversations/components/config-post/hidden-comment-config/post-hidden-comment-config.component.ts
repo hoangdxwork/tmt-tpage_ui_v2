@@ -107,7 +107,7 @@ export class PostHiddenCommentConfigComponent implements OnInit {
     });
   }
 
-  onCannel() {
+  onCancel() {
     this.modalRef.destroy(null);
   }
 }

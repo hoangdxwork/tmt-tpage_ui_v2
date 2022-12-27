@@ -337,14 +337,17 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         break;
     }
 
-    this.modalService.create({
+    let modal = this.modalService.create({
       content: ConfigPostOutletComponent,
-      closable: false,
+      title: `Cấu hình bài viết ${date}`,
       size: "xl",
+      onCancel: () =>{
+        modal.componentInstance?.onCancel();
+        return false;
+      },
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        data: this.data,
-        date: date
+        data: this.data
       }
     });
   }

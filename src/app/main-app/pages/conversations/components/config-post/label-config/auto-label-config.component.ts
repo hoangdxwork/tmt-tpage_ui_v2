@@ -158,7 +158,7 @@ export class AutoLabelConfigComponent implements OnInit {
     return 1;
   }
 
-  onCannel() {
+  onCancel() {
     this.modalRef.destroy(null);
   }
 }
