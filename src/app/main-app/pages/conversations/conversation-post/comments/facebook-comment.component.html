@@ -11,11 +11,11 @@
           </div>
 
            <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2 min-h-[118px]">
-              <div *ngIf="item && item.Type == 12" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
-                    <div>
-                      <tpage-avatar-facebook class="cursor-pointer" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" [shape]="'circle'" [size]="'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
+              <div *ngIf="item && item.Type == 12" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14' : ''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
+                  <div>
+                      <tpage-avatar-facebook class="cursor-pointer" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" [shape]="'circle'" [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
                       </tpage-avatar-facebook>
-                    </div>
+                  </div>
 
                   <div class="ml-2 w-full h-full">
                       <div class="bg-white rounded-2xl px-4 py-3 min-h-[106px]">
