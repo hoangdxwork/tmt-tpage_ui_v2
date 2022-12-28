@@ -100,6 +100,7 @@ import { AddLiveCampaignV2Component } from './components/add-livecampaign-v2/add
 import { TableAllOrderComponent } from './components/table-all-order/table-all-order.component';
 import { TableDeletedOrderComponent } from './components/table-deleted-order/table-deleted-order.component';
 import { ImportProductLivecampaignComponent } from './components/import-product-livecampaign/import-product-livecampaign.component';
+import { GenerateTagAttributesFacade } from '@app/services/facades/generate-tag-attributes.facade';
 
 const cmp =[
   LiveCampaignComponent,
@@ -172,6 +173,10 @@ const SERVICES = [
   PrepareAddCampaignHandler
 ]
 
+const FACADE = [
+  GenerateTagAttributesFacade
+]
+
 @NgModule({
   declarations: [
     ...cmp,
@@ -217,7 +222,8 @@ const SERVICES = [
     TDSImageModule
   ],
   providers: [
-    ...SERVICES
+    ...SERVICES,
+    ...FACADE
   ]
 })
 
