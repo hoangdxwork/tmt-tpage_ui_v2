@@ -511,6 +511,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   selectPost(item: ChatomniObjectsItemDto | any, type?: string): any {
     if(item && item.Data) {
+        let exsit = this.currentPost && this.currentPost.ObjectId == item.ObjectId && !item.ParentId;
+        if(exsit) {
+            this.clickCurrentChild = TDSHelperString.hasValueString(this.clickCurrentChild) ? null: item.ObjectId;
+            return;
+        }
+
         this.currentPost = item;
         if(!item.ParentId && type == '_click') {
             this.setSessionStoragePostId(item.ObjectId);
