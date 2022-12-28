@@ -150,7 +150,11 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
           this.lstOfData = [...res.value];
 
           // Cập nhật filter status
-          this.loadSummaryStatus();
+          // this.loadSummaryStatus();
+          //gán tạm thời
+          let data = [{ Name: "Tất cả", Index: 1, Total: this.count }];
+          this.tabNavs = [...data];
+
 
           this.setOfCheckedId = new Set<string>();
           this.checked = false;

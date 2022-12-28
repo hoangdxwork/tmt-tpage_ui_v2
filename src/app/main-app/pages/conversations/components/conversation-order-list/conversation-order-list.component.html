@@ -30,7 +30,7 @@
                                 [ngClass]="{' border-primary-1':active,'border-neutral-2-100 group-hover:border-primary-1':!active}">
                                 <div class="text-body-2 px-2 font-semibold truncate" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 group-hover:text-primary-1':!active}">
                                     {{name}}
-                                    <tds-tag [status]="active ? 'primary' : 'secondary'" class="!rounded-full ml-1">{{ count }}</tds-tag>
+                                    <tds-tag [status]="active ? 'primary' : 'secondary'" size="sm" class="!rounded-full ml-1">{{ count }}</tds-tag>
                                 </div>
                             </div>
                         </ng-template>
