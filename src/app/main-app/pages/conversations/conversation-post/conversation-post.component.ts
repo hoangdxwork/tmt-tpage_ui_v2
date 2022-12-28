@@ -1,3 +1,4 @@
+import { Parent } from './../../../dto/conversation/post/comment-group.dto';
 import { Object } from './../../../dto/conversation/make-activity.dto';
 import { Child } from './../../../dto/team/all-facebook-child.dto';
 import { ExtrasChildsDto } from './../../../dto/conversation-all/chatomni/chatomni-data.dto';
@@ -32,6 +33,11 @@ import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+
+export interface SessionParamsDto {
+  ParentId: string;
+  ObjectId: string;
+}
 
 @Component({
   selector: 'app-conversation-post',
@@ -72,7 +78,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   listBadge: any = {};
 
   keyFilter: string = '';
-  currentPost?: ChatomniObjectsItemDto | any;
+  // currentPost?: ChatomniObjectsItemDto | any;
   isLoading: boolean = false;
   isLoadingTab: boolean = false;
   isProcessing: boolean = false;
@@ -141,7 +147,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
           // TODO: change Team
           if(team?.Id != this.currentTeam?.Id) {
-              delete this.currentPost;
+              delete this.currentObject;
               this.fetchPosts(team);
               this.setCurrentTeam(team);
           }
@@ -149,8 +155,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.type = params?.params?.type;
           this.setParamsUrl(params.params);
 
-          let exist = (TDSHelperString.isString(this.currentPost?.ObjectId) != TDSHelperString.isString(this.paramsUrl.post_id))
-            || (!TDSHelperString.isString(this.currentPost?.ObjectId) && !TDSHelperString.isString(this.paramsUrl?.post_id));
+          let exist = (TDSHelperString.isString(this.currentObject?.ObjectId) != TDSHelperString.isString(this.paramsUrl.post_id))
+            || (!TDSHelperString.isString(this.currentObject?.ObjectId) && !TDSHelperString.isString(this.paramsUrl?.post_id));
 
           if(exist) {
               this.loadData();
@@ -179,9 +185,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.lstObjects = [...this.lstObjects]
             }
 
-            if(this.currentPost && res.Id == this.currentPost?.Id) {
-                this.currentPost.LiveCampaignId = res.LiveCampaignId;
-                this.currentPost.LiveCampaign = { ...res.LiveCampaign }  as any;
+            if(this.currentObject && res.Id == this.currentObject?.Id) {
+                this.currentObject.LiveCampaignId = res.LiveCampaignId;
+                this.currentObject.LiveCampaign = { ...res.LiveCampaign }  as any;
             }
         }
       }
@@ -199,11 +205,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                   this.lstObjects[index] = {...this.lstObjects[index]};
               }
 
-              if(this.currentPost && res.Id == this.currentPost?.Id) {
-                  delete this.currentPost.LiveCampaignId;
-                  delete this.currentPost.LiveCampaign;
+              if(this.currentObject && res.Id == this.currentObject?.Id) {
+                  delete this.currentObject.LiveCampaignId;
+                  delete this.currentObject.LiveCampaign;
 
-                  this.currentPost = { ...this.currentPost};
+                  this.currentObject = { ...this.currentObject};
               }
           }
       }
@@ -440,10 +446,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     let currentObject: ChatomniObjectsItemDto;
     let params_postid: string;
 
+    let session = this.getSessionStoragePostId() as SessionParamsDto;
     params_postid = this.paramsUrl?.post_id;
-    if(!TDSHelperString.hasValueString(params_postid) || params_postid == "undefined") {
-        params_postid = this.getSessionStoragePostId();
-    }
 
     if(params_postid == null || params_postid == undefined) {
       currentObject = this.lstObjects[0];
@@ -454,18 +458,33 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       return;
     }
 
-    let index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
-    if(Number(index) >= 0) {
-        this.checkObject(Number(index));
-        return;
+    // TODO: url đã lưu trong sesstion
+    let index: any = null;
+    if(session && session.ObjectId && session.ParentId && params_postid == session.ObjectId) {
+        index = this.lstObjects.findIndex(x => x.ObjectId == session.ParentId);
     } else {
-        params_postid = this.getSessionStoragePostId();
-        let indexSession = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
-        
-        if(Number(indexSession) >= 0) {
-            this.checkObject(Number(indexSession));
-            return;
-        }
+      if(session && session.ObjectId && !TDSHelperString.hasValueString(session.ParentId) && params_postid == session.ObjectId) {
+          index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+      } else {
+          index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+      }
+    }
+
+    if(Number(index) >= 0) {
+      if(session.ParentId) {
+          let exitsChild = this.extrasChilds && this.extrasChilds[session.ParentId] && this.extrasChilds[session.ParentId].filter(x => x.ObjectId == params_postid)[0];
+          if(exitsChild) {
+              this.currentObject = this.extrasChilds[session.ParentId].filter(x => x.ObjectId == params_postid)[0] as any;
+          } else {
+              this.currentObject = this.lstObjects[index];
+          }
+      } else {
+          this.currentObject = this.lstObjects[index];
+      }
+
+      this.selectPost(this.currentObject);
+      this.isLoading = false;
+      return;
     }
 
     let teamId = this.currentTeam?.Id as number;
@@ -480,7 +499,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
           this.currentObject = currentObject;
           this.lstObjects = [...[currentObject], ...this.lstObjects];
-
 
           this.selectPost(currentObject);
           this.isLoading = false;
@@ -498,28 +516,17 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     })
   }
 
-  checkObject(index: number) {
-    let currentObject = this.lstObjects[index];
-
-      let exist = currentObject && currentObject?.ObjectId;
-      if(exist) {
-          this.currentObject = currentObject;
-          this.selectPost(currentObject);
-          this.isLoading = false;
-      }
-  }
-
   selectPost(item: ChatomniObjectsItemDto | any, type?: string): any {
     if(item && item.Data) {
-        let exsit = this.currentPost && this.currentPost.ObjectId == item.ObjectId && !item.ParentId;
+        let exsit = this.currentObject && this.currentObject.ObjectId == item.ObjectId && !item.ParentId && type == '_click';
         if(exsit) {
             this.clickCurrentChild = TDSHelperString.hasValueString(this.clickCurrentChild) ? null: item.ObjectId;
             return;
         }
 
-        this.currentPost = item;
+        this.currentObject = item;
+        this.setSessionStoragePostId(item);
         if(!item.ParentId && type == '_click') {
-            this.setSessionStoragePostId(item.ObjectId);
             this.clickCurrentChild = item.ObjectId;
         }
 
@@ -539,9 +546,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
 
         next: (res: ChatomniObjectsDto) => {
+            if(res && res.Extras && res.Extras.Childs) {
+                this.extrasChilds = {...(res.Extras?.Childs || {})}
+            }
+
             if(TDSHelperArray.hasListValue(res?.Items)) {
                 this.lstObjects = [...(res.Items || [])];
-                this.extrasChilds = {...(res.Extras?.Childs || {})}
             } else {
                 this.disableNextUrl = true;
             }
@@ -625,7 +635,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
           this.lstObjects  = [...res.Items];
           let currentObject = {} as any;
-          let params_postid = this.getSessionStoragePostId();
+
+          let sesstion = this.getSessionStoragePostId() as SessionParamsDto;
+          let params_postid = sesstion.ObjectId;
+          let parentId = sesstion.ParentId;
 
           if(params_postid == null || params_postid == undefined) {
             currentObject = this.lstObjects[0];
@@ -637,10 +650,39 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             return;
           }
 
-          let index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+          let index: any = null;
+          if(TDSHelperString.hasValueString(parentId)) {
+              index = this.lstObjects.findIndex(x => x.ObjectId == parentId);
+          } else {
+              index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+          }
+
+          if(Number(index) >= 0) {
+            if(parentId) {
+                let exitsChild = this.extrasChilds && this.extrasChilds[parentId] && this.extrasChilds[parentId].filter(x => x.ObjectId == params_postid)[0];
+                if(exitsChild) {
+                    this.currentObject = this.extrasChilds[parentId].filter(x => x.ObjectId == params_postid)[0] as any;
+                } else {
+                    this.currentObject = this.lstObjects[index];
+                }
+            } else {
+                this.currentObject = this.lstObjects[index];
+            }
+
+            this.selectPost(this.currentObject);
+            this.isLoading = false;
+            this.isRefreshing = false;
+          }
+
           if(Number(index) < 0 && !this.isFilter) {
               let teamId = this.currentTeam?.Id as number;
-              let objectId = params_postid;
+              let objectId: any = '';
+
+              if(parentId) {
+                  objectId = parentId;
+              } else {
+                  objectId = params_postid;
+              }
 
               if(!TDSHelperString.hasValueString(objectId)) {
                   this.message.error('Không tìm thấy ObjectId');
@@ -662,9 +704,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                     this.message.error(error?.error?.message);
                 }
               })
-          } else {
-              this.currentPost = this.lstObjects[index];
-              this.setSessionStoragePostId(this.currentPost.ObjectId);
           }
 
           setTimeout(() => {
@@ -686,7 +725,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.isFilter = false;
 
     delete this.dataSource$;
-    delete this.currentPost;
     delete this.syncConversationInfo;
     delete this.currentObject;
   }
@@ -726,9 +764,18 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     })
   }
 
-  setSessionStoragePostId(id: string): any {
+  setSessionStoragePostId(item: ChatomniObjectsItemDto ): any {
     const _keyCache = this.chatomniObjectService._keycache_params_postid;
-    sessionStorage.setItem(_keyCache, JSON.stringify(id));
+    let data: SessionParamsDto = {
+      ObjectId: item.ObjectId,
+      ParentId: '',
+    }
+
+    if(item && TDSHelperString.hasValueString(item.ParentId)) {
+      data.ParentId = item.ParentId;
+    }
+
+    sessionStorage.setItem(_keyCache, JSON.stringify(data));
   }
 
   getSessionStoragePostId(): any {

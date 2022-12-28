@@ -73,17 +73,18 @@
                 <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1 min-w-[158px]">
 
                     <div *ngIf="item && currentTeam!.Type == 'Facebook'">
-                        <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="extrasChilds[item.ObjectId]" [clickCurrentChild]="clickCurrentChild" (selectPostItemEvent)="selectPost($event, '_click')">
+                        <object-facebook-post [item]="item" [currentPost]="currentObject" [postChilds]="extrasChilds[item.ObjectId]"
+                          [clickCurrentChild]="clickCurrentChild" (selectPostItemEvent)="selectPost($event, '_click')">
                         </object-facebook-post>
                     </div>
 
                     <div *ngIf="item && currentTeam!.Type == 'TShop'">
-                        <object-tshop-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
+                        <object-tshop-post [item]="item" [currentPost]="currentObject" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
                         </object-tshop-post>
                     </div>
 
                     <div *ngIf="item && currentTeam!.Type == 'UnofficialTikTok'">
-                        <object-tiktok-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
+                        <object-tiktok-post [item]="item" [currentPost]="currentObject" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
                         </object-tiktok-post>
                     </div>
                 </div>
@@ -135,10 +136,10 @@
     </div>
 
     <!-- Thông tin bài viết -->
-    <div *ngIf="currentPost && currentTeam && !isLoadingUpdate" class="w-[80%] h-full flex">
+    <div *ngIf="currentObject && currentTeam && !isLoadingUpdate" class="w-[80%] h-full flex">
         <!--Chọn bài viết để hiển thị chi tiết-->
         <div class="w-[62.5%] flex flex-col h-full overflow-hidden">
-            <conversation-post-overview class="w-full h-full" [data]="currentPost" [team]="currentTeam" [widthConversation]="widthConversation"></conversation-post-overview>
+            <conversation-post-overview class="w-full h-full" [data]="currentObject" [team]="currentTeam" [widthConversation]="widthConversation"></conversation-post-overview>
         </div>
 
         <!-- Danh sách khách hàng, đơn hàng -->
@@ -154,8 +155,8 @@
                         </div>
                     </ng-template>
 
-                    <div class="flex pt-1 w-full h-[calc(100vh-109px)]" *ngIf="currentPost && currentTeam">
-                        <conversation-order-list class="w-full" [data]="currentPost" [currentTeam]="currentTeam" *ngIf="selectedIndex == 0"></conversation-order-list>
+                    <div class="flex pt-1 w-full h-[calc(100vh-109px)]" *ngIf="currentObject && currentTeam">
+                        <conversation-order-list class="w-full" [data]="currentObject" [currentTeam]="currentTeam" *ngIf="selectedIndex == 0"></conversation-order-list>
                     </div>
                 </tds-tab>
 
@@ -190,12 +191,12 @@
     </div>
 
     <!-- Đang load dữ liệu bài viết -->
-    <div class="w-[80%] h-full flex" *ngIf="((!currentPost || !currentObject) && isLoading) || isLoadingUpdate">
+    <div class="w-[80%] h-full flex" *ngIf="(!currentObject && isLoading) || isLoadingUpdate">
         <div csLoadingPost class="h-full w-full"></div>
     </div>
 
     <!-- Không có dữ liệu bài viết -->
-    <div class="flex-auto flex" *ngIf="!currentPost && !currentObject && !isLoading && !isLoadingUpdate">
+    <div class="flex-auto flex" *ngIf="!currentObject && !isLoading && !isLoadingUpdate">
         <div class="flex-auto flex flex-col justify-center items-center bg-white">
             <img src="../../../../../assets/imagesv2/conversation/noDataConversationItem.png">
             <span class="text-heading-3 font-semibold w-2/5 text-center pt-12">TPage - Giải pháp bán hàng toàn diện cho bán hàng đa kênh</span>
