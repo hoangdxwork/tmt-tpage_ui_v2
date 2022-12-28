@@ -3,7 +3,6 @@ import { OverviewLiveCampaignComponent } from './../../../../shared/overview-liv
 import { PrepareUpdateFacebookByLiveCampaign } from './../../../../handler-v2/conversation-post/prepare-facebook-post.handler';
 import { ObjectFacebookPostEvent } from './../../../../handler-v2/conversation-post/object-facebook-post.event';
 import { FacebookLiveCampaignPostComponent } from '../facebook-livecampaign-post/facebook-livecampaign-post.component';
-import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewContainerRef, OnChanges, SimpleChanges } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';

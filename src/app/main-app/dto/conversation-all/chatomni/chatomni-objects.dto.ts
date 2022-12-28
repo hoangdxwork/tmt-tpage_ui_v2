@@ -22,8 +22,7 @@ export interface ChatomniObjectsItemDto {
   LiveCampaignId?: string;
   LiveCampaign?: ChatomniLiveCampaignDto;
   StatusLive?: any; // 1 đang live
-
-  ExtrasChilds: ChatomniObjectsItemDto[] | any; // không có trong dữ liệu trả về
+  ParentId?: any;
 }
 
 export interface ChatomniObjectsDto {
