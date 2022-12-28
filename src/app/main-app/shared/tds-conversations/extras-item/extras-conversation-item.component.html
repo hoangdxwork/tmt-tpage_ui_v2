@@ -2,7 +2,7 @@
 <div *ngIf="typeNumber == 12 && team?.Type == 'Facebook'" class="post-block mb-3 bg-white flex flex-col">
     <div class="post-body flex flex-row justify-between p-4">
         <div class="post-content flex flex-col">
-            <div class="post-type flex flex-row items-center mb-3">
+            <div class="post-type flex flex-row items-center mb-3 gap-x-2">
                 <tds-avatar
                     [tdsSrc]="(data.Data | facebookType)?.status_type == 'added_video' ? '../../../assets/imagesv2/conversation/live-circle.svg' : '../../../assets/imagesv2/conversation/facebook-circle.svg'"
                     [size]="24" [shape]="'circle'" [isAvatar]="false" class="mr-1">
