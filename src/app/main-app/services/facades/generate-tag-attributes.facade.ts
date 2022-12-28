@@ -9,29 +9,19 @@ export class GenerateTagAttributesFacade {
 
   mappingTagAttributes(tagWithAttributes?: any, attributeValues?: any[]) {
       let datas: any = [];
-
-      tagWithAttributes = "SP44020,mmmmm";
-      attributeValues = [
-        {
-          Name: "Màu",
-          Value: "Trắng",
-        },
-        {
-          Name: "size",
-          Value: "26",
-        }
-      ];
-
       let tags = [] as any[];
-      tags = tagWithAttributes.split(',');
+      
+      if(TDSHelperString.hasValueString(tagWithAttributes)) {
+        tags = tagWithAttributes?.split(',');
+      }
 
-      tags.map((att: any) => {
+      tags?.map((att: any) => {
 
           let item1 = `${att}`;
           let item2 = `${att}`;
 
-          // let item3 = `${att}`;
-          // let item4 = `${att}`;
+          let item3 = `${att}`;
+          let item4 = `${att}`;
 
           let valueAtt = attributeValues?.map((t: any) => TDSHelperString.stripSpecialChars(t.Value).toLocaleLowerCase().trim()) as any[];
 
@@ -40,8 +30,15 @@ export class GenerateTagAttributesFacade {
               item2 = `${item2} ${valueAtt[i]}`;
           }
 
+          for (let i = valueAtt?.length - 1; i >= 0; i--) {
+            item3 = `${item3}${valueAtt[i]}`;
+            item4 = `${item4} ${valueAtt[i]}`;
+          }
+
           datas.push(item1);
           datas.push(item2);
+          datas.push(item3);
+          datas.push(item4);
 
       })
 
