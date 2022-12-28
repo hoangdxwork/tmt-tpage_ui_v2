@@ -270,6 +270,11 @@ export class DrawerAddProductComponent implements OnInit {
             // TODO: gọi cập nhật tồn kho
             let id = data.productTmpl.Id;
             let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
+            let exist = model.InitInventory && Number(model.InitInventory) > 0 && this.checkMapping(mapping) && mapping && mapping.length > 0;
+            if(exist) {
+              mapping[0] = model.InitInventory;
+            }
+
             this.productTemplateFacade.stockChangeProductQty(id, mapping, InventoryChangeType._DRAWER_ADD_PRODUCT);
 
             this.modalRef.destroy(data.type ? data : null);
@@ -282,6 +287,17 @@ export class DrawerAddProductComponent implements OnInit {
             this.cdRef.detectChanges();
         }
       })
+  }
+
+  checkMapping(mapping: any[]) {
+    let result = false;
+    mapping.map(x => {
+      if(x == 0) {
+        result = true;
+      }
+    })
+
+    return result;
   }
 
   onCancel() {
