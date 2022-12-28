@@ -478,6 +478,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           } else {
               this.currentObject = this.lstObjects[index];
           }
+
+          this.clickCurrentChild = session.ParentId;
       } else {
           this.currentObject = this.lstObjects[index];
       }
@@ -487,33 +489,44 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       return;
     }
 
-    let teamId = this.currentTeam?.Id as number;
-    if(!TDSHelperString.hasValueString(params_postid)) {
-      this.message.error('Không tìm thấy ObjectId');
-      return;
-    }
+    // let teamId = this.currentTeam?.Id as number;
+    // if(!TDSHelperString.hasValueString(params_postid)) {
+    //   this.message.error('Không tìm thấy ObjectId');
+    //   return;
+    // }
 
-    this.chatomniObjectService.getById(params_postid, teamId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniObjectsItemDto) => {
-          currentObject = {...res};
+    this.currentObject = this.lstObjects[0];
+    this.selectPost(this.currentObject);
+    this.isLoading = false;
+    this.cdRef.detectChanges();
+    return;
 
-          this.currentObject = currentObject;
-          this.lstObjects = [...[currentObject], ...this.lstObjects];
+    // params_postid = session.ParentId;
+    // this.chatomniObjectService.getById(params_postid, teamId).pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: (res: ChatomniObjectsItemDto) => {
+    //       currentObject = {...res};
 
-          this.selectPost(currentObject);
-          this.isLoading = false;
-          this.cdRef.detectChanges();
-      },
-      error: (error: any) => {
-          this.isLoading = false;
+    //       this.currentObject = currentObject;
+    //       this.lstObjects = [...[currentObject], ...this.lstObjects];
 
-          currentObject = this.lstObjects[0];
-          this.currentObject = currentObject;
+    //       if(this.currentObject && this.currentObject.ParentId) {
+    //         this.clickCurrentChild = this.currentObject.ParentId;
+    //       }
 
-          this.selectPost(currentObject);
-          this.cdRef.detectChanges();
-      }
-    })
+    //       this.selectPost(currentObject);
+    //       this.isLoading = false;
+    //       this.cdRef.detectChanges();
+    //   },
+    //   error: (error: any) => {
+    //       this.isLoading = false;
+
+    //       currentObject = this.lstObjects[0];
+    //       this.currentObject = currentObject;
+
+    //       this.selectPost(currentObject);
+    //       this.cdRef.detectChanges();
+    //   }
+    // })
   }
 
   selectPost(item: ChatomniObjectsItemDto | any, type?: string): any {

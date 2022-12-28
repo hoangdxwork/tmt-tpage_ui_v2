@@ -278,6 +278,9 @@
         </div>
 
   </virtual-scroller>
+  <div *ngIf="dataSource && dataSource.Items.length == 0">
+      <tds-alert type="info"  message="Không có dữ liệu"> </tds-alert>
+  </div>
 </tds-spin>
 
 <drawer-detail-bill [isMessage]="true" [visibleDrawerBillDetail]="visibleDrawerBillDetail" [bill]="order" (onVisibleDrawer)="onVisibleDrawer($event)"></drawer-detail-bill>
