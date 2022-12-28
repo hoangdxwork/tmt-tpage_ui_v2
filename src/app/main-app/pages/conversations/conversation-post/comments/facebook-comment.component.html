@@ -4,6 +4,7 @@
           (vsEnd)="vsEnd($event)"
           (vsStart)="vsStart($event)"
           [enableUnequalChildrenSizes]="true"
+          [childHeight]="118"
           [scrollAnimationTime]="750">
 
           <div *ngIf="isLoadingNextdata" class="p-2 bg-white rounded-md mr-2">
@@ -306,7 +307,7 @@
                   <div *ngFor="let child of dataSource.Extras.Childs[item.Data.id]">
                       <div *ngIf="child && child.Type == 12" class="pl-14 flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
                           <div>
-                              <tpage-avatar-facebook class="cursor-pointer" (click)="loadPartnerTab(child, commentOrders ? commentOrders[child.Data?.from!.id] : '')" [shape]="'circle'" [size]="child.ParentId && !child.isNoPartnerId ? 'md': 'lg'" [psid]="child.UserId" [token]="team.ChannelToken">
+                              <tpage-avatar-facebook class="cursor-pointer" (click)="loadPartnerTab(child, commentOrders ? commentOrders[child.Data?.from!.id] : '')" [shape]="'circle'" [size]="'md'" [psid]="child.UserId" [token]="team.ChannelToken">
                               </tpage-avatar-facebook>
                           </div>
 
@@ -552,7 +553,7 @@
                               </div>
 
                             <!-- Input trả lời bình luận -->
-                            <div class="bg-white rounded-2xl border-b-2 border-primary-1 p-4 mt-3 relative min-h-[118px]" *ngIf="item.Data?.is_reply">
+                            <div class="bg-white rounded-2xl border-b-2 border-primary-1 p-4 mt-3 relative min-h-[118px]" *ngIf="child.Data?.is_reply">
                                 <div [ngClass]="isReplyingComment ? '!cursor-wait' : 'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
                                 <div class="flex justify-between gap-2 pb-2">
 

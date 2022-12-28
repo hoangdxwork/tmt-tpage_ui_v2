@@ -25,6 +25,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   @Input() item!: ChatomniObjectsItemDto;
   @Input() currentPost?: ChatomniObjectsItemDto;
   @Input() postChilds!: any[];
+  @Input() clickCurrentChild!: string;
 
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
 
