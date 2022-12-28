@@ -776,8 +776,6 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
   }
 
   detail() {
-    console.log("Chi tiết");
-
   }
 
 }
