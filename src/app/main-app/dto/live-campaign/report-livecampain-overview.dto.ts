@@ -22,7 +22,7 @@ export interface ReportLiveCampaignDetailDTO {
   Quantity: number;
   RemainQuantity: number;
   ScanQuantity: number;
-  RemainRealQuantity: number;
+  // RemainRealQuantity: number;
   QuantityCanceled: number;
   UsedQuantity: number;
   Price: number;
@@ -43,6 +43,7 @@ export interface ReportLiveCampaignDetailDTO {
   TotalFastSaleOrder?: number;
   TotalSaleOnlineOrder?: number;
   ProductTmlpId: number;
+  DateCreated: Date;
 
   // 2 field không dùng để lưu
   TagWithAttributes?: any;
@@ -93,4 +94,9 @@ export interface DetailExistsDTO {
   ProductId: number;
   UOMId: number;
   Tags: string;
+}
+
+export interface SaleOnlineLiveCampaignDTO {
+  TotalCount: number;
+  Details: ReportLiveCampaignDetailDTO[];
 }

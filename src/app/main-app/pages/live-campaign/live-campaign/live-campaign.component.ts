@@ -41,8 +41,6 @@ export class LiveCampaignComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadReportLiveCampaignOverview();
-    let aaa = this.generateTagAttributesFacade.mappingTagAttributes();
-    console.log(aaa);
   }
 
   loadReportLiveCampaignOverview() {

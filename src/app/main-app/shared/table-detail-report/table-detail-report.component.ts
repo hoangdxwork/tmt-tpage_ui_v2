@@ -1,3 +1,5 @@
+import { SaleOnlineLiveCampaignDTO } from './../../dto/live-campaign/report-livecampain-overview.dto';
+import { GenerateTagAttributesFacade } from '@app/services/facades/generate-tag-attributes.facade';
 import { InventoryChangeType } from './../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { EditLiveCampaignPostComponent } from '@app/shared/edit-livecampaign-post/edit-livecampaign-post.component';
@@ -50,6 +52,7 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
   resfeshScroll: boolean = false;
 
   isEditDetails: { [id: string] : ReportLiveCampaignDetailDTO } = {};
+  orderTags: { [productId: number] : string[] } = {};
   indClickTag = -1;
   modelTags: Array<string> = [];
 
@@ -76,6 +79,7 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
       private liveCampaignService: LiveCampaignService,
       private cdr: ChangeDetectorRef,
       private notificationService: TDSNotificationService,
+      private generateTagAttributesFacade: GenerateTagAttributesFacade,
       private productTemplateFacade: ProductTemplateFacade) { }
 
   ngOnInit(): void {
@@ -137,9 +141,12 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
     this.isLoading = true;
     let params = THelperDataRequest.convertDataRequestToStringShipTake(pageSize, pageIndex, text);
     this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
-        next: res => {
+        next: (res: SaleOnlineLiveCampaignDTO) => {
             this.lstDetails = [...(this.lstDetails || []), ...res.Details];
-            this.lstDetails.map((x: any, i: number)=> { x.Index = i + 1; });
+            this.lstDetails.map((x: ReportLiveCampaignDetailDTO, i: number)=> { 
+              x.Index = i + 1; 
+              this.orderTags[x.ProductId] = this.generateTagAttributesFacade.mappingTagAttributes(x.TagWithAttributes, x.AttributeValues);
+            });
 
             this.count = res.TotalCount;
             this.isLoading = false;

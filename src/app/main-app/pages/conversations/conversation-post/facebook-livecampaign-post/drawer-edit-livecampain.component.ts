@@ -1,3 +1,4 @@
+import { GenerateTagAttributesFacade } from '@app/services/facades/generate-tag-attributes.facade';
 import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ModalLiveCampaignBillComponent } from './../../../live-campaign/components/modal-live-campaign-bill/modal-live-campaign-bill.component';
 import { ModalLiveCampaignOrderComponent } from './../../../live-campaign/components/modal-live-campaign-order/modal-live-campaign-order.component';
@@ -98,6 +99,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   response: any;
   inventories: any;
   productIds: {[key: string]: DetailExistsDTO} = {} as any;
+  orderTags: { [productId: number] : string[] } = {};
 
   constructor(private liveCampaignService: LiveCampaignService,
     private message: TDSMessageService,
@@ -110,6 +112,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private socketOnEventService: SocketOnEventService,
     private productTemplateFacade: ProductTemplateFacade,
+    private generateTagAttributesFacade: GenerateTagAttributesFacade,
     private destroy$: TDSDestroyService) {
   }
 
@@ -232,6 +235,10 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
         this.lstDetail = [...(this.lstDetail || []), ...(res.Details || [])];
         this.count = res.TotalCount || 0;
+
+        this.lstDetail?.map(x => {
+          this.orderTags[x.ProductId] = this.generateTagAttributesFacade.mappingTagAttributes(x.TagWithAttributes, x.AttributeValues);
+        })
 
         this.getLstOrderTags(this.lstDetail);
 
