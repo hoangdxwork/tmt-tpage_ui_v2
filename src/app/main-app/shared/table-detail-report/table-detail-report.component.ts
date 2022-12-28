@@ -52,7 +52,7 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
   resfeshScroll: boolean = false;
 
   isEditDetails: { [id: string] : ReportLiveCampaignDetailDTO } = {};
-  orderTags: { [productId: number] : string[] } = {};
+  orderTags: { [key: string] : string[] } = {};
   indClickTag = -1;
   modelTags: Array<string> = [];
 
@@ -145,7 +145,10 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
             this.lstDetails = [...(this.lstDetails || []), ...res.Details];
             this.lstDetails.map((x: ReportLiveCampaignDetailDTO, i: number)=> { 
               x.Index = i + 1; 
-              this.orderTags[x.ProductId] = this.generateTagAttributesFacade.mappingTagAttributes(x.TagWithAttributes, x.AttributeValues);
+              
+              if(x.TagWithAttributes && x.AttributeValues && x.AttributeValues.length > 0) {
+                this.orderTags[`${x.ProductId}_${x.UOMId}`] = this.generateTagAttributesFacade.mappingTagAttributes(x.TagWithAttributes, x.AttributeValues);
+              }
             });
 
             this.count = res.TotalCount;

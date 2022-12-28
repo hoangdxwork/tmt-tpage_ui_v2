@@ -99,7 +99,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   response: any;
   inventories: any;
   productIds: {[key: string]: DetailExistsDTO} = {} as any;
-  orderTags: { [productId: number] : string[] } = {};
+  orderTags: { [key: string] : string[] } = {};
 
   constructor(private liveCampaignService: LiveCampaignService,
     private message: TDSMessageService,
@@ -237,7 +237,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
         this.count = res.TotalCount || 0;
 
         this.lstDetail?.map(x => {
-          this.orderTags[x.ProductId] = this.generateTagAttributesFacade.mappingTagAttributes(x.TagWithAttributes, x.AttributeValues);
+          if(x.TagWithAttributes && x.AttributeValues && x.AttributeValues.length > 0) {
+            this.orderTags[`${x.ProductId}_${x.UOMId}`] = this.generateTagAttributesFacade.mappingTagAttributes(x.TagWithAttributes, x.AttributeValues);
+          }
         })
 
         this.getLstOrderTags(this.lstDetail);
