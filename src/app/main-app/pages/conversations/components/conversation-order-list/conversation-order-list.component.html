@@ -26,10 +26,11 @@
                     <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
                         <ng-template tds-filter-status-template let-active='active'
                             let-count='count' let-name='name' let-value>
-                            <div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
+                            <div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2 mb-1"
                                 [ngClass]="{' border-primary-1':active,'border-neutral-2-100 group-hover:border-primary-1':!active}">
                                 <div class="text-body-2 px-2 font-semibold truncate" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 group-hover:text-primary-1':!active}">
-                                    {{name}}&nbsp; {{count}}
+                                    {{name}}
+                                    <tds-tag [status]="active ? 'primary' : 'secondary'" size="sm" class="!rounded-full ml-1">{{ count }}</tds-tag>
                                 </div>
                             </div>
                         </ng-template>

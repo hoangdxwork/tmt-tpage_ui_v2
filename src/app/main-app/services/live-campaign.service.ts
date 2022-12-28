@@ -1,3 +1,4 @@
+import { SaleOnlineLiveCampaignDTO } from './../dto/live-campaign/report-livecampain-overview.dto';
 import { Injectable } from "@angular/core";
 import { ODataLiveCampaignDTO } from "@app/dto/live-campaign/odata-live-campaign.dto";
 import { CRMTeamType } from "@app/dto/team/chatomni-channel.dto";
@@ -306,7 +307,7 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  overviewDetailsReport(liveCampaignId: string, params?: string): Observable<any> {
+  overviewDetailsReport(liveCampaignId: string, params?: string): Observable<SaleOnlineLiveCampaignDTO> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/overviewdetailsreport`+ (params ? `?${params}` : ``),
       method: CoreApiMethodType.get,

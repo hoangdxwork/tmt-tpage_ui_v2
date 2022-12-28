@@ -135,6 +135,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     if(changes['data'] && !changes['data'].firstChange) {
         this.currentPost = changes['data'].currentValue;
         this.loadData(this.pageSize, this.pageIndex);
+        
     }
   }
 
@@ -148,9 +149,12 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
 
+          // Cập nhật filter status
+          // this.loadSummaryStatus();
           //gán tạm thời
           let data = [{ Name: "Tất cả", Index: 1, Total: this.count }];
           this.tabNavs = [...data];
+
 
           this.setOfCheckedId = new Set<string>();
           this.checked = false;
@@ -253,8 +257,6 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
                   break;
               }
           });
-          //TODO: load số lượng đơn hàng
-          // this.conversationPostEvent.getOrderTotal$.emit(total);
 
           this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
           this.tabNavs.sort((a, b) => a.Index - b.Index);
@@ -517,8 +519,6 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     this.pageIndex = 1;
 
     this.filterObj.searchText = '';
-    // đóng tạm thời
-    // this.loadSummaryStatus();
     this.loadData(this.pageSize, this.pageIndex);
   }
 }

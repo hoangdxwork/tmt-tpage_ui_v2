@@ -152,6 +152,7 @@ import { TiktokCommentComponent } from './conversation-post/comments/tiktok-comm
 import { ObjectTiktokPostComponent } from './conversation-post/objects/object-tiktok-post.component';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { CurrentConversationItemV3Component } from './components/current-conversation-item/current-conversation-item-v3.component';
+import { TDSAlertModule } from "tds-ui/alert";
 
 const SERVICES = [
   ConversationFacebookState,
@@ -319,6 +320,7 @@ const FACADES = [
     QuillModule.forRoot(quillOptions),
     VirtualScrollerModule,
     TDSSkeletonModule,
+    TDSAlertModule
   ],
   providers: [
     ...SERVICES,

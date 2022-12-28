@@ -106,7 +106,6 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   currentConversation!: ChatomniConversationItemDto | any;
   commentOrders?: any = {};
   filterObj : TDSSafeAny;
-  lengthDataSource: number = 0;
   isLoadingInsertFromPost: boolean = false;
   isLoadingiconMess: boolean = false;
 
@@ -257,11 +256,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
   setCommentRealtime(response: any) {
     let itemNewComment = {...this.chatomniConversationFacade.preapreMessageOnEventSocket(response.Data, this.conversationItem) };
-
-    // TODO: đang search bình luận thì không push dữ liệu vào
     if(TDSHelperString.isString(this.innerText) && TDSHelperString.hasValueString(this.innerText)) return;
 
-    // TODO: nếu là comment child thì cũng push thẳng xóa parentId
     if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
         itemNewComment.ParentId = null;
     }
@@ -269,16 +265,10 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     if(this.vsStartIndex <= 1) {
         this.dataSource.Items = [...[itemNewComment], ...(this.dataSource?.Items || [])];
         this.dataSource.Items = [...this.dataSource.Items];
-        this.lengthDataSource = this.dataSource.Items.length;
-
-        if(this.virtualScroller) {
-            this.virtualScroller.scrollToPosition(0);
-        }
-
+        this.virtualScroller?.scrollToPosition(0);
     } else {
         this.vsSocketImports = [...[itemNewComment], ...this.vsSocketImports];
         this.vsSocketImports = [...this.vsSocketImports];
-        this.lengthDataSource = this.lengthDataSource + 1;
     }
 
     this.postEvent.countRealtimeMessage$.emit(true);
@@ -391,10 +381,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     this.disableNextUrl = false;
     this.isLoadingNextdata = false;
 
-    if(this.virtualScroller) {
-        this.virtualScroller.refresh();
-        this.virtualScroller.scrollToPosition(0);
-    }
+    this.virtualScroller?.refresh();
+    this.virtualScroller?.scrollToPosition(0);
 
     this.dataSource$ = this.chatomniCommentService.makeDataSource(this.team.Id, this.data.ObjectId, this.filterObj);
     if(this.dataSource$) {
@@ -403,23 +391,6 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
             this.dataSource = { ...res };
             this.dataSource.Items = [...this.dataSource.Items];
 
-            let dataChilds: ChatomniDataItemDto[] =  [];
-            this.dataSource.Items.map((x: ChatomniDataItemDto) => {
-                let exist = x && x.Data?.id && this.dataSource.Extras && this.dataSource.Extras.Childs &&
-                    this.dataSource.Extras.Childs[x.Data?.id] && Object.keys(this.dataSource.Extras.Childs[x.Data?.id]).length > 0;
-                if(exist) {
-                    let childs = this.dataSource.Extras.Childs[x.Data?.id];
-                    if(childs && childs.length > 0) {
-                        dataChilds = [...(dataChilds || []), ...childs];
-                    }
-                }
-            })
-
-            if(dataChilds && dataChilds.length > 0) {
-              this.dataSource.Items = [...this.dataSource.Items, ...dataChilds];
-            }
-
-            this.lengthDataSource = this.dataSource.Items.length;
             this.isLoading = false;
             this.cdRef.detectChanges();
         },
@@ -438,8 +409,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
   isReply(item: ChatomniDataItemDto, child?: string) {
     if(child){
-        item.Data.is_reply = true;
-        return
+      item.Data.is_reply = true;
+      return
     }
     item.Data.is_reply = !item.Data.is_reply;
   }
@@ -723,7 +694,6 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
       next: (res: any) => {
         if(res) {
             let comments = [...res];
-
             comments.map((x: CommentOrderPost) => {
                 this.commentOrders[x.asuid] = [];
                 this.commentOrders[x.uid] = [];
@@ -753,39 +723,23 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
   nextData(event: any) {
     if(this.dataSource?.Items?.length == 0) return;
+    let dataSourceItem = (this.dataSource?.Items || []);
 
     let id = `${this.team.Id}_${this.data.ObjectId}`;
-    let dataSourceItem = (this.dataSource?.Items || []);
     this.dataSource$ = this.chatomniCommentService.nextDataSource(id, dataSourceItem);
 
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
-          if(res && res.Items && res.Items.length > 0) {
 
+          if(res && res.Extras) {
               this.dataSource!.Extras = res.Extras;
-              this.dataSource.Items = [...(res.Items || [])];
-
-              this.dataSource.Items = [...this.dataSource.Items];
-              this.lengthDataSource = this.dataSource.Items.length;
-
-          } else {
-              this.disableNextUrl = true;// check dk dừng phân trang
           }
 
-          let dataChilds: ChatomniDataItemDto[] =  [];
-          this.dataSource.Items.map((x: ChatomniDataItemDto) => {
-              let exist = x && x.Data?.id && this.dataSource.Extras && this.dataSource.Extras.Childs &&
-                  this.dataSource.Extras.Childs[x.Data?.id] && Object.keys(this.dataSource.Extras.Childs[x.Data?.id]).length > 0;
-              if(exist) {
-                  let childs = this.dataSource.Extras.Childs[x.Data?.id];
-                  if(childs && childs.length > 0) {
-                      dataChilds = [...(dataChilds || []), ...childs];
-                  }
-              }
-          })
-
-          if(dataChilds && dataChilds.length > 0) {
-            this.dataSource.Items = [...this.dataSource.Items, ...dataChilds];
+          if(res && res.Items && res.Items.length > 0) {
+              this.dataSource.Items = [...(res.Items || [])];
+              this.dataSource.Items = [...this.dataSource.Items];
+          } else {
+              this.disableNextUrl = true;
           }
 
           this.isLoadingNextdata = false;
@@ -897,6 +851,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     if (TDSHelperString.hasValueString(key)) {
       key = TDSHelperString.stripSpecialChars(key.trim());
     }
+
     data = data.filter((x) => (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
     this.lstOfTag = data
   }
@@ -924,16 +879,13 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
   onOpenDrawerBillDetail(item : TDSSafeAny){
     this.idPopoverVisible = '';
-    if(item) {
-      this.visibleDrawerBillDetail = true;
-      let model = {
-        Id: item.Id,
-        Number: item.Number
-      }
-      this.order = {...model};
+    if(!item) return;
 
-      this.cdRef.detectChanges();
-    }
+    this.visibleDrawerBillDetail = true;
+    let model = { Id: item.Id, Number: item.Number };
+
+    this.order = {...model};
+    this.cdRef.detectChanges();
   }
 
   onPopoverVisible(id: string) {
@@ -946,15 +898,14 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
     let exisData = this.dataSource && this.dataSource.Items && this.dataSource.Items.length > 0 && event && event.scrollStartPosition > 0;
     if(exisData) {
-        const vsEnd = Number(this.dataSource.Items.length - 1 ) == Number(event.endIndex) && !this.disableNextUrl as boolean;
-        if(vsEnd) {
-            if (this.isLoading || this.isLoadingNextdata) return;
-
-            this.isLoadingNextdata = true;
-            setTimeout(() => {
-                this.nextData(event);
-            }, 500);
-        }
+      const vsEnd = Number(this.dataSource.Items.length - 1 ) == Number(event.endIndex) && !this.disableNextUrl as boolean;
+      if(vsEnd) {
+          if(this.isLoading || this.isLoadingNextdata) return;
+          this.isLoadingNextdata = true;
+          setTimeout(() => {
+              this.nextData(event);
+          }, 500);
+      }
     }
   }
 
@@ -963,7 +914,6 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     this.idPopoverVisible = '';
 
     if(event && Number(event.startIndex) >= 0) {
-        // TODO: mapping dữ liệu socket ko có trong danh sách
         let exist = (event.startIndex < this.vsStartIndex) && this.vsStartIndex > 1  && event.startIndex <= 2
             && this.vsSocketImports && this.vsSocketImports.length > 0;
 
@@ -972,11 +922,9 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
             setTimeout(() => {
                 this.dataSource.Items = [...this.vsSocketImports, ...this.dataSource.Items];
                 this.dataSource.Items = [...this.dataSource.Items];
-                this.lengthDataSource = this.dataSource.Items.length;
 
                 this.vsSocketImports = [];
                 this.isLoadingNextdata = false;
-
                 this.cdRef.detectChanges();
             }, 350);
         }

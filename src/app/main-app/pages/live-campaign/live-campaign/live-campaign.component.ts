@@ -5,6 +5,7 @@ import { ReportLiveCampaignOverviewDTO } from 'src/app/main-app/dto/live-campaig
 import { TDSMessageService } from 'tds-ui/message';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
+import { GenerateTagAttributesFacade } from '@app/services/facades/generate-tag-attributes.facade';
 
 @Component({
   selector: 'live-campaign',
@@ -31,6 +32,7 @@ export class LiveCampaignComponent implements OnInit {
   constructor(private router: Router,
     private message: TDSMessageService,
     private commonHandler: CommonHandler,
+    private generateTagAttributesFacade: GenerateTagAttributesFacade,
     private liveCampaignService: LiveCampaignService) {
 
       this.tdsDateRanges = this.commonHandler.tdsDateRanges;
@@ -58,7 +60,7 @@ export class LiveCampaignComponent implements OnInit {
         }
 
         this.isLoadingReport = false;
-      }, 
+      },
       error: (error) => {
         this.isLoadingReport = false;
         this.message.error(error?.error?.message || 'Đã xảy ra lỗi');

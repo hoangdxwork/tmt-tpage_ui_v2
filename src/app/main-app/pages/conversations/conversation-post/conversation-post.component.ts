@@ -1,3 +1,4 @@
+import { Parent } from './../../../dto/conversation/post/comment-group.dto';
 import { Object } from './../../../dto/conversation/make-activity.dto';
 import { Child } from './../../../dto/team/all-facebook-child.dto';
 import { ExtrasChildsDto } from './../../../dto/conversation-all/chatomni/chatomni-data.dto';
@@ -32,6 +33,11 @@ import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+
+export interface SessionParamsDto {
+  ParentId: string;
+  ObjectId: string;
+}
 
 @Component({
   selector: 'app-conversation-post',
@@ -72,7 +78,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   listBadge: any = {};
 
   keyFilter: string = '';
-  currentPost?: ChatomniObjectsItemDto | any;
+  // currentPost?: ChatomniObjectsItemDto | any;
   isLoading: boolean = false;
   isLoadingTab: boolean = false;
   isProcessing: boolean = false;
@@ -99,7 +105,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   isLoadingUpdate: boolean = false;
 
   extrasChilds: { [id: string] : ExtrasChildsDto[] } = {};
-  clickExtras = {} as any;
+  clickCurrentChild: string | any;
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -141,7 +147,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
           // TODO: change Team
           if(team?.Id != this.currentTeam?.Id) {
-              delete this.currentPost;
+              delete this.currentObject;
               this.fetchPosts(team);
               this.setCurrentTeam(team);
           }
@@ -149,8 +155,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.type = params?.params?.type;
           this.setParamsUrl(params.params);
 
-          let exist = (TDSHelperString.isString(this.currentPost?.ObjectId) != TDSHelperString.isString(this.paramsUrl.post_id))
-            || (!TDSHelperString.isString(this.currentPost?.ObjectId) && !TDSHelperString.isString(this.paramsUrl?.post_id));
+          let exist = (TDSHelperString.isString(this.currentObject?.ObjectId) != TDSHelperString.isString(this.paramsUrl.post_id))
+            || (!TDSHelperString.isString(this.currentObject?.ObjectId) && !TDSHelperString.isString(this.paramsUrl?.post_id));
 
           if(exist) {
               this.loadData();
@@ -179,9 +185,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.lstObjects = [...this.lstObjects]
             }
 
-            if(this.currentPost && res.Id == this.currentPost?.Id) {
-                this.currentPost.LiveCampaignId = res.LiveCampaignId;
-                this.currentPost.LiveCampaign = { ...res.LiveCampaign }  as any;
+            if(this.currentObject && res.Id == this.currentObject?.Id) {
+                this.currentObject.LiveCampaignId = res.LiveCampaignId;
+                this.currentObject.LiveCampaign = { ...res.LiveCampaign }  as any;
             }
         }
       }
@@ -199,11 +205,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                   this.lstObjects[index] = {...this.lstObjects[index]};
               }
 
-              if(this.currentPost && res.Id == this.currentPost?.Id) {
-                  delete this.currentPost.LiveCampaignId;
-                  delete this.currentPost.LiveCampaign;
+              if(this.currentObject && res.Id == this.currentObject?.Id) {
+                  delete this.currentObject.LiveCampaignId;
+                  delete this.currentObject.LiveCampaign;
 
-                  this.currentPost = { ...this.currentPost};
+                  this.currentObject = { ...this.currentObject};
               }
           }
       }
@@ -440,10 +446,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     let currentObject: ChatomniObjectsItemDto;
     let params_postid: string;
 
+    let session = this.getSessionStoragePostId() as SessionParamsDto;
     params_postid = this.paramsUrl?.post_id;
-    if(!TDSHelperString.hasValueString(params_postid) || params_postid == "undefined") {
-        params_postid = this.getStoragePostId();
-    }
 
     if(params_postid == null || params_postid == undefined) {
       currentObject = this.lstObjects[0];
@@ -454,99 +458,89 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       return;
     }
 
-    let parentObject: string = '';
-    let extras = Object.keys(this.extrasChilds);
-
-    if(extras && extras.length > 0) {
-      extras.map(x => {
-        let exist = this.extrasChilds[x] && this.extrasChilds[x].length > 0;
-        if(exist) {
-          let existChild = this.extrasChilds[x]?.filter(x => x.ObjectId == params_postid)[0];
-          if(existChild) {
-              parentObject = x;
-              delete this.clickExtras[parentObject];
-              this.postChilds = [];
-          }
-        }
-      })
-    }
-
-    let objectId: string = '';
-    if(parentObject) {
-        this.currentPost = null as any;
-        objectId = parentObject;
+    // TODO: url đã lưu trong sesstion
+    let index: any = null;
+    if(session && session.ObjectId && session.ParentId && params_postid == session.ObjectId) {
+        index = this.lstObjects.findIndex(x => x.ObjectId == session.ParentId);
     } else {
-        objectId = params_postid;
-    }
-
-    let index = this.lstObjects.findIndex(x => x.ObjectId == objectId);
-    if(Number(index) >= 0) {
-      currentObject = this.lstObjects[index];
-
-      let exist = currentObject && currentObject?.ObjectId;
-      if(exist) {
-          this.currentObject = currentObject;
-          this.selectPost(currentObject);
-          this.isLoading = false;
-          return;
+      if(session && session.ObjectId && !TDSHelperString.hasValueString(session.ParentId) && params_postid == session.ObjectId) {
+          index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+      } else {
+          index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
       }
     }
 
-    let teamId = this.currentTeam?.Id as number;
-    if(!TDSHelperString.hasValueString(params_postid)) {
-      this.message.error('Không tìm thấy ObjectId');
+    if(Number(index) >= 0) {
+      if(session.ParentId) {
+          let exitsChild = this.extrasChilds && this.extrasChilds[session.ParentId] && this.extrasChilds[session.ParentId].filter(x => x.ObjectId == params_postid)[0];
+          if(exitsChild) {
+              this.currentObject = this.extrasChilds[session.ParentId].filter(x => x.ObjectId == params_postid)[0] as any;
+          } else {
+              this.currentObject = this.lstObjects[index];
+          }
+
+          this.clickCurrentChild = session.ParentId;
+      } else {
+          this.currentObject = this.lstObjects[index];
+      }
+
+      this.selectPost(this.currentObject);
+      this.isLoading = false;
       return;
     }
 
-    this.chatomniObjectService.getById(params_postid, teamId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: ChatomniObjectsItemDto) => {
-          currentObject = {...res};
+    // let teamId = this.currentTeam?.Id as number;
+    // if(!TDSHelperString.hasValueString(params_postid)) {
+    //   this.message.error('Không tìm thấy ObjectId');
+    //   return;
+    // }
 
-          this.currentObject = currentObject;
-          this.lstObjects = [...[currentObject], ...this.lstObjects];
+    this.currentObject = this.lstObjects[0];
+    this.selectPost(this.currentObject);
+    this.isLoading = false;
+    this.cdRef.detectChanges();
+    return;
 
+    // params_postid = session.ParentId;
+    // this.chatomniObjectService.getById(params_postid, teamId).pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: (res: ChatomniObjectsItemDto) => {
+    //       currentObject = {...res};
 
-          this.selectPost(currentObject);
-          this.isLoading = false;
-          this.cdRef.detectChanges();
-      },
-      error: (error: any) => {
-          this.isLoading = false;
+    //       this.currentObject = currentObject;
+    //       this.lstObjects = [...[currentObject], ...this.lstObjects];
 
-          currentObject = this.lstObjects[0];
-          this.currentObject = currentObject;
+    //       if(this.currentObject && this.currentObject.ParentId) {
+    //         this.clickCurrentChild = this.currentObject.ParentId;
+    //       }
 
-          this.selectPost(currentObject);
-          this.cdRef.detectChanges();
-      }
-    })
+    //       this.selectPost(currentObject);
+    //       this.isLoading = false;
+    //       this.cdRef.detectChanges();
+    //   },
+    //   error: (error: any) => {
+    //       this.isLoading = false;
+
+    //       currentObject = this.lstObjects[0];
+    //       this.currentObject = currentObject;
+
+    //       this.selectPost(currentObject);
+    //       this.cdRef.detectChanges();
+    //   }
+    // })
   }
 
   selectPost(item: ChatomniObjectsItemDto | any, type?: string): any {
     if(item && item.Data) {
-        this.setStoragePostId(item.ObjectId);
-        this.currentPost = item;
+        let exsit = this.currentObject && this.currentObject.ObjectId == item.ObjectId && !item.ParentId && type == '_click';
+        if(exsit) {
+            this.clickCurrentChild = TDSHelperString.hasValueString(this.clickCurrentChild) ? null: item.ObjectId;
+            return;
+        }
 
-        switch(this.currentTeam?.Type ) {
-            case CRMTeamType._Facebook:
-                let exitsChilds = type == '_click' && this.extrasChilds && this.extrasChilds[item.ObjectId] && Object.keys(this.extrasChilds[item.ObjectId]).length > 0;
-
-                if(exitsChilds) {
-                  let dataChilds = this.extrasChilds[item.ObjectId];
-                  if(this.clickExtras[item.ObjectId]) {
-                      this.postChilds = [];
-                      delete this.clickExtras[item.ObjectId];
-                  } else {
-                      this.postChilds = [...dataChilds];
-                      this.clickExtras[item.ObjectId] = true;
-                  }
-                }
-            break;
-
-            case CRMTeamType._TShop:
-            break;
-
-            default: break;
+        this.currentObject = item;
+        this.setSessionStoragePostId(item);
+        if(!item.ParentId && type == '_click') {
+            this.clickCurrentChild = item.ObjectId;
         }
 
         this.changeTab(0, true);
@@ -565,6 +559,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
 
         next: (res: ChatomniObjectsDto) => {
+            if(res && res.Extras && res.Extras.Childs) {
+                this.extrasChilds = {...(res.Extras?.Childs || {})}
+            }
+
             if(TDSHelperArray.hasListValue(res?.Items)) {
                 this.lstObjects = [...(res.Items || [])];
             } else {
@@ -650,9 +648,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
           this.lstObjects  = [...res.Items];
           let currentObject = {} as any;
-          let params_postid = this.getStoragePostId();
 
-          if(params_postid == null || params_postid == undefined || params_postid != this.currentPost?.ObjectId) {
+          let sesstion = this.getSessionStoragePostId() as SessionParamsDto;
+          let params_postid = sesstion.ObjectId;
+          let parentId = sesstion.ParentId;
+
+          if(params_postid == null || params_postid == undefined) {
             currentObject = this.lstObjects[0];
             this.currentObject = currentObject;
 
@@ -662,26 +663,39 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             return;
           }
 
-          let existChild = this.postChilds.filter(x => x.ObjectId == params_postid)[0];
-          let parentObject: string = '';
-          if(existChild) {
-              parentObject = existChild.Data?.parent_id;
-              delete this.clickExtras[parentObject];
-              this.postChilds = [];
-          }
-
-          let objectId: string = '';
-          if(parentObject) {
-            this.currentPost = null as any;
-            objectId = parentObject;
+          let index: any = null;
+          if(TDSHelperString.hasValueString(parentId)) {
+              index = this.lstObjects.findIndex(x => x.ObjectId == parentId);
           } else {
-            objectId = this.currentPost?.ObjectId;
+              index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
           }
 
-          let index = this.lstObjects.findIndex(x => x.ObjectId == objectId);
+          if(Number(index) >= 0) {
+            if(parentId) {
+                let exitsChild = this.extrasChilds && this.extrasChilds[parentId] && this.extrasChilds[parentId].filter(x => x.ObjectId == params_postid)[0];
+                if(exitsChild) {
+                    this.currentObject = this.extrasChilds[parentId].filter(x => x.ObjectId == params_postid)[0] as any;
+                } else {
+                    this.currentObject = this.lstObjects[index];
+                }
+            } else {
+                this.currentObject = this.lstObjects[index];
+            }
+
+            this.selectPost(this.currentObject);
+            this.isLoading = false;
+            this.isRefreshing = false;
+          }
+
           if(Number(index) < 0 && !this.isFilter) {
               let teamId = this.currentTeam?.Id as number;
-              let objectId = this.currentPost?.ObjectId;
+              let objectId: any = '';
+
+              if(parentId) {
+                  objectId = parentId;
+              } else {
+                  objectId = params_postid;
+              }
 
               if(!TDSHelperString.hasValueString(objectId)) {
                   this.message.error('Không tìm thấy ObjectId');
@@ -703,9 +717,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                     this.message.error(error?.error?.message);
                 }
               })
-          } else {
-              this.currentPost = this.lstObjects[index];
-              this.setStoragePostId(this.currentPost.ObjectId);
           }
 
           setTimeout(() => {
@@ -727,7 +738,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.isFilter = false;
 
     delete this.dataSource$;
-    delete this.currentPost;
     delete this.syncConversationInfo;
     delete this.currentObject;
   }
@@ -767,14 +777,23 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     })
   }
 
-  setStoragePostId(id: string): any {
+  setSessionStoragePostId(item: ChatomniObjectsItemDto ): any {
     const _keyCache = this.chatomniObjectService._keycache_params_postid;
-    localStorage.setItem(_keyCache, JSON.stringify(id));
+    let data: SessionParamsDto = {
+      ObjectId: item.ObjectId,
+      ParentId: '',
+    }
+
+    if(item && TDSHelperString.hasValueString(item.ParentId)) {
+      data.ParentId = item.ParentId;
+    }
+
+    sessionStorage.setItem(_keyCache, JSON.stringify(data));
   }
 
-  getStoragePostId(): any {
+  getSessionStoragePostId(): any {
     const _keyCache = this.chatomniObjectService._keycache_params_postid;
-    let item = localStorage.getItem(_keyCache) as any;
+    let item = sessionStorage.getItem(_keyCache) as any;
 
     if(item) {
         return JSON.parse(item);
@@ -783,9 +802,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     }
   }
 
-  removeStoragePostId() {
+  removeSessionStoragePostId() {
     const _keyCache = this.chatomniObjectService._keycache_params_postid;
-    localStorage.removeItem(_keyCache);
+    sessionStorage.removeItem(_keyCache);
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {

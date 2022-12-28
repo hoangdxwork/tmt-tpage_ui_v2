@@ -3,22 +3,23 @@
 	<div *ngIf="dataItem.Type == 11" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}" [ngClass]="dataItem.IsShowAvatar? '!mt-0': '!my-0.5'">
 
       <!-- webhook_attachments template sản phẩm -->
-      <!-- <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
+      <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
           (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
           <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
               <div *ngIf="wb.type == 'template' && wb.payload">
-                <div class="w-full flex justify-end relative">
-                  <div *ngFor="let item of wb?.payload?.elements" id="scroll-product{{dataItem.Data.id}}" class="w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
-                    <div #itemProduct class="snap-start shrink-0">
-                      <tds-card class="bg-white w-full h-full rounded-xl" (click)="detail()">
-                        <img src="{{ item?.image_url }}" alt="" />
-                        <tds-card-content class="px-4 py-3">
-                            <div class="flex flex-col items-start gap-y-1">
-                                <h3 class="text-body font-semibold">{{ item?.title }}</h3>
-                                <p class="text-body-2 text-neutral-1-400">{{ item?.price }}</p>
-                            </div>
-                        </tds-card-content>
-                      </tds-card>
+                <div class="w-full justify-end flex relative">
+                  <div id="scroll-product{{dataItem.Data.id}}" class="max-w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
+                    <div *ngFor="let item of wb?.payload?.elements">
+                      <div #itemProduct class="snap-start shrink-0">
+                        <tds-card class="bg-white w-[260px] h-full rounded-xl" (click)="detail()">
+                          <img *ngIf="item?.image_url" class="w-full h-[192px] object-cover" src="{{ item.image_url }}" alt="" />
+                          <img *ngIf="!item?.image_url || item?.image_url == null" class="w-full h-[192px] bg-neutral-3-50 p-6" src="../assets/imagesv2/errorPic.svg" alt="" />
+                          <tds-card-content class="px-4 py-3 w-full flex flex-col gap-y-1">
+                            <span class="text-body-2 font-semibold break-words break-all text-left">{{ item?.title }}</span>
+                            <span class="text-body-2 text-neutral-1-400 text-left">{{ item?.price || "---" | numberCustom }}</span>
+                          </tds-card-content>
+                        </tds-card>
+                      </div>
                     </div>
                   </div>
                   <div [ngClass]="wb?.payload?.elements?.length > 2 ? 'flex' : 'hidden'" class="w-[85%] px-2 h-full justify-between items-center absolute z-1">
@@ -33,7 +34,7 @@
 
                 <div class="w-full flex justify-end py-2">
                   <div class="px-4 py-2 bg-primary-1 text-white rounded-l-xl rounded-t-xl">
-                    Hóa đơn của bạn
+                    Hóa đơn của bạn  👇
                   </div>
                 </div>
 
@@ -41,37 +42,39 @@
                   <div class="flex flex-col w-[50%]">
                     <div class="bg-neutral-3-50 rounded-t-xl px-4 py-2 flex justify-between items-center">
                       <span class="text-neutral-1-600">Xác nhận đơn đặt hàng</span>
-                      <span class="text-title-1 font-semibold">{{ wb.payload.recipient_name }}</span>
+                      <span class="text-title-1 font-semibold">{{ wb?.payload?.recipient_name || "N/A"}}</span>
                     </div>
                     <div class="bg-white px-4 rounded-b-xl">
                       <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col items-start">
                         <div class="flex gap-x-2.5">
-                          <img class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] object-cover"
-                              src="{{ wb?.payload?.order_url }}">
+                          <img *ngIf="wb?.payload?.order_url" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] object-cover"
+                              src="{{ wb.payload.order_url }}">
+                          <img *ngIf="!wb?.payload?.order_url" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] p-4"
+                              src="../assets/imagesv2/errorPic.svg" alt="" />
                           <div class="flex flex-col gap-y-1 items-start">
-                            <div class="font-semibold">{{ wb?.payload?.summary }}</div>
+                            <div class="font-semibold">{{ wb?.payload?.summary?.subtotal || "---" }}</div>
                             <div class="flex gap-x-2">
-                              <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ wb?.payload?.order_number }}</span></span>
+                              <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ wb?.payload?.order_number || '___' }}</span></span>
                               <span>-</span>
-                              <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ wb?.payload?.currency }}</span></span>
+                              <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ wb?.payload?.currency || '___' }}</span></span>
                             </div>
                           </div>
                         </div>
                         <span class="mt-4 text-neutral-1-600">Đã thanh toán bằng</span>
-                        <span class="mt-1 text-body-1">{{ wb?.payload?.payment_method }}</span>
+                        <span class="mt-1 text-body-1">{{ wb?.payload?.payment_method || '---' }}</span>
                         <span class="mt-2 text-neutral-1-600">Địa chỉ giao hàng</span>
-                        <span class="mt-1 text-body-1">{{ wb?.payload?.address }}</span>
+                        <span class="mt-1 text-body-1 text-left">{{ wb?.payload?.address?.street_1 || '---' }}</span>
                       </div>
                       <div class="py-2 flex justify-between items-center">
                         <span class="text-neutral-1-600 font-semibold">Tổng tiền</span>
-                        <span class="text-title-1 font-semibold">{{ (wb?.payload?.order_number)*(wb?.payload?.currency) }}</span>
+                        <span class="text-title-2 font-semibold">{{ wb?.payload?.summary?.subtotal || 0 | numberCustom }}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
           </div>
-      </div> -->
+      </div>
 
       <div class="chat-body w-full" [ngClass]="dataItem.IsShowAvatar? '': '!my-2 pl-9'">
           <div *ngIf="!dataItem.IsOwner " class="mr-2 flex flex-col justify-end">
@@ -154,7 +157,7 @@
           <div *ngIf="(dataItem.Error && dataItem.Error!.Message) || dataItem.Status == 2" class="select-message flex items-center">
 
               <!-- Gửi lại tin nhắn lỗi -->
-              <a class="flex items-center cursor-pointer" *ngIf="checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" tds-tooltip 
+              <a class="flex items-center cursor-pointer" *ngIf="checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" tds-tooltip
                 tooltipContentCss="rounded-md p-2 bg-warning-300 text-neutral-1-900  bg-opacity-90" tooltipArrowCss="border-4 border-warning-300"
                 tooltipTitle="Cảnh báo: Nguy cơ bị facebook đánh giá spam tài khoản nếu sử dụng chức năng này nhiều lần" (click)="retryMessage()">
                   <span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>

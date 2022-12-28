@@ -5,10 +5,10 @@
             <div class="flex flex-row justify-between p-2 border-b-3 border-neutral-3-200">
 
                 <!-- facebook -->
-                <div class="flex items-center" *ngIf="team!.Type == 'Facebook'">
+                <div class="flex items-center gap-x-2" *ngIf="team!.Type == 'Facebook'">
 
                     <tds-avatar [icon]="(data.Data | facebookType)?.status_type === 'added_video'? 'tdsi-video-camera-fill': 'tdsi-facebook-f-fill'"
-                        [ngClass]="(data.Data | facebookType)?.status_type === 'added_video'? 'bg-base-red-500' : 'bg-base-blue-500'" class="text-white mr-1"
+                        [ngClass]="(data.Data | facebookType)?.status_type === 'added_video'? 'bg-base-red-500' : 'bg-base-blue-500'" class="text-white"
                         [size]="36" [shape]="'circle'" [isAvatar]="false">
                     </tds-avatar>
 
