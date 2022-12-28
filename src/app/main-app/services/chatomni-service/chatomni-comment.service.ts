@@ -83,7 +83,7 @@ export class ChatomniCommentService extends BaseSevice  {
   }
 
   nextDataSource(id: string, dataSourceItem: ChatomniDataItemDto[], queryObj?: TDSSafeAny): Observable<ChatomniDataDto> {
-    
+
     let exist = this.commentFacade.getData(id);
     if(exist && !TDSHelperString.hasValueString(this.urlNext)) {
 
@@ -95,17 +95,17 @@ export class ChatomniCommentService extends BaseSevice  {
         let url = this.urlNext  as string;
         return this.getLink(url, queryObj).pipe(map((res: ChatomniDataDto) => {
 
-            if(res.Extras) {
+            if(res && res.Extras) {
               exist.Extras = {
                   Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
                   Childs: Object.assign({}, exist.Extras?.Childs, res.Extras?.Childs)
               }
             }
 
-            if(dataSourceItem && dataSourceItem.length > 0){
-              exist.Items = [ ...dataSourceItem, ...res.Items ];
+            if(dataSourceItem && dataSourceItem.length > 0) {
+                exist.Items = [ ...dataSourceItem, ...res.Items ];
             } else {
-              exist.Items = [ ...exist.Items, ...res.Items ];
+                exist.Items = [ ...exist.Items, ...res.Items ];
             }
 
             exist.Paging = { ...res.Paging };
@@ -118,9 +118,8 @@ export class ChatomniCommentService extends BaseSevice  {
             }
 
             this.commentFacade.setData(id, exist);
-
             let result = this.commentFacade.getData(id);
-            return result; //tương đương this.chatomniDataSource[id]]
+            return result;
 
         }), shareReplay({ bufferSize: 1, refCount: true }));
     }
@@ -133,7 +132,7 @@ export class ChatomniCommentService extends BaseSevice  {
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
-  
+
   commentHandle(teamId: number, data: ChatomniCommentModelDto) {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${teamId}/comments`,
