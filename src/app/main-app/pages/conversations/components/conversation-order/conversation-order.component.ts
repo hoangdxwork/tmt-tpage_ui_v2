@@ -408,8 +408,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.isLoading = true;
 
     this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};
-    let note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(this.quickOrderModel.Note);debugger
     this.mappingAddress(this.quickOrderModel);
+
     this.isLoading = false;
     this.cdRef.detectChanges();
   }

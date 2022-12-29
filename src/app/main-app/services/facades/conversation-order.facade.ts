@@ -49,22 +49,21 @@ export class ConversationOrderFacade extends BaseSevice  {
   }
 
   prepareMessageHasPhoneBBCode(message: string) {
-    if(TDSHelperString.hasValueString(message)) {
       let exist = message.includes('[format') && message.includes('[end_format]') && message.includes("type='text-copyable'");
       if(exist) {
           let phone: string = '';
-          let format: string = '';
+          let formatFb: string = '';
 
           let indexOf = message.indexOf('[format') && message.indexOf('[end_format]');
           if(indexOf > 0) {
             let sub1 = message.indexOf('[format');
             if(sub1 > 0) {
-              format = message.substring(sub1);
+              formatFb = message.substring(sub1);
             }
 
-            let sub2 = format.lastIndexOf('[end_format]');
-            if(sub2 > 0 && format) {
-                format = format.substring(sub2);
+            let sub2 = formatFb?.lastIndexOf('[end_format]');
+            if(sub2 > 0 && formatFb) {
+              formatFb = formatFb.substring(0, (sub2 + 12));
             }
           }
 
@@ -75,11 +74,13 @@ export class ConversationOrderFacade extends BaseSevice  {
                 phone = message.substring(start, end).replace("value='", "").trim();
             }
           }
+
+          if(formatFb && phone) {
+            message = message.replace(formatFb, phone);
+          }
       }
+
+      return message;
     }
-
-    return message;
-  }
-
 
 }
