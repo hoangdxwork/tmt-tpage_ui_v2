@@ -132,7 +132,7 @@ export class ConfigEditPromotionComponent implements OnInit {
     });
   }
 
-  onSave() {debugger
+  onSave() {
     this.isLoading = true;
     this.prepareModel();
 
@@ -194,7 +194,7 @@ export class ConfigEditPromotionComponent implements OnInit {
     this.dataEdit.DiscountPercentage = formValue.DiscountPercentage;
 
     this.dataEdit.DiscountApplyOn = formValue.DiscountApplyOn;
-    // this.dataEdit.DiscountSpecificProductId = formValue.DiscountSpecificProductId;
+    this.dataEdit.DiscountSpecificProductId = formValue.DiscountSpecificProductId;
     this.dataEdit.DiscountMaxAmount = formValue.DiscountMaxAmount;
     this.dataEdit.DiscountFixedAmount = formValue.DiscountFixedAmount;
 
