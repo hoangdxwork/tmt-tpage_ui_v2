@@ -24,7 +24,7 @@ export class TpageAvatarFacebookComponent implements OnInit {
   url!: string;
   nativeElement: HTMLElement;
   id: any;
-  isLoading: boolean = true;
+  isLoading: boolean = false;
 
   constructor(element: ElementRef,
     private cdRef : ChangeDetectorRef,
@@ -44,18 +44,18 @@ export class TpageAvatarFacebookComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes["fbid"] && !changes["fbid"].firstChange) {
+    if(changes['avatarUrl'] && !changes['avatarUrl'].firstChange) {
+      this.avatarUrl = changes['avatarUrl'].currentValue;
+    }
+
+    if(changes["fbid"] && !changes["fbid"].firstChange && !TDSHelperString.hasValueString(this.avatarUrl)) {
         this.id = changes["fbid"].currentValue;
         this.buildUrl(this.id, this.token);
     }
 
-    if(changes["psid"] && !changes["psid"].firstChange) {
+    if(changes["psid"] && !changes["psid"].firstChange && !TDSHelperString.hasValueString(this.avatarUrl)) {
         this.id = changes["psid"].currentValue;
         this.buildUrl(this.id, this.token);
-    }
-
-    if(changes['avatarUrl'] && !changes['avatarUrl'].firstChange) {
-      this.avatarUrl = changes['avatarUrl'].currentValue;
     }
   }
 
