@@ -345,19 +345,19 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           status: `${event.value}_${event.text}`
       }
       this.isLoading = true;
-      
+
       this.partnerService.updateStatus(this.partner.Id, data).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
             this.message.success('Cập nhật trạng thái khách hàng thành công');
             this.partner.StatusText = event.text;
-            
+
             let status = {
               UserId: this.conversationItem.UserId,
               Code: event.value,
               Name: event.text
             } as PartnerChangeStatusDTO;
 
-            // TODO: cập nhật thông tin trạng thái cho conversation-all, tds-conversation 
+            // TODO: cập nhật thông tin trạng thái cho conversation-all, tds-conversation
             this.partnerService.changeStatus$.emit(status);
 
             this.isLoading = false;

@@ -312,8 +312,8 @@
           </div>
 
     </virtual-scroller>
-    <div *ngIf="dataSource && dataSource.Items.length == 0">
-        <tds-alert type="info"  message="Không có dữ liệu"> </tds-alert>
+    <div class="flex-auto flex items-center justify-center" *ngIf="dataSource && dataSource.Items.length == 0">
+        <tds-empty></tds-empty>
     </div>
 </tds-spin>
 

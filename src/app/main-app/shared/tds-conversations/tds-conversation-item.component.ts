@@ -8,7 +8,7 @@ import { ChatomniEventEmiterService } from './../../app-constants/chatomni-event
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { ResponseAddMessCommentDto, ResponseAddMessCommentDtoV2 } from './../../dto/conversation-all/chatomni/response-mess.dto';
 import { ChatomniCommentFacade } from './../../services/chatomni-facade/chatomni-comment.facade';
-import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto, NlpEntityDto, AttachmentDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { ChatomniDataItemDto, ChatomniStatus, Datum, ChatomniDataDto, ExtrasChildsDto, NlpEntityDto, AttachmentDto, PayloadElementsDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewChildren, ViewContainerRef, Inject } from "@angular/core";
 import { finalize, takeUntil } from "rxjs";
@@ -28,6 +28,7 @@ import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
 import { DOCUMENT } from '@angular/common';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
   selector: "tds-conversation-item",
@@ -67,6 +68,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
   listAtts: TDSSafeAny[] = [];
   isShowItemImage: boolean = false;
   imageClick!: number;
+  postPictureError: any[] = [];
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
@@ -707,6 +709,14 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
   }
 
   detail() {
+  }
+
+  errorPostPicture(item: PayloadElementsDto) {
+    this.postPictureError.push(item?.image_url);
+  }
+
+  checkPostPictureError(item: PayloadElementsDto) {
+    return this.postPictureError.find(f => f == item?.image_url);
   }
 
 }

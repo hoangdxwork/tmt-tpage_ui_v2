@@ -1,8 +1,5 @@
-<tds-avatar [tdsSrc]="hasAvatar" [size]="size" [shape]="shape" *ngIf="hasAvatar; else avatarNull"
-    [ngStyle]="{ 'outline-style': 'solid', 'outline-width.px': 2, 'outline-color': statusColor || 'transparent', 'outline-offset.px': 2 }">
-</tds-avatar>
-<ng-template #avatarNull>
-    <tds-avatar  [tdsSrc]="url" [size]="size" [shape]="shape" 
-    [ngStyle]="{ 'outline-style': 'solid', 'outline-width.px': 2, 'outline-color': statusColor || 'transparent', 'outline-offset.px': 2 }">
-    </tds-avatar>
-</ng-template>
+<tds-spin [spinning]="isLoading">
+  <tds-avatar [tdsSrc]="avatarUrl ? avatarUrl : url" [size]="size" [shape]="shape"
+      [ngStyle]="{ 'outline-style': 'solid', 'outline-width.px': 2, 'outline-color': statusColor || 'transparent', 'outline-offset.px': 2 }">
+  </tds-avatar>
+</tds-spin>

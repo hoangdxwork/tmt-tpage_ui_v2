@@ -1,3 +1,4 @@
+import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { DeliveryCarrierV2Service } from 'src/app/main-app/services/delivery-carrier-v2.service';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { ProductTemplateV2DTO } from './../../../../dto/product-template/product-tempalte.dto';
@@ -178,6 +179,7 @@ export class EditOrderV2Component implements OnInit {
     private destroy$: TDSDestroyService,
     private productTemplateUOMLineService: ProductTemplateUOMLineService,
     private productTemplateFacade: ProductTemplateFacade,
+    private conversationOrderFacade: ConversationOrderFacade,
     private router: Router,
     private productIndexDBService: ProductIndexDBService) {
   }
@@ -231,6 +233,10 @@ export class EditOrderV2Component implements OnInit {
 
   loadData() {
     this.quickOrderModel = this.dataItem;
+    if(this.quickOrderModel && TDSHelperString.hasValueString(this.quickOrderModel.Note)) {
+      this.quickOrderModel.Note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(this.quickOrderModel.Note);
+    }
+
     this.mappingAddress(this.quickOrderModel);
 
     let postId = this.quickOrderModel.Facebook_PostId;

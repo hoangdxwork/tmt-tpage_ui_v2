@@ -41,7 +41,6 @@ export class CurrentConversationItemV3Component  implements OnInit, OnChanges, A
   @ViewChild('currentWidthTag') currentWidthTag!:  ElementRef<TDSSafeAny>;
   @ViewChildren('widthTag') widthTag!: QueryList<ElementRef>;
 
-  eventData: any;
   isDraftMessage: boolean = false;
   isConversationOver: boolean = false;
   isChoose!: TDSSafeAny;
@@ -66,11 +65,8 @@ export class CurrentConversationItemV3Component  implements OnInit, OnChanges, A
   }
 
   ngOnInit(): void {
-    if(this.item) {
-      this.eventData = this.conversationEventFacade.getEvent();
-      if(TDSHelperArray.hasListValue(this.item?.Tags)) {
-          this.displayTag = this.item?.Tags?.length || 0;
-      }
+    if(this.item && TDSHelperArray.hasListValue(this.item?.Tags)) {
+        this.displayTag = this.item?.Tags?.length || 0;
     }
 
     this.eventEmitter();
