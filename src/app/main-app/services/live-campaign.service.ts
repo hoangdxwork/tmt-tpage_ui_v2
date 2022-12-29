@@ -195,9 +195,15 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  reportLiveCampaignProduct(liveCampaignId: string, params: string, isOnlyProductCancel: boolean = false): Observable<any> {
+  reportLiveCampaignProduct(liveCampaignId: string, take: number, skip: number, isOnlyProductCancel: boolean = false, searchText?: string): Observable<any> {
+    let url = `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/reportlivecampaignproduct?take=${take}&skip=${skip}&isOnlyProductCancel=${isOnlyProductCancel}`;
+
+    if(searchText) {
+      url += `&q=${searchText}`
+    }
+
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/reportlivecampaignproduct?${params}&isOnlyProductCancel=${isOnlyProductCancel}`,
+        url: url,
         method: CoreApiMethodType.get,
     }
 

@@ -50,10 +50,10 @@ export class DetailProductComponent implements OnInit {
 
   loadData(pageSize: number, pageIndex: number) {
     this.lstOfData = [];
-    let filters = this.oDataLiveCampaignService.buildFilterReportProduct(this.filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
+    let take = pageSize;
+    let skip = pageSize*(pageIndex - 1);
 
-    this.getViewData(params).subscribe({
+    this.getViewData(take, skip).subscribe({
         next: (res: ODataLiveCampaignReportProductDto) => {
             this.lstOfData = [...(res?.Datas || [])];
             this.count = res?.TotalCount || 0;
@@ -64,9 +64,9 @@ export class DetailProductComponent implements OnInit {
     })
   }
 
-  getViewData(params: string): Observable<TDSSafeAny> {
+  getViewData(take: number, skip: number): Observable<TDSSafeAny> {
     this.isLoading = true;
-    return this.liveCampaignService.reportLiveCampaignProduct(this.liveCampaignId, params, this.filterObj.isOnlyProductCancel)
+    return this.liveCampaignService.reportLiveCampaignProduct(this.liveCampaignId, take, skip, this.filterObj.isOnlyProductCancel, this.filterObj.searchText)
       .pipe(takeUntil(this.destroy$), finalize(()=>{ this.isLoading = false }))
   }
 
