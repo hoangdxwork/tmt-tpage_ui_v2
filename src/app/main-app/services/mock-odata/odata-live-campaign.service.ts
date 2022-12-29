@@ -110,7 +110,8 @@ export class ODataLiveCampaignService extends BaseSevice {
         dataFilter.filters.push( {
             filters: [
               { field: "ProductName", operator: OperatorEnum.contains, value: value },
-              { field: "ProductNameNoSign", operator: OperatorEnum.contains, value: value }
+              { field: "ProductNameNoSign", operator: OperatorEnum.contains, value: value },
+              { field: "Tags", operator: OperatorEnum.contains, value: value },
             ],
             logic: 'or'
         })

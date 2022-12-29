@@ -59,7 +59,7 @@
                                                 <div *ngIf="data.Tags; else noTags" class="flex flex-wrap items-center gap-1">
                                                     <div *ngFor="let item of data.Tags | stringToStringArray">
                                                         <tds-tag class="cursor-pointer" tds-tooltip tooltipTitle="{{ item }}" status="primary" size="sm">
-                                                            <div class="max-w-[48px] w-fit truncate">{{ item }}</div>
+                                                            <div class="2xl:max-w-[200px] xl:max-w-[95px] w-fit truncate">{{ item }}</div>
                                                         </tds-tag>
                                                     </div>
 
@@ -117,11 +117,12 @@
 
                                             <!-- Danh sách order tag -->
                                             <div *ngIf="orderTags && orderTags[data.ProductId + '_' + data.UOMId] && orderTags[data.ProductId + '_' + data.UOMId].length > 0" class="flex flex-wrap items-center gap-1">
-                                                <tds-tag status='secondary' *ngFor="let orderTag of orderTags[data.ProductId + '_' + data.UOMId]| slice:0:3" class="cursor-pointer" size="sm" tds-tooltip="{{ orderTag }}">
-                                                    <div class="max-w-[48px] w-fit truncate">{{ orderTag }}</div>
+                                                <tds-tag status='secondary' class="cursor-pointer hover:opacity-75" size="sm" tds-tooltip="{{ orderTag }}" 
+                                                    *ngFor="let orderTag of orderTags[data.ProductId + '_' + data.UOMId]| slice:0:1">
+                                                    <div class="2xl:max-w-[176px] xl:max-w-[95px] w-fit truncate">{{ orderTag }}</div>
                                                 </tds-tag> 
 
-                                                <div class="flex gap-1.5 items-center"  *ngIf="orderTags[data.ProductId + '_' + data.UOMId].length > 3">
+                                                <div class="flex gap-1.5 items-center" *ngIf="orderTags[data.ProductId + '_' + data.UOMId].length > 1">
                                                     <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer tdsi-plus-fill" tds-popover
                                                         [popoverContent]="popoverContentTag"
                                                         popoverPlacement="top"
@@ -130,10 +131,10 @@
       
                                                     <ng-template #popoverContentTag>
                                                         <div class="flex gap-x-2 gap-y-1 flex-wrap max-w-[500px]">
-                                                            <div *ngFor="let orderTag2 of orderTags[data.ProductId + '_' + data.UOMId] | slice:3:(orderTags[data.ProductId + '_' + data.UOMId].length)"
+                                                            <div *ngFor="let orderTag2 of orderTags[data.ProductId + '_' + data.UOMId]"
                                                                 class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
                                                                 <tds-tag status='secondary' class="cursor-pointer" size="sm" tds-tooltip="{{ orderTag2 }}">
-                                                                    <div class="max-w-[48px] w-fit truncate">{{ orderTag2 }}</div>
+                                                                    <div class="max-w-[230px] w-fit truncate">{{ orderTag2 }}</div>
                                                                 </tds-tag> 
                                                             </div>
                                                         </div>
@@ -153,7 +154,7 @@
                                                     <tds-spinner [color]="'primary'" class="w-2.5 h-2.5"
                                                         *ngIf="!inventories || (inventories && !inventories[data.ProductId])"></tds-spinner>
                                                 </span>
-                                                <span class="px-2">/</span>
+                                                <span class="px-2 self-center">/</span>
                                                 <span class="text-neutral-1-400 font-regular text-body-2 flex flex-row items-center gap-x-1">
                                                     Tồn dự báo:
                                                     <span class="text-primary-1" *ngIf="inventories && inventories[data.ProductId]">{{ inventories[data.ProductId]?.VirtualAvailable || 0 }}</span>
