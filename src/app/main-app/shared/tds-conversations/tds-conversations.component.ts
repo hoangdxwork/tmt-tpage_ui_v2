@@ -287,7 +287,20 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   checkCommentSocket(item: TDSSafeAny) {
-    let indexChild = (this.dataSource.Items || []).findIndex(x => x.Data.Id == item?.ParentId);
+    let indexChild: number = -1;
+    switch (this.team.Type) {
+      case CRMTeamType._Facebook:
+        indexChild = (this.dataSource.Items || []).findIndex(x => x.Data.id == item?.ParentId);
+        break;
+
+      case CRMTeamType._TShop:
+        indexChild = (this.dataSource.Items || []).findIndex(x => x.Data.Id == item?.ParentId);
+        break;
+
+      case CRMTeamType._UnofficialTikTok:
+        break;
+    }
+    
 
     if (item.ParentId && this.dataSource.Extras?.Childs && Number(indexChild) >= 0) {
         this.dataSource.Extras.Childs[item.ParentId] = [...(this.dataSource.Extras?.Childs[item.ParentId] || []), ...[item]];
@@ -688,15 +701,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
         else if (this.type === 'comment') {
             //TODO: Phản hồi bình lần bằng bình luận
-            switch(this.team.Type) {
-              case CRMTeamType._Facebook:
-                this.replyComment(activityFinal, message);
-              break;
-
-              case CRMTeamType._TShop:
-                this.replyCommentTshop(activityFinal, message);
-              break;
-            }
+            this.replyComment(activityFinal, message);
         }
 
     } else {
@@ -728,70 +733,21 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   replyComment(activityFinal: any, message: string) {
-    const model = this.prepareModel(message);
-
-    model.post_id = activityFinal?.ObjectId || null;
-    model.parent_id = activityFinal?.Data?.id || null;
-    model.to_id = activityFinal?.Data?.from?.id || activityFinal?.UserId || null;
-    model.to_name = activityFinal?.Data?.from?.name || null;
-
-    this.activityMatchingService.replyComment(this.team?.Id, model)
-      .pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: ResponseAddMessCommentDto) => {
-          // add vào dataSource tại đây
-          res["status"] = ChatomniStatus.Done;
-          res.name = this.team.Name;
-
-          switch(this.team.Type) {
-            case CRMTeamType._Facebook:
-              res.type = 12;
-              break;
-            case CRMTeamType._TShop:
-              res.type = 91;
-              break;
-            case CRMTeamType._UnofficialTikTok:
-              res.type = 1001;
-              break;
-          }
-
-          let data = this.omniCommentFacade.mappingExtrasChildsDto(res)
-
-          if(this.dataSource.Extras!.Childs && this.dataSource.Extras!.Childs[activityFinal?.Data?.id] ){
-              // TODO: Đã có tin nhắn con, add thêm phản hổi mới vào Childs đã có
-              this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...this.dataSource.Extras!.Childs[activityFinal?.Data?.id], data];
-          }
-          else if(activityFinal?.Data?.id) {
-              // TODO: chưa có tin nhắn con, Tạo mới Childs {Key[]} để thêm phản hồi mới
-              this.dataSource.Extras!.Childs = { ...(this.dataSource.Extras!.Childs || {}) } as any;
-              this.dataSource.Extras!.Childs[activityFinal?.Data?.id] = [...[], data];
-          }
-
-          //TODO: Đẩy qua conversation-all-v2
-          let itemLast = {...data};
-          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast, res.type);
-          this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-
-          this.currentImage = null;
-          this.uploadedImages = [];
-          delete this.messageModel;
-          this.isLoadingSendMess = false;
-
-          this.cdRef.detectChanges();
-      },
-      error: error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-        this.isLoadingSendMess = false;
-        this.cdRef.detectChanges();
-      }
-    });
-  }
-
-  replyCommentTshop(activityFinal: any, message: string) {
     let modelv2 = this.prepareModelComment(message);
-    modelv2.RecipientId = activityFinal?.Data?.Id as string;
-    modelv2.ObjectId = activityFinal?.Data?.ObjectId as string;
+    switch(this.team.Type) {
+      case CRMTeamType._Facebook:
+        modelv2.RecipientId = activityFinal?.Data?.id as string;
+        modelv2.ObjectId = activityFinal.ObjectId || activityFinal?.Data?.object.id as string;
+      break;
 
-    this.chatomniCommentService.replyCommentTshop(this.team!.Id, activityFinal.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
+      case CRMTeamType._TShop:
+        modelv2.RecipientId = activityFinal?.Data?.Id as string;
+        modelv2.ObjectId = activityFinal?.Data?.ObjectId as string;
+      break;
+    }
+   
+
+    this.chatomniCommentService.replyComment(this.team!.Id, activityFinal.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: ChatomniDataItemDto[]) => {
           // todo: socket trả về đã map
 

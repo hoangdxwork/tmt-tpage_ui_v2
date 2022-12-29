@@ -479,7 +479,7 @@ export class TiktokConversationItemComponent implements OnInit, OnChanges  {
       modelv2.RecipientId = this.dataItem.Data?.Id as string;
       modelv2.ObjectId = this.dataItem.Data?.ObjectId as string;
 
-      this.chatomniCommentService.replyCommentTshop(this.team!.Id, this.dataItem.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
+      this.chatomniCommentService.replyComment(this.team!.Id, this.dataItem.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
           next:(res: ChatomniDataItemDto[]) => {
             res.map((x: ChatomniDataItemDto)=> {
               x["Status"] = ChatomniStatus.Done;

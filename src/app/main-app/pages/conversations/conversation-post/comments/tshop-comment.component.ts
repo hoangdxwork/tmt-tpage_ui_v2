@@ -1,3 +1,4 @@
+import { EnumSendMessageType } from './../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { CommentOrderPost, CommentOrder } from '../../../../dto/conversation/post/comment-order-post.dto';
 import { FacebookCommentService } from '../../../../services/facebook-comment.service';
 import { ChatmoniSocketEventName } from '../../../../services/socket-io/soketio-event';
@@ -523,7 +524,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
       if(item.Data.is_private_reply){
         // TODO: gửi về tin nhắn
-        modelv2.MessageType = 2;
+        modelv2.MessageType = EnumSendMessageType._REPLY;
 
         this.chatomniSendMessageService.sendMessage(this.team.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: ResponseAddMessCommentDtoV2[]) => {
@@ -546,7 +547,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
         // TODO: Trả lời bình luận
         modelv2.ObjectId = item.Data?.ObjectId as string;
 
-        this.chatomniCommentService.replyCommentTshop(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
+        this.chatomniCommentService.replyComment(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res: ChatomniDataItemDto[]) => {
               res.map((x: ChatomniDataItemDto)=> {
 

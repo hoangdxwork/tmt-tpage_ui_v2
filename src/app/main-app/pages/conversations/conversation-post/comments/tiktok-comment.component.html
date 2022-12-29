@@ -11,9 +11,9 @@
         </div>
 
          <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2 min-h-[118px]">
-            <div *ngIf="item" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
+            <div *ngIf="item" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
                 <div>
-                    <tds-avatar  class="cursor-pointer" [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [tdsSrc]="(item.Data | tiktokDataCs)?.profilePictureUrl"></tds-avatar>
+                    <tds-avatar  class="cursor-pointer" [size]="'lg'" [tdsSrc]="(item.Data | tiktokDataCs)?.profilePictureUrl"></tds-avatar>
                 </div>
                 <div class="ml-2 w-full h-full">
                     <div class="bg-white rounded-2xl px-4 py-3 min-h-[106px]">
@@ -278,9 +278,9 @@
         </div>
 
   </virtual-scroller>
-  <div *ngIf="dataSource && dataSource.Items.length == 0">
-      <tds-alert type="info"  message="Không có dữ liệu"> </tds-alert>
-  </div>
+  <div class="flex-auto flex items-center justify-center" *ngIf="dataSource && dataSource.Items.length == 0">
+    <tds-empty></tds-empty>
+   </div>
 </tds-spin>
 
 <drawer-detail-bill [isMessage]="true" [visibleDrawerBillDetail]="visibleDrawerBillDetail" [bill]="order" (onVisibleDrawer)="onVisibleDrawer($event)"></drawer-detail-bill>
