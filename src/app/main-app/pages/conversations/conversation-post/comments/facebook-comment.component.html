@@ -14,7 +14,8 @@
            <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2">
               <div *ngIf="item && item.Type == 12" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
                   <div>
-                      <tpage-avatar-facebook class="cursor-pointer" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" [shape]="'circle'" [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
+                      <tpage-avatar-facebook class="cursor-pointer"
+                        [shape]="'circle'" [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'" [psid]="item.UserId" [token]="team.ChannelToken">
                       </tpage-avatar-facebook>
                   </div>
 
@@ -307,7 +308,7 @@
                   <div *ngFor="let child of dataSource.Extras.Childs[item.Data.id]">
                       <div *ngIf="child && child.Type == 12" class="pl-14 flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
                           <div>
-                              <tpage-avatar-facebook class="cursor-pointer" (click)="loadPartnerTab(child, commentOrders ? commentOrders[child.Data?.from!.id] : '')" [shape]="'circle'" [size]="'md'" [psid]="child.UserId" [token]="team.ChannelToken">
+                              <tpage-avatar-facebook class="cursor-pointer" [shape]="'circle'" [size]="'md'" [psid]="child.UserId" [token]="team.ChannelToken">
                               </tpage-avatar-facebook>
                           </div>
 

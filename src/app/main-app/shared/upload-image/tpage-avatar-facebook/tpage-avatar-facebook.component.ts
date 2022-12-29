@@ -19,11 +19,12 @@ export class TpageAvatarFacebookComponent implements OnInit {
   @Input() size: 'md' | 'lg' | 'sm' | 'xl' | number = 'md';
   @Input() shape:'square' | 'circle' = 'circle';
   @Input() statusColor!: string;
-  @Input() hasAvatar!: string;
+  @Input() avatarUrl!: string;
 
   url!: string;
   nativeElement: HTMLElement;
   id: any;
+  isLoading: boolean = true;
 
   constructor(element: ElementRef,
     private cdRef : ChangeDetectorRef,
@@ -47,26 +48,34 @@ export class TpageAvatarFacebookComponent implements OnInit {
         this.id = changes["fbid"].currentValue;
         this.buildUrl(this.id, this.token);
     }
+
     if(changes["psid"] && !changes["psid"].firstChange) {
         this.id = changes["psid"].currentValue;
         this.buildUrl(this.id, this.token);
+    }
+
+    if(changes['avatarUrl'] && !changes['avatarUrl'].firstChange) {
+      this.avatarUrl = changes['avatarUrl'].currentValue;
     }
   }
 
   buildUrl(id: string, token: string) {
     this.url = '';
     if(TDSHelperString.hasValueString(id) && TDSHelperString.hasValueString(token)){
-        let url = `https://graph.facebook.com/${id}/picture?type=large&access_token=${token}`;
+      let url = `https://graph.facebook.com/${id}/picture?type=large&access_token=${token}`;
 
-        this.imageFacade.getImage(url).pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res: any) => {
-              this.url = res;
-              this.cdRef.markForCheck();
-          },
-          error: (err: any) => {
-              this.cdRef.markForCheck();
-          }
-        })
+      this.isLoading = true;
+      this.imageFacade.getImage(url).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.url = res;
+            this.isLoading = false;
+            this.cdRef.detectChanges();
+        },
+        error: (err: any) => {
+          this.isLoading = false;
+            this.cdRef.detectChanges();
+        }
+      })
     }
   }
 
