@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core";
 import { ChatomniConversationInfoDto, ConversationPartnerDto } from "@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto";
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from "@app/dto/saleonlineorder/quick-saleonline-order.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
+import { ChatomniConversationFacade } from "@app/services/chatomni-facade/chatomni-conversation.facade";
+import { ConversationOrderFacade } from "@app/services/facades/conversation-order.facade";
 import { ProductTemplateUOMLineService } from "@app/services/product-template-uom-line.service";
 import { SharedService } from "@app/services/shared.service";
 import { UserInitDTO } from "@core/dto";
@@ -14,8 +16,9 @@ export class CsOrder_FromConversationHandler {
     private userInit!: UserInitDTO;
 
     constructor(private sharedService: SharedService,
+      private conversationOrderFacade: ConversationOrderFacade,
       private productTemplateUOMLineService: ProductTemplateUOMLineService){
-      this.loadUserLogged();
+        this.loadUserLogged();
     }
 
     getOrderFromConversation(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO, type?: string){
@@ -127,10 +130,14 @@ export class CsOrder_FromConversationHandler {
       order.Facebook_UserId = order.Facebook_UserId || conversationInfo.Conversation?.UserId;
 
       // TODO: nếu không có đơn hàng cũ thì tính tạm tổng tiền với product mặc định
-      if(!conversationInfo.Order && TDSHelperArray.hasListValue(order.Details)) {
+      if(!TDSHelperObject.hasValue(conversationInfo.Order) && TDSHelperArray.hasListValue(order.Details)) {
           order.TotalAmount = 0;
           order.TotalAmount = (order.Details[0].Price * order.Details[0].Quantity);
           order.TotalQuantity = 1;
+      }
+
+      if(TDSHelperString.hasValueString(order.Note)) {
+          order.Note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(order.Note);
       }
 
       return {...order}

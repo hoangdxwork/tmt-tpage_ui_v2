@@ -1,3 +1,4 @@
+import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { Detail_QuickSaleOnlineOrder } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
@@ -19,6 +20,7 @@ export class CsOrder_PrepareModelHandler {
   saleConfig!: SaleOnlineSettingDTO;
 
   constructor(private crmTeamService: CRMTeamService,
+    private conversationOrderFacade: ConversationOrderFacade,
     private facebookPostService: FacebookPostService) {}
 
   public prepareInsertFromMessage(model: QuickSaleOnlineOrderModel, team: CRMTeamDTO) {
@@ -138,7 +140,11 @@ export class CsOrder_PrepareModelHandler {
     }
 
     if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
-        x.Note = `{before}${comment.Message || comment.Data?.message}`;
+        let message = `${comment.Data?.message || comment.Message}`;
+        if(TDSHelperString.hasValueString(message)) {
+          message = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(message);
+        }
+        x.Note = `{before}${message}`;
     }
 
     return {...x};
