@@ -28,7 +28,7 @@
                                   </div>
 
                                   <!-- Mã đơn hàng -->
-                                  <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] gap-x-1">
+                                  <div *ngIf="commentOrders && item?.Data?.from && commentOrders[item.Data?.from!.id] && !item.IsOwner" class="flex flex-row items-center min-w-[110px] gap-x-1">
                                       <div class="text-info-500 font-semibold flex flex-row items-center gap-x-2">
                                           <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(item, commentOrders[item.Data?.from!.id][0])">
                                               <span *ngIf="!order?.code?.includes('#')">#</span>{{ commentOrders[item.Data?.from!.id][0].code }}
@@ -62,7 +62,7 @@
                                   </div>
 
                                   <!-- Mã hóa đơn -->
-                                  <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i" class="flex flex-auto flex-row items-center">
+                                  <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i && !item.IsOwner" class="flex flex-auto flex-row items-center">
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
                                         <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold cursor-pointer" (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][0])">
                                             {{ invoiceDict[partnerDict[item.UserId].i][0].Number }}
@@ -321,7 +321,7 @@
                                           </div>
 
                                           <!-- Mã đơn hàng -->
-                                          <div *ngIf="commentOrders && child?.Data?.from && commentOrders[child.Data?.from!.id]" class="flex flex-row items-center min-w-[110px] gap-x-1">
+                                          <div *ngIf="commentOrders && child?.Data?.from && commentOrders[child.Data?.from!.id] && !child.IsOwner" class="flex flex-row items-center min-w-[110px] gap-x-1">
                                               <div class="text-info-500 font-semibold flex flex-row items-center gap-x-2">
                                                   <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(child, commentOrders[child.Data?.from!.id][0])">
                                                       <span *ngIf="!order?.code?.includes('#')">#</span>{{ commentOrders[child.Data?.from!.id][0].code }}
@@ -355,7 +355,7 @@
                                           </div>
 
                                           <!-- Mã hóa đơn -->
-                                          <div *ngIf="partnerDict && partnerDict[child.UserId] && partnerDict[child.UserId].i" class="flex flex-auto flex-row items-center">
+                                          <div *ngIf="partnerDict && partnerDict[child.UserId] && partnerDict[child.UserId].i && !child.IsOwner" class="flex flex-auto flex-row items-center">
                                             <div *ngIf="invoiceDict && invoiceDict[partnerDict[child.UserId].i]" class="flex flex-auto items-center gap-x-1">
                                                 <span *ngIf="invoiceDict[partnerDict[child.UserId].i][0]" class="text-primary-1 font-semibold cursor-pointer" (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[child.UserId].i][0])">
                                                     {{ invoiceDict[partnerDict[child.UserId].i][0].Number }}
