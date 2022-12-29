@@ -1,6 +1,5 @@
 import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
-import { Facebook } from './../../../../../lib/dto/facebook.dto';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
@@ -341,10 +340,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             this.saleOnline_OrderService.getById(res.orderId).pipe(takeUntil(this.destroy$)).subscribe({
               next: (obs: any) => {
                   delete obs['@odata.context'];
-                  this.quickOrderModel = {...obs};
-                  this.mappingAddress(this.quickOrderModel);
 
+                  this.quickOrderModel = {...obs};
+                  if(this.quickOrderModel && TDSHelperString.hasValueString(this.quickOrderModel.Note)) {
+                    this.quickOrderModel.Note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(this.quickOrderModel.Note);
+                  }
+
+                  this.mappingAddress(this.quickOrderModel);
                   this.postEvent.spinLoadingTab$.emit(false);
+
                   this.isLoading = false;
                   this.cdRef.detectChanges();
               },
@@ -488,13 +492,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             next: (order: any) => {
                 this.isLoading = false;
 
-                  if(type == 'confirm') {
-                     this.message.success('Lưu địa chỉ đơn hàng thành công');
-                  }
+                if(type == 'confirm') {
+                    this.message.success('Lưu địa chỉ đơn hàng thành công');
+                }
 
-                  let csid = model.Facebook_ASUserId;
-                  this.onSyncConversationPartner(csid);
-                  this.cdRef.detectChanges();
+                let csid = model.Facebook_ASUserId;
+                this.onSyncConversationPartner(csid);
+                this.cdRef.detectChanges();
             },
             error: error => {
                 this.isLoading = false;
