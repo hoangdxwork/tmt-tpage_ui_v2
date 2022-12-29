@@ -1628,9 +1628,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     let id = order.Id as string;
     let message = this.type == 'post' ? this.commentPost?.Message : null;
-    if(message && TDSHelperString.hasValueString(message)) {
-        message = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(message);
-    }
 
     // Tiktok khi print gán uid là UniqueId
     let channelType = this.team?.Type;

@@ -1,13 +1,14 @@
 import { Injectable, OnDestroy } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { takeUntil } from 'rxjs/operators';
 import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 import { InitSaleDTO } from "../../dto/setting/setting-sale-online.dto";
 import { TDSNotificationService } from "tds-ui/notification";
 import { SharedService } from "../shared.service";
+import { ConversationOrderFacade } from "../facades/conversation-order.facade";
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,7 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
 
   constructor(private apiService: TCommonService,
     private sharedService: SharedService,
+    private conversationOrderFacade: ConversationOrderFacade,
     private notificationService: TDSNotificationService) {
     super(apiService);
       this.initialize();
@@ -128,6 +130,10 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
   }
 
   printId(id: string, quickOrderModel: QuickSaleOnlineOrderModel, message?: any) {
+    if(message && TDSHelperString.hasValueString(message)) {
+        message = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(message);
+    }
+
     let exist = this.saleConfig.configs && this.saleConfig.configs.PrinterConfigs != null && this.saleConfig.configs.DefaultPrinterTemplate != null;
     if(!exist) {
       this.notificationService.warning('Lỗi in', `Không thể tải cấu hình`,  { placement: 'bottomLeft'});
