@@ -836,9 +836,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         next: (res: any) => {
             delete res['@odata.context'];
             res.FormAction = formAction;
-            this.mappingAddress(res);
+            if(res && TDSHelperString.hasValueString(res.Note)) {
+              res.Note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(res.Note);
+            }
 
+            this.mappingAddress(res);
             this.disableSyncOrder = true;
+
             this.prepareResponseSaleOnline(res, type);
             this.cdRef.detectChanges();
         },
@@ -874,6 +878,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           next: (res: any) => {
               delete res['@odata.context'];
               res.FormAction = formAction;
+              if(res && TDSHelperString.hasValueString(res.Note)) {
+                res.Note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(res.Note);
+              }
 
               this.prepareResponseSaleOnline(res, type);
               this.cdRef.detectChanges();
@@ -1621,6 +1628,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     let id = order.Id as string;
     let message = this.type == 'post' ? this.commentPost?.Message : null;
+    if(message && TDSHelperString.hasValueString(message)) {
+        message = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(message);
+    }
 
     // Tiktok khi print gán uid là UniqueId
     let channelType = this.team?.Type;
