@@ -64,3 +64,29 @@ export class ShowAvatarPipe implements PipeTransform {
     return false;
   }
 }
+
+@Pipe({
+  name: "sizeAvatarPipe"
+})
+export class SizeAvatarPipe implements PipeTransform {
+
+  transform(size: string | number): any {
+    switch (size) {
+      case 'xl':
+        return 64;
+
+      case 'lg':
+        return 48;
+
+      case 'md':
+        return 36;
+
+      case 'sm':
+        return 24;
+
+      default:
+        if(Number(size) > 0)
+        return Number(size);
+    }
+  }
+}
