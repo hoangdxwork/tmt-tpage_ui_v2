@@ -542,7 +542,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
         // TODO: Trả lời bình luận
         modelv2.ObjectId = item?.ObjectId as string;
 
-        this.chatomniCommentService.replyCommentTshop(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
+        this.chatomniCommentService.replyComment(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res: ChatomniDataItemDto[]) => {
               res.map((x: ChatomniDataItemDto)=> {
                   x["Status"] = ChatomniStatus.Done;
