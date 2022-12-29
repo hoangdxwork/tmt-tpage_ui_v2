@@ -220,7 +220,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.loadDeliveryCarrier();
     this.productIndexDB();
 
-    this.eventEmitter();
+    this.onEventEmitter();
     this.onEventSocket();
   }
 
@@ -263,7 +263,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     })
   }
 
-  eventEmitter(){
+  onEventEmitter(){
     this.onSelectOrderFromMessage();
 
     this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -408,6 +408,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.isLoading = true;
 
     this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};
+    let note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(this.quickOrderModel.Note);debugger
     this.mappingAddress(this.quickOrderModel);
     this.isLoading = false;
     this.cdRef.detectChanges();
@@ -568,7 +569,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     });
   }
 
-  //Load thông tin ship aship
   loadConfigProvider(data: FastSaleOrder_DefaultDTOV2) {
     if (data.Carrier && data.Carrier.ExtraProperties) {
 

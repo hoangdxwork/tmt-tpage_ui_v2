@@ -43,68 +43,8 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     private sgRConnectionService: SignalRConnectionService) {
       super(apiService);
 
-      // this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
-      //   if(res && TDSHelperArray.isArray(res)){
-      //       this.lstTeam = res;
-      //   }
-      // })
-      // this.initialize();
   }
 
-  initialize() {
-    //TODO: load message from Webhook
-    this.sgRConnectionService._onFacebookEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.messageWebhook(res);
-    });
-
-    //TODO: load message from MessageJob
-    this.sgRConnectionService._onSendMessageCompleteEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.messageJob(res);
-    });
-
-    //TODO: Tin nhắn đã được tiếp nhập và đang được gửi đi send_message_sending
-    this.sgRConnectionService._onSendMessageSendingEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        if(res) {
-            this.messageSending(res);
-            this.notification.info('Tin nhắn', `${res.message}`, { placement: 'bottomLeft' });
-        }
-    });
-
-    //TODO: tin nhắn lỗi
-    this.sgRConnectionService._onSendMessageFailEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        if(res) {
-            this.messageFail(res);
-            this.notification.error('Tin nhắn lỗi', `${res.message}`, { placement: 'bottomLeft' });
-        }
-    });
-
-    //TODO: Retry Message
-    this.sgRConnectionService._onRetryMessage$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.messageRetry(res);
-    });
-
-    //TODO: Data From Scan
-    this.sgRConnectionService._onFacebookScanData$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if (res.type == "update_scan_conversation") {
-          this.messageScanConversation(res);
-      }
-      if (res.type == "update_scan_feed") {
-          this.messageScanFeed(res);
-      }
-    });
-
-    //TODO: Send Message With Bill
-    this.sgRConnectionService._onSendMessageWithBill$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.messageWithBill(res);
-    });
-
-    ///TODO: Message From Add Template
-    this.sgRConnectionService._onAddTemplateMessage$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if (res.type == "add_template_message") {
-          this.messageAddTemplate(res);
-      }
-    });
-  }
 
   messageWebhook(model: any) {
     const data = Object.assign({}, model.data);

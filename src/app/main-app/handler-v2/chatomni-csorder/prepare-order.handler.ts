@@ -138,7 +138,7 @@ export class CsOrder_PrepareModelHandler {
     }
 
     if(saleOnlineSetting && saleOnlineSetting.enablePrintComment) {
-        x.Note = `{before}${comment.Message || comment.Data?.message}`;
+        x.Note = `{before}${comment.Message}`; //comment.Data?.message ||
     }
 
     return {...x};

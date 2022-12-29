@@ -15,7 +15,7 @@ export class CsOrder_FromConversationHandler {
 
     constructor(private sharedService: SharedService,
       private productTemplateUOMLineService: ProductTemplateUOMLineService){
-      this.loadUserLogged();
+        this.loadUserLogged();
     }
 
     getOrderFromConversation(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO, type?: string){
@@ -127,11 +127,13 @@ export class CsOrder_FromConversationHandler {
       order.Facebook_UserId = order.Facebook_UserId || conversationInfo.Conversation?.UserId;
 
       // TODO: nếu không có đơn hàng cũ thì tính tạm tổng tiền với product mặc định
-      if(!conversationInfo.Order && TDSHelperArray.hasListValue(order.Details)) {
+      if(!TDSHelperObject.hasValue(conversationInfo.Order) && TDSHelperArray.hasListValue(order.Details)) {
           order.TotalAmount = 0;
           order.TotalAmount = (order.Details[0].Price * order.Details[0].Quantity);
           order.TotalQuantity = 1;
       }
+
+
 
       return {...order}
     }

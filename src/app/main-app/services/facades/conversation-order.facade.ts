@@ -1,14 +1,8 @@
-import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { TAuthService, TCommonService, UserInitDTO } from "src/app/lib";
 import { BaseSevice } from "../base.service";
-import { CRMTeamService } from "../crm-team.service";
-import { PartnerService } from "../partner.service";
-import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
-import { TabPartnerCvsRequestModel } from '../../dto/conversation-partner/partner-conversation-request.dto';
-import { CRMTeamDTO } from '../../dto/team/team.dto';
-import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from '../../dto/saleonlineorder/quick-saleonline-order.dto';
+import { QuickSaleOnlineOrderModel } from '../../dto/saleonlineorder/quick-saleonline-order.dto';
 import { ChangeTabConversationEnum } from '@app/dto/conversation-all/chatomni/change-tab.dto';
 import { ChatomniConversationInfoDto, ConversationPartnerDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
 
@@ -19,12 +13,6 @@ export class ConversationOrderFacade extends BaseSevice  {
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "";
-
-  private currentTeam!: CRMTeamDTO;;
-  private userInit!: UserInitDTO;
-
-  private lastOrder!: QuickSaleOnlineOrderModel;
-  private partner!: TabPartnerCvsRequestModel;
 
   // Event loading tab partner, order
   public onChangeTab$ = new EventEmitter<ChangeTabConversationEnum>();
@@ -56,41 +44,42 @@ export class ConversationOrderFacade extends BaseSevice  {
   // TODO: output có thông tin đơn hàng khi bấn thông tin khách hàng để Disable tab đơn hàng
   public hasValueOrderCode$ = new EventEmitter<any>();
 
-  constructor(private apiService: TCommonService,
-      private partnerService: PartnerService,
-      private sgRConnectionService: SignalRConnectionService,
-      private auth: TAuthService) {
+  constructor(private apiService: TCommonService) {
         super(apiService);
   }
 
-  loadOrderFromSignalR(){
-    this.sgRConnectionService._onSaleOnlineOrder$.subscribe((res: any) => {
-        if(res && (res.action == "create" || res.action == "updated")) {
+  prepareMessageHasPhoneBBCode(message: string) {
+    if(TDSHelperString.hasValueString(message)) {
+      let exist = message.includes('[format') && message.includes('[end_format]') && message.includes("type='text-copyable'");
+      if(exist) {
+          let phone: string = '';
+          let format: string = '';
 
-          if(this.partner && this.currentTeam && this.partner.Id &&
-            (this.partner.Facebook_ASUserId == res.data.facebook_ASUserId && res.data.facebook_PageId == this.currentTeam.ChannelId ||
-            this.partner.Facebook_ASUserId == res.data.facebook.psId && res.data.facebook.pageId == this.currentTeam.ChannelId)) {
+          let indexOf = message.indexOf('[format') && message.indexOf('[end_format]');
+          if(indexOf > 0) {
+            let sub1 = message.indexOf('[format');
+            if(sub1 > 0) {
+              format = message.substring(sub1);
+            }
 
-                this.partnerService.getLastOrder(this.partner.Id).subscribe((obs: any) => {
-                    if(obs) {
-                        this.lastOrder = {...obs};
-
-                        this.lastOrder.Details = [...obs.Details];
-                        this.lastOrder.PartnerId = obs.PartnerId || obs.Partner?.Id;
-                        this.lastOrder.PartnerName = obs.PartnerName || obs.Partner?.Name;
-
-                    } else {
-                      this.lastOrder && (delete this.lastOrder.Id)
-                      this.lastOrder && (delete this.lastOrder.Code)
-                    }
-
-                    this.onLastOrderCheckedConversation$.emit(this.lastOrder);
-                })
+            let sub2 = format.lastIndexOf('[end_format]');
+            if(sub2 > 0 && format) {
+                format = format.substring(sub2);
+            }
           }
-        }
-      }, error => {
-          console.log(`Load đơn hàng từ signalR đã xảy ra lỗi: ${error}`);
-      });
+
+          if(indexOf > 0) {
+            let start =  message.indexOf("value='");
+            let end =  message.indexOf( "']");
+            if(start > 0 && end > 0) {
+                phone = message.substring(start, end).replace("value='", "").trim();
+            }
+          }
+      }
+    }
+
+    return message;
   }
+
 
 }
