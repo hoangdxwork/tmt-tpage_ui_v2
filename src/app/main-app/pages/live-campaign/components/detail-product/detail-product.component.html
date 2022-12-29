@@ -1,15 +1,12 @@
 <div class="w-full h-full flex flex-col bg-white rounded-xl text-body-2 text-neutral-900">
     <div class="py-2.5 px-4 flex justify-end items-center gap-x-4">
-        <div class="w-1/4 flex flex-row items-center">
-            Lọc theo: 
-            <tds-form-field class="flex flex-auto ml-2">
-                <tds-select valueField="value" textField="text" placeholder='Lọc theo'
-                    [ngModel]="filterObj.isOnlyProductCancel" (ngModelChange)="onFilterData($event)" [required]='true'
-                    [data]="filterData" [allowClear]="false">
-                </tds-select>
-                <tds-error>Validation message text</tds-error>
-            </tds-form-field>
-        </div>
+        <tds-form-field class="w-[10%]">
+            <tds-select valueField="value" textField="text" placeholder='Lọc theo'
+                [ngModel]="filterObj.isOnlyProductCancel" (ngModelChange)="onFilterData($event)" [required]='true'
+                [data]="filterData" [allowClear]="false">
+            </tds-select>
+            <tds-error>Validation message text</tds-error>
+        </tds-form-field>
 
         <tds-form-field class="w-1/4">
             <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput [tdsInputDebounce]="750" [(ngModel)]="innerText"
