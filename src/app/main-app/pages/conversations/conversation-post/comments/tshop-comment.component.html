@@ -11,10 +11,10 @@
           </div>
 
            <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2 min-h-[118px]">
-              <div *ngIf="item && item.Type == 91" [ngClass]="item.ParentId && !item.isNoPartnerId ? 'pl-14':''" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
+              <div *ngIf="item && item.Type == 91" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
 
                   <div>
-                      <tds-avatar  class="cursor-pointer" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.UserId] : '')" [size]="item.ParentId && !item.isNoPartnerId ? 'md': 'lg'"
+                      <tds-avatar  class="cursor-pointer" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.UserId] : '')" [size]="'lg'"
                        [tdsSrc]="(item.Data | tshopDataCs)?.Actor?.AvatarUrl | imageLazyLoad: isLoadingNextdata"></tds-avatar>
                   </div>
 
