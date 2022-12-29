@@ -117,10 +117,11 @@
 
                                             <!-- Danh sách order tag -->
                                             <div *ngIf="orderTags && orderTags[data.ProductId + '_' + data.UOMId] && orderTags[data.ProductId + '_' + data.UOMId].length > 0" class="flex flex-wrap items-center gap-1">
-                                                <tds-tag status='secondary' *ngFor="let orderTag of orderTags[data.ProductId + '_' + data.UOMId]| slice:0:1" class="cursor-pointer" tds-tooltip="{{ orderTag }}">
-                                                    {{ orderTag }}</tds-tag> 
+                                                <tds-tag status='secondary' *ngFor="let orderTag of orderTags[data.ProductId + '_' + data.UOMId]| slice:0:3" class="cursor-pointer" size="sm" tds-tooltip="{{ orderTag }}">
+                                                    <div class="max-w-[48px] w-fit truncate">{{ orderTag }}</div>
+                                                </tds-tag> 
 
-                                                <div class="flex gap-1.5 items-center"  *ngIf="orderTags[data.ProductId + '_' + data.UOMId].length > 1">
+                                                <div class="flex gap-1.5 items-center"  *ngIf="orderTags[data.ProductId + '_' + data.UOMId].length > 3">
                                                     <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer tdsi-plus-fill" tds-popover
                                                         [popoverContent]="popoverContentTag"
                                                         popoverPlacement="top"
@@ -129,9 +130,11 @@
       
                                                     <ng-template #popoverContentTag>
                                                         <div class="flex gap-x-2 gap-y-1 flex-wrap max-w-[500px]">
-                                                            <div *ngFor="let orderTag2 of orderTags[data.ProductId + '_' + data.UOMId] | slice: 1:(orderTags[data.ProductId + '_' + data.UOMId].length)"
+                                                            <div *ngFor="let orderTag2 of orderTags[data.ProductId + '_' + data.UOMId] | slice:3:(orderTags[data.ProductId + '_' + data.UOMId].length)"
                                                                 class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
-                                                                <tds-tag status='secondary'>{{ orderTag2 }}</tds-tag> 
+                                                                <tds-tag status='secondary' class="cursor-pointer" size="sm" tds-tooltip="{{ orderTag2 }}">
+                                                                    <div class="max-w-[48px] w-fit truncate">{{ orderTag2 }}</div>
+                                                                </tds-tag> 
                                                             </div>
                                                         </div>
                                                     </ng-template>

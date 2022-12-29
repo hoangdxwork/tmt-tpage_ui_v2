@@ -197,7 +197,7 @@ export class LiveCampaignService extends BaseSevice {
 
   reportLiveCampaignProduct(liveCampaignId: string, params: string): Observable<any> {
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ReportLiveCampaignProduct?key=${liveCampaignId}&${params}&$count=true`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/reportlivecampaignproduct?${params}&isOnlyProductCancel=false`,
         method: CoreApiMethodType.get,
     }
 

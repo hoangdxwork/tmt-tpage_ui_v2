@@ -38,7 +38,37 @@
                             (expandChange)="onExpandChange(product.ProductId, $event)">
                         </td>
 
-                        <td class="font-semibold border-r">{{ product.ProductName }}</td>
+                        <td class="font-semibold border-r">
+                            <div class="flex flex-col gap-y-2">
+                                <tds-label>{{ product.ProductName }}</tds-label>
+
+                                <div *ngIf="product.Tags && (product.Tags|stringToStringArray)?.length > 0" class="flex flex-wrap items-center gap-1">
+                                    <tds-tag status='primary' *ngFor="let tag1 of product.Tags|stringToStringArray| slice:0:3" class="cursor-pointer" size="sm" tds-tooltip="{{ tag1 }}">
+                                        <div class="max-w-[48px] w-fit truncate">{{ tag1 }}</div>
+                                    </tds-tag> 
+
+                                    <div class="flex gap-1.5 items-center"  *ngIf="(product.Tags|stringToStringArray)?.length > 3">
+                                        <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer tdsi-plus-fill" 
+                                            tds-popover
+                                            [popoverContent]="popoverContentTag"
+                                            popoverPlacement="top"
+                                            [popoverBackdrop]="true">
+                                        </div>
+
+                                        <ng-template #popoverContentTag>
+                                            <div class="flex gap-x-2 gap-y-1 flex-wrap max-w-[500px]">
+                                                <div *ngFor="let tag2 of product.Tags|stringToStringArray | slice:3:(product.Tags|stringToStringArray)?.length"
+                                                    class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
+                                                    <tds-tag status='primary' class="cursor-pointer" size="sm" tds-tooltip="{{ tag2 }}">
+                                                        <div class="max-w-[48px] w-fit truncate">{{ tag2 }}</div>
+                                                    </tds-tag> 
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
 
                         <td class="border-r">{{ product.ProductQtyInCart || 0 |numberCustom }}</td>
                         <td class="border-r">{{ product.ProductQtyWaitCheckOut || 0 |numberCustom }}</td>

@@ -1,4 +1,3 @@
-
 export interface LiveCampaignReportProductDto {
     ProductId: number;
     ProductName: string;
@@ -11,12 +10,10 @@ export interface LiveCampaignReportProductDto {
     OrderQtyCancelCheckOut: number;
     InvoiceQtyCheckOut: number;
     InvoiceQtyCancelCheckOut: number;
+    Tags: string;
 }
 
 export interface ODataLiveCampaignReportProductDto {
-    '@odata.context': string;
-    '@odata.count': number;
-    value: LiveCampaignReportProductDto[];
+    TotalCount: number;
+    Datas: LiveCampaignReportProductDto[];
 }
-
-

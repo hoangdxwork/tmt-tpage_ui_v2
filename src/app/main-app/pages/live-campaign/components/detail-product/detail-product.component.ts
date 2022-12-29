@@ -49,8 +49,8 @@ export class DetailProductComponent implements OnInit {
 
     this.getViewData(params).subscribe({
         next: (res: ODataLiveCampaignReportProductDto) => {
-            this.count = res['@odata.count'] as number;
-            this.lstOfData = [...res.value];
+            this.lstOfData = [...(res?.Datas || [])];
+            this.count = res?.TotalCount || 0;
         },
         error: (err: any) => {
             this.message.error(err.error.message);
