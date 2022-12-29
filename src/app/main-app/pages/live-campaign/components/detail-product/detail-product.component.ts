@@ -42,8 +42,7 @@ export class DetailProductComponent implements OnInit {
 
   constructor(private message: TDSMessageService,
     private liveCampaignService: LiveCampaignService,
-    private destroy$: TDSDestroyService,
-    private oDataLiveCampaignService: ODataLiveCampaignService) { }
+    private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
   }
@@ -83,6 +82,7 @@ export class DetailProductComponent implements OnInit {
         searchText: '',
         isOnlyProductCancel: false
     }
+    this.pageIndex = 1;
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -101,6 +101,7 @@ export class DetailProductComponent implements OnInit {
   }
 
   onFilterData(event: boolean) {
+    this.pageIndex = 1;
     this.filterObj.isOnlyProductCancel = event;
     this.loadData(this.pageSize, this.pageIndex);
   }
