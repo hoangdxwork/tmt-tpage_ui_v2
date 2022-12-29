@@ -33,6 +33,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { CreateFormProductHandler } from 'src/app/main-app/handler-v2/product/create-form-product.handler';
 import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
+import { TDSConfigService } from 'tds-ui/core/config';
 
 @Component({
   selector: 'app-create-product',
@@ -96,6 +97,7 @@ export class ConfigAddProductComponent implements OnInit {
   constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
+    private readonly tdsConfigService: TDSConfigService,
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
@@ -138,7 +140,11 @@ export class ConfigAddProductComponent implements OnInit {
     this.loadOriginCountry();
 
     this.onEventEmitter();
-    this.loadCurrentCompany()
+    this.loadCurrentCompany();
+
+    this.tdsConfigService.set('message', {
+      maxStack: 3
+    });
   }
   //#endregion Initialization
 
