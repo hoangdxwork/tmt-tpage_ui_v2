@@ -1,3 +1,4 @@
+import { ChatomniCommentModelDto } from './../../dto/conversation-all/chatomni/chatomni-comment.dto';
 import { EnumSendMessageType } from './../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from './../../dto/suggest-address/suggest-address.dto';
@@ -188,29 +189,26 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
     if(this.isLiking){
       return
     }
-
     this.isLiking = true;
+
     let model = {
-      TeamId: this.team.Id,
-      CommentId:  this.dataItem.Data?.id,
-      Content: this.dataItem.Data?.user_likes ? 'hủy thích' : 'thích',
-      Message: this.dataItem.Data?.message,
-      UserName: this.dataItem.Data?.from?.name,
-      fbid: this.dataItem.Data?.from?.id
-    }
+      CommentType: 3,
+      Recipients: [this.dataItem.Data?.id as string]
+    } as ChatomniCommentModelDto;
 
-    this.activityMatchingService.addLikeComment(model)
-      .pipe(takeUntil(this.destroy$), finalize (()=>{this.isLiking = false})).subscribe({
-        next: (res: any) => {
-            this.tdsMessage.success('Thao tác thành công!');
-            this.dataItem.Data.user_likes = !this.dataItem.Data.user_likes;
+    this.chatomniCommentService.commentHandle(this.team.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.tdsMessage.success('Thao tác thành công!');
+          this.dataItem.Data.user_likes = !this.dataItem.Data.user_likes;
+          this.isLiking = false;
 
-            this.cdRef.markForCheck();
+          this.cdRef.markForCheck();
         },
-        error: error => {
-            this.tdsMessage.error(error.error? error.error.message : 'đã xảy ra lỗi');
-            this.cdRef.markForCheck();
-        }
+      error: error => {
+          this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
+          this.isLiking = false;
+          this.cdRef.markForCheck();
+      }
     });
   }
 
@@ -219,25 +217,24 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
       return
     }
     this.isHiding = true;
+
     let model = {
-      TeamId: this.team.Id,
-      CommentId: this.dataItem.Data?.id,
-      Content: this.dataItem.Data?.is_hidden ? 'hiện' : 'ẩn',
-      Message: this.dataItem.Data?.message,
-      UserName: this.dataItem.Data?.from?.name,
-      fbid: this.dataItem.Data?.from?.id
-    };
+      CommentType: this.dataItem.Data?.is_hidden ? 2: 1,
+      Recipients: [this.dataItem.Data?.id as string]
+    } as ChatomniCommentModelDto
 
-    this.activityMatchingService.hideComment(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{this.isHiding = false})).subscribe({
+    this.chatomniCommentService.commentHandle(this.team.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.tdsMessage.success('Thao tác thành công!');
-        this.dataItem.Data.is_hidden = !this.dataItem.Data?.is_hidden;
+          this.tdsMessage.success('Thao tác thành công!');
+          this.dataItem.Data.is_hidden = !this.dataItem.Data?.is_hidden;
+          this.isHiding = false;
 
-        this.cdRef.markForCheck();
-      },
+          this.cdRef.markForCheck();
+        },
       error: error => {
-        this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
-        this.cdRef.markForCheck();
+          this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
+          this.isHiding = false;
+          this.cdRef.markForCheck();
       }
     });
   }
@@ -480,7 +477,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
     }
 
     else {
-        let model = this.prepareModelV2(message);
+        let model = this.prepareModel(message);
         model.RecipientId = this.dataItem.ParentId || this.dataItem?.Data?.id as string;
         model.ObjectId =this.dataItem.ObjectId || this.dataItem.Data?.object?.id as string;
 
@@ -531,7 +528,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
 
   addQuickReplyComment(message: string) {
     this.isReply = false;
-    const model = this.prepareModelV2(message);
+    const model = this.prepareModel(message);
     model.MessageType = EnumSendMessageType._REPLY;
     model.RecipientId = this.dataItem.Data.id || this.dataItem.Data.Id || null;
 
@@ -572,7 +569,7 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
     });
   }
 
-  prepareModelV2(message: string): any {
+  prepareModel(message: string): any {
     const model = {} as ChatomniSendMessageModelDto;
     model.Message = message;
 

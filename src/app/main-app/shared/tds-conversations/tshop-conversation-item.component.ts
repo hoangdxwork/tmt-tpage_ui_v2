@@ -477,11 +477,11 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
     }
 
     else {
-        let modelv2 = this.prepareModelV2(message);
-        modelv2.RecipientId = this.dataItem.Data?.Id as string;
-        modelv2.ObjectId = this.dataItem.Data?.ObjectId as string;
+        let model = this.prepareModel(message);
+        model.RecipientId = this.dataItem.Data?.Id as string;
+        model.ObjectId = this.dataItem.Data?.ObjectId as string;
 
-        this.chatomniCommentService.replyComment(this.team!.Id, this.dataItem.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
+        this.chatomniCommentService.replyComment(this.team!.Id, this.dataItem.UserId, model).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res: ResponseAddMessCommentDtoV2[]) => {
               res.map((resItem: ResponseAddMessCommentDtoV2)=> {
                 let x = resItem as ChatomniDataItemDto;
@@ -529,7 +529,7 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
 
   addQuickReplyComment(message: string) {
     this.isReply = false;
-    const model = this.prepareModelV2(message);
+    const model = this.prepareModel(message);
     model.MessageType = EnumSendMessageType._REPLY;
     model.RecipientId = this.dataItem.Data.id || this.dataItem.Data.Id || null;
 
@@ -571,24 +571,6 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
   }
 
   prepareModel(message: string): any {
-    const model = {} as SendMessageModelDTO;
-    model.from = {
-      id: this.team.ChannelId || this.team.Facebook_PageId,
-      name: this.team.Name
-    }
-    model.to = {
-      id: this.dataItem.UserId,
-      name: this.name
-    };
-    model.to_id = this.dataItem.UserId;
-    model.to_name = this.name;
-    model.message = message;
-    model.created_time = (new Date()).toISOString();
-
-    return model
-  }
-
-  prepareModelV2(message: string): any {
     const model = {} as ChatomniSendMessageModelDto;
     model.Message = message;
 
