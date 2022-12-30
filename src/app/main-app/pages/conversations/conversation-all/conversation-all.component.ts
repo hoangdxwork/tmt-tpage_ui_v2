@@ -155,6 +155,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
               this.fetchLiveConversations(team);
               this.setCurrentTeam(team);
+              this.crmService.onUpdateTeam(team);
           }
 
           this.type = params?.params?.type;
@@ -606,15 +607,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onClickTeam(data: any): any {
-    if (this.paramsUrl?.teamId) {
+    let exist = this.paramsUrl && TDSHelperString.hasValueString(this.paramsUrl?.teamId) && data;
+    if (exist) {
       this.disableNextUrl = false;
-
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+
+      this.crmService.onUpdateTeam(data);
       this.router.navigateByUrl(uriParams);
     }
-
-    this.crmService.onUpdateTeam(data);
   }
 
   onRefresh(event: boolean){

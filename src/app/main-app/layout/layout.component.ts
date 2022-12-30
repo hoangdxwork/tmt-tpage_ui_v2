@@ -27,7 +27,7 @@ import { FirebaseRegisterService } from '@app/services/firebase/firebase-registe
 
 export class LayoutComponent implements OnInit, AfterViewInit {
 
-  userInit!: UserInitDTO;
+  userInit!: UserInitDTO | any;
   currentTeam!: CRMTeamDTO | null;
   lstMenu!: TDSSafeAny;
   inlineCollapsed = false;
@@ -341,21 +341,18 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   //load thông tin user
   loadUserInfo() {
-    this.auth.getUserInit().subscribe(res => {
-      if(res) {
+    this.auth.getUserInit().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        if(res) {
           this.userInit = res || {};
+        }
       }
     })
   }
 
   onClickTeam(data: CRMTeamDTO): any{
-    let uri = this.router.url;
-
-    if(uri && uri.startsWith("/conversation")){
-        this.crmService.changeTeamFromLayout$.emit(data);
-    } else {
-        this.crmService.onUpdateTeam(data);
-    }
+    this.crmService.changeTeamFromLayout$.emit(data);
+    this.crmService.onUpdateTeam(data);
   }
 
   onProfile() {

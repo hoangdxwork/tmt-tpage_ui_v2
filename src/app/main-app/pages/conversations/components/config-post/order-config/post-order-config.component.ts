@@ -1,4 +1,3 @@
-import { UOM } from './../../../../../dto/product-template/product-tempalte.dto';
 import { ApiContentToOrdersV2Dto, TextContentToOrderV2Dto, ProductTextContentToOrderDto } from './../../../../../dto/live-campaign/content-to-order.dto';
 import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign-model.dto';
 import { ConfigUserDTO } from '../../../../../dto/configs/post/post-order-config.dto';
@@ -783,7 +782,10 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
 
   prepareModelOrderConfig() {
     let model = {} as any;
-    this.currentTeam = this.crmTeamService.getCurrentTeam();
+
+    if(!this.currentTeam) {
+      this.currentTeam = this.crmTeamService.getCurrentTeam();
+    }
 
     let status: any[] = [];
     if( this.dataModel.ExcludedStatusNames) {
