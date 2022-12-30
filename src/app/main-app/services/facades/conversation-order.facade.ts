@@ -55,19 +55,19 @@ export class ConversationOrderFacade extends BaseSevice  {
           let formatFb: string = '';
 
           let indexOf = message.indexOf('[format') && message.indexOf('[end_format]');
-          if(indexOf > 0) {
+          if(indexOf >= 0) {
             let sub1 = message.indexOf('[format');
-            if(sub1 > 0) {
+            if(sub1 >= 0) {
               formatFb = message.substring(sub1);
             }
 
             let sub2 = formatFb?.lastIndexOf('[end_format]');
-            if(sub2 > 0 && formatFb) {
+            if(sub2 >= 0 && formatFb) {
               formatFb = formatFb.substring(0, (sub2 + 12));
             }
           }
 
-          if(indexOf > 0) {
+          if(indexOf >= 0) {
             let start =  message.indexOf("value='");
             let end =  message.indexOf( "']");
             if(start > 0 && end > 0) {

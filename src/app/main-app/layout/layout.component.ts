@@ -6,7 +6,6 @@ import { filter, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { environment } from 'src/environments/environment';
 import { TDSMenuDTO } from 'tds-ui/menu';
-import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { CRMTeamService } from '../services/crm-team.service';
@@ -18,6 +17,8 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { TDSMessageService } from 'tds-ui/message';
 import { FireBaseDevice, TopicDetailDto } from '@app/dto/firebase/topics.dto';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
+import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
   selector: 'app-layout',
@@ -48,6 +49,8 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private socketService: SocketService,
     private activatedRoute: ActivatedRoute,
     public router: Router,
+    private chatomniObjectService: ChatomniObjectService,
+    private chatomniConversationService: ChatomniConversationService,
     private firebaseRegisterService: FirebaseRegisterService,
     private firebaseMessagingService: FirebaseMessagingService,
     private message: TDSMessageService,
@@ -349,9 +352,24 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     })
   }
 
-  onClickTeam(data: CRMTeamDTO): any{
-    this.crmService.changeTeamFromLayout$.emit(data);
-    this.crmService.onUpdateTeam(data);
+  onClickTeam(data: CRMTeamDTO): any {
+    if(data) {
+      this.removeSessionStorageConversationId();
+      this.removeSessionStoragePostId();
+
+      this.crmService.changeTeamFromLayout$.emit(data);
+      this.crmService.onUpdateTeam(data);
+    }
+  }
+
+  removeSessionStorageConversationId() {
+    const _keyCache = this.chatomniConversationService._keycache_params_csid;
+    sessionStorage.removeItem(_keyCache);
+  }
+
+  removeSessionStoragePostId() {
+    const _keyCache = this.chatomniObjectService._keycache_params_postid;
+    sessionStorage.removeItem(_keyCache);
   }
 
   onProfile() {

@@ -31,6 +31,7 @@ import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 export interface SessionParamsDto {
   ParentId: string;
@@ -118,6 +119,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     public router: Router,
     private cdRef: ChangeDetectorRef,
     private chatomniObjectService: ChatomniObjectService,
+    private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
     private socketOnEventService: SocketOnEventService,
     private resizeObserver: TDSResizeObserver,
@@ -581,6 +583,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
 
+      this.removeSessionStoragePostId();
+      this.removeSessionStorageConversationId();
+
       this.crmService.onUpdateTeam(data);
       this.router.navigateByUrl(uriParams);
     }
@@ -789,6 +794,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   removeSessionStoragePostId() {
     const _keyCache = this.chatomniObjectService._keycache_params_postid;
+    sessionStorage.removeItem(_keyCache);
+  }
+
+  removeSessionStorageConversationId() {
+    const _keyCache = this.chatomniConversationService._keycache_params_csid;
     sessionStorage.removeItem(_keyCache);
   }
 
