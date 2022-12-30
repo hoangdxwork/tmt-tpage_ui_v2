@@ -585,6 +585,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
       this.removeSessionStoragePostId();
       this.removeSessionStorageConversationId();
+      this.removeQueryObjConversation();
 
       this.crmService.onUpdateTeam(data);
       this.router.navigateByUrl(uriParams);
@@ -800,6 +801,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   removeSessionStorageConversationId() {
     const _keyCache = this.chatomniConversationService._keycache_params_csid;
     sessionStorage.removeItem(_keyCache);
+  }
+
+  removeQueryObjConversation() {
+    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
+    localStorage.removeItem(_keyCache);
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {
