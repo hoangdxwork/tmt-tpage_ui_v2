@@ -1,6 +1,4 @@
-import { Parent } from './../../../dto/conversation/post/comment-group.dto';
-import { Object } from './../../../dto/conversation/make-activity.dto';
-import { Child } from './../../../dto/team/all-facebook-child.dto';
+import { OnDestroy } from '@angular/core';
 import { ExtrasChildsDto } from './../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { TiktokService } from './../../../services/tiktok-service/tiktok.service';
 import { TDSNotificationService } from 'tds-ui/notification';
@@ -45,7 +43,7 @@ export interface SessionParamsDto {
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationPostComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
+export class ConversationPostComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('innerText') innerText!: ElementRef;
   @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
@@ -102,6 +100,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   widthConversation!: number;
   clickReload: number = 0;
   refreshTimer: TDSSafeAny;
+  nextDataTimer: TDSSafeAny;
   isLoadingUpdate: boolean = false;
 
   extrasChilds: { [id: string] : ExtrasChildsDto[] } = {};
@@ -399,7 +398,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         })
     } else {
         this.refreshTimer = setTimeout(() => {
-          this.loadFilterDataSource();
+            this.loadFilterDataSource();
         }, 350)
     }
 
@@ -428,16 +427,14 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               this.prepareParamsUrl();
           }
 
-          setTimeout(() => {
-              this.isRefreshing = false;
-          }, 300);
-
+          this.isRefreshing = false;
           this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
           this.isRefreshing = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -488,12 +485,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       this.isLoading = false;
       return;
     }
-
-    // let teamId = this.currentTeam?.Id as number;
-    // if(!TDSHelperString.hasValueString(params_postid)) {
-    //   this.message.error('Không tìm thấy ObjectId');
-    //   return;
-    // }
 
     this.currentObject = this.lstObjects[0];
     this.selectPost(this.currentObject);
@@ -554,10 +545,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   nextData(event: any): any {
     if(event) {
-
       this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-
         next: (res: ChatomniObjectsDto) => {
             if(res && res.Extras && res.Extras.Childs) {
                 this.extrasChilds = {...(res.Extras?.Childs || {})}
@@ -633,19 +622,19 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
       });
 
-      this.resizeObserver.observe(this.viewChildConvesationPost)
-      .subscribe(() => {
-        if(this.viewChildConvesationPost && this.viewChildConvesationPost.nativeElement) {
-          this.widthConversation = this.viewChildConvesationPost.nativeElement.clientWidth as number;
-        }
-      });
+    this.resizeObserver.observe(this.viewChildConvesationPost).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+          if(this.viewChildConvesationPost && this.viewChildConvesationPost.nativeElement) {
+              this.widthConversation = this.viewChildConvesationPost.nativeElement.clientWidth as number;
+          }
+      }
+    });
   }
 
   loadFilterDataSource() {
     this.lstObjects = [];
     this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, this.queryObj).subscribe({
       next: (res: ChatomniObjectsDto) => {
-
           this.lstObjects  = [...res.Items];
           let currentObject = {} as any;
 
@@ -719,14 +708,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               })
           }
 
-          setTimeout(() => {
-              this.isRefreshing = false;
-          }, 300);
+          this.isRefreshing = false;
       },
       error: (error: any) => {
-          setTimeout(() => {
-             this.isRefreshing = false;
-          }, 300);
+          this.isRefreshing = false;
           this.message.error(`${error?.error?.message}`);
       }
     })
@@ -746,14 +731,13 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if(res === ChangeTabConversationEnum.order) {
-          this.changeTab(2, true);
-          this.isDisableTabPartner = false;
-          this.isDisableTabOrder = false;
-        }
-
-        else if(res === ChangeTabConversationEnum.partner) {
-          this.changeTab(1, true);
-          this.isDisableTabPartner = false;
+            this.changeTab(2, true);
+            this.isDisableTabPartner = false;
+            this.isDisableTabOrder = false;
+        } else
+        if(res === ChangeTabConversationEnum.partner) {
+            this.changeTab(1, true);
+            this.isDisableTabPartner = false;
         }
       }
     });
@@ -769,10 +753,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.liveCampaignService.getAvailables(text).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           delete res['@odata.context'];
-          this.lstOfLiveCampaign = [...res.value];
+          this.lstOfLiveCampaign = [...(res?.value || [])];
       },
       error: (error: any) => {
-          this.message.error(`${error?.error?.message}` || `Tải danh sách chiến dịch thật bại`);
+          this.message.error(`${error?.error?.message}`);
       }
     })
   }
@@ -813,15 +797,14 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       const vsEnd = Number(this.lstObjects.length - 1) == Number(event.endIndex) && !this.disableNextUrl as boolean;
       if(vsEnd) {
 
-        if (this.isProcessing || this.isLoadingNextdata) {
-            return;
-        }
-
+        if (this.isProcessing || this.isLoadingNextdata) return;
         this.isLoadingNextdata = true;
-        setTimeout(() => {
+
+        this.destroyTimer();
+        this.nextDataTimer = setTimeout(() => {
             this.nextData(event);
         }, 350);
-    }
+      }
     }
   }
 
@@ -862,5 +845,13 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
     }
+
+    if (this.nextDataTimer) {
+      clearTimeout(this.nextDataTimer);
+    }
+  }
+
+  ngOnDestroy(): void {
+      this.destroyTimer();
   }
 }

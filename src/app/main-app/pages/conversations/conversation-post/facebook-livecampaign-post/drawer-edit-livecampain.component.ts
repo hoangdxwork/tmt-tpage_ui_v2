@@ -136,7 +136,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   onEventSocket() {
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-
           if(!this.liveCampaignId) return;
 
           switch(res && res.EventName) {
@@ -158,7 +157,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
                     this.lstDetail = [...this.lstDetail];
                     delete this.animateSocket[key1];
-
                     this.cdRef.detectChanges();
                   }, 1000);
 
@@ -183,7 +181,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
                     this.lstDetail = [...this.lstDetail];
                     delete this.animateSocket[key2];
-
                     this.cdRef.detectChanges();
                   }, 1000);
 
@@ -198,7 +195,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
     this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (obs: any) => {
         if(obs !== InventoryChangeType._DRAWER_ADD_PRODUCT) return;
-        
+
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         if(warehouseId > 0) {
 
