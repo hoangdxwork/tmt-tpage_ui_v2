@@ -40,6 +40,7 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { SharedService } from '@app/services/shared.service';
 import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
+import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 
 @Component({
   selector: 'app-conversation-all',
@@ -104,6 +105,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     public activatedRoute: ActivatedRoute,
     public router: Router,
     private chatomniConversationService: ChatomniConversationService,
+    private chatomniObjectService: ChatomniObjectService,
     private notification: TDSNotificationService,
     private conversationOrderFacade: ConversationOrderFacade,
     private cdRef: ChangeDetectorRef,
@@ -613,6 +615,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
 
+      this.removeSessionStorageConversationId();
+      this.removeSessionStoragePostId();
+
       this.crmService.onUpdateTeam(data);
       this.router.navigateByUrl(uriParams);
     }
@@ -973,6 +978,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   removeSessionStorageConversationId() {
     const _keyCache = this.chatomniConversationService._keycache_params_csid;
+    sessionStorage.removeItem(_keyCache);
+  }
+
+  removeSessionStoragePostId() {
+    const _keyCache = this.chatomniObjectService._keycache_params_postid;
     sessionStorage.removeItem(_keyCache);
   }
 
