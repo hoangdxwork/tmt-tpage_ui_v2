@@ -26,7 +26,8 @@ export class PartnerService extends BaseSevice {
 
   public partnerStatus: any;
   public partnerStatus$ = new BehaviorSubject<any>(null);
-  public changeStatus$ = new EventEmitter<PartnerChangeStatusDTO>();
+  public changeStatusFromPartner$ = new EventEmitter<PartnerChangeStatusDTO>();
+  public changeStatusFromCsAll$ = new EventEmitter<PartnerChangeStatusDTO>();
 
   constructor(private apiService: TCommonService) {
     super(apiService);

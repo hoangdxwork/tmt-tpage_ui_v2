@@ -414,7 +414,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     })
 
     //TODO: cập nhật màu partner status cho conversation-item, tds-conversation
-    this.partnerService.changeStatus$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.partnerService.changeStatusFromPartner$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: PartnerChangeStatusDTO) => {
           let index = this.lstConversation?.findIndex(x => x.ConversationId == res.UserId) as number;
           if(Number(index) >= 0) {
@@ -522,7 +522,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         Code: item.StatusStyle
       } as PartnerChangeStatusDTO;
 
-      this.partnerService.changeStatus$.emit(status);
+      this.partnerService.changeStatusFromCsAll$.emit(status);
 
       // TODO: lưu lại Storage item đang active để hiện thị tiếp ở message, inbox nếu tồn tại trong danh sách
       this.setSessionStorageConversationId(item.ConversationId)
