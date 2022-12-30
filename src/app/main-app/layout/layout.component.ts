@@ -356,6 +356,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     if(data) {
       this.removeSessionStorageConversationId();
       this.removeSessionStoragePostId();
+      this.removeQueryObjConversation();
 
       this.crmService.changeTeamFromLayout$.emit(data);
       this.crmService.onUpdateTeam(data);
@@ -370,6 +371,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   removeSessionStoragePostId() {
     const _keyCache = this.chatomniObjectService._keycache_params_postid;
     sessionStorage.removeItem(_keyCache);
+  }
+
+  removeQueryObjConversation() {
+    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
+    localStorage.removeItem(_keyCache);
   }
 
   onProfile() {
