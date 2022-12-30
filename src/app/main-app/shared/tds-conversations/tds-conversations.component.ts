@@ -189,7 +189,15 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     )
 
     // TODO: cập nhật màu status
-    this.partnerService.changeStatus$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.partnerService.changeStatusFromPartner$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+          this.data.StatusStyle = res.Code;
+          this.data.StatusText = res.Name;
+          this.cdRef.detectChanges();
+      }
+    })
+
+    this.partnerService.changeStatusFromCsAll$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
           this.data.StatusStyle = res.Code;
           this.data.StatusText = res.Name;

@@ -358,7 +358,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             } as PartnerChangeStatusDTO;
 
             // TODO: cập nhật thông tin trạng thái cho conversation-all, tds-conversation
-            this.partnerService.changeStatus$.emit(status);
+            this.partnerService.changeStatusFromPartner$.emit(status);
 
             this.isLoading = false;
             this.cdRef.detectChanges();
