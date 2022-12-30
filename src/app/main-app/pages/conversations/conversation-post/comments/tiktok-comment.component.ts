@@ -543,8 +543,10 @@ export class TiktokCommentComponent implements OnInit, OnChanges {
         modelv2.ObjectId = item?.ObjectId as string;
 
         this.chatomniCommentService.replyComment(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
-            next:(res: ChatomniDataItemDto[]) => {
-              res.map((x: ChatomniDataItemDto)=> {
+            next:(res: ResponseAddMessCommentDtoV2[]) => {
+              res.map((resItem: ResponseAddMessCommentDtoV2)=> {
+                let x = resItem as ChatomniDataItemDto;
+
                   x["Status"] = ChatomniStatus.Done;
                   x.Type = this.team.Type == CRMTeamType._TShop? 91 : 0;
                   x.Data.Actor.Name = this.team.Name;

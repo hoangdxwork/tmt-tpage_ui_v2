@@ -23,7 +23,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   @Input() item!: ChatomniObjectsItemDto;
   @Input() currentPost?: ChatomniObjectsItemDto;
-  @Input() postChilds!: any[];
+  @Input() extrasChilds!: any[];
   @Input() clickCurrentChild!: string;
 
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
@@ -80,8 +80,8 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
         this.cdRef.detectChanges();
     }
 
-    if(changes["postChilds"] && !changes["postChilds"].firstChange) {
-        this.postChilds = [...changes["postChilds"].currentValue];
+    if(changes["extrasChilds"] && !changes["extrasChilds"].firstChange) {
+        this.extrasChilds = [...changes["extrasChilds"].currentValue];
         this.cdRef.detectChanges();
     }
   }

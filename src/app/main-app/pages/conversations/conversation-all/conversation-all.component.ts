@@ -464,7 +464,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
     params_csid = this.paramsUrl?.csid;
     if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
-        params_csid = this.getStorageConversationId();
+        params_csid = this.getSessionStorageConversationId();
     }
 
     if(params_csid == null || params_csid == undefined) {
@@ -523,7 +523,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.partnerService.changeStatus$.emit(status);
 
       // TODO: lưu lại Storage item đang active để hiện thị tiếp ở message, inbox nếu tồn tại trong danh sách
-      this.setStorageConversationId(item.ConversationId)
+      this.setSessionStorageConversationId(item.ConversationId)
 
       if (this.isFastSend == true) {
           // Check lại trường hợp này
@@ -764,7 +764,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
     });
 
-    modal.afterClose.subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.onSentSucceed();
       }
@@ -955,14 +955,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     delete this.orderCode;
   }
 
-  setStorageConversationId(id: string): any {
+  setSessionStorageConversationId(id: string): any {
     const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    localStorage.setItem(_keyCache, JSON.stringify(id));
+    sessionStorage.setItem(_keyCache, JSON.stringify(id));
   }
 
-  getStorageConversationId(): any {
+  getSessionStorageConversationId(): any {
     const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    let item = localStorage.getItem(_keyCache) as any;
+    let item = sessionStorage.getItem(_keyCache) as any;
 
     if(item) {
         return JSON.parse(item);
@@ -971,9 +971,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
-  removeStorageConversationId() {
+  removeSessionStorageConversationId() {
     const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    localStorage.removeItem(_keyCache);
+    sessionStorage.removeItem(_keyCache);
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {

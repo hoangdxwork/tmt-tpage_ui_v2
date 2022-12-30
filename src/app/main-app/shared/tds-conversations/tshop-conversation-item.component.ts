@@ -1,3 +1,4 @@
+import { EnumSendMessageType } from './../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { ChatomniCommentModelDto } from './../../dto/conversation-all/chatomni/chatomni-comment.dto';
 import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
@@ -290,7 +291,7 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
   //TODO: load lại tin nhắn lỗi
   retryMessage() {
     let model = {
-      MessageType: 1,
+      MessageType: EnumSendMessageType._RETRY,
       RecipientId: this.dataItem.Id
     }
 
@@ -481,37 +482,39 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
         modelv2.ObjectId = this.dataItem.Data?.ObjectId as string;
 
         this.chatomniCommentService.replyComment(this.team!.Id, this.dataItem.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
-            next:(res: ChatomniDataItemDto[]) => {
-              res.map((x: ChatomniDataItemDto)=> {
-                x["Status"] = ChatomniStatus.Done;
-                x.Type = this.team.Type == CRMTeamType._TShop? 91 : 0;
-                x.Data.Actor.Name = this.team.Name;
-                let data = { ...x};
+            next:(res: ResponseAddMessCommentDtoV2[]) => {
+              res.map((resItem: ResponseAddMessCommentDtoV2)=> {
+                let x = resItem as ChatomniDataItemDto;
 
-                let index = (this.children || []).findIndex(x=>x.Id == data.Id);
+                  x["Status"] = ChatomniStatus.Done;
+                  x.Type = this.team.Type == CRMTeamType._TShop? 91 : 0;
+                  x.Data.Actor.Name = this.team.Name;
+                  let data = { ...x};
 
-                // TODO: Nếu socker trả về trước thì không add item, chưa trả về thì add item
-                if(Number(index) == -1) {
-                  this.children = [ ...(this.children || []), data];
+                  let index = (this.children || []).findIndex(x=>x.Id == data.Id);
 
-                  //TODO: Đẩy qua tds-conversation
-                  this.chatomniEventEmiter.childCommentConversationEmiter$.emit(data);
+                  // TODO: Nếu socker trả về trước thì không add item, chưa trả về thì add item
+                  if(Number(index) == -1) {
+                    this.children = [ ...(this.children || []), data];
 
-                  //TODO: Đẩy qua conversation-all
-                  let itemLast = {...data}
-                  let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.Type);
-                  this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-                }
+                    //TODO: Đẩy qua tds-conversation
+                    this.chatomniEventEmiter.childCommentConversationEmiter$.emit(data);
 
-                this.messageModel = null;
+                    //TODO: Đẩy qua conversation-all
+                    let itemLast = {...data}
+                    let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.Type);
+                    this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+                  }
 
-                this.messageModel = null;
-                this.tdsMessage.success("Trả lời bình luận thành công");
+                  this.messageModel = null;
 
-                this.isReply = false;
-                this.isReplyingComment = false;
+                  this.messageModel = null;
+                  this.tdsMessage.success("Trả lời bình luận thành công");
+
+                  this.isReply = false;
+                  this.isReplyingComment = false;
               })
-                this.cdRef.detectChanges();
+                  this.cdRef.detectChanges();
             },
             error: error => {
 
@@ -527,7 +530,7 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
   addQuickReplyComment(message: string) {
     this.isReply = false;
     const model = this.prepareModelV2(message);
-    model.MessageType = 2;
+    model.MessageType = EnumSendMessageType._REPLY;
     model.RecipientId = this.dataItem.Data.id || this.dataItem.Data.Id || null;
 
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.dataItem.UserId, model)

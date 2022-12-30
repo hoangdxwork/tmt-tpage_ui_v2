@@ -7,7 +7,6 @@ import { ImageFacade } from '../../../services/facades/image.facade';
 @Component({
   selector: 'tpage-avatar-facebook',
   templateUrl: './tpage-avatar-facebook.component.html',
-  styleUrls: ['./tpage-avatar-facebook.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [TDSDestroyService]
 })
