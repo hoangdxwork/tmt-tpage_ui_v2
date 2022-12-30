@@ -62,13 +62,27 @@ export interface To {
     data: Datum[];
 }
 
+export interface Parent {
+    id: string;
+}
+
 export interface Data {
     id?: any;
+    parent: Parent;
+    is_hidden: boolean;
+    can_hide: boolean;
+    can_remove: boolean;
+    can_like: boolean;
+    can_reply_privately: boolean;
+    comment_count: number;
     message: string;
+    user_likes: boolean;
     created_time: Date;
+    object: Object;
     from: From;
-    to: To;
-    attachments?: any;
+    comments?: any;
+    attachment?: any;
+    message_tags: any[];
 }
 
 export interface ResponseAddMessCommentDtoV2 {
@@ -78,27 +92,32 @@ export interface ResponseAddMessCommentDtoV2 {
     ChannelId: string;
     ConversationId: string;
     UserId: string;
+    UserName?: any;
     CreatedById?: any;
-    CreatedBy?: CreatedBy;
+    CreatedBy?: any;
     CreatedTime: Date;
     ChannelCreatedTime: Date;
     ChannelUpdatedTime?: any;
     MessageType: number;
     ContentType?: any;
     MessageId: string;
-    ObjectId?: any;
+    ObjectId: string;
     Object?: any;
-    ParentId?: any;
+    ParentId?: string;
     Parent?: any;
     Message: string;
+    MessageFormatted?: any;
     Source?: any;
     Attachments?: any;
     Mentions?: any;
     ExtraProperties: ExtraProperties;
     Error?: any;
     Status: number;
+    NlpEntities: any[];
     IsSystem: boolean;
     IsOwner: boolean;
     Data: Data;
-    name?: string; // không có trong api trả về, là Name page (Data.from.name)
+    Order?: any;
+
+    Type: number; // không trong dữ liệu trả về, nó là MessageType để mapping giống data lúc đầu
 }

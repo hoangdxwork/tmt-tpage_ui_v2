@@ -529,17 +529,19 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
         model.ObjectId = item.ObjectId || item.Data?.object?.id as string;
 
         this.chatomniCommentService.replyComment(this.team!.Id, item.UserId, model).pipe(takeUntil(this.destroy$)).subscribe({
-            next:(res: any) => {
-              res.map((x: ChatomniDataItemDto)=> {
-                x["Status"] = ChatomniStatus.Done;
-                x.Type = ChatomniMessageType.FacebookComment;
+            next:(res: ResponseAddMessCommentDtoV2[]) => {
+              res.map((resItem: ResponseAddMessCommentDtoV2)=> {
+                let x = resItem as ChatomniDataItemDto;
+                
+                  x["Status"] = ChatomniStatus.Done;
+                  x.Type = ChatomniMessageType.FacebookComment;
 
-                this.addReplyComment(x);
-                item.Data.is_reply = false;
-                this.isReplyingComment = false;
+                  this.addReplyComment(x);
+                  item.Data.is_reply = false;
+                  this.isReplyingComment = false;
 
-                this.message.success("Trả lời bình luận thành công.");
-                this.cdRef.detectChanges();
+                  this.message.success("Trả lời bình luận thành công.");
+                  this.cdRef.detectChanges();
               })
             },
             error: error => {
@@ -564,10 +566,13 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
     let exist = data && data.ParentId && this.dataSource && this.dataSource.Extras && this.dataSource.Extras.Childs
     if(exist) {
         this.dataSource.Extras.Childs[data.ParentId] = [...(this.dataSource.Extras.Childs[data.ParentId] || []), ...[data]];
-        this.dataSource.Items = this.dataSource.Items.filter((x: ChatomniDataItemDto)=> x.Id != data.Id); // lọc lại vì nếu sokect trả về trước res
+        let index = this.dataSource.Items.findIndex((x: ChatomniDataItemDto)=> x.Id == data.Id); // lọc lại vì nếu sokect trả về trước res
+        if(Number(index) >=0 ) {
+          this.dataSource.Items.splice(index, 1);
+          return;
+        }
+        this.postEvent.countRealtimeMessage$.emit(true);
     }
-
-    this.postEvent.countRealtimeMessage$.emit(true);
   }
 
   loadPartnerTab(item: ChatomniDataItemDto, orders: CommentOrder[] | any) {
