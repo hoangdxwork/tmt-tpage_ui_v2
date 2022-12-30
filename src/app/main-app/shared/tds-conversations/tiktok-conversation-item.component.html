@@ -223,9 +223,12 @@
               </div>
 
               <!-- Lỗi gửi tin -->
-              <div *ngIf="dataItem.Error || dataItem.Status == 2">
-                   <span class="tdsi-information-fill" title="{{dataItem.Error?.Message}}"></span>
-              </div>
+              <a class="flex items-center cursor-pointer ml-2" *ngIf="dataItem.Error?.Message || dataItem.Status == 2" tds-popover [popoverContent]="popoverBug">
+                  <span class="tdsi-info-line text-error-400 text-body-1 leading-none" ></span>
+              </a>
+              <ng-template #popoverBug>
+                  <div class="max-w-[336px] text-body-2 text-neutral-1-900">{{dataItem.Error? dataItem.Error.Message: ''}}</div>
+              </ng-template>
 
             <!-- Thao tác -->
             <div *ngIf="!dataItem.Data?.attachments" class="chat-option invisible group-hover:visible">
