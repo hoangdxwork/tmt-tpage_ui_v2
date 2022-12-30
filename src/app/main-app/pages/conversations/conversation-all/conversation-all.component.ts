@@ -12,7 +12,7 @@ import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/ch
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -49,7 +49,7 @@ import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-o
   providers: [TDSDestroyService]
 })
 
-export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostBinding("@openCollapse") eventAnimationCollap = false;
   @ViewChild('conversationSearchInput') innerText!: ElementRef;
@@ -96,6 +96,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   orderCode: any;
   refreshTimer: TDSSafeAny;
   isLoadingUpdate: boolean = false;
+  nextDataTimer: TDSSafeAny;
+  preDataTimer: TDSSafeAny;
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -1003,7 +1005,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             }
 
             this.isLoadingNextdata = true;
-            setTimeout(() => {
+            this.destroyTimer();
+            this.nextDataTimer = setTimeout(() => {
                 this.nextData(event);
             }, 350);
         }
@@ -1018,7 +1021,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       if(exist) {
         this.isLoadingNextdata = true;
-        setTimeout(() => {
+        this.preDataTimer = setTimeout(() => {
             this.lstConversation = [...this.vsSocketImports, ...this.lstConversation];
             this.lstConversation = [...this.lstConversation];
 
@@ -1037,6 +1040,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
     }
+    if (this.nextDataTimer) {
+      clearTimeout(this.nextDataTimer);
+    }
+    if (this.preDataTimer) {
+      clearTimeout(this.preDataTimer);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyTimer();
   }
 }
 

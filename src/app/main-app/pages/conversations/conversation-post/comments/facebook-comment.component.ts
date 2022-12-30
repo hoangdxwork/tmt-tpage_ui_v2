@@ -14,7 +14,7 @@ import { ResponseAddMessCommentDtoV2 } from '../../../../dto/conversation-all/ch
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
-import { Component, OnInit, ViewChild, ChangeDetectorRef, Input, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, Input, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -56,7 +56,7 @@ import { en_US } from "tds-ui/i18n";
   providers: [ TDSDestroyService ]
 })
 
-export class FacebookCommentComponent implements OnInit, OnChanges {
+export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChildren('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
@@ -103,6 +103,9 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
   filterObj : TDSSafeAny;
   isLoadingInsertFromPost: boolean = false;
   isLoadingiconMess: boolean = false;
+  nextDataTimer: TDSSafeAny;
+  preDataTimer: TDSSafeAny;
+  refreshTimer: TDSSafeAny;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -532,7 +535,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
             next:(res: ResponseAddMessCommentDtoV2[]) => {
               res.map((resItem: ResponseAddMessCommentDtoV2)=> {
                 let x = resItem as ChatomniDataItemDto;
-                
+
                   x["Status"] = ChatomniStatus.Done;
                   x.Type = ChatomniMessageType.FacebookComment;
 
@@ -663,7 +666,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
   reloadDataCommentsOrder() {
     let m = 10;
-    setTimeout(() => {
+    this.refreshTimer = setTimeout(() => {
       this.loadCommentsOrderByPost();
       this.reloadDataCommentsOrder();
     }, m * 60 * 1000);
@@ -883,7 +886,9 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
       if(vsEnd) {
           if(this.isLoading || this.isLoadingNextdata) return;
           this.isLoadingNextdata = true;
-          setTimeout(() => {
+
+          this.destroyTimer();
+          this.nextDataTimer = setTimeout(() => {
               this.nextData(event);
           }, 500);
       }
@@ -900,7 +905,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
         if(exist) {
             this.isLoadingNextdata = true;
-            setTimeout(() => {
+              this.preDataTimer = setTimeout(() => {
                 this.dataSource.Items = [...this.vsSocketImports, ...this.dataSource.Items];
                 this.dataSource.Items = [...this.dataSource.Items];
 
@@ -916,5 +921,21 @@ export class FacebookCommentComponent implements OnInit, OnChanges {
 
   openPopover(id: string) {
     this.isVisible = id;
+  }
+
+  destroyTimer() {
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+    }
+    if (this.nextDataTimer) {
+      clearTimeout(this.nextDataTimer);
+    }
+    if (this.preDataTimer) {
+      clearTimeout(this.preDataTimer);
+    }
+  }
+
+  ngOnDestroy(): void {
+      this.destroyTimer();
   }
 }
