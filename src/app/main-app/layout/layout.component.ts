@@ -6,7 +6,6 @@ import { filter, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { environment } from 'src/environments/environment';
 import { TDSMenuDTO } from 'tds-ui/menu';
-import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { CRMTeamService } from '../services/crm-team.service';
@@ -18,6 +17,8 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { TDSMessageService } from 'tds-ui/message';
 import { FireBaseDevice, TopicDetailDto } from '@app/dto/firebase/topics.dto';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
+import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 @Component({
   selector: 'app-layout',
@@ -45,37 +46,36 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   constructor(private auth: TAuthService,
     public crmService: CRMTeamService,
-    private modalService: TDSModalService,
     private socketService: SocketService,
     private activatedRoute: ActivatedRoute,
     public router: Router,
+    private chatomniObjectService: ChatomniObjectService,
+    private chatomniConversationService: ChatomniConversationService,
     private firebaseRegisterService: FirebaseRegisterService,
     private firebaseMessagingService: FirebaseMessagingService,
-    private cdRef: ChangeDetectorRef,
     private message: TDSMessageService,
     private resizeObserver: TDSResizeObserver,
     private destroy$: TDSDestroyService,
     private socketStorageNotificationService: SocketStorageNotificationService ) {
 
-    router.events.pipe(
-        takeUntil(this.destroy$),filter(event => event instanceof NavigationEnd), // Only get the event of NavigationEnd
+    router.events.pipe(takeUntil(this.destroy$),
+        filter((event: any) => event instanceof NavigationEnd), // Only get the event of NavigationEnd
         map(() => activatedRoute), // Listen to activateRoute
-        map(route => {
-
+        map((route: any) => {
             while (route.firstChild) {
                 route = route.firstChild;
             }
             return route;
         }),
-        filter(route => route.outlet === 'primary'),
-        mergeMap(route => route.data) ,
-        // get the data
-    ).subscribe(res => {
-        if(this.withLayout < this.withLaptop){
-            this.inlineCollapsed = true;
-        } else {
-            this.inlineCollapsed = res.collapse;
-        }
+        filter((route: any) => route.outlet === 'primary'), mergeMap((route: any) => route.data))
+        .subscribe({
+            next: (res: any) => {
+                if(this.withLayout < this.withLaptop){
+                    this.inlineCollapsed = true;
+                } else {
+                    this.inlineCollapsed = res.collapse;
+                }
+            }
     })
   }
 
@@ -83,34 +83,40 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     // TODO: check trạng thái bât tắt socket thông báo
     let localSocket = this.socketStorageNotificationService.getLocalStorage() as any;
     if(!localSocket) {
-      this.socketStorageNotificationService.setLocalStorage();
-      localSocket = this.socketStorageNotificationService.getLocalStorage();
+        this.socketStorageNotificationService.setLocalStorage();
+        localSocket = this.socketStorageNotificationService.getLocalStorage();
     }
+
     this.notiSocket = localSocket["socket.all"];
 
-    this.crmService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
-        this.lstMenu = this.setMenu(res);
-        this.currentTeam = res;
+    this.crmService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.lstMenu = this.setMenu(res);
+          this.currentTeam = res;
+      }
     })
 
     this.getAllFacebook();
     this.loadUserInfo();
 
-    this.activatedRoute.queryParams.pipe(takeUntil(this.destroy$)).subscribe(res => {
-        this.params = res;
+    this.activatedRoute.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.params = res;
+      }
     });
 
     // TODO: check trạng thái connnect socket-io
     this.establishedConnected = this.socketService.establishedConnected;
 
     this.firebaseDevice();
-
     this.onEventEmitter();
   }
 
   onEventEmitter() {
-    this.socketStorageNotificationService.socketAllEmitter$.pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.notiSocket = res;
+    this.socketStorageNotificationService.socketAllEmitter$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.notiSocket = res;
+      }
     });
   }
 
@@ -126,16 +132,14 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.withLayout = this.viewChildWithLayout?.nativeElement?.offsetWidth;
-
-    this.resizeObserver.observe(this.viewChildWithLayout)
-      .subscribe(() => {
-
-        this.withLayout = this.viewChildWithLayout?.nativeElement?.offsetWidth;
-
-        if(this.withLayout < this.withLaptop){
-             this.inlineCollapsed = true;
-        }
-      });
+    this.resizeObserver.observe(this.viewChildWithLayout).subscribe({
+      next: () => {
+          this.withLayout = this.viewChildWithLayout?.nativeElement?.offsetWidth;
+          if(this.withLayout < this.withLaptop){
+               this.inlineCollapsed = true;
+          }
+      }
+    });
   }
 
   onLogout() {
@@ -150,7 +154,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   getAllFacebook() {
     this.crmService.getAllFacebooks().pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$)).subscribe({
       next: (dataTeam: any) => {
-
         if (TDSHelperObject.hasValue(dataTeam)) {
             this.crmService.onUpdateListFaceBook(dataTeam);
 
@@ -158,8 +161,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
                 const team = TPageHelperService.findTeamById(dataTeam, teamId, true)
                 this.crmService.onUpdateTeam(team);
             })
-        }
-        else {
+        } else {
             this.crmService.onUpdateListFaceBook(null);
             this.crmService.onUpdateTeam(null);
         }
@@ -344,15 +346,36 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     this.auth.getUserInit().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         if(res) {
-          this.userInit = res || {};
+            this.userInit = res || {};
         }
       }
     })
   }
 
-  onClickTeam(data: CRMTeamDTO): any{
-    this.crmService.changeTeamFromLayout$.emit(data);
-    this.crmService.onUpdateTeam(data);
+  onClickTeam(data: CRMTeamDTO): any {
+    if(data) {
+      this.removeSessionStorageConversationId();
+      this.removeSessionStoragePostId();
+      this.removeQueryObjConversation();
+
+      this.crmService.changeTeamFromLayout$.emit(data);
+      this.crmService.onUpdateTeam(data);
+    }
+  }
+
+  removeSessionStorageConversationId() {
+    const _keyCache = this.chatomniConversationService._keycache_params_csid;
+    sessionStorage.removeItem(_keyCache);
+  }
+
+  removeSessionStoragePostId() {
+    const _keyCache = this.chatomniObjectService._keycache_params_postid;
+    sessionStorage.removeItem(_keyCache);
+  }
+
+  removeQueryObjConversation() {
+    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
+    localStorage.removeItem(_keyCache);
   }
 
   onProfile() {
