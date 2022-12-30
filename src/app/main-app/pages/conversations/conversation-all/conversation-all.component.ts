@@ -1021,6 +1021,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       if(exist) {
         this.isLoadingNextdata = true;
+        this.destroyTimer();
         this.preDataTimer = setTimeout(() => {
             this.lstConversation = [...this.vsSocketImports, ...this.lstConversation];
             this.lstConversation = [...this.lstConversation];
