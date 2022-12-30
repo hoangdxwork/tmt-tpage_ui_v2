@@ -290,11 +290,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let indexChild: number = -1;
     switch (this.team.Type) {
       case CRMTeamType._Facebook:
-        indexChild = (this.dataSource.Items || []).findIndex(x => x.Data.id == item?.ParentId);
+        indexChild = (this.dataSource.Items || []).findIndex(x => x.Data?.id == item?.ParentId);
         break;
 
       case CRMTeamType._TShop:
-        indexChild = (this.dataSource.Items || []).findIndex(x => x.Data.Id == item?.ParentId);
+        indexChild = (this.dataSource.Items || []).findIndex(x => x.Data?.Id == item?.ParentId);
         break;
 
       case CRMTeamType._UnofficialTikTok:
@@ -410,7 +410,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (result : string[]) => {
         if(TDSHelperArray.hasListValue(result)){
           let data = this.uploadedImages;
@@ -437,7 +437,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       }
     });
 
-    modal.componentInstance?.onSendProduct.subscribe({
+    modal.componentInstance?.onSendProduct.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny)=>{
         if(res){
             this.onProductSelected(res);
@@ -493,7 +493,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         }
     });
 
-    modal.afterClose.subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: TDSSafeAny) => {
           if(res && res.type == 'img'){
             this.uploadedImages = [...this.uploadedImages, ...[res.value]];
@@ -513,7 +513,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         viewContainerRef: this.viewContainerRef,
     });
 
-    modal.afterClose.subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (result: TDSSafeAny) => {
         if(result){
             this.lstOfTag = [...this.lstOfTag, result];
@@ -623,7 +623,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   loadTags(data: ChatomniConversationItemDto) {
     if (data) {
       if (this.tags?.length == 0) {
-        this.crmTagService.dataActive$.subscribe({
+        this.crmTagService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
             this.tags = [...res];
             this.lstOfTag = [...this.tags];
@@ -748,7 +748,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
    
 
     this.chatomniCommentService.replyComment(this.team!.Id, activityFinal.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res: ChatomniDataItemDto[]) => {
+        next:(res: ResponseAddMessCommentDtoV2[]) => {
           // todo: socket trả về đã map
 
             this.currentImage = null;
@@ -766,7 +766,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onRetryMessage() {
-    this.activityMatchingService.onCopyMessageHasAminRequired$.subscribe({
+    this.activityMatchingService.onCopyMessageHasAminRequired$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (message: string) => {
         if(TDSHelperString.hasValueString(message)) {
             if (TDSHelperString.hasValueString(this.messageModel)) {
@@ -1143,7 +1143,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       formData.append('files', file, fileName);
       formData.append('id', '0000000000000051');
 
-      this.sharedService.saveImageV2(formData).subscribe((res: any) => {
+      this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if(res && res[0]) {
           this.uploadedImages = [...this.uploadedImages,...[res[0]?.urlImageProxy]];
           this.isLoadingImage = false;
