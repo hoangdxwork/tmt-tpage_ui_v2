@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { ChatomniConversationInfoDto, ConversationPartnerDto } from "@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto";
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from "@app/dto/saleonlineorder/quick-saleonline-order.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
-import { ChatomniConversationFacade } from "@app/services/chatomni-facade/chatomni-conversation.facade";
 import { ConversationOrderFacade } from "@app/services/facades/conversation-order.facade";
 import { ProductTemplateUOMLineService } from "@app/services/product-template-uom-line.service";
 import { SharedService } from "@app/services/shared.service";
@@ -21,21 +20,21 @@ export class CsOrder_FromConversationHandler {
         this.loadUserLogged();
     }
 
-    getOrderFromConversation(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO, type?: string){
+    getOrderFromConversation(csInfo: ChatomniConversationInfoDto, team: CRMTeamDTO, type?: string){
       let order: QuickSaleOnlineOrderModel = {} as any;
       let partner: ConversationPartnerDto = {} as any;
 
-      if(conversationInfo && TDSHelperObject.hasValue(conversationInfo.Partner)) {
-          partner = conversationInfo.Partner;
+      if(csInfo && TDSHelperObject.hasValue(csInfo.Partner)) {
+          partner = csInfo.Partner;
       }
 
       // TODO: trường hợp có đơn hàng nháp gần nhất
-      if(conversationInfo && TDSHelperObject.hasValue(conversationInfo.Order) && type != 'post') {
-          order = {... conversationInfo.Order} as any;
+      if(csInfo && TDSHelperObject.hasValue(csInfo.Order) && csInfo.Order?.Id) {
+          order = {... csInfo.Order} as any;
 
           order.Details = [];
-          if(TDSHelperArray.hasListValue(conversationInfo.Order?.Details)) {
-              conversationInfo.Order.Details.forEach(x => {
+          if(TDSHelperArray.hasListValue(csInfo.Order?.Details)) {
+            csInfo.Order.Details.forEach(x => {
                   let item = {
                       Id: x.Id,
                       Quantity: x.Quantity,
@@ -95,12 +94,12 @@ export class CsOrder_FromConversationHandler {
           order.CRMTeamName = team.Name;
       }
 
-      order.Telephone = order.Telephone || partner?.Phone || conversationInfo.Conversation?.Phone;
+      order.Telephone = order.Telephone || partner?.Phone || csInfo.Conversation?.Phone;
       order.Address =  order.Address || partner?.Street as string;
-      order.Email = order.Email || partner?.Email || conversationInfo.Conversation?.Email;
+      order.Email = order.Email || partner?.Email || csInfo.Conversation?.Email;
 
-      order.PartnerId = order.PartnerId || conversationInfo.Partner?.Id;
-      order.PartnerName = order.PartnerName || conversationInfo.Conversation.Name || partner.Name || order.Facebook_UserName;
+      order.PartnerId = order.PartnerId || csInfo.Partner?.Id;
+      order.PartnerName = order.PartnerName || csInfo.Conversation.Name || partner.Name || order.Facebook_UserName;
 
       if(this.userInit && !order.UserId) {
           order.UserId = this.userInit.Id;
@@ -125,12 +124,12 @@ export class CsOrder_FromConversationHandler {
         order.WardName = (partner?.WardName || partner?.Ward?.code) as any;
       }
 
-      order.Facebook_ASUserId = order.Facebook_ASUserId || conversationInfo.Conversation?.ConversationId;
-      order.Facebook_UserName = order.Facebook_UserName || conversationInfo.Conversation?.Name;
-      order.Facebook_UserId = order.Facebook_UserId || conversationInfo.Conversation?.UserId;
+      order.Facebook_ASUserId = order.Facebook_ASUserId || csInfo.Conversation?.ConversationId;
+      order.Facebook_UserName = order.Facebook_UserName || csInfo.Conversation?.Name;
+      order.Facebook_UserId = order.Facebook_UserId || csInfo.Conversation?.UserId;
 
       // TODO: nếu không có đơn hàng cũ thì tính tạm tổng tiền với product mặc định
-      if(!TDSHelperObject.hasValue(conversationInfo.Order) && TDSHelperArray.hasListValue(order.Details)) {
+      if(!TDSHelperObject.hasValue(csInfo.Order) && TDSHelperArray.hasListValue(order.Details)) {
           order.TotalAmount = 0;
           order.TotalAmount = (order.Details[0].Price * order.Details[0].Quantity);
           order.TotalQuantity = 1;
@@ -144,7 +143,7 @@ export class CsOrder_FromConversationHandler {
     }
 
     onSyncConversationInfoToOrder(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO, type: string) {
-        let data = { ... this.getOrderFromConversation(conversationInfo, team, type) }
+        let data = { ... this.getOrderFromConversation(conversationInfo, team, type) };
         return { ...data };
     }
 
