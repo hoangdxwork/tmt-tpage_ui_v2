@@ -12,7 +12,7 @@ import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/ch
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -40,6 +40,7 @@ import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { SharedService } from '@app/services/shared.service';
 import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conversation.dto';
+import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 
 @Component({
   selector: 'app-conversation-all',
@@ -48,7 +49,7 @@ import { SocketioOnMarkseenDto } from '@app/dto/socket-io/chatomni-on-read-conve
   providers: [TDSDestroyService]
 })
 
-export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostBinding("@openCollapse") eventAnimationCollap = false;
   @ViewChild('conversationSearchInput') innerText!: ElementRef;
@@ -95,6 +96,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   orderCode: any;
   refreshTimer: TDSSafeAny;
   isLoadingUpdate: boolean = false;
+  nextDataTimer: TDSSafeAny;
+  preDataTimer: TDSSafeAny;
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -104,6 +107,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     public activatedRoute: ActivatedRoute,
     public router: Router,
     private chatomniConversationService: ChatomniConversationService,
+    private chatomniObjectService: ChatomniObjectService,
     private notification: TDSNotificationService,
     private conversationOrderFacade: ConversationOrderFacade,
     private cdRef: ChangeDetectorRef,
@@ -155,6 +159,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
               this.fetchLiveConversations(team);
               this.setCurrentTeam(team);
+              this.crmService.onUpdateTeam(team);
           }
 
           this.type = params?.params?.type;
@@ -411,7 +416,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     })
 
     //TODO: cập nhật màu partner status cho conversation-item, tds-conversation
-    this.partnerService.changeStatus$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.partnerService.changeStatusFromPartner$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: PartnerChangeStatusDTO) => {
           let index = this.lstConversation?.findIndex(x => x.ConversationId == res.UserId) as number;
           if(Number(index) >= 0) {
@@ -463,7 +468,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
     params_csid = this.paramsUrl?.csid;
     if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
-        params_csid = this.getStorageConversationId();
+        params_csid = this.getSessionStorageConversationId();
     }
 
     if(params_csid == null || params_csid == undefined) {
@@ -519,10 +524,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         Code: item.StatusStyle
       } as PartnerChangeStatusDTO;
 
-      this.partnerService.changeStatus$.emit(status);
+      this.partnerService.changeStatusFromCsAll$.emit(status);
 
       // TODO: lưu lại Storage item đang active để hiện thị tiếp ở message, inbox nếu tồn tại trong danh sách
-      this.setStorageConversationId(item.ConversationId)
+      this.setSessionStorageConversationId(item.ConversationId)
 
       if (this.isFastSend == true) {
           // Check lại trường hợp này
@@ -606,15 +611,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onClickTeam(data: any): any {
-    if (this.paramsUrl?.teamId) {
+    let exist = this.paramsUrl && TDSHelperString.hasValueString(this.paramsUrl?.teamId) && data;
+    if (exist) {
       this.disableNextUrl = false;
-
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+
+      this.removeSessionStorageConversationId();
+      this.removeSessionStoragePostId();
+      this.removeQueryObjConversation();
+
+      this.crmService.onUpdateTeam(data);
       this.router.navigateByUrl(uriParams);
     }
-
-    this.crmService.onUpdateTeam(data);
   }
 
   onRefresh(event: boolean){
@@ -763,7 +772,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         }
     });
 
-    modal.afterClose.subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.onSentSucceed();
       }
@@ -954,14 +963,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     delete this.orderCode;
   }
 
-  setStorageConversationId(id: string): any {
+  setSessionStorageConversationId(id: string): any {
     const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    localStorage.setItem(_keyCache, JSON.stringify(id));
+    sessionStorage.setItem(_keyCache, JSON.stringify(id));
   }
 
-  getStorageConversationId(): any {
+  getSessionStorageConversationId(): any {
     const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    let item = localStorage.getItem(_keyCache) as any;
+    let item = sessionStorage.getItem(_keyCache) as any;
 
     if(item) {
         return JSON.parse(item);
@@ -970,8 +979,18 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
-  removeStorageConversationId() {
+  removeSessionStorageConversationId() {
     const _keyCache = this.chatomniConversationService._keycache_params_csid;
+    sessionStorage.removeItem(_keyCache);
+  }
+
+  removeSessionStoragePostId() {
+    const _keyCache = this.chatomniObjectService._keycache_params_postid;
+    sessionStorage.removeItem(_keyCache);
+  }
+
+  removeQueryObjConversation() {
+    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
     localStorage.removeItem(_keyCache);
   }
 
@@ -986,7 +1005,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             }
 
             this.isLoadingNextdata = true;
-            setTimeout(() => {
+            this.destroyTimer();
+            this.nextDataTimer = setTimeout(() => {
                 this.nextData(event);
             }, 350);
         }
@@ -1001,7 +1021,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       if(exist) {
         this.isLoadingNextdata = true;
-        setTimeout(() => {
+        this.destroyTimer();
+        this.preDataTimer = setTimeout(() => {
             this.lstConversation = [...this.vsSocketImports, ...this.lstConversation];
             this.lstConversation = [...this.lstConversation];
 
@@ -1020,6 +1041,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
     }
+    if (this.nextDataTimer) {
+      clearTimeout(this.nextDataTimer);
+    }
+    if (this.preDataTimer) {
+      clearTimeout(this.preDataTimer);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyTimer();
   }
 }
 

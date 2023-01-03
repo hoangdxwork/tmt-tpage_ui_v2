@@ -1,13 +1,16 @@
 import { Injectable } from "@angular/core";
 import { ChatomniConversationInfoDto, ConversationPartnerDto } from "@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto";
 import { CRMTeamDTO } from "@app/dto/team/team.dto";
+import { ConversationOrderFacade } from "@app/services/facades/conversation-order.facade";
 import { TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { ChatomniConversationItemDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
-import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 
 @Injectable()
 
 export class CsPartner_PrepareModelHandler {
+
+  constructor(private conversationOrderFacade: ConversationOrderFacade) {
+  }
 
   public getPartnerFromConversation(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO) {
     let partner: ConversationPartnerDto = {} as any;
@@ -59,6 +62,10 @@ export class CsPartner_PrepareModelHandler {
 
     if(!TDSHelperString.hasValueString(partner.Street) && TDSHelperString.hasValueString(partner.FullAddress)){
       partner.Street = partner.FullAddress;
+    }
+
+    if(TDSHelperString.hasValueString(partner.Comment)) {
+      partner.Comment = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(partner.Comment);
     }
 
     return {...partner};

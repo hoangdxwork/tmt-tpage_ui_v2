@@ -65,16 +65,18 @@ export class ODataLiveCampaignBillService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
-        let value =  TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
-        dataFilter.filters.push( {
+        let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
+        dataFilter.filters.push({
             filters: [
               { field: "PartnerDisplayName", operator: OperatorEnum.contains, value: value },
+              { field: "PartnerNameNoSign", operator: OperatorEnum.contains, value: value },
               { field: "Address", operator: OperatorEnum.contains, value: value },
               { field: "Number", operator: OperatorEnum.contains, value: value },
-              { field: "State", operator: OperatorEnum.contains, value: value },
+              { field: "Name", operator: OperatorEnum.contains, value: value },
+              { field: "FacebookName", operator: OperatorEnum.contains, value: value },
               { field: "PartnerNameNoSign", operator: OperatorEnum.contains, value: value },
               { field: "TrackingRef", operator: OperatorEnum.contains, value: value},
-              { field: "PartnerPhone", operator: OperatorEnum.contains, value: value}
+              { field: "PartnerPhone", operator: OperatorEnum.contains, value: value},
             ],
             logic: 'or'
         })
@@ -96,7 +98,7 @@ export class ODataLiveCampaignBillService extends BaseSevice {
       dataFilter.logic = "and";
     }
 
-    
+
     if(filterObj.carrierId >= 0 ) {
       dataFilter.filters.push({ field: "CarrierId", operator: OperatorEnum.eq, value: filterObj.carrierId })
         dataFilter.logic = "and";

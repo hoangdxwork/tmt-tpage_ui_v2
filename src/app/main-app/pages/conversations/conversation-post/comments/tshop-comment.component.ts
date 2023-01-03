@@ -1,3 +1,4 @@
+import { EnumSendMessageType } from './../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { CommentOrderPost, CommentOrder } from '../../../../dto/conversation/post/comment-order-post.dto';
 import { FacebookCommentService } from '../../../../services/facebook-comment.service';
 import { ChatmoniSocketEventName } from '../../../../services/socket-io/soketio-event';
@@ -14,7 +15,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ChatomniConversationItemDto } from '../../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from '../../../../services/socket-io/socket-onevent.service';
-import { Component, OnInit, ViewChild, ChangeDetectorRef, Input, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, Input, ChangeDetectionStrategy, ViewContainerRef, OnChanges, SimpleChanges, ElementRef, ViewChildren, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -54,7 +55,7 @@ import { en_US, vi_VN } from "tds-ui/i18n";
   providers: [ TDSDestroyService ]
 })
 
-export class TShopCommentComponent implements OnInit, OnChanges {
+export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChildren('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
@@ -102,6 +103,10 @@ export class TShopCommentComponent implements OnInit, OnChanges {
   lengthDataSource: number = 0;
   isLoadingInsertFromPost: boolean = false;
   isLoadingiconMess: boolean = false;
+  nextDataTimer: TDSSafeAny;
+  preDataTimer: TDSSafeAny;
+  refreshTimer: TDSSafeAny;
+  dictActiveComment: {[key: string] : boolean } = {};
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -367,6 +372,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
         this.innerText = '';
         this.partnerDict = {};
         this.invoiceDict = {};
+        this.dictActiveComment = {};
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
@@ -523,7 +529,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
       if(item.Data.is_private_reply){
         // TODO: gửi về tin nhắn
-        modelv2.MessageType = 2;
+        modelv2.MessageType = EnumSendMessageType._REPLY;
 
         this.chatomniSendMessageService.sendMessage(this.team.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: ResponseAddMessCommentDtoV2[]) => {
@@ -546,9 +552,10 @@ export class TShopCommentComponent implements OnInit, OnChanges {
         // TODO: Trả lời bình luận
         modelv2.ObjectId = item.Data?.ObjectId as string;
 
-        this.chatomniCommentService.replyCommentTshop(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
-            next:(res: ChatomniDataItemDto[]) => {
-              res.map((x: ChatomniDataItemDto)=> {
+        this.chatomniCommentService.replyComment(this.team!.Id, item.UserId, modelv2).pipe(takeUntil(this.destroy$)).subscribe({
+            next:(res: ResponseAddMessCommentDtoV2[]) => {
+              res.map((resItem: ResponseAddMessCommentDtoV2)=> {
+                let x = resItem as ChatomniDataItemDto;
 
                   x["Status"] = ChatomniStatus.Done;
                   x.Type = this.team.Type == CRMTeamType._TShop? 91 : 0;
@@ -641,8 +648,10 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
     this.postEvent.spinLoadingTab$.emit(true);
-    let psid = item.UserId || item.Data?.from?.id;
+    this.dictActiveComment = {};
+    this.dictActiveComment[item.Id] = true;
 
+    let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
       this.message.error("Không truy vấn được thông tin người dùng!");
       return;
@@ -658,6 +667,8 @@ export class TShopCommentComponent implements OnInit, OnChanges {
                 orderId: order.id,
                 comment: item
             });
+          } else {
+              this.conversationOrderFacade.hasValueOrderCode$.emit('');
           }
 
           if(type == 'SALEONLINE_ORDER') {
@@ -665,6 +676,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
           }
 
           this.conversationOrderFacade.loadPartnerByPostComment$.emit(info);
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.postEvent.spinLoadingTab$.emit(false);
@@ -677,7 +689,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
   reloadDataCommentsOrder() {
     let m = 10;
-    setTimeout(() => {
+    this.refreshTimer = setTimeout(() => {
       this.loadCommentsOrderByPost();
       this.reloadDataCommentsOrder();
     }, m * 60 * 1000);
@@ -900,7 +912,8 @@ export class TShopCommentComponent implements OnInit, OnChanges {
             if (this.isLoading || this.isLoadingNextdata) return;
 
             this.isLoadingNextdata = true;
-            setTimeout(() => {
+            this.destroyTimer();
+            this.nextDataTimer = setTimeout(() => {
                 this.nextData(event);
             }, 500);
         }
@@ -918,7 +931,7 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
         if(exist) {
             this.isLoadingNextdata = true;
-            setTimeout(() => {
+            this.preDataTimer = setTimeout(() => {
                 this.dataSource.Items = [...this.vsSocketImports, ...this.dataSource.Items];
                 this.dataSource.Items = [...this.dataSource.Items];
                 this.lengthDataSource = this.dataSource.Items.length;
@@ -936,5 +949,21 @@ export class TShopCommentComponent implements OnInit, OnChanges {
 
   openPopover(id: string) {
     this.isVisible = id;
+  }
+
+  destroyTimer() {
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+    }
+    if (this.nextDataTimer) {
+      clearTimeout(this.nextDataTimer);
+    }
+    if (this.preDataTimer) {
+      clearTimeout(this.preDataTimer);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyTimer();
   }
 }

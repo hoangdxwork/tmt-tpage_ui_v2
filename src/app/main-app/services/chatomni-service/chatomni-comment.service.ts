@@ -125,7 +125,7 @@ export class ChatomniCommentService extends BaseSevice  {
     }
   }
 
-  replyCommentTshop(teamId: number, userId: any, data: any): Observable<TDSSafeAny> {
+  replyComment(teamId: number, userId: any, data: any): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${teamId}_${userId}/comments`,
       method: CoreApiMethodType.post,

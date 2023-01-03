@@ -135,9 +135,11 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
         if(res && res.value && TDSHelperArray.isArray(res.value)) {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+          this.setOfCheckedId.clear();
+          this.refreshCheckedStatus();
         }
         this.isLoading = false;
-      }, 
+      },
       error: (err) => {
         this.isLoading = false;
         this.message.error(err?.error?.message || 'Tải dữ liệu sản phẩm thất bại!');
@@ -355,10 +357,10 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
             exits.Tags = JSON.stringify(Tags)
           }
           this.configModelTags = [];
-  
+
           this.message.success('Gán nhãn thành công!');
         }
-      }, 
+      },
       error: (err) => {
         this.message.error(err?.error?.message || 'Gán nhãn thất bại!');
       }
@@ -410,7 +412,7 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
       cancelText: "Hủy bỏ",
       onOk: () => {
         this.isLoading = true;
-        
+
         this.productTemplateService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: TDSSafeAny) => {
             this.message.success('Xóa thành công');

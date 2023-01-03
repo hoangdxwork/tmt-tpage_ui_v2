@@ -1,8 +1,8 @@
-<tds-avatar [tdsSrc]="hasAvatar" [size]="size" [shape]="shape" *ngIf="hasAvatar; else avatarNull"
-    [ngStyle]="{ 'outline-style': 'solid', 'outline-width.px': 2, 'outline-color': statusColor || 'transparent', 'outline-offset.px': 2 }">
-</tds-avatar>
-<ng-template #avatarNull>
-    <tds-avatar  [tdsSrc]="url" [size]="size" [shape]="shape" 
-    [ngStyle]="{ 'outline-style': 'solid', 'outline-width.px': 2, 'outline-color': statusColor || 'transparent', 'outline-offset.px': 2 }">
-    </tds-avatar>
-</ng-template>
+<div class="relative">
+  <tds-avatar [tdsSrc]="avatarUrl ? avatarUrl : url" [size]="size" [shape]="shape"
+      [ngStyle]="{ 'outline-style': 'solid', 'outline-width.px': 2, 'outline-color': statusColor || 'transparent', 'outline-offset.px': 2 }">
+  </tds-avatar>
+  <div class="animate-pulse absolute inset-0 {{isLoading? 'inline-block':'hidden'}}">
+    <span class="rounded-full inline-block align-top bg-neutral-2-100 dark:bg-d-neutral-2-200 border border-neutral-1-100" [style.width.px]=" size | sizeAvatarPipe " [style.height.px]=" size | sizeAvatarPipe "></span>
+  </div>
+</div>

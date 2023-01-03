@@ -23,11 +23,17 @@ export class DetailProductComponent implements OnInit {
   expandSet = new Set<number | undefined>();
 
   filterObj: any = {
-    searchText: ''
+    searchText: '',
+    isOnlyProductCancel: false
   };
 
+  filterData: any = [
+    { text: 'Tất cả', value: false },
+    { text: 'Sản phẩm hủy', value: true }
+  ]
+
   pageIndex = 1;
-  pageSize = 20;
+  pageSize = 10;
   count: number = 0;
   isLoading: boolean = false;
 
@@ -36,21 +42,20 @@ export class DetailProductComponent implements OnInit {
 
   constructor(private message: TDSMessageService,
     private liveCampaignService: LiveCampaignService,
-    private destroy$: TDSDestroyService,
-    private oDataLiveCampaignService: ODataLiveCampaignService) { }
+    private destroy$: TDSDestroyService) { }
 
   ngOnInit(): void {
   }
 
   loadData(pageSize: number, pageIndex: number) {
     this.lstOfData = [];
-    let filters = this.oDataLiveCampaignService.buildFilterReportProduct(this.filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
+    let take = pageSize;
+    let skip = pageSize*(pageIndex - 1);
 
-    this.getViewData(params).subscribe({
+    this.getViewData(take, skip).subscribe({
         next: (res: ODataLiveCampaignReportProductDto) => {
-            this.count = res['@odata.count'] as number;
-            this.lstOfData = [...res.value];
+            this.lstOfData = [...(res?.Datas || [])];
+            this.count = res?.TotalCount || 0;
         },
         error: (err: any) => {
             this.message.error(err.error.message);
@@ -58,9 +63,9 @@ export class DetailProductComponent implements OnInit {
     })
   }
 
-  getViewData(params: string): Observable<TDSSafeAny> {
+  getViewData(take: number, skip: number): Observable<TDSSafeAny> {
     this.isLoading = true;
-    return this.liveCampaignService.reportLiveCampaignProduct(this.liveCampaignId, params)
+    return this.liveCampaignService.reportLiveCampaignProduct(this.liveCampaignId, take, skip, this.filterObj.isOnlyProductCancel, this.filterObj.searchText)
       .pipe(takeUntil(this.destroy$), finalize(()=>{ this.isLoading = false }))
   }
 
@@ -75,11 +80,14 @@ export class DetailProductComponent implements OnInit {
   refreshData() {
     this.filterObj = {
         searchText: '',
+        isOnlyProductCancel: false
     }
+    this.pageIndex = 1;
     this.loadData(this.pageSize, this.pageIndex);
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
+    this.pageIndex = params.pageIndex;
     this.pageSize = params.pageSize;
     this.loadData(params.pageSize, params.pageIndex);
   }
@@ -92,4 +100,9 @@ export class DetailProductComponent implements OnInit {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
+  onFilterData(event: boolean) {
+    this.pageIndex = 1;
+    this.filterObj.isOnlyProductCancel = event;
+    this.loadData(this.pageSize, this.pageIndex);
+  }
 }

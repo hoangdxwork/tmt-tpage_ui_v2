@@ -1,6 +1,5 @@
 import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
-import { Facebook } from './../../../../../lib/dto/facebook.dto';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
@@ -220,7 +219,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.loadDeliveryCarrier();
     this.productIndexDB();
 
-    this.eventEmitter();
+    this.onEventEmitter();
     this.onEventSocket();
   }
 
@@ -263,7 +262,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     })
   }
 
-  eventEmitter(){
+  onEventEmitter(){
     this.onSelectOrderFromMessage();
 
     this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -341,10 +340,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             this.saleOnline_OrderService.getById(res.orderId).pipe(takeUntil(this.destroy$)).subscribe({
               next: (obs: any) => {
                   delete obs['@odata.context'];
-                  this.quickOrderModel = {...obs};
-                  this.mappingAddress(this.quickOrderModel);
 
+                  this.quickOrderModel = {...obs};
+                  if(this.quickOrderModel && TDSHelperString.hasValueString(this.quickOrderModel.Note)) {
+                    this.quickOrderModel.Note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(this.quickOrderModel.Note);
+                  }
+
+                  this.mappingAddress(this.quickOrderModel);
                   this.postEvent.spinLoadingTab$.emit(false);
+
                   this.isLoading = false;
                   this.cdRef.detectChanges();
               },
@@ -363,11 +367,18 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     // TODO: đồng bộ dữ liệu khi lưu bên tab khách hàng
     this.chatomniConversationFacade.onSyncConversationOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (info: ChatomniConversationInfoDto) => {
+
+          let order = this.quickOrderModel;
           this.validateData();
-          this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(info, this.team, this.type)};
+
+          if(this.type != 'post') {
+              this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncOrderFromCsAll(info, this.team, this.type)};
+          } else {
+              this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncOrderFromCsPost(info, this.team, order)};
+          }
+
           this.mappingAddress(this.quickOrderModel);
           this.checkSelectNote();
-
           this.cdRef.detectChanges();
       }
     })
@@ -409,6 +420,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};
     this.mappingAddress(this.quickOrderModel);
+
     this.isLoading = false;
     this.cdRef.detectChanges();
   }
@@ -487,13 +499,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             next: (order: any) => {
                 this.isLoading = false;
 
-                  if(type == 'confirm') {
-                     this.message.success('Lưu địa chỉ đơn hàng thành công');
-                  }
+                if(type == 'confirm') {
+                    this.message.success('Lưu địa chỉ đơn hàng thành công');
+                }
 
-                  let csid = model.Facebook_ASUserId;
-                  this.onSyncConversationPartner(csid);
-                  this.cdRef.detectChanges();
+                let csid = model.Facebook_ASUserId;
+                this.onSyncConversationPartner(csid);
+                this.cdRef.detectChanges();
             },
             error: error => {
                 this.isLoading = false;
@@ -568,7 +580,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     });
   }
 
-  //Load thông tin ship aship
   loadConfigProvider(data: FastSaleOrder_DefaultDTOV2) {
     if (data.Carrier && data.Carrier.ExtraProperties) {
 
@@ -832,9 +843,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         next: (res: any) => {
             delete res['@odata.context'];
             res.FormAction = formAction;
-            this.mappingAddress(res);
+            if(res && TDSHelperString.hasValueString(res.Note)) {
+              res.Note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(res.Note);
+            }
 
+            this.mappingAddress(res);
             this.disableSyncOrder = true;
+
             this.prepareResponseSaleOnline(res, type);
             this.cdRef.detectChanges();
         },
@@ -870,6 +885,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           next: (res: any) => {
               delete res['@odata.context'];
               res.FormAction = formAction;
+              if(res && TDSHelperString.hasValueString(res.Note)) {
+                res.Note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(res.Note);
+              }
 
               this.prepareResponseSaleOnline(res, type);
               this.cdRef.detectChanges();

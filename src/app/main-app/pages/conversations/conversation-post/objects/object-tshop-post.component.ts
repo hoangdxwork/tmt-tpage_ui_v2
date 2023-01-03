@@ -21,7 +21,7 @@ export class ObjectTshopPostComponent  implements OnInit {
 
   @Input() item!: ChatomniObjectsItemDto;
   @Input() currentPost?: ChatomniObjectsItemDto;
-  @Input() postChilds!: any[];
+  @Input() extrasChilds!: any[];
 
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
 

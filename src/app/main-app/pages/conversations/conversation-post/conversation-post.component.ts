@@ -1,6 +1,4 @@
-import { Parent } from './../../../dto/conversation/post/comment-group.dto';
-import { Object } from './../../../dto/conversation/make-activity.dto';
-import { Child } from './../../../dto/team/all-facebook-child.dto';
+import { OnDestroy } from '@angular/core';
 import { ExtrasChildsDto } from './../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { TiktokService } from './../../../services/tiktok-service/tiktok.service';
 import { TDSNotificationService } from 'tds-ui/notification';
@@ -33,6 +31,7 @@ import { ChatomniConversationInfoDto } from '@app/dto/conversation-all/chatomni/
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 
 export interface SessionParamsDto {
   ParentId: string;
@@ -45,7 +44,7 @@ export interface SessionParamsDto {
   providers: [ TDSDestroyService ]
 })
 
-export class ConversationPostComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
+export class ConversationPostComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('innerText') innerText!: ElementRef;
   @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
@@ -102,10 +101,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   widthConversation!: number;
   clickReload: number = 0;
   refreshTimer: TDSSafeAny;
+  nextDataTimer: TDSSafeAny;
   isLoadingUpdate: boolean = false;
 
   extrasChilds: { [id: string] : ExtrasChildsDto[] } = {};
-  clickCurrentChild: string | any;
+  clickCurrentChild: any;
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -119,6 +119,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     public router: Router,
     private cdRef: ChangeDetectorRef,
     private chatomniObjectService: ChatomniObjectService,
+    private chatomniConversationService: ChatomniConversationService,
     private destroy$: TDSDestroyService,
     private socketOnEventService: SocketOnEventService,
     private resizeObserver: TDSResizeObserver,
@@ -150,6 +151,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               delete this.currentObject;
               this.fetchPosts(team);
               this.setCurrentTeam(team);
+              this.crmService.onUpdateTeam(team);
           }
 
           this.type = params?.params?.type;
@@ -399,7 +401,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         })
     } else {
         this.refreshTimer = setTimeout(() => {
-          this.loadFilterDataSource();
+            this.loadFilterDataSource();
         }, 350)
     }
 
@@ -428,16 +430,14 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               this.prepareParamsUrl();
           }
 
-          setTimeout(() => {
-              this.isRefreshing = false;
-          }, 300);
-
+          this.isRefreshing = false;
           this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false;
           this.isRefreshing = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -455,6 +455,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
       this.selectPost(currentObject);
       this.isLoading = false;
+      this.cdRef.detectChanges();
       return;
     }
 
@@ -463,11 +464,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     if(session && session.ObjectId && session.ParentId && params_postid == session.ObjectId) {
         index = this.lstObjects.findIndex(x => x.ObjectId == session.ParentId);
     } else {
-      if(session && session.ObjectId && !TDSHelperString.hasValueString(session.ParentId) && params_postid == session.ObjectId) {
-          index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
-      } else {
-          index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
-      }
+        if(session && session.ObjectId && !TDSHelperString.hasValueString(session.ParentId) && params_postid == session.ObjectId) {
+            index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+        } else {
+            index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+        }
     }
 
     if(Number(index) >= 0) {
@@ -486,14 +487,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
       this.selectPost(this.currentObject);
       this.isLoading = false;
+      this.cdRef.detectChanges();
       return;
     }
-
-    // let teamId = this.currentTeam?.Id as number;
-    // if(!TDSHelperString.hasValueString(params_postid)) {
-    //   this.message.error('Không tìm thấy ObjectId');
-    //   return;
-    // }
 
     this.currentObject = this.lstObjects[0];
     this.selectPost(this.currentObject);
@@ -533,7 +529,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     if(item && item.Data) {
         let exsit = this.currentObject && this.currentObject.ObjectId == item.ObjectId && !item.ParentId && type == '_click';
         if(exsit) {
-            this.clickCurrentChild = TDSHelperString.hasValueString(this.clickCurrentChild) ? null: item.ObjectId;
+            this.clickCurrentChild = TDSHelperString.hasValueString(this.clickCurrentChild) ? null : item.ObjectId;
             return;
         }
 
@@ -554,10 +550,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   nextData(event: any): any {
     if(event) {
-
       this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
-
         next: (res: ChatomniObjectsDto) => {
             if(res && res.Extras && res.Extras.Childs) {
                 this.extrasChilds = {...(res.Extras?.Childs || {})}
@@ -585,15 +579,19 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   onClickTeam(data: CRMTeamDTO): any {
-    if (this.paramsUrl?.teamId) {
+    let exist = this.paramsUrl && TDSHelperString.hasValueString(this.paramsUrl?.teamId) && data;
+    if (exist) {
       this.disableNextUrl = false;
-
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+
+      this.removeSessionStoragePostId();
+      this.removeSessionStorageConversationId();
+      this.removeQueryObjConversation();
+
+      this.crmService.onUpdateTeam(data);
       this.router.navigateByUrl(uriParams);
     }
-
-    this.crmService.onUpdateTeam(data);
   }
 
   getIconTypePost(type: string): any {
@@ -633,19 +631,19 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
       });
 
-      this.resizeObserver.observe(this.viewChildConvesationPost)
-      .subscribe(() => {
-        if(this.viewChildConvesationPost && this.viewChildConvesationPost.nativeElement) {
-          this.widthConversation = this.viewChildConvesationPost.nativeElement.clientWidth as number;
-        }
-      });
+    this.resizeObserver.observe(this.viewChildConvesationPost).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+          if(this.viewChildConvesationPost && this.viewChildConvesationPost.nativeElement) {
+              this.widthConversation = this.viewChildConvesationPost.nativeElement.clientWidth as number;
+          }
+      }
+    });
   }
 
   loadFilterDataSource() {
     this.lstObjects = [];
     this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, this.queryObj).subscribe({
       next: (res: ChatomniObjectsDto) => {
-
           this.lstObjects  = [...res.Items];
           let currentObject = {} as any;
 
@@ -660,6 +658,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             this.selectPost(currentObject);
             this.isLoading = false;
             this.isRefreshing = false;
+            this.cdRef.detectChanges();
             return;
           }
 
@@ -711,23 +710,22 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
                     this.lstObjects = [...[currentObject], ...this.lstObjects];
                     this.isLoading = false;
+                    this.cdRef.detectChanges();
                 },
                 error: (error: any) => {
                     this.isLoading = false;
                     this.message.error(error?.error?.message);
+                    this.cdRef.detectChanges();
                 }
               })
           }
 
-          setTimeout(() => {
-              this.isRefreshing = false;
-          }, 300);
+          this.isRefreshing = false;
       },
       error: (error: any) => {
-          setTimeout(() => {
-             this.isRefreshing = false;
-          }, 300);
+          this.isRefreshing = false;
           this.message.error(`${error?.error?.message}`);
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -746,14 +744,13 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.conversationOrderFacade.onChangeTab$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if(res === ChangeTabConversationEnum.order) {
-          this.changeTab(2, true);
-          this.isDisableTabPartner = false;
-          this.isDisableTabOrder = false;
-        }
-
-        else if(res === ChangeTabConversationEnum.partner) {
-          this.changeTab(1, true);
-          this.isDisableTabPartner = false;
+            this.changeTab(2, true);
+            this.isDisableTabPartner = false;
+            this.isDisableTabOrder = false;
+        } else
+        if(res === ChangeTabConversationEnum.partner) {
+            this.changeTab(1, true);
+            this.isDisableTabPartner = false;
         }
       }
     });
@@ -769,10 +766,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.liveCampaignService.getAvailables(text).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           delete res['@odata.context'];
-          this.lstOfLiveCampaign = [...res.value];
+          this.lstOfLiveCampaign = [...(res?.value || [])];
       },
       error: (error: any) => {
-          this.message.error(`${error?.error?.message}` || `Tải danh sách chiến dịch thật bại`);
+          this.message.error(`${error?.error?.message}`);
       }
     })
   }
@@ -807,21 +804,30 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     sessionStorage.removeItem(_keyCache);
   }
 
+  removeSessionStorageConversationId() {
+    const _keyCache = this.chatomniConversationService._keycache_params_csid;
+    sessionStorage.removeItem(_keyCache);
+  }
+
+  removeQueryObjConversation() {
+    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
+    localStorage.removeItem(_keyCache);
+  }
+
   vsEnd(event: NgxVirtualScrollerDto) {
     let exits = this.lstObjects && this.lstObjects.length > 0 && event && event.scrollStartPosition > 0;
     if(exits) {
       const vsEnd = Number(this.lstObjects.length - 1) == Number(event.endIndex) && !this.disableNextUrl as boolean;
       if(vsEnd) {
 
-        if (this.isProcessing || this.isLoadingNextdata) {
-            return;
-        }
-
+        if (this.isProcessing || this.isLoadingNextdata) return;
         this.isLoadingNextdata = true;
-        setTimeout(() => {
+
+        this.destroyTimer();
+        this.nextDataTimer = setTimeout(() => {
             this.nextData(event);
         }, 350);
-    }
+      }
     }
   }
 
@@ -862,5 +868,13 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
     }
+
+    if (this.nextDataTimer) {
+      clearTimeout(this.nextDataTimer);
+    }
+  }
+
+  ngOnDestroy(): void {
+      this.destroyTimer();
   }
 }

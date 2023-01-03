@@ -17,9 +17,9 @@
             [noResult]="NoResultTable">
             <thead>
                 <tr>
-                    <th [width]="'20%'">Tên thuộc tính</th>
-                    <th [width]="'60%'">Giá trị thuộc tính</th>
-                    <th [width]="'20%'" [align]="'center'">Thao tác</th>
+                    <th [width]="'33.33%'">Tên thuộc tính</th>
+                    <th [width]="'33.33%'">Giá trị thuộc tính</th>
+                    <th [width]="'33.33%'" [align]="'center'">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,7 +30,7 @@
                             <tds-form-field>
                                 <tds-select valueField="Id" textField="Name" placeholder='Chọn giá trị thuộc tính'
                                     disabledField="isActive" mode="multiple" [valuePrimitive]="false"
-                                    [ngModel]="data.Values|selectMultipleValue" [ngModelOptions]="{standalone: true}"THÊM MỚI SẢN PHẨM
+                                    [ngModel]="data.Values|selectMultipleValue" [ngModelOptions]="{standalone: true}"
                                     [data]="lstValue[i]?.Values || []" [autoClose]="true" [allowClear]="true"
                                     (selectChange)="onSelectValues($event,data.AttributeId)">
                                 </tds-select>

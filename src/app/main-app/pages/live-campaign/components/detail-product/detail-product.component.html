@@ -1,5 +1,13 @@
 <div class="w-full h-full flex flex-col bg-white rounded-xl text-body-2 text-neutral-900">
-    <div class="py-2.5 px-4 flex justify-end items-center">
+    <div class="py-2.5 px-4 flex justify-end items-center gap-x-4">
+        <tds-form-field class="w-[10%]">
+            <tds-select valueField="value" textField="text" placeholder='Lọc theo'
+                [ngModel]="filterObj.isOnlyProductCancel" (ngModelChange)="onFilterData($event)" [required]='true'
+                [data]="filterData" [allowClear]="false">
+            </tds-select>
+            <tds-error>Validation message text</tds-error>
+        </tds-form-field>
+
         <tds-form-field class="w-1/4">
             <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput [tdsInputDebounce]="750" [(ngModel)]="innerText"
                 [ngModelOptions]="{standalone: true}" (inputKeyup)="onSearch($event)" />
@@ -8,7 +16,7 @@
     </div>
     <div class="h-full pb-2.5">
         <tds-table #table [showSizeChanger]="true" [frontPagination]="false"
-            [listData]="lstOfData" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
+            [listData]="lstOfData" [loading]="isLoading" [total]="count" [(pageIndex)]="pageIndex" [(pageSize)]="pageSize" [scroll]="{y:'auto'}"
             (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
             <thead>
                 <tr>
@@ -38,7 +46,17 @@
                             (expandChange)="onExpandChange(product.ProductId, $event)">
                         </td>
 
-                        <td class="font-semibold border-r">{{ product.ProductName }}</td>
+                        <td class="font-semibold border-r">
+                            <div class="flex flex-col gap-y-2">
+                                <tds-label>{{ product.ProductName }}</tds-label>
+
+                                <div *ngIf="product.Tags && (product.Tags|stringToStringArray)?.length > 0" class="flex flex-wrap items-center gap-1">
+                                    <tds-tag status='primary' *ngFor="let tag1 of product.Tags|stringToStringArray" class="cursor-pointer" size="sm" tds-tooltip="{{ tag1 }}">
+                                        <div class="xl:max-w-[150px] 2xl:max-w-[250px] w-fit truncate">{{ tag1 }}</div>
+                                    </tds-tag>
+                                </div>
+                            </div>
+                        </td>
 
                         <td class="border-r">{{ product.ProductQtyInCart || 0 |numberCustom }}</td>
                         <td class="border-r">{{ product.ProductQtyWaitCheckOut || 0 |numberCustom }}</td>

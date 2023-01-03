@@ -182,8 +182,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   }
 
   onChangeExcel(event: any) {
-    this.sharedService.checkPrermission().pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.sharedService.checkPrermission().pipe(takeUntil(this.destroy$)).subscribe({
         next: res =>{
           switch (event.value) {
             case "excel":
@@ -215,12 +214,11 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   }
 
   onChangeFilter(event: any): any {
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if (!TDSHelperString.hasValueString(this.data.ObjectId)) {
-      return this.message.error('Không tìm thấy bài post');
+      this.message.error('Không tìm thấy bài post');
+      return;
     }
 
     this.currentFilter = event;
@@ -248,21 +246,20 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     if(teamId && this.data.ObjectId) {
       this.facebookCommentService.fetchComments(teamId, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-            // TODO: gán lại data để đẩy vào ngOnChanges CommentFilterAllComponent
             this.data = {...this.data};
             this.cdRef.detectChanges();
         },
         error: error => {
             this.message.error(`${error?.error?.message}`);
+            this.cdRef.detectChanges();
         }
       })
     }
-
   }
 
   showModalLiveCampaign(data: ChatomniObjectsItemDto, type: string, liveCampaignId?: string) {
     if(liveCampaignId) {
-      const modal = this.modalService.create({
+      this.modalService.create({
         title: 'Tổng quan chiến dịch live',
         content: OverviewLiveCampaignComponent,
         size: "xl",
@@ -277,7 +274,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         }
       });
     } else {
-      const modal = this.modalService.create({
+      this.modalService.create({
         title: 'Chiến dịch',
         content: FacebookLiveCampaignPostComponent,
         size: "lg",
@@ -416,9 +413,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductDTOV2) => {
         if(TDSHelperObject.hasValue(result)){
           this.defaultProductPost = this.prepareModel(result);
-
           this.facebookPostService.setDefaultProductPost(this.defaultProductPost);
-
           this.cdRef.detectChanges();
         }
       })
@@ -459,7 +454,6 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
   onChangeDrawerEditLive(event: any) {
     this.visibleDrawerEditLive = event;
-
     let liveCampaignId = this.data.LiveCampaignId as string;
     if(event) {
         this.liveCampaignService.setLocalStorageDrawer(this.data.ObjectId, liveCampaignId, event);
@@ -475,8 +469,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   closeDrawerEditLiveCampaign(): void {
     this.visibleDrawerEditLive = false;
     this.drawerEditLiveCampaign = false;
-    let liveCampaignId = this.data.LiveCampaignId as string;
 
+    let liveCampaignId = this.data.LiveCampaignId as string;
     this.liveCampaignService.setLocalStorageDrawer(this.data.ObjectId, liveCampaignId, false);
   }
 

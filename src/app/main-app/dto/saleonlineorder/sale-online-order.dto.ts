@@ -5,12 +5,17 @@ import { ObjectDataDTO } from '../conversation/inner.dto';
 import { PartnerDTO, PartnerStatus } from '../partner/partner.dto';
 import { StockWarehouseDTO } from '../product/warehouse.dto';
 
-export interface SaleOnlineOrderSummaryStatusDTO {
+export interface SaleOnlineStatusModelDto {
   DateStart?: Date | any;
   DateEnd?: Date | any;
   TagIds: string;
   SearchText: string;
   PostId?: string;
+}
+
+export interface SaleOnlineStatusValueDto {
+  StatusText: string;
+  Total: number;
 }
 
 export interface SaleOnline_OrderDTO {

@@ -16,7 +16,7 @@ import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib';
 import { Message } from 'src/app/lib/consts/message.const';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
+import { SaleOnlineStatusModelDto, SaleOnlineStatusValueDto } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
@@ -97,6 +97,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     if(this.data && this.data?.ObjectId) {
       this.currentPost = this.data;
       this.loadData(this.pageSize, this.pageIndex);
+      this.loadSummaryStatus();
     }
 
     this.onEventSocket();
@@ -135,6 +136,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     if(changes['data'] && !changes['data'].firstChange) {
         this.currentPost = changes['data'].currentValue;
         this.loadData(this.pageSize, this.pageIndex);
+        this.loadSummaryStatus();
         
     }
   }
@@ -148,13 +150,6 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
       next:(res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
-
-          // Cập nhật filter status
-          // this.loadSummaryStatus();
-          //gán tạm thời
-          let data = [{ Name: "Tất cả", Index: 1, Total: this.count }];
-          this.tabNavs = [...data];
-
 
           this.setOfCheckedId = new Set<string>();
           this.checked = false;
@@ -204,6 +199,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     }
 
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   changePageSize(pageSize:number){
@@ -222,10 +218,11 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
 
     this.filterObj.searchText = event.value;
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   loadSummaryStatus() {
-    let model : SaleOnlineOrderSummaryStatusDTO = {
+    let model : SaleOnlineStatusModelDto = {
       SearchText: this.filterObj.searchText,
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
       PostId: this.currentPost?.ObjectId
@@ -233,29 +230,13 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
 
     this.isLoading = true;
     this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: Array<TDSSafeAny>) => {
+      next: (res: Array<SaleOnlineStatusValueDto>) => {
           let total = 0;
           this.tabNavs.length = 0;
 
-          res.map((x: TDSSafeAny) => {
-              total += x.Total;
-              switch(x.StatusText) {
-                case "Nháp" :
-                  this.tabNavs.push({ Name: "Nháp", Index: 2, Total: x.Total });
-                  break;
-                case "Đã xác nhận" :
-                  this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Total: x.Total });
-                  break;
-                case "Đơn hàng" :
-                  this.tabNavs.push({ Name: "Đơn hàng", Index: 3, Total: x.Total });
-                  break;
-                case "Đã thanh toán" :
-                  this.tabNavs.push({ Name: "Đã thanh toán", Index: 4, Total: x.Total });
-                  break;
-                case "Hủy" :
-                  this.tabNavs.push({ Name: "Hủy", Index: 5, Total: x.Total });
-                  break;
-              }
+          res.map((x: TDSSafeAny, i: number) => {
+            total += x.Total;
+            this.tabNavs.push({ Name: `${x.StatusText}`, Index: i + 2, Total: x.Total });
           });
 
           this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
@@ -279,6 +260,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     };
 
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   onActiveChange(order: any, event: boolean, index: number) {
@@ -413,6 +395,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
             this.modalService.afterAllClose.subscribe({
               next:(x: any) =>{
                   this.loadData(this.pageSize,this.pageIndex);
+                  this.loadSummaryStatus();
               }
             });
           }
@@ -456,6 +439,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
             this.isLoading = false;
             this.message.success(Message.DeleteSuccess);
             this.loadData(this.pageSize, this.pageIndex);
+            this.loadSummaryStatus();
 
             // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
             this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
@@ -520,5 +504,6 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
 
     this.filterObj.searchText = '';
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 }

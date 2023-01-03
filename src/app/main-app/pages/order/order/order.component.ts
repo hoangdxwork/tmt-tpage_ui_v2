@@ -9,7 +9,7 @@ import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
 import { addDays } from 'date-fns/esm';
 import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, AfterViewInit } from '@angular/core';
-import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
+import { SaleOnlineStatusModelDto, SaleOnlineStatusValueDto } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
 import { SortEnum, THelperCacheService, TIDictionary } from 'src/app/lib';
@@ -283,7 +283,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
         endDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-ddTHH:mm:ss+00:00');
     }
 
-    let model: SaleOnlineOrderSummaryStatusDTO = {
+    let model: SaleOnlineStatusModelDto = {
       DateStart: startDate,
       DateEnd: endDate,
       SearchText: this.filterObj.searchText,
@@ -293,11 +293,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.isTabNavs = true;
     this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
       finalize(() => this.isTabNavs = false)).subscribe({
-        next: (res: Array<TDSSafeAny>) => {
+        next: (res: Array<SaleOnlineStatusValueDto>) => {
             let tabs: TabNavsDTO[] = [];
             let total = 0;
 
-            res?.map((x: TDSSafeAny, index: number) => {
+            res?.map((x: SaleOnlineStatusValueDto, index: number) => {
                 total += x.Total;
                 index = index + 2;
 
