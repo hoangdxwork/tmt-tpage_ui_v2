@@ -370,8 +370,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           this.validateData();
           this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(info, this.team, this.type)};
           this.mappingAddress(this.quickOrderModel);
-          this.checkSelectNote();
 
+          this.checkSelectNote();
           this.cdRef.detectChanges();
       }
     })
