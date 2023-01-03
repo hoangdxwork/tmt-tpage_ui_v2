@@ -244,7 +244,7 @@
                                             <tds-form-field class="w-full">
                                                 <tds-input-number [min]="0"
                                                     [max]="20000" [step]="1" [disabled]="item.IsActive ? false : true"
-                                                    placeholder="0"  [(ngModel)]="item.Product.Quantity" [ngModelOptions]="{standalone: true}"
+                                                    placeholder="0" [(ngModel)]="item.Product.Quantity" [ngModelOptions]="{standalone: true}"
                                                     [formatter]="numberWithCommas" [parser]="parserComas">
                                                 </tds-input-number>
                                             </tds-form-field>
