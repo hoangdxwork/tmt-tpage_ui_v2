@@ -12,7 +12,7 @@ import { ModalListPostComponent } from '../../components/modal-list-post/modal-l
 import { GetAllFacebookPostDTO } from '../../../../dto/live-campaign/getall-facebook-post.dto';
 import { DetailExistsDTO, OverviewReportDTO, ReportLiveCampaignDetailDTO } from '../../../../dto/live-campaign/report-livecampain-overview.dto';
 import { DrawerAddProductComponent } from './drawer-add-product.component';
-import { ViewContainerRef, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation, ViewChild, ElementRef } from "@angular/core";
+import { ViewContainerRef, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation, ViewChild, ElementRef, OnDestroy } from "@angular/core";
 import { LiveCampaignService } from "@app/services/live-campaign.service";
 import { TDSDestroyService } from "tds-ui/core/services";
 import { takeUntil} from "rxjs";
@@ -43,7 +43,7 @@ import { ProductTemplateFacade } from '@app/services/facades/product-template.fa
   }
 })
 
-export class DrawerEditLiveCampaignComponent implements OnInit {
+export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
   @Input() liveCampaignId: any;
   @Input() visibleDrawerEditLive!: boolean;
@@ -80,9 +80,10 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   animateSocket: any = {};
 
   lstOrderTags!: string[];
-  lstDetailsAll: LiveCampaignSimpleDetail[] = []
+  lstSimpleDetail: LiveCampaignSimpleDetail[] = [];
+  changeDetailTimer: any;
 
-  numberWithCommas =(value: TDSSafeAny) =>{
+  numberWithCommas =(value: TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
@@ -293,7 +294,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
           if(!res) return;
           delete res['@odata.context'];
-          this.lstDetailsAll = [...res.Details];
+          this.lstSimpleDetail = [...res.Details];
 
           this.cdRef.detectChanges();
       },
@@ -380,7 +381,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
   }
 
   addItemProduct(listData: DataPouchDBDTO[]) {
-    let formDetails = this.lstDetailsAll as any[];
+    let formDetails = this.lstSimpleDetail as any[];
     let simpleDetail: ReportLiveCampaignDetailDTO[] = [];
 
     listData.forEach((x: DataPouchDBDTO) => {
@@ -434,12 +435,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
     this.isLoading = true;
     this.liveCampaignService.updateDetails(id, items).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any[]) => {
+        next: (res: any) => {
           this.isLoading = false;
           if(!res) return;
 
           res.map((x: ReportLiveCampaignDetailDTO, idx: number) => {
-              let exist = this.lstDetailsAll.filter(y=> x.ProductId == y.ProductId && x.UOMId == y.UOMId)[0];
+              let exist = this.lstSimpleDetail.filter(y => x.ProductId == y.ProductId && x.UOMId == y.UOMId)[0];
               let formDetails = this.lstDetail as any[];
 
               x.ProductName = items[idx].ProductName;
@@ -474,8 +475,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
           this.lstDetail = [...this.lstDetail];
           this.getLstOrderTags(this.lstDetail);
-          this.loadDataDetail();
 
+          this.loadDataDetail();
           this.cdRef.detectChanges();
         },
         error: (err: any) => {
@@ -962,5 +963,15 @@ export class DrawerEditLiveCampaignComponent implements OnInit {
 
       delete this.isEditDetails[item.Id];
     }
+  }
+
+  destroyTimer() {
+    if (this.changeDetailTimer) {
+      clearTimeout(this.changeDetailTimer);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyTimer();
   }
 }

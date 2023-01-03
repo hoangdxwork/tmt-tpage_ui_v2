@@ -105,7 +105,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   isLoadingUpdate: boolean = false;
 
   extrasChilds: { [id: string] : ExtrasChildsDto[] } = {};
-  clickCurrentChild: string | any;
+  clickCurrentChild: any;
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -455,6 +455,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
       this.selectPost(currentObject);
       this.isLoading = false;
+      this.cdRef.detectChanges();
       return;
     }
 
@@ -463,11 +464,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     if(session && session.ObjectId && session.ParentId && params_postid == session.ObjectId) {
         index = this.lstObjects.findIndex(x => x.ObjectId == session.ParentId);
     } else {
-      if(session && session.ObjectId && !TDSHelperString.hasValueString(session.ParentId) && params_postid == session.ObjectId) {
-          index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
-      } else {
-          index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
-      }
+        if(session && session.ObjectId && !TDSHelperString.hasValueString(session.ParentId) && params_postid == session.ObjectId) {
+            index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+        } else {
+            index = this.lstObjects.findIndex(x => x.ObjectId == params_postid);
+        }
     }
 
     if(Number(index) >= 0) {
@@ -486,6 +487,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
       this.selectPost(this.currentObject);
       this.isLoading = false;
+      this.cdRef.detectChanges();
       return;
     }
 
@@ -527,7 +529,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     if(item && item.Data) {
         let exsit = this.currentObject && this.currentObject.ObjectId == item.ObjectId && !item.ParentId && type == '_click';
         if(exsit) {
-            this.clickCurrentChild = TDSHelperString.hasValueString(this.clickCurrentChild) ? null: item.ObjectId;
+            this.clickCurrentChild = TDSHelperString.hasValueString(this.clickCurrentChild) ? null : item.ObjectId;
             return;
         }
 
@@ -656,6 +658,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             this.selectPost(currentObject);
             this.isLoading = false;
             this.isRefreshing = false;
+            this.cdRef.detectChanges();
             return;
           }
 
@@ -707,10 +710,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
                     this.lstObjects = [...[currentObject], ...this.lstObjects];
                     this.isLoading = false;
+                    this.cdRef.detectChanges();
                 },
                 error: (error: any) => {
                     this.isLoading = false;
                     this.message.error(error?.error?.message);
+                    this.cdRef.detectChanges();
                 }
               })
           }
@@ -720,6 +725,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       error: (error: any) => {
           this.isRefreshing = false;
           this.message.error(`${error?.error?.message}`);
+          this.cdRef.detectChanges();
       }
     })
   }
