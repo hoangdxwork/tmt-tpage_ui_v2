@@ -290,7 +290,11 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
 
   selectContent(event: string[], item: TextContentToOrderDTO) {
     let strs = [...this.checkInputMatch(event)];
+
     let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
+    if(item && item.Product && item.Product.ProductId &&  item.Product?.UOMId) {
+      idx =  this.dataModel.TextContentToOrders.findIndex(x => x.Product?.ProductId == item.Product?.ProductId && x.Product?.UOMId == item.Product?.UOMId) as number;
+    }
 
     if(Number(idx) >= 0) {
       this.dataModel.TextContentToOrders[idx].Content = strs.join(',')  || null;
@@ -304,6 +308,9 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
   selectContentWithAttributes(event: string[], item: TextContentToOrderDTO) {
     let strs = [...this.checkInputMatch(event)];
     let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
+    if(item && item.Product && item.Product.ProductId &&  item.Product?.UOMId) {
+      idx =  this.dataModel.TextContentToOrders.findIndex(x => x.Product?.ProductId == item.Product?.ProductId && x.Product?.UOMId == item.Product?.UOMId) as number;
+    }
 
     if(Number(idx) >= 0) {
       this.dataModel.TextContentToOrders[idx].ContentWithAttributes = strs.join(',') || null;
@@ -315,6 +322,10 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
 
   enableRegexAttributeValues(event: boolean, item: TextContentToOrderDTO){
     let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index) as number;
+    if(item && item.Product && item.Product.ProductId &&  item.Product?.UOMId) {
+      idx =  this.dataModel.TextContentToOrders.findIndex(x => x.Product?.ProductId == item.Product?.ProductId && x.Product?.UOMId == item.Product?.UOMId) as number;
+    }
+
     if(Number(idx) >= 0 ) {
       this.dataModel.TextContentToOrders[idx].Product!.IsEnableRegexAttributeValues = event;
       this.dataModel.TextContentToOrders[idx].Product = {...this.dataModel.TextContentToOrders[idx].Product} as any;
@@ -325,6 +336,10 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
 
   enableRegexQty(event: boolean, item: TextContentToOrderDTO){
     let idx = this.dataModel.TextContentToOrders.findIndex(x => x.Index == item.Index);
+    if(item && item.Product && item.Product.ProductId &&  item.Product?.UOMId) {
+      idx =  this.dataModel.TextContentToOrders.findIndex(x => x.Product?.ProductId == item.Product?.ProductId && x.Product?.UOMId == item.Product?.UOMId) as number;
+    }
+
     if(Number(idx) >=0) {
       this.dataModel.TextContentToOrders[idx]!.Product!.IsEnableRegexQty = event;
       this.dataModel.TextContentToOrders[idx]!.Product = {...this.dataModel.TextContentToOrders[idx]!.Product} as any;
