@@ -12,17 +12,11 @@
                     <div *ngFor="let item of wb?.payload?.elements">
                       <div #itemProduct class="snap-start shrink-0">
                         <tds-card class="bg-white w-[260px] h-full rounded-xl" (click)="detail()">
-                          <!-- <img *ngIf="item?.image_url" class="w-full h-[192px] object-cover" src="{{ item.image_url }}" alt="" />
-                          <img *ngIf="!item?.image_url || item?.image_url == null" class="w-full h-[192px] bg-neutral-3-50 p-6" src="../assets/imagesv2/errorPic.svg" alt="" /> -->
-
                           <div *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture" class="relative">
-                            <img src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)"
-                                  class="w-full h-[192px] object-cover">
+                            <img src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)" class="w-full h-[192px] object-cover">
                           </div>
                           <ng-template #noPicture>
-                              <div *ngIf="!item?.image_url">
-                                  <img src="../assets/imagesv2/errorPic.svg" alt="" class="w-full h-[192px] rounded-md p-4">
-                              </div>
+                            <img src="../assets/imagesv2/errorPic.svg" alt="" class="w-full h-[192px] rounded-md p-4">
                           </ng-template>
 
                           <tds-card-content class="px-4 py-3 w-full flex flex-col gap-y-1">
