@@ -367,10 +367,17 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     // TODO: đồng bộ dữ liệu khi lưu bên tab khách hàng
     this.chatomniConversationFacade.onSyncConversationOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (info: ChatomniConversationInfoDto) => {
-          this.validateData();
-          this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncConversationInfoToOrder(info, this.team, this.type)};
-          this.mappingAddress(this.quickOrderModel);
 
+          let order = this.quickOrderModel;
+          this.validateData();
+
+          if(this.type != 'post') {
+              this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncOrderFromCsAll(info, this.team, this.type)};
+          } else {
+              this.quickOrderModel = {...this.csOrder_FromConversationHandler.onSyncOrderFromCsPost(info, this.team, order)};
+          }
+
+          this.mappingAddress(this.quickOrderModel);
           this.checkSelectNote();
           this.cdRef.detectChanges();
       }

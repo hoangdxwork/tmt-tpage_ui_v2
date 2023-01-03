@@ -29,7 +29,7 @@ export class CsOrder_FromConversationHandler {
       }
 
       // TODO: trường hợp có đơn hàng nháp gần nhất
-      if(csInfo && TDSHelperObject.hasValue(csInfo.Order) && csInfo.Order?.Id) {
+      if(csInfo && TDSHelperObject.hasValue(csInfo.Order) && type != 'post') {
           order = {... csInfo.Order} as any;
 
           order.Details = [];
@@ -142,9 +142,67 @@ export class CsOrder_FromConversationHandler {
       return {...order}
     }
 
-    onSyncConversationInfoToOrder(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO, type: string) {
+    onSyncOrderFromCsAll(conversationInfo: ChatomniConversationInfoDto, team: CRMTeamDTO, type: string) {
         let data = { ... this.getOrderFromConversation(conversationInfo, team, type) };
         return { ...data };
+    }
+
+    onSyncOrderFromCsPost(csInfo: ChatomniConversationInfoDto, team: CRMTeamDTO, quickOrderModel: QuickSaleOnlineOrderModel) {
+      let order: QuickSaleOnlineOrderModel = {} as any;
+      let partner: ConversationPartnerDto = {} as any;
+
+      if(csInfo && TDSHelperObject.hasValue(csInfo.Partner)) {
+          partner = csInfo.Partner;
+      }
+
+      if(quickOrderModel && quickOrderModel.Id) {
+          order = quickOrderModel as any;
+      }
+
+      if(team && !order.CRMTeamId) {
+          order.CRMTeamId = team.Id;
+          order.CRMTeamName = team.Name;
+      }
+
+      order.Telephone = order.Telephone || partner?.Phone || csInfo.Conversation?.Phone;
+      order.Address =  order.Address || partner?.Street as string;
+      order.Email = order.Email || partner?.Email || csInfo.Conversation?.Email;
+
+      order.PartnerId = order.PartnerId || csInfo.Partner?.Id;
+      order.PartnerName = order.PartnerName || csInfo.Conversation.Name || partner.Name || order.Facebook_UserName;
+
+      if(this.userInit && !order.UserId) {
+          order.UserId = this.userInit.Id;
+          order.User = {
+              Id: this.userInit.Id,
+              Name: this.userInit.Name
+          } as any;
+      }
+
+      if(!TDSHelperString.hasValueString(order.CityCode)) {
+        order.CityCode = (partner?.CityCode || partner?.City?.code) as any;
+        order.CityName = (partner?.CityName || partner?.City?.name) as any;
+      }
+
+      if(!TDSHelperString.hasValueString(order.DistrictCode)) {
+        order.DistrictCode = (partner?.DistrictCode || partner?.District?.code) as any;
+        order.DistrictName = (partner?.DistrictName || partner?.District?.name) as any;
+      }
+
+      if(!TDSHelperString.hasValueString(order.WardCode)) {
+        order.WardCode = (partner?.WardCode || partner?.Ward?.code) as any;
+        order.WardName = (partner?.WardName || partner?.Ward?.code) as any;
+      }
+
+      order.Facebook_ASUserId = order.Facebook_ASUserId || csInfo.Conversation?.ConversationId;
+      order.Facebook_UserName = order.Facebook_UserName || csInfo.Conversation?.Name;
+      order.Facebook_UserId = order.Facebook_UserId || csInfo.Conversation?.UserId;
+
+      if(TDSHelperString.hasValueString(order.Note)) {
+          order.Note = this.conversationOrderFacade.prepareMessageHasPhoneBBCode(order.Note);
+      }
+
+      return {...order}
     }
 
     loadUserLogged() {
