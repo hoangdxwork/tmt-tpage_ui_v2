@@ -810,6 +810,15 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
     model.MinLengthToOrder = this.dataModel.MinLengthToOrder;
     model.TextContentToExcludeOrder = this.dataModel.TextContentToExcludeOrder;
     model.TextContentToOrders = this.dataModel.TextContentToOrders;
+
+    if(model.TextContentToOrders && model.TextContentToOrders.length > 0) {
+      model.TextContentToOrders?.map((x: any) => {
+        if(x && x.Product && Number(x.Product.Quantity)) {
+            x.Product.QtyLimit = x.Product.Quantity;
+        }
+      })
+    }
+
     model.IsOrderCreateOnlyOnce = this.dataModel.IsOrderCreateOnlyOnce || false;
     model.Users = this.prepareUser(this.dataModel.Users);
     model.TeamId = this.currentTeam?.Id;
