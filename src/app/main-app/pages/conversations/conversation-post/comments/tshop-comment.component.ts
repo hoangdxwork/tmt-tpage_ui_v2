@@ -106,7 +106,7 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
   nextDataTimer: TDSSafeAny;
   preDataTimer: TDSSafeAny;
   refreshTimer: TDSSafeAny;
-  dictActiveComment!: string | any;
+  dictActiveComment: {[key: string] : boolean } = {};
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -372,7 +372,7 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
         this.innerText = '';
         this.partnerDict = {};
         this.invoiceDict = {};
-        this.dictActiveComment = null;
+        this.dictActiveComment = {};
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
@@ -648,9 +648,10 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
     this.postEvent.spinLoadingTab$.emit(true);
-    this.dictActiveComment = item.Id;
-    let psid = item.UserId || item.Data?.from?.id;
+    this.dictActiveComment = {};
+    this.dictActiveComment[item.Id] = true;
 
+    let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
       this.message.error("Không truy vấn được thông tin người dùng!");
       return;
