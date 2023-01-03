@@ -1,9 +1,9 @@
 import { FilterObjSOOrderModel } from './odata-saleonlineorder.service';
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString, TDSHelperArray } from 'tds-ui/shared/utility';
 import { ODataResponsesDTO } from '../../dto/odata/odata.dto';
 import { BaseSevice } from '../base.service';
@@ -62,8 +62,10 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
               { field: "Code", operator: OperatorEnum.contains, value: filterObj.searchText },
               { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
               { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "StatusText", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "UserName", operator: OperatorEnum.contains, value: filterObj.searchText}
+              { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Facebook_UserName", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "UserName", operator: OperatorEnum.contains, value: filterObj.searchText }
             ],
             logic: 'or'
         })
@@ -90,7 +92,7 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
       })
     }
 
-    if(filterObj.Telephone != null) {
+    if(filterObj.Telephone) {
       dataFilter.filters.push({
         filters: [
         { field: "Telephone", operator: (filterObj.Telephone ?  OperatorEnum.gt :  OperatorEnum.eq), value: (filterObj.Telephone ? "" : null) }
