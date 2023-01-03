@@ -134,18 +134,18 @@
                                     <div class="mb-1 inline-block w-full">
                                         <div class="flex-auto flex flex-col gap-y-1">
                                             <div class="w-full flex gap-x-2 justify-between items-center">
-                                                <span class="font-semibold text-[13px] w-full truncate" tds-popover [popoverContent]="popoverTag" popoverPlacement="topLeft" 
+                                                <span class="font-semibold text-[13px] w-full truncate" tds-popover [popoverContent]="popoverTag" popoverPlacement="topLeft"
                                                     tds-tooltip="{{ data.ProductNameGet || data.ProductName}}"  tooltipPlacement="bottomLeft">
                                                     {{ data.ProductNameGet || data.ProductName }}
                                                 </span>
-    
+
                                                 <!-- Thao tác -->
-    
+
                                                 <div class="text-center flex justify-end gap-x-1 w-1/4">
                                                     <button *ngIf="!isEditDetails[data.Id]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Chỉnh sửa" (click)="onEditDetails(data)">
                                                         <i class="tdsi-edit-fill"></i>
                                                     </button>
-                                                      
+
                                                     <button *ngIf="!isEditDetails[data.Id]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Xóa" (click)="removeDetail(data)">
                                                         <i class="tdsi-trash-fill"></i>
                                                     </button>
@@ -257,10 +257,12 @@
 
                                     <!-- Danh sách order tag -->
                                     <div *ngIf="orderTags && orderTags[data.ProductId + '_' + data.UOMId] && orderTags[data.ProductId + '_' + data.UOMId].length > 0" class="flex flex-wrap items-center gap-1">
-                                        <tds-tag status='secondary' *ngFor="let orderTag of orderTags[data.ProductId + '_' + data.UOMId]| slice:0:1" class="cursor-pointer" tds-tooltip="{{ orderTag }}">
-                                            {{ orderTag }}</tds-tag> 
+                                        <tds-tag status='secondary' class="cursor-pointer hover:opacity-75" size="sm" tds-tooltip="{{ orderTag }}"
+                                            *ngFor="let orderTag of orderTags[data.ProductId + '_' + data.UOMId]| slice:0:2">
+                                            <div class="2xl:max-w-[105px] xl:max-w-[55px] w-fit truncate">{{ orderTag }}</div>
+                                        </tds-tag>
 
-                                        <div class="flex gap-1.5 items-center"  *ngIf="orderTags[data.ProductId + '_' + data.UOMId].length > 1">
+                                        <div class="flex gap-1.5 items-center" *ngIf="orderTags[data.ProductId + '_' + data.UOMId].length > 2">
                                             <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer tdsi-plus-fill" tds-popover
                                                 [popoverContent]="popoverContentTag"
                                                 popoverPlacement="top"
@@ -269,9 +271,11 @@
 
                                             <ng-template #popoverContentTag>
                                                 <div class="flex gap-x-2 gap-y-1 flex-wrap max-w-[500px]">
-                                                    <div *ngFor="let orderTag2 of orderTags[data.ProductId + '_' + data.UOMId] | slice:1:(orderTags[data.ProductId + '_' + data.UOMId].length)"
+                                                    <div *ngFor="let orderTag2 of orderTags[data.ProductId + '_' + data.UOMId]"
                                                         class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
-                                                        <tds-tag status='secondary'>{{ orderTag2 }}</tds-tag> 
+                                                        <tds-tag status='secondary' class="cursor-pointer" size="sm" tds-tooltip="{{ orderTag2 }}">
+                                                            <div class="max-w-[230px] w-fit truncate">{{ orderTag2 }}</div>
+                                                        </tds-tag>
                                                     </div>
                                                 </div>
                                             </ng-template>
@@ -361,7 +365,7 @@
                                                 </tds-input-number>
                                             </tds-form-field>
                                         </div>
-                                        
+
                                         <div class="flex gap-x-1 w-full" *ngIf="!isEditDetails[data.Id]">
                                             <span class="flex items-center">Giá:</span>
                                             <div class="text-body-2 text-center flex items-center ml-2 font-semibold">

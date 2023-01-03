@@ -10,7 +10,7 @@ export class GenerateTagAttributesFacade {
   mappingTagAttributes(tagWithAttributes?: any, attributeValues?: any[]) {
       let datas: any = [];
       let tags = [] as any[];
-      
+
       if(TDSHelperString.hasValueString(tagWithAttributes)) {
         tags = tagWithAttributes?.split(',');
       }
@@ -39,6 +39,16 @@ export class GenerateTagAttributesFacade {
           datas.push(item2);
           datas.push(item3);
           datas.push(item4);
+
+          if(datas?.length > 1) {
+            let lstFilter: any[] = [];
+            datas.map((x: any) => {
+              let exist = lstFilter.find(a => a === x);
+              if(!exist) lstFilter.push(x);
+            });
+
+            datas = [...lstFilter.reverse()];
+          }
 
       })
 
