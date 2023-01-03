@@ -667,6 +667,8 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
                 orderId: order.id,
                 comment: item
             });
+          } else {
+              this.conversationOrderFacade.hasValueOrderCode$.emit('');
           }
 
           if(type == 'SALEONLINE_ORDER') {
@@ -674,6 +676,7 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           this.conversationOrderFacade.loadPartnerByPostComment$.emit(info);
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.postEvent.spinLoadingTab$.emit(false);
