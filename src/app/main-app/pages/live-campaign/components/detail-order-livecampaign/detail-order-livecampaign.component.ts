@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
-import { SaleOnlineOrderSummaryStatusDTO } from "@app/dto/saleonlineorder/sale-online-order.dto";
+import { SaleOnlineStatusModelDto, SaleOnlineStatusValueDto } from "@app/dto/saleonlineorder/sale-online-order.dto";
 import { FilterObjSOOrderModel, TabNavsDTO } from "@app/services/mock-odata/odata-saleonlineorder.service";
 import { SaleOnline_OrderService } from "@app/services/sale-online-order.service";
 import { TagService } from "@app/services/tag.service";
@@ -57,7 +57,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
   }
 
   loadSummaryStatus() {
-    let model: SaleOnlineOrderSummaryStatusDTO = {
+    let model: SaleOnlineStatusModelDto = {
       DateStart: this.filterObj.dateRange?.startDate,
       DateEnd: this.filterObj.dateRange?.endDate,
       SearchText: this.filterObj.searchText,
@@ -66,11 +66,11 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
 
     this.isTabNavs = true;
     this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: Array<TDSSafeAny>) => {
+        next: (res: Array<SaleOnlineStatusValueDto>) => {
           let tabs: TabNavsDTO[] = [];
           let total = 0;
 
-          res?.map((x: TDSSafeAny, index: number) => {
+          res?.map((x: SaleOnlineStatusValueDto, index: number) => {
             total += x.Total;
             index = index + 2;
 
