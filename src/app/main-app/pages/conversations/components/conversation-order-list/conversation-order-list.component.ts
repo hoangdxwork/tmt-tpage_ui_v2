@@ -205,13 +205,11 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
   changePageSize(pageSize:number){
     this.pageSize = pageSize;
     this.loadData(this.pageSize, this.pageIndex);
-    this.loadSummaryStatus();
   }
 
   changePageIndex(pageIndex:number){
     this.pageIndex = pageIndex;
     this.loadData(this.pageSize, this.pageIndex);
-    this.loadSummaryStatus();
   }
 
   applyFilter(event: TDSSafeAny) {
