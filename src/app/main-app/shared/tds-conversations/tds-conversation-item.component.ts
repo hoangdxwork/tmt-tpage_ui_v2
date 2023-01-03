@@ -538,19 +538,27 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
 
           if(TDSHelperArray.hasListValue(res)){
             res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-              x["Status"] = ChatomniStatus.Done;
+              x["Status"] = ChatomniStatus.Pending;
 
-            let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-            this.dataSource.Items = [...this.dataSource.Items, data];
+              let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
+              let index = (this.dataSource?.Items || []).findIndex(x=> x.Id == data.Id);
 
-            if(i == res.length - 1){
-              let itemLast = {...data}
+              if(index < 0) {
+                  this.dataSource.Items = [...this.dataSource.Items, ...[data]];
+              } else {
+                //TODO: trường hợp socket trả về trước res, gán lại data để Status là Pending
+                  this.dataSource.Items[index] = {...data};
+                  this.dataSource.Items = [...this.dataSource.Items];
+              }
 
-              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.MessageType);
-              //TODO: Đẩy qua conversation-all-v2
-              this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-            }
-          });
+              if(i == res.length - 1){
+                let itemLast = {...data}
+
+                let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.MessageType);
+                //TODO: Đẩy qua conversation-all-v2
+                this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+              }
+            });
         }
 
         this.messageModel = null;
