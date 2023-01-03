@@ -106,6 +106,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
   nextDataTimer: TDSSafeAny;
   preDataTimer: TDSSafeAny;
   refreshTimer: TDSSafeAny;
+  dictActiveComment!: string | any;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
@@ -360,6 +361,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
         this.innerText = '';
         this.partnerDict = {};
         this.invoiceDict = {};
+        this.dictActiveComment = null;
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
@@ -627,6 +629,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
     this.postEvent.spinLoadingTab$.emit(true);
+    this.dictActiveComment = item.Id;
     let psid = item.ParentId ? (item.Data?.from?.id) : (item.UserId || item.Data?.from?.id);
     if (!psid) {
       this.message.error("Không truy vấn được thông tin người dùng!");

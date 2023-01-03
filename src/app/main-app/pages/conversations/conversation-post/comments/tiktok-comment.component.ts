@@ -106,6 +106,8 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
   preDataTimer: TDSSafeAny;
   refreshTimer: TDSSafeAny;
 
+  dictActiveComment!: string | any;
+
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
   constructor(private message: TDSMessageService,
@@ -367,6 +369,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
         this.innerText = '';
         this.partnerDict = {};
         this.invoiceDict = {};
+        this.dictActiveComment = null;
 
         this.data = {...changes["data"].currentValue};
         this.loadData();
@@ -641,6 +644,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
     this.postEvent.spinLoadingTab$.emit(true);
+    this.dictActiveComment = item.Id;
     let psid = item.UserId || item.Data?.from?.id;
 
     if (!psid) {

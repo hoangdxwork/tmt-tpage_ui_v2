@@ -10,13 +10,13 @@
             <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
         </div>
 
-         <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2 min-h-[118px]">
+    <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2 min-h-[118px]">
             <div *ngIf="item" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
                 <div>
                     <tds-avatar  class="cursor-pointer" [size]="'lg'" [tdsSrc]="(item.Data | tiktokDataCs)?.profilePictureUrl"></tds-avatar>
                 </div>
                 <div class="ml-2 w-full h-full">
-                    <div class="bg-white rounded-2xl px-4 py-3 min-h-[106px]">
+                    <div class="bg-white rounded-2xl px-4 py-3 min-h-[106px]" [ngClass]="dictActiveComment == item.Id? 'bg-primary-3': ''">
                         <div class="flex items-center justify-between">
                             <div class="flex gap-x-2 items-center">
 

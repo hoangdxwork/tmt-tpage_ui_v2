@@ -1,3 +1,4 @@
+import { EnumSendMessageType } from './../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { ChatomniCommentService } from './../../services/chatomni-service/chatomni-comment.service';
@@ -739,7 +740,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     let model = this.prepareModel(message);
-    model.MessageType = 0;
+    model.MessageType = EnumSendMessageType._NORMAl;
 
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
@@ -823,7 +824,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   sendMessage(message: string) {
     const model = this.prepareModel(message);
     if(!TDSHelperArray.hasListValue(this.uploadedImages)){
-        model.MessageType = 0;
+        model.MessageType = EnumSendMessageType._NORMAl;
     }
 
     this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model).pipe(takeUntil(this.destroy$)).subscribe({
@@ -888,7 +889,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   sendPrivateReplies(activityFinal: any, message: string){
     const model = this.prepareModel(message);
-    model.MessageType = 2;
+    model.MessageType = EnumSendMessageType._REPLY;
     model.RecipientId = activityFinal?.Data?.id || activityFinal?.Data?.msgId || null;
 
     if(TDSHelperArray.hasListValue(this.uploadedImages) && model.Attachment.Data){
