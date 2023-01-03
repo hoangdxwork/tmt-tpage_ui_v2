@@ -3,7 +3,7 @@ import { SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.se
 import { EventEmitter, Injectable } from "@angular/core";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
-import { get as _get, maxBy as _maxBy } from 'lodash';
+import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { ChatomniConversationDto, ChatomniConversationItemDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
 import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
