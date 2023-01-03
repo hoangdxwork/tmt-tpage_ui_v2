@@ -2,7 +2,7 @@ import { CRMTeamDTO } from './../../../../dto/team/team.dto';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
 import { addDays } from 'date-fns';
-import { SaleOnlineOrderSummaryStatusDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
+import { SaleOnlineStatusModelDto, SaleOnlineStatusValueDto } from './../../../../dto/saleonlineorder/sale-online-order.dto';
 import { TIDictionary } from './../../../../../lib/dto/dictionary.dto';
 import { CommonService } from './../../../../services/common.service';
 import { TagService } from './../../../../services/tag.service';
@@ -601,7 +601,7 @@ export class TableAllOrderComponent implements OnInit {
   }
 
   loadSummaryStatus() {
-    let model: SaleOnlineOrderSummaryStatusDTO = {
+    let model: SaleOnlineStatusModelDto = {
       DateStart: this.filterObj.dateRange?.startDate,
       DateEnd: this.filterObj.dateRange?.endDate,
       SearchText: this.filterObj.searchText,
@@ -611,7 +611,7 @@ export class TableAllOrderComponent implements OnInit {
     this.isTabNavs = true;
     this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
       finalize(() => this.isTabNavs = false)).subscribe({
-        next: (res: Array<TDSSafeAny>) => {
+        next: (res: Array<SaleOnlineStatusValueDto>) => {
             let tabs: TabNavsDTO[] = [];
             let total = 0;
 

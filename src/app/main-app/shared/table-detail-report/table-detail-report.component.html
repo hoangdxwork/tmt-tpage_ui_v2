@@ -117,25 +117,25 @@
 
                                             <!-- Danh sách order tag -->
                                             <div *ngIf="orderTags && orderTags[data.ProductId + '_' + data.UOMId] && orderTags[data.ProductId + '_' + data.UOMId].length > 0" class="flex flex-wrap items-center gap-1">
-                                                <tds-tag status='secondary' class="cursor-pointer hover:opacity-75" size="sm" tds-tooltip="{{ orderTag }}" 
-                                                    *ngFor="let orderTag of orderTags[data.ProductId + '_' + data.UOMId]| slice:0:1">
-                                                    <div class="2xl:max-w-[176px] xl:max-w-[95px] w-fit truncate">{{ orderTag }}</div>
-                                                </tds-tag> 
-
-                                                <div class="flex gap-1.5 items-center" *ngIf="orderTags[data.ProductId + '_' + data.UOMId].length > 1">
+                                                <tds-tag status='secondary' class="cursor-pointer hover:opacity-75" size="sm" tds-tooltip="{{ orderTag }}"
+                                                    *ngFor="let orderTag of orderTags[data.ProductId + '_' + data.UOMId]| slice:0:2">
+                                                    <div class="2xl:max-w-[95px] xl:max-w-[55px] w-fit truncate">{{ orderTag }}</div>
+                                                </tds-tag>
+        
+                                                <div class="flex gap-1.5 items-center" *ngIf="orderTags[data.ProductId + '_' + data.UOMId].length > 2">
                                                     <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer tdsi-plus-fill" tds-popover
                                                         [popoverContent]="popoverContentTag"
                                                         popoverPlacement="top"
                                                         [popoverBackdrop]="true">
                                                     </div>
-      
+        
                                                     <ng-template #popoverContentTag>
                                                         <div class="flex gap-x-2 gap-y-1 flex-wrap max-w-[500px]">
                                                             <div *ngFor="let orderTag2 of orderTags[data.ProductId + '_' + data.UOMId]"
                                                                 class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
                                                                 <tds-tag status='secondary' class="cursor-pointer" size="sm" tds-tooltip="{{ orderTag2 }}">
                                                                     <div class="max-w-[230px] w-fit truncate">{{ orderTag2 }}</div>
-                                                                </tds-tag> 
+                                                                </tds-tag>
                                                             </div>
                                                         </div>
                                                     </ng-template>
