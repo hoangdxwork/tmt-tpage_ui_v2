@@ -204,8 +204,7 @@ export class ModalListProductComponent implements OnInit {
     this.productIndexDBService.setCacheDBRequest();
     this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: KeyCacheIndexDBDTO) => {
-            if(!res) return;
-            this.indexDbStorage = [...res?.cacheDbStorage];
+            this.indexDbStorage = [...res?.cacheDbStorage || []];
             this.isLoading = false;
             this.cdRef.detectChanges();
         },

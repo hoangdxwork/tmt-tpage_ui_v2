@@ -458,8 +458,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.liveCampaignService.updateDetails(id, items).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-          this.isLoading = false;
-          if(!res) return;
+          
+          if(!res) {
+            this.isLoading = false;
+            return;
+          };
 
           res.map((x: ReportLiveCampaignDetailDTO, idx: number) => {
               let exist = this.lstSimpleDetail.filter(y => x.ProductId == y.ProductId && x.UOMId == y.UOMId)[0];
@@ -675,8 +678,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     this.productIndexDBService.setCacheDBRequest();
     this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: KeyCacheIndexDBDTO) => {
-            if(!res) return;
-            this.indexDbStorage = [...res?.cacheDbStorage];
+            this.indexDbStorage = [...res?.cacheDbStorage || []];
             this.isLoadingProduct = false;
         },
         error:(err) => {
@@ -743,6 +745,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
   showCreateProductModal() {
     if(this.checkIsEdit() == 0) return;
+    this.isLoading = true;
 
     const modal = this.modal.create({
       title: 'Thêm mới sản phẩm',
@@ -755,8 +758,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((response: any) => {
-      if(!response) return;
-      this.response = response;
+      if(response) {
+        this.response = response;
+      } else {
+        this.isLoading = false;
+      }
     });
   }
 
@@ -771,13 +777,13 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
         if(items && items.length == 0) {
           this.message.error('Sản phẩm đã bị xóa hoặc hết hiệu lực');
+          this.isLoading = false;
           return;
         }
 
         this.visible = false;
         this.searchValue = '';
         this.innerTextValue = '';
-        this.isEditDetails = {};
         this.pageIndex = 1;
 
         let lstItems = [] as ReportLiveCampaignDetailDTO[];
@@ -811,6 +817,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
         });
 
         this.addProductLiveCampaignDetails(lstItems);
+    } else {
+      this.isLoading = false;
     }
   }
 
@@ -1008,6 +1016,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   }
 
   arrangeChangedItem(item: any) {
+    if(this.innerTextValue && TDSHelperString.hasValueString(this.innerTextValue)) return;
     let idx = this.lstDetail.findIndex((x: ReportLiveCampaignDetailDTO) => x.ProductId == item?.ProductId && x.UOMId == item?.ProductUOMId);
 
     if(Number(idx) >= 0) {
@@ -1016,7 +1025,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
       this.lstDetail = [...exist,...this.lstDetail];
 
     } else {
-      // TODO: pop up lên đầu danh sách, chờ danh sách lstDetail có item = changedItem thì xóa
+      // TODO: pop up lên đầu danh sách, chờ danh sách lstDetail có item = changedItem thì xóa phần tử này
       let exist = this.lstSimpleDetail.find((x: LiveCampaignSimpleDetail) => x.ProductId == item?.ProductId && x.UOMId == item?.ProductUOMId);
       if(exist) {
         let key = `${exist.ProductId}_${exist.UOMId}`;
