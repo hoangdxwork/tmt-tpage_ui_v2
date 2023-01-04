@@ -7,7 +7,7 @@
           (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
           <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
               <div *ngIf="wb.type == 'template' && wb.payload">
-                <div class="w-full justify-end flex relative">
+                <div *ngIf=" wb.payload.template_type == 'generic'" class="w-full justify-end flex relative">
                   <div id="scroll-product{{dataItem.Data.id}}" class="max-w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
                     <div *ngFor="let item of wb?.payload?.elements">
                       <div #itemProduct class="snap-start shrink-0">
@@ -37,13 +37,13 @@
                   </div>
                 </div>
 
-                <div class="w-full flex justify-end py-2">
+                <div *ngIf="wb.payload.template_type == 'receipt'" class="w-full flex justify-end py-2">
                   <div class="px-4 py-2 bg-primary-1 text-white rounded-l-xl rounded-t-xl">
                     Hóa đơn của bạn  👇
                   </div>
                 </div>
 
-                <div class="w-full flex justify-end">
+                <div *ngIf="wb.payload.template_type == 'receipt'" class="w-full flex justify-end">
                   <div class="flex flex-col w-[50%]">
                     <div class="bg-neutral-3-50 rounded-t-xl px-4 py-2 flex justify-between items-center">
                       <span class="text-neutral-1-600">Xác nhận đơn đặt hàng</span>
