@@ -26,10 +26,10 @@
                 [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>
                     <tr class="text-neutral-1-900 text-body-2 font-semibold">
-                        <th [width]="'100px'">STT</th>
+                        <th [width]="'60px'" [align]="'center'">STT</th>
                         <th>Tên thẻ</th>
                         <th [align]="'center'">Màu sắc</th>
-                        <th>Lượt gán</th>
+                        <th [align]="'center'">Lượt gán</th>
                         <th [align]="'center'">Trạng thái</th>
                         <th [align]="'center'">Thao tác</th>
                     </tr>
@@ -37,15 +37,15 @@
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                         <tr class="text-neutral-1-900 text-body-2 font-regular">
-                            <td>{{ 1 + i + (pageIndex - 1) * pageSize }}</td>
+                            <td [align]="'center'">{{ 1 + i + (pageIndex - 1) * pageSize }}</td>
                             <td>{{ data.Name }}</td>
                             <td [align]="'center'">
                                 <div class="flex items-center justify-center">
                                     <div class="w-16 h-6 rounded-full" [style.background-color]="data.ColorClassName"></div>
                                 </div>
                             </td>
-                            <td>1</td>
-                            <td [align]="'center'" >
+                            <td [align]="'center'"> 2 </td>
+                            <td [align]="'center'">
                                 <tds-switch [(ngModel)]="!data.IsDeleted" (ngModelChange)="updateStatus(data)"></tds-switch>
                             </td>
                             <td [align]="'center'" >
