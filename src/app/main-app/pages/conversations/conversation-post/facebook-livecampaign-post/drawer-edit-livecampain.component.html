@@ -127,6 +127,7 @@
                     <virtual-scroller *ngIf="lstDetail && lstDetail.length > 0; else noData"
                         #scroll [items]="lstDetail" class="tds-custom-scroll w-full h-full"
                         (vsEnd)="vsEnd($event)"
+                        (vsStart)="vsStart($event)"
                         [enableUnequalChildrenSizes]="true"
                         [scrollAnimationTime]="750">
                             <div *ngFor="let data of scroll.viewPortItems; let i = index" class="flex w-full overflow-hidden">

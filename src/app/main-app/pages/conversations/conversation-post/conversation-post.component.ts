@@ -472,7 +472,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     }
 
     if(Number(index) >= 0) {
-      if(session.ParentId) {
+      if(session && session.ParentId) {
           let exitsChild = this.extrasChilds && this.extrasChilds[session.ParentId] && this.extrasChilds[session.ParentId].filter(x => x.ObjectId == params_postid)[0];
           if(exitsChild) {
               this.currentObject = this.extrasChilds[session.ParentId].filter(x => x.ObjectId == params_postid)[0] as any;

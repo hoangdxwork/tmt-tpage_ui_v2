@@ -78,10 +78,13 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   pageIndex: number = 1;
   resfeshScroll: boolean = false;
   animateSocket: any = {};
+  changedItems: { [key: string] : ReportLiveCampaignDetailDTO } = {};
+  lstWaitingItems: any[] = [];
+  changeDetailTimer: any;
+  startIndex: number = 0;
 
   lstOrderTags!: string[];
   lstSimpleDetail: LiveCampaignSimpleDetail[] = [];
-  changeDetailTimer: any;
 
   numberWithCommas =(value: TDSSafeAny) => {
     if(value != null) {
@@ -99,7 +102,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
   response: any;
   inventories: any;
-  productIds: {[key: string]: DetailExistsDTO} = {} as any;
+  productIds: { [key: string]: DetailExistsDTO } = {};
   orderTags: { [key: string] : string[] } = {};
 
   constructor(private liveCampaignService: LiveCampaignService,
@@ -145,23 +148,29 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
                   let pCheckout = res.Data.Data as LiveCampaigntPendingCheckoutDto;
                   if(pCheckout && pCheckout.LiveCampaignId != this.liveCampaignId) break;
+                  
+                  if(this.startIndex == 0) {
+                    //sắp xếp lên đầu danh sách
+                    this.arrangeChangedItem(pCheckout);
+                  } else {
+                    this.lstWaitingItems.push(pCheckout);
+                  }
 
                   const iCheckout = this.lstDetail.findIndex(x => x.ProductId == pCheckout.ProductId && x.UOMId == pCheckout.ProductUOMId);
                   if(Number(iCheckout) < 0) break;
+                  this.animateSocket[`${this.lstDetail[iCheckout].ProductId}_${this.lstDetail[iCheckout].UOMId}_queueQty`] = true;
 
-                  let key1 = `${this.lstDetail[iCheckout].ProductId}_${this.lstDetail[iCheckout].UOMId}_queueQty`;
-                  this.animateSocket[key1] = true;
+                  this.lstDetail[iCheckout].QueueQuantity = pCheckout.Quantity;
+                  this.lstDetail[iCheckout] = {...this.lstDetail[iCheckout]};
+                  this.lstDetail = [...this.lstDetail];
+                  
+                  this.destroyTimer();
+                  this.changeDetailTimer = setTimeout(() => { 
+                    this.animateSocket = {};
+                    this.cdRef.markForCheck();
+                  }, 2000);
 
-                  setTimeout(() => {
-                    this.lstDetail[iCheckout].QueueQuantity = pCheckout.Quantity;
-                    this.lstDetail[iCheckout] = {...this.lstDetail[iCheckout]};
-
-                    this.lstDetail = [...this.lstDetail];
-                    delete this.animateSocket[key1];
-                    this.cdRef.detectChanges();
-                  }, 1000);
-
-                  this.cdRef.detectChanges();
+                  this.cdRef.markForCheck();
               break;
 
               // Số lượng sản phẩm chiến dịch có thểm mua
@@ -170,22 +179,28 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
                   let toBuy = res.Data?.Data as LiveCampaigntAvailableToBuyDto;
                   if(toBuy && toBuy.LiveCampaignId != this.liveCampaignId) break;
 
+                  if(this.startIndex == 0) {
+                    //sắp xếp lên đầu danh sách
+                    this.arrangeChangedItem(toBuy);
+                  } else {
+                    this.lstWaitingItems.push(toBuy);
+                  }
+                  
                   const iToBuy = this.lstDetail.findIndex(x => x.ProductId == toBuy.ProductId && x.UOMId == toBuy.ProductUOMId);
                   if(Number(iToBuy) < 0) break;
+                  this.animateSocket[`${this.lstDetail[iToBuy].ProductId}_${this.lstDetail[iToBuy].UOMId}_usedQty`] = true;
 
-                  let key2 = `${this.lstDetail[iToBuy].ProductId}_${this.lstDetail[iToBuy].UOMId}_usedQty`;
-                  this.animateSocket[key2] = true;
+                  this.lstDetail[iToBuy].UsedQuantity = (this.lstDetail[iToBuy].Quantity - toBuy.QuantityAvailableToBuy);
+                  this.lstDetail[iToBuy] = {...this.lstDetail[iToBuy]};
+                  this.lstDetail = [...this.lstDetail];
 
-                  setTimeout(() => {
-                    this.lstDetail[iToBuy].UsedQuantity = (this.lstDetail[iToBuy].Quantity - toBuy.QuantityAvailableToBuy);
-                    this.lstDetail[iToBuy] = {...this.lstDetail[iToBuy]};
+                  this.destroyTimer();
+                  this.changeDetailTimer = setTimeout(() => { 
+                    this.animateSocket = {};
+                    this.cdRef.markForCheck();
+                  }, 2000);
 
-                    this.lstDetail = [...this.lstDetail];
-                    delete this.animateSocket[key2];
-                    this.cdRef.detectChanges();
-                  }, 1000);
-
-                  this.cdRef.detectChanges();
+                  this.cdRef.markForCheck();
               break;
           }
       }
@@ -238,6 +253,19 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
           if(x.TagWithAttributes && x.AttributeValues && x.AttributeValues.length > 0) {
             this.orderTags[`${x.ProductId}_${x.UOMId}`] = this.generateTagAttributesFacade.mappingTagAttributes(x.TagWithAttributes, x.AttributeValues);
           }
+
+          // TODO: xóa item = changedItem đầu mảng sau khi tìm thấy trong danh sách lstDetail
+          let key = `${x.ProductId}_${x.UOMId}`;
+
+          if(this.lstWaitingItems.length == 0 && this.changedItems[key] && x.ProductId == this.changedItems[key].ProductId && x.UOMId == this.changedItems[key].UOMId) {
+            let items = this.lstDetail.filter(x => x.ProductId == this.changedItems[key].ProductId && x.UOMId == this.changedItems[key].UOMId);
+
+            if(items.length > 1) {
+              let index = this.lstDetail.findIndex(x => x.ProductId == this.changedItems[key].ProductId && x.UOMId == this.changedItems[key].UOMId);
+              this.lstDetail.splice(index, 1);
+              delete this.changedItems[key];
+            }
+          }
         })
 
         this.getLstOrderTags(this.lstDetail);
@@ -274,9 +302,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.liveCampaignService.getAllFacebookPost(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
       next: res => {
-        if(res) {
-            this.facebookPosts = [...res];
-        }
+        this.facebookPosts = [...(res || [])];
         this.isLoading = false;
       },
       error: error => {
@@ -291,11 +317,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     this.liveCampaignService.getById(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
           this.isLoading = false;
-
-          if(!res) return;
-          delete res['@odata.context'];
-          this.lstSimpleDetail = [...res.Details];
-
+          this.lstSimpleDetail = [...(res.Details || [])];
           this.cdRef.detectChanges();
       },
       error:(err) => {
@@ -477,6 +499,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
           this.getLstOrderTags(this.lstDetail);
 
           this.loadDataDetail();
+          this.loadOverviewDetails(this.pageSize, this.pageIndex);
           this.cdRef.detectChanges();
         },
         error: (err: any) => {
@@ -751,6 +774,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
           return;
         }
 
+        this.visible = false;
+        this.searchValue = '';
+        this.innerTextValue = '';
+        this.isEditDetails = {};
+        this.pageIndex = 1;
+
         let lstItems = [] as ReportLiveCampaignDetailDTO[];
 
         items.map((x: DataPouchDBDTO) => {
@@ -845,6 +874,19 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   nextData() {
     this.pageIndex += 1;
     this.loadOverviewDetails(this.pageSize, this.pageIndex, this.innerTextValue);
+  }
+
+  vsStart(event: NgxVirtualScrollerDto) {
+    this.startIndex = event?.startIndex || 0;
+    let exist = event?.startIndex == 0 && this.lstWaitingItems.length > 0;
+
+    if(exist) {
+      this.lstWaitingItems.map(x => {
+        this.arrangeChangedItem(x);
+      });
+
+      this.lstWaitingItems = [];
+    }
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {
@@ -955,7 +997,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     }
 
   onCloseDetail(item: ReportLiveCampaignDetailDTO) {
-    let index = this.lstDetail.findIndex(x=> x.ProductId == item.ProductId && x.UOMId == item.UOMId)
+    let index = this.lstDetail.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId)
 
     if(Number(index) >= 0) {
       this.lstDetail[index] = this.isEditDetails[item.Id];
@@ -963,6 +1005,55 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
       delete this.isEditDetails[item.Id];
     }
+  }
+
+  arrangeChangedItem(item: any) {
+    let idx = this.lstDetail.findIndex((x: ReportLiveCampaignDetailDTO) => x.ProductId == item?.ProductId && x.UOMId == item?.ProductUOMId);
+
+    if(Number(idx) >= 0) {
+      // TODO: pop up lên đầu danh sách
+      let exist = this.lstDetail.splice(idx, 1);
+      this.lstDetail = [...exist,...this.lstDetail];
+
+    } else {
+      // TODO: pop up lên đầu danh sách, chờ danh sách lstDetail có item = changedItem thì xóa
+      let exist = this.lstSimpleDetail.find((x: LiveCampaignSimpleDetail) => x.ProductId == item?.ProductId && x.UOMId == item?.ProductUOMId);
+      if(exist) {
+        let key = `${exist.ProductId}_${exist.UOMId}`;
+        this.changedItems[key] = {...this.prepareDetailModel(exist)};
+        this.lstDetail = [...[this.changedItems[key]],...this.lstDetail];
+      }
+    }
+  }
+
+  prepareDetailModel(data: LiveCampaignSimpleDetail) {
+    let model = {} as ReportLiveCampaignDetailDTO;
+    
+    model.Id = data.Id;
+    model.Index = data.Index;
+    model.Quantity = data.Quantity;
+    model.RemainQuantity = data.RemainQuantity;
+    model.ScanQuantity = data.ScanQuantity;
+    model.QuantityCanceled = data.QuantityCanceled;
+    model.UsedQuantity = data.UsedQuantity;
+    model.Price = data.Price;
+    model.Note = data.Note;
+    model.ProductId = data.ProductId;
+    model.LiveCampaign_Id = data.LiveCampaign_Id;
+    model.ProductName = data.ProductName;
+    model.ProductNameGet = data.ProductNameGet;
+    model.UOMId = data.UOMId;
+    model.UOMName = data.UOMName;
+    model.Tags = data.Tags;
+    model.LimitedQuantity = data.LimitedQuantity;
+    model.ProductCode = data.ProductCode;
+    model.ImageUrl = data.ImageUrl;
+    model.IsActive = data.IsActive;
+    model.ProductTmlpId = data.ProductTmlpId;
+    model.TagWithAttributes = data.TagWithAttributes;
+    model.AttributeValues = data.AttributeValues;
+
+    return model;
   }
 
   destroyTimer() {
