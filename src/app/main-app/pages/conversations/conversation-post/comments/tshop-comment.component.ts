@@ -648,8 +648,6 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
     this.postEvent.spinLoadingTab$.emit(true);
-    this.dictActiveComment = {};
-    this.dictActiveComment[item.Id] = true;
 
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
@@ -961,6 +959,11 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
     if (this.preDataTimer) {
       clearTimeout(this.preDataTimer);
     }
+  }
+
+  onDictActiveComment(item: any) {
+    this.dictActiveComment = {};
+    this.dictActiveComment[item.Id] = true;
   }
 
   ngOnDestroy(): void {

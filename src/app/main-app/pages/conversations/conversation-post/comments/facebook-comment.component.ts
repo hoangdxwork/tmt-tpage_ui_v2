@@ -629,8 +629,6 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
     this.postEvent.spinLoadingTab$.emit(true);
-    this.dictActiveComment = {};
-    this.dictActiveComment[item.Id] = true;
     
     let psid = item.ParentId ? (item.Data?.from?.id) : (item.UserId || item.Data?.from?.id);
     if (!psid) {
@@ -938,6 +936,11 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
     if (this.preDataTimer) {
       clearTimeout(this.preDataTimer);
     }
+  }
+
+  onDictActiveComment(item: any) {
+    this.dictActiveComment = {};
+    this.dictActiveComment[item.Id] = true;
   }
 
   ngOnDestroy(): void {
