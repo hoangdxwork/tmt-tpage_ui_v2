@@ -5,7 +5,8 @@
           (vsStart)="vsStart($event)"
           [enableUnequalChildrenSizes]="true"
           [childHeight]="118"
-          [scrollAnimationTime]="750">
+          [scrollAnimationTime]="500"
+          [scrollThrottlingTime]="350">
 
           <div *ngIf="isLoadingNextdata" class="p-2 bg-white rounded-md mr-2">
               <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
@@ -20,7 +21,7 @@
                   </div>
 
                   <div class="ml-2 w-full h-full">
-                      <div class="bg-white rounded-2xl px-4 py-3" [ngClass]="dictActiveComment[item.Id]? 'bg-primary-3': ''">
+                      <div class="bg-white rounded-2xl px-4 py-3" [ngClass]="dictActiveComment[item.Id]? 'bg-primary-3': ''" (click)="onDictActiveComment(item)">
                           <div class="flex items-center justify-between">
                               <div class="flex gap-x-2 items-center">
                                   <div *ngIf="(item.Data | facebookDataCs) && (item.Data | facebookDataCs)?.from" class="min-w-[50px] max-w-[220px] truncate">
@@ -313,7 +314,7 @@
                           </div>
 
                           <div class="ml-2 w-full h-full">
-                              <div class="bg-white rounded-2xl px-4 py-3" [ngClass]="dictActiveComment[child.Id]? 'bg-primary-3': ''">
+                              <div class="bg-white rounded-2xl px-4 py-3" [ngClass]="dictActiveComment[child.Id]? 'bg-primary-3': ''"  (click)="onDictActiveComment(child)">
                                   <div class="flex items-center justify-between">
                                       <div class="flex gap-x-2 items-center">
                                           <div *ngIf="(child.Data | facebookDataCs) && (child.Data | facebookDataCs)?.from" class="min-w-[50px] max-w-[220px] truncate">

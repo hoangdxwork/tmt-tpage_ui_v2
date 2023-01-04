@@ -4,16 +4,16 @@
     <div class="flex flex-col gap-y-3" *ngIf="(item.Data | tshopType)">
         <div class="relative w-[120px] h-[88px]">
             <!-- Hình ảnh -->
-            <div class="post-picture" *ngIf="item?.Thumbnail && !checkPostPictureError(item); else noPicture">
+            <div class="post-picture" *ngIf="((item.Data | tshopType)?.MediaLive?.ThumbnailUrl || item?.Thumbnail?.Url) && !checkPostPictureError(item); else noPicture">
                 <div *ngIf="item.Thumbnail; else noPicture" class="rounded-lg">
-                    <img  [src]="item.Thumbnail?.Url"
+                    <img  [src]="item.Thumbnail.Url || (item.Data | tshopType)?.MediaLive?.ThumbnailUrl"
                         [width]="120" [height]="88" (error)="errorPostPicture(item)"
                         class="max-w-[120px] max-h-[88px] w-[120px] h-[88px] rounded-md  object-cover">
                 </div>
             </div>
 
             <ng-template #noPicture>
-                <div *ngIf="!item.Thumbnail && item.StatusLive != 1 && (item.Data | tshopType).KindValue != 1; else noPictureLive">
+                <div *ngIf="!(item?.Thumbnail?.Url || (item.Data | tshopType)?.MediaLive?.ThumbnailUrl) && item.StatusLive != 1 && (item.Data | tshopType).KindValue != 1; else noPictureLive">
                     <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
                         class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                 </div>

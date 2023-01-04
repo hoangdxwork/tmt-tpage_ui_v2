@@ -1,3 +1,4 @@
+import { SessionParamsService } from './../../../services/session-params.service';
 import { CRMTeamType } from './../../../dto/team/chatomni-channel.dto';
 import { PartnerChangeStatusDTO } from './../../../dto/partner/partner-status.dto';
 import { StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
@@ -120,7 +121,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private sharedService: SharedService,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private chatomniEventEmiterService: ChatomniEventEmiterService,
-    private socketOnEventService: SocketOnEventService) {
+    private socketOnEventService: SocketOnEventService,
+    private sessionParamsService: SessionParamsService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -468,7 +470,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     // TODO: trường hợp F5 có csid , hoặc click chuyển menu trong hội thoại
     params_csid = this.paramsUrl?.csid;
     if(!TDSHelperString.hasValueString(params_csid) || params_csid == "undefined") {
-        params_csid = this.getSessionStorageConversationId();
+        params_csid = this.sessionParamsService.getSessionStorageConversationId();
     }
 
     if(params_csid == null || params_csid == undefined) {
@@ -527,7 +529,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.partnerService.changeStatusFromCsAll$.emit(status);
 
       // TODO: lưu lại Storage item đang active để hiện thị tiếp ở message, inbox nếu tồn tại trong danh sách
-      this.setSessionStorageConversationId(item.ConversationId)
+      this.sessionParamsService.setSessionStorageConversationId(item.ConversationId)
 
       if (this.isFastSend == true) {
           // Check lại trường hợp này
@@ -617,9 +619,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
 
-      this.removeSessionStorageConversationId();
-      this.removeSessionStoragePostId();
-      this.removeQueryObjConversation();
+      this.sessionParamsService.removeStorageAll();
 
       this.crmService.onUpdateTeam(data);
       this.router.navigateByUrl(uriParams);
@@ -961,37 +961,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     delete this.conversationItem;
     delete this.dataSource$;
     delete this.orderCode;
-  }
-
-  setSessionStorageConversationId(id: string): any {
-    const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    sessionStorage.setItem(_keyCache, JSON.stringify(id));
-  }
-
-  getSessionStorageConversationId(): any {
-    const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    let item = sessionStorage.getItem(_keyCache) as any;
-
-    if(item) {
-        return JSON.parse(item);
-    } else {
-        return null;
-    }
-  }
-
-  removeSessionStorageConversationId() {
-    const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    sessionStorage.removeItem(_keyCache);
-  }
-
-  removeSessionStoragePostId() {
-    const _keyCache = this.chatomniObjectService._keycache_params_postid;
-    sessionStorage.removeItem(_keyCache);
-  }
-
-  removeQueryObjConversation() {
-    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
-    localStorage.removeItem(_keyCache);
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {

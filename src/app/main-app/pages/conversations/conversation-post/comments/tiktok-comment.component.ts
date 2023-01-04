@@ -111,7 +111,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
   constructor(private message: TDSMessageService,
-    private cdRef: ChangeDetectorRef,
+    public cdRef: ChangeDetectorRef,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private activityMatchingService: ActivityMatchingService,
@@ -644,9 +644,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
     this.postEvent.spinLoadingTab$.emit(true);
-    this.dictActiveComment = {};
-    this.dictActiveComment[item.Id] = true;
-    
+
     let psid = item.UserId || item.Data?.from?.id;
     if (!psid) {
       this.message.error("Không truy vấn được thông tin người dùng!");
@@ -953,6 +951,11 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
     if (this.preDataTimer) {
       clearTimeout(this.preDataTimer);
     }
+  }
+
+  onDictActiveComment(item: any) {
+    this.dictActiveComment = {};
+    this.dictActiveComment[item.Id] = true;
   }
 
   ngOnDestroy(): void {

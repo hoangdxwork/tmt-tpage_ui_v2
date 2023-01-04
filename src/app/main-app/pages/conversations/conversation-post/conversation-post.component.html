@@ -68,7 +68,8 @@
                 (vsEnd)="vsEnd($event)"
                 [enableUnequalChildrenSizes]="true"
                 [childHeight]="148"
-                [checkResizeInterval]="750">
+                [scrollAnimationTime]="500"
+                [scrollThrottlingTime]="350">
 
                 <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="pb-1 min-w-[158px]">
 

@@ -1577,7 +1577,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: KeyCacheIndexDBDTO) => {
             if(!res) return;
-            this.indexDbStorage = [...res?.cacheDbStorage];
+            this.indexDbStorage = [...res?.cacheDbStorage || []];
 
             this.isLoadingProduct = false;
             this.cdRef.detectChanges();
