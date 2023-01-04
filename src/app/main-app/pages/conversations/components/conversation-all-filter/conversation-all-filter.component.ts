@@ -1,16 +1,16 @@
+import { SessionParamsService } from './../../../../services/session-params.service';
 import { ApplicationUserDTO } from './../../../../dto/account/application-user.dto';
 import { TDSMessageService } from 'tds-ui/message';
-import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { CRMTagDTO } from './../../../../dto/crm-tag/odata-crmtag.dto';
 import { startOfMonth, endOfMonth, startOfYesterday, endOfYesterday, subDays } from 'date-fns';
 import { ApplicationUserService } from './../../../../services/application-user.service';
 import { CRMTagService } from './../../../../services/crm-tag.service';
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges, ChangeDetectorRef } from '@angular/core';
-import { TDSHelperArray, TDSSafeAny, TDSHelperString, TDSHelperObject } from 'tds-ui/shared/utility';
+import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
+import { TDSHelperString, TDSHelperObject } from 'tds-ui/shared/utility';
 import { TDSI18nService, vi_VN } from 'tds-ui/i18n';
 import { QueryFilterConversationDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { CRMTeamService } from '@app/services/crm-team.service';
-import { Observable, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
@@ -51,14 +51,14 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     private applicationUserService: ApplicationUserService,
     private destroy$: TDSDestroyService,
     private i18n: TDSI18nService,
-    private chatomniConversationService: ChatomniConversationService,
-    private message: TDSMessageService) {
+    private message: TDSMessageService,
+    private sessionParamsService: SessionParamsService) {
       this.i18n.setLocale(vi_VN);
   }
 
   ngOnInit(): void {
     this.loadUserActive();
-    this.removeQueryObjConversation();
+    this.sessionParamsService.removeQueryObjConversation();
 
     this.crmTagService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (tags: CRMTagDTO[]) => {
@@ -96,7 +96,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
       } else {
         this.isFilter = false;
       }
-      this.setQueryObjConversation(this.queryObj);
+      this.sessionParamsService.setQueryObjConversation(this.queryObj);
     }
   }
 
@@ -104,7 +104,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     this.queryObj = {} as any;
     this.visibleDrawerFillter = true;
 
-    let saveQueryObj = this.getQueryObjConversation()
+    let saveQueryObj = this.sessionParamsService.getQueryObjConversation()
     if(saveQueryObj) {
       this.queryObj = {...saveQueryObj};
 
@@ -174,7 +174,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     this.keyFilterTag = '';
     this.totalConversations = 0;
     this.queryObj = {} as any;
-    this.removeQueryObjConversation();
+    this.sessionParamsService.removeQueryObjConversation();
 
     this.onSubmitFilter.emit(this.queryObj);
     this.closeDrawerFillter()
@@ -248,27 +248,6 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     } else {
         delete this.queryObj['has_unread'];
     }
-  }
-
-  setQueryObjConversation(queryObj: QueryFilterConversationDto): any {
-    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
-    localStorage.setItem(_keyCache, JSON.stringify(queryObj));
-  }
-
-  getQueryObjConversation(): any {
-    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
-    let item = localStorage.getItem(_keyCache) as any;
-
-    if(item) {
-        return JSON.parse(item);
-    } else {
-        return null;
-    }
-  }
-
-  removeQueryObjConversation() {
-    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
-    localStorage.removeItem(_keyCache);
   }
 
 }

@@ -1,3 +1,4 @@
+import { SessionParamsService } from './../services/session-params.service';
 import { SocketStorageNotificationService } from './../services/socket-io/socket-config-notification.service';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
@@ -56,7 +57,8 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private message: TDSMessageService,
     private resizeObserver: TDSResizeObserver,
     private destroy$: TDSDestroyService,
-    private socketStorageNotificationService: SocketStorageNotificationService ) {
+    private socketStorageNotificationService: SocketStorageNotificationService,
+    private sessionParamsService: SessionParamsService) {
 
     router.events.pipe(takeUntil(this.destroy$),
         filter((event: any) => event instanceof NavigationEnd), // Only get the event of NavigationEnd
@@ -354,28 +356,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   onClickTeam(data: CRMTeamDTO): any {
     if(data) {
-      this.removeSessionStorageConversationId();
-      this.removeSessionStoragePostId();
-      this.removeQueryObjConversation();
+      this.sessionParamsService.removeStorageAll();
 
       this.crmService.changeTeamFromLayout$.emit(data);
       this.crmService.onUpdateTeam(data);
     }
-  }
-
-  removeSessionStorageConversationId() {
-    const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    sessionStorage.removeItem(_keyCache);
-  }
-
-  removeSessionStoragePostId() {
-    const _keyCache = this.chatomniObjectService._keycache_params_postid;
-    sessionStorage.removeItem(_keyCache);
-  }
-
-  removeQueryObjConversation() {
-    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
-    localStorage.removeItem(_keyCache);
   }
 
   onProfile() {

@@ -1,3 +1,4 @@
+import { SessionParamsService } from './../../../services/session-params.service';
 import { OnDestroy } from '@angular/core';
 import { ExtrasChildsDto } from './../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { TiktokService } from './../../../services/tiktok-service/tiktok.service';
@@ -126,7 +127,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private notification: TDSNotificationService,
     private tiktokService: TiktokService,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private sessionParamsService: SessionParamsService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -446,7 +448,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     let currentObject: ChatomniObjectsItemDto;
     let params_postid: string;
 
-    let session = this.getSessionStoragePostId() as SessionParamsDto;
+    let session = this.sessionParamsService.getSessionStoragePostId() as SessionParamsDto;
     params_postid = this.paramsUrl?.post_id;
 
     if(params_postid == null || params_postid == undefined) {
@@ -534,7 +536,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
 
         this.currentObject = item;
-        this.setSessionStoragePostId(item);
+        this.sessionParamsService.setSessionStoragePostId(item);
         if(!item.ParentId && type == '_click') {
             this.clickCurrentChild = item.ObjectId;
         }
@@ -585,9 +587,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
 
-      this.removeSessionStoragePostId();
-      this.removeSessionStorageConversationId();
-      this.removeQueryObjConversation();
+      this.sessionParamsService.removeStorageAll();
 
       this.crmService.onUpdateTeam(data);
       this.router.navigateByUrl(uriParams);
@@ -647,7 +647,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.lstObjects  = [...res.Items];
           let currentObject = {} as any;
 
-          let sesstion = this.getSessionStoragePostId() as SessionParamsDto;
+          let sesstion = this.sessionParamsService.getSessionStoragePostId() as SessionParamsDto;
           let params_postid = sesstion.ObjectId;
           let parentId = sesstion.ParentId;
 
@@ -772,46 +772,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.message.error(`${error?.error?.message}`);
       }
     })
-  }
-
-  setSessionStoragePostId(item: ChatomniObjectsItemDto ): any {
-    const _keyCache = this.chatomniObjectService._keycache_params_postid;
-    let data: SessionParamsDto = {
-      ObjectId: item.ObjectId,
-      ParentId: '',
-    }
-
-    if(item && TDSHelperString.hasValueString(item.ParentId)) {
-      data.ParentId = item.ParentId;
-    }
-
-    sessionStorage.setItem(_keyCache, JSON.stringify(data));
-  }
-
-  getSessionStoragePostId(): any {
-    const _keyCache = this.chatomniObjectService._keycache_params_postid;
-    let item = sessionStorage.getItem(_keyCache) as any;
-
-    if(item) {
-        return JSON.parse(item);
-    } else {
-        return null;
-    }
-  }
-
-  removeSessionStoragePostId() {
-    const _keyCache = this.chatomniObjectService._keycache_params_postid;
-    sessionStorage.removeItem(_keyCache);
-  }
-
-  removeSessionStorageConversationId() {
-    const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    sessionStorage.removeItem(_keyCache);
-  }
-
-  removeQueryObjConversation() {
-    const _keyCache = this.chatomniConversationService._keyQueryObj_conversation_all;
-    localStorage.removeItem(_keyCache);
   }
 
   vsEnd(event: NgxVirtualScrollerDto) {

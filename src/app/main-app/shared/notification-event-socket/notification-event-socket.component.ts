@@ -1,11 +1,10 @@
+import { SessionParamsService } from './../../services/session-params.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { CRMTeamService } from './../../services/crm-team.service';
 import { Router } from '@angular/router';
 import { SocketEventSubjectDto } from './../../services/socket-io/socket-onevent.service';
 import { Component, Input, OnInit, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
-import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
-import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 
 @Component({
   selector: 'notification-event-socket',
@@ -23,8 +22,7 @@ export class NotificationEventSocketComponent implements OnInit {
 
   constructor(private router: Router,
     private crmTeamService: CRMTeamService,
-    private chatomniConversationService: ChatomniConversationService,
-    private chatomniObjectService: ChatomniObjectService,
+    private sessionParamsService: SessionParamsService,
     private message: TDSMessageService) {
   }
 
@@ -37,8 +35,8 @@ export class NotificationEventSocketComponent implements OnInit {
 
         let currentTeam = this.crmTeamService.getCurrentTeam() as any;
         if(currentTeam && currentTeam.Id != data.Team.Id) {
-            this.removeStorageConversationId();
-            this.removeStoragePostId();
+            this.sessionParamsService.removeSessionStorageConversationId();
+            this.sessionParamsService.removeSessionStoragePostId();
         }
 
         this.crmTeamService.onUpdateTeam(data.Team);
@@ -57,16 +55,6 @@ export class NotificationEventSocketComponent implements OnInit {
     } else {
         this.message.error("Không tìm thấy đơn hàng");
     }
-  }
-
-  removeStoragePostId() {
-    const _keyCache = this.chatomniObjectService._keycache_params_postid;
-    localStorage.removeItem(_keyCache);
-  }
-
-  removeStorageConversationId() {
-    const _keyCache = this.chatomniConversationService._keycache_params_csid;
-    localStorage.removeItem(_keyCache);
   }
 
 }
