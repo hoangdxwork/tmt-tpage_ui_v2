@@ -109,11 +109,9 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
     this.productIndexDBService.setCacheDBRequest();
     this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: KeyCacheIndexDBDTO) => {
-          if(TDSHelperObject.hasValue(res)) {
-            this.indexDbStorage = res?.cacheDbStorage;
-          }
-
+          this.indexDbStorage = [...res?.cacheDbStorage || []];
           this.loadDataTable();
+          
           this.isLoading = false;
           this.disabledReload = false;
         },

@@ -205,8 +205,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.productIndexDBService.setCacheDBRequest();
     this.productIndexDBService.getCacheDBRequest().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: KeyCacheIndexDBDTO) => {
-            if(!res) return;
-            this.indexDbStorage = [...res?.cacheDbStorage];
+            this.indexDbStorage = [...res?.cacheDbStorage || []];
             this.isLoadingProduct = false;
             this.cdRef.detectChanges();
         },
