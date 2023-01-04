@@ -5,7 +5,8 @@
           (vsStart)="vsStart($event)"
           [enableUnequalChildrenSizes]="true"
           [childHeight]="118"
-          [scrollAnimationTime]="750">
+          [scrollAnimationTime]="500"
+          [scrollThrottlingTime]="350">
 
           <div *ngIf="isLoadingNextdata" class="p-2 bg-white rounded-md mr-2">
               <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
