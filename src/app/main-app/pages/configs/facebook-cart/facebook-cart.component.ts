@@ -14,7 +14,8 @@ import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.
   templateUrl: './facebook-cart.component.html',
   host: {
     class: 'w-full h-full flex'
-  }
+  },
+  providers: [TDSDestroyService]
 })
 
 export class FacebookCartComponent implements OnInit {

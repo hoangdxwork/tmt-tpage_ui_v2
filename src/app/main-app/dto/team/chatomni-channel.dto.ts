@@ -83,5 +83,6 @@ export enum CRMTeamType {
   _Lazada = "Lazada",
   _Shopee = "Shopee",
   _TikTok = "TikTok",
-  _UnofficialTikTok = "UnofficialTikTok"
+  _UnofficialTikTok = "UnofficialTikTok",
+  _ShopCart = "ShopCart"
 }

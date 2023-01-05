@@ -37,10 +37,18 @@ export class ProductShopCartService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
+  updateQuantityProductOnShopCart(data: any): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/Product/OdataService.UpdateQuantityProductOnShopCart`,
+      method: CoreApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
   deleteProductOnShopCart(data: any): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/odata/Product/OdataService.DeleteProductOnShopCart`,
-      method: CoreApiMethodType.delete
+      method: CoreApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }

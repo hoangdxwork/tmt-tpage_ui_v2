@@ -1,10 +1,5 @@
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { EditProductVariantComponent } from '../edit-product-variant/edit-product-variant.component';
-import { ExcelExportService } from '../../../services/excel-export.service';
-import { ProductService } from '../../../services/product.service';
-import { finalize } from 'rxjs/operators';
 import { OdataProductService } from '../../../services/mock-odata/odata-product.service';
-import { CRMTeamService } from '../../../services/crm-team.service';
 import { takeUntil } from 'rxjs/operators';
 import { THelperDataRequest } from '../../../../lib/services/helper-data.service';
 import { Subject, Observable } from 'rxjs';
@@ -13,7 +8,6 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ODataProductDTO } from 'src/app/main-app/dto/configs/product/config-odata-product.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
-import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
@@ -31,29 +25,29 @@ export class ProductShopCartComponent implements OnInit {
 
   setOfCheckedId = new Set<number>();
   lstOfData: any[] = [];
+
   isLoading: boolean = false;
   isProcessing: boolean = false;
-
   checked = false;
   indeterminate = false;
+
   pageSize: number = 20;
   pageIndex: number = 1;
   count: number = 0;
+
   public filterObj: TDSSafeAny = {
     searchText: ''
   }
+
   idsModel: any = [];
   teamShopCart!: CRMTeamDTO;
 
   constructor(private router: Router,
-    private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private destroy$: TDSDestroyService,
     private odataProductService: OdataProductService,
     private message: TDSMessageService,
-    private productService: ProductService,
-    private productShopCartService: ProductShopCartService,
-    private excelExportService: ExcelExportService) {
+    private productShopCartService: ProductShopCartService) {
   }
 
   ngOnInit(): void {
@@ -78,7 +72,7 @@ export class ProductShopCartComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.message.error(err?.error?.message || 'Tải dữ liệu khách hàng thất bại!');
+        this.message.error(err?.error?.message);
       }
     });
   }
@@ -149,69 +143,32 @@ export class ProductShopCartComponent implements OnInit {
     return 1;
   }
 
-  setActive(type: string) {
-    if (this.checkValueEmpty() == 0) return;
+  updateQuantityProductOnShopCart() {
 
-    switch (type) {
-      case 'active':
-        let active = { Active: true, Ids: this.idsModel };
-        this.isLoading = true;
+  }
 
-        this.productService.setActive({ model: active }).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: any) => {
-                this.message.success("Đã mở hiệu lực thành công!");
-                this.isLoading = false;
-
-                this.loadData(this.pageSize, this.pageIndex);
-            },
-            error: (err) => {
-              this.message.error(err?.error?.message || 'Mở hiệu lực thất bại!');
-              this.isLoading = false;
-            }
-        })
-        break;
-
-      case 'unactive':
-        let unactive = { Active: false, Ids: this.idsModel };
-        this.isLoading = true;
-
-        this.productService.setActive({ model: unactive }).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: any) => {
-                this.message.success("Đã hết hiệu lực!");
-                this.isLoading = false;
-
-                this.loadData(this.pageSize, this.pageIndex);
-            },
-            error: (err) => {
-                this.message.error(err?.error?.message || 'Đóng hiệu lực thất bại!');
-                this.isLoading = false;
-            }
-        })
-        break;
-
-      default:
-        break;
+  onDelete(data: any) {
+    let model = {
+      Ids: [data.Id]
     }
+    this.apiDeleteProductOnShopCart(model);
   }
 
   deleteProductOnShopCart() {
     if (this.checkValueEmpty() == 0) return;
-    let team = this.teamShopCart as CRMTeamDTO;
-    if(!team) {
-        this.message.error('Không tìm thấy Team ShopCart');
-        return;
-    };
-
     let model = {
-      TeamId: team.Id,
-      Ids: [this.idsModel]
+      Ids: this.idsModel
     }
+    this.apiDeleteProductOnShopCart(model);
+  }
 
+  apiDeleteProductOnShopCart(model: any) {
+    this.isLoading = true;
     this.productShopCartService.deleteProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.message.success("Xóa sản phẩm trong giỏ hàng thành công");
           this.isLoading = false;
-          return;
+          this.loadData(this.pageSize, this.pageIndex);
       },
       error: (err: any) => {
           this.message.error(err?.error?.message);
@@ -227,7 +184,6 @@ export class ProductShopCartComponent implements OnInit {
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId.clear();
-
     this.loadData(this.pageSize, this.pageIndex);
   }
 
