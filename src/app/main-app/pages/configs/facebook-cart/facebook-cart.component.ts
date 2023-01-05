@@ -160,7 +160,7 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsMergeOrder"].enable();
 
       this._form.controls["IsShopCart"].setValue(true);
-      this._form.controls["IsShopCart"].disable();
+      this._form.controls["IsShopCart"].enable();
     }
   }
 
@@ -192,11 +192,11 @@ export class FacebookCartComponent implements OnInit {
     this.productShopCartService.initShopCart().pipe(takeUntil(this.destroy$)).subscribe({
       next: (team: any) => {
           this.teamShopCart = team;
-          this.isLoading = true;
+          this.isLoading = false;
       },
       error: (err: any) => {
           this.message.error(err?.error?.message);
-          this.isLoading = true;
+          this.isLoading = false;
       }
     })
   }
