@@ -355,7 +355,12 @@
                 [fbid]="currentMappingTeam?.team?.ChannelId || currentMappingTeam?.team?.Facebook_ASUserId"
                 [token]="currentMappingTeam?.team?.Facebook_PageToken || currentMappingTeam?.team?.Facebook_UserToken || currentMappingTeam?.team?.ChannelToken">
               </tpage-avatar-facebook>
-              <tds-button-group>
+              <button type="button">
+                <span class="flex items-center">
+                  {{ currentMappingTeam?.team?.Name || 'Hãy chọn kênh' }}
+                </span>
+              </button>
+              <!-- <tds-button-group>
                 <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
                   <span class="flex items-center">
                     {{currentMappingTeam?.team?.Name || 'Hãy chọn kênh'}}
@@ -369,7 +374,7 @@
                     </div>
                   </div>
                 </tds-dropdown-menu>
-              </tds-button-group>
+              </tds-button-group> -->
             </div>
             <div class="flex gap-x-2">
               <button tds-button color="info" (click)="showMessageModal(orderMessage)">
