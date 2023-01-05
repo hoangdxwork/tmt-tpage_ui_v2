@@ -702,23 +702,23 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
 
                 //gán lại data bằng syntax
                 x.orders?.map((a: CommentOrder) => {
-                    this.commentOrders![x.asuid].push(a);
+                  if(a) {
+                      this.commentOrders![x.asuid].push(a);
+                  }
                 });
-
-                this.commentOrders![x.asuid].reverse();
 
                 if (x.uid && x.uid != x.asuid) {
                   x.orders?.map((a: any) => {
-                      this.commentOrders[x.uid].push(a);
+                    if(a) {
+                        this.commentOrders[x.uid].push(a);
+                    }
                   });
-
-                  this.commentOrders[x.uid].reverse();
                 }
             });
         }
 
-        this.cdRef.detectChanges();
         this.isLoading = false;
+        this.cdRef.detectChanges();
       },
       error: (error: any) => {
         this.isLoading = false;
