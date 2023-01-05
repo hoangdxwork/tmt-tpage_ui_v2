@@ -1,7 +1,6 @@
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AutoInteractionDTO } from 'src/app/main-app/dto/configs/general-config.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { GeneralConfigService } from 'src/app/main-app/services/general-config.service';
@@ -48,7 +47,8 @@ export class FacebookCartComponent implements OnInit {
       IsRemoveProduct: [false],//Cho phép xóa sản phẩm mua được
       IsRemoveProductInValid: [false],// Cho phép xóa sản phẩm không hợp lệ (Không mua được)
       IsDisplayInventory: [false],// Cho phép hiện tồn kho
-      IsMergeOrder: [false]// Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng
+      IsMergeOrder: [false],// Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng
+      IsShopCart: [false]// hiển thị thông tin giỏ hàng
     })
   }
 
@@ -66,6 +66,7 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsRemoveProductInValid"].disable();
       this._form.controls["IsDisplayInventory"].disable();
       this._form.controls["IsMergeOrder"].disable();
+      this._form.controls["IsShopCart"].disable();
     }
   }
 
@@ -118,6 +119,9 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsMergeOrder"].setValue(false);
       this._form.controls["IsMergeOrder"].disable();
 
+      this._form.controls["IsShopCart"].setValue(false);
+      this._form.controls["IsShopCart"].disable();
+
     } else {
 
       this._form.controls["IsUpdatePartnerInfo"].setValue(true);
@@ -149,6 +153,9 @@ export class FacebookCartComponent implements OnInit {
 
       this._form.controls["IsMergeOrder"].setValue(false);
       this._form.controls["IsMergeOrder"].enable();
+
+      this._form.controls["IsShopCart"].setValue(true);
+      this._form.controls["IsShopCart"].disable();
     }
   }
 
@@ -197,7 +204,8 @@ export class FacebookCartComponent implements OnInit {
         IsRemoveProduct: formModel.IsRemoveProduct as boolean,
         IsRemoveProductInValid: formModel.IsRemoveProductInValid as boolean,
         IsDisplayInventory: formModel.IsDisplayInventory as boolean,
-        IsMergeOrder: formModel.IsMergeOrder as boolean
+        IsMergeOrder: formModel.IsMergeOrder as boolean,
+        IsShopCart: formModel.IsShopCart as boolean,
     } as ConfigFacebookCartDTO
 
     return model;
