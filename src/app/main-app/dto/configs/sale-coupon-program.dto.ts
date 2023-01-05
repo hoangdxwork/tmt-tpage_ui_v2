@@ -32,14 +32,14 @@ export interface SaleCouponProgramDTO {
   RuleDateTo?: any;
   ProgramType: string;
   ValidityDuration: number;
-  CouponCount?: any;
+  CouponCount?: number;
   OrderCount?: any;
   DateCreated: Date;
   RewardDescription?: any;
   NoIncrease: boolean;
-  RewardProductUOMId?: any;
+  RewardProductUOMId?: number;
   NoteReward?: any;
-  RewardProduct?: ProductDTO[];
+  RewardProduct?: ProductDTO;
 }
 
 export interface SaleCouponProgramDetailDTO {

@@ -185,14 +185,14 @@
               </div>
 
               <!-- gift -->
-              <div *ngIf="isShow('DiscountSpecificProduct')" class="grid grid-cols-4 gap-y-4 items-baseline">
+              <div *ngIf="isShow('RewardProduct')" class="grid grid-cols-4 gap-y-4 items-center">
                   <span class="text-neutral-1-900 text-body-2 font-semibold">
                       Sản phẩm quà tặng
                   </span>
                   <div class="flex flex-row items-center col-span-3">
                       <tds-form-field class="w-full">
                           <tds-select valueField="Id" textField="NameGet" placeholder='Chọn sản phẩm'
-                              disabledField="isActive" formControlName="DiscountSpecificProduct" [required]='true'
+                              disabledField="isActive" formControlName="RewardProduct" [required]='true'
                               [data]="lstProduct" [allowClear]="true">
                           </tds-select>
                           <tds-error>
