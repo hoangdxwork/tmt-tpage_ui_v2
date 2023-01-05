@@ -301,7 +301,7 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
         if(index >= 0) {
             orders[index] = {...item};
         } else {
-            orders.push(item);
+            orders = [...[item],...orders];
         }
 
         this.commentOrders[model.Data.Facebook_ASUserId] = [...orders];
@@ -709,10 +709,14 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
                     this.commentOrders![x.asuid].push(a);
                 });
 
+                this.commentOrders![x.asuid].reverse();
+
                 if (x.uid && x.uid != x.asuid) {
                   x.orders?.map((a: any) => {
                       this.commentOrders[x.uid].push(a);
                   });
+
+                  this.commentOrders[x.uid].reverse();
                 }
             });
         }

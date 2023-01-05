@@ -76,6 +76,13 @@
                                 <span class="whitespace-nowrap">{{ data.CreatedTime | date: "dd-MM-yyyy HH:mm" }}</span>
                             </div>
                         </span>
+
+                        <!-- truy cập bài live -->
+                        <div *ngIf="team?.OwnerId">
+                            <a href="https://www.tiktok.com/@{{team.OwnerId}}/live" target="_blank" class="text-neutral-1-400">
+                                <i class="tdsi-expand-2-line leading-none text-xl"></i>
+                            </a>
+                        </div>
                     </tds-tag>
 
                     <div class="pl-4 flex gap-x-2 items-center" *ngIf="data.LiveCampaignId">
