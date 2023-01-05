@@ -290,7 +290,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
         if(index >= 0) {
             orders[index] = {...item};
         } else {
-            orders.push(item);
+            orders = [...[item],...orders];
         }
 
         this.commentOrders[model.Data.Facebook_ASUserId] = [...orders];
@@ -629,7 +629,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   prepareLoadTab(item: ChatomniDataItemDto, order: CommentOrder | null, type: any) {
     this.postEvent.spinLoadingTab$.emit(true);
-
+    
     let psid = item.ParentId ? (item.Data?.from?.id) : (item.UserId || item.Data?.from?.id);
     if (!psid) {
       this.message.error("Không truy vấn được thông tin người dùng!");
@@ -690,10 +690,14 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
                     this.commentOrders![x.asuid].push(a);
                 });
 
+                this.commentOrders![x.asuid].reverse();
+
                 if (x.uid && x.uid != x.asuid) {
                   x.orders?.map((a: any) => {
                       this.commentOrders[x.uid].push(a);
                   });
+
+                  this.commentOrders[x.uid].reverse();
                 }
             });
         }
