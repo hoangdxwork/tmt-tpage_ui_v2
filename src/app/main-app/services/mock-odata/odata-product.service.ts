@@ -39,6 +39,14 @@ export class OdataProductService extends BaseSevice {
     return this.apiService.getData<ODataProductDTO>(api, null);
   }
 
+  getProductOnShopCart(params: string): Observable<TDSSafeAny>{
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetProductOnShopCart?${params}&$count=true`,
+        method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
   getProductCombo(params: string): Observable<ODataProductDTOV2> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?%24format=json&${params}&%24count=true`,

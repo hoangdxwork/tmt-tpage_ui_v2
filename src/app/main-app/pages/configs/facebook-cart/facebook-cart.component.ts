@@ -1,3 +1,5 @@
+import { TDSHelperObject } from 'tds-ui/shared/utility';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnDestroy, OnInit } from '@angular/core';
@@ -5,6 +7,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { GeneralConfigService } from 'src/app/main-app/services/general-config.service';
 import { ConfigFacebookCartDTO } from 'src/app/main-app/dto/configs/facebook-cart/config-facebook-cart.dto';
+import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
 
 @Component({
   selector: 'facebook-cart',
@@ -19,10 +22,12 @@ export class FacebookCartComponent implements OnInit {
   _form!: FormGroup;
   isLoading: boolean = false;
   dataModel!: ConfigFacebookCartDTO;
+  teamShopCart!: CRMTeamDTO;
 
   constructor(private fb: FormBuilder,
     private generalConfigService: GeneralConfigService,
     private message: TDSMessageService,
+    private productShopCartService: ProductShopCartService,
     private destroy$: TDSDestroyService) {
       this.createForm();
   }
@@ -172,6 +177,26 @@ export class FacebookCartComponent implements OnInit {
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+      }
+    })
+  }
+
+  onChangeIsShopCart(event: boolean) {
+    if(event == true && !TDSHelperObject.hasValue(this.teamShopCart)) {
+        this.loadInitShopCart();
+    }
+  }
+
+  loadInitShopCart() {
+    this.isLoading = true;
+    this.productShopCartService.initShopCart().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (team: any) => {
+          this.teamShopCart = team;
+          this.isLoading = true;
+      },
+      error: (err: any) => {
+          this.message.error(err?.error?.message);
+          this.isLoading = true;
       }
     })
   }
