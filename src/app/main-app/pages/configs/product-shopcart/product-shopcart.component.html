@@ -18,10 +18,9 @@
                     <tds-dropdown-menu #menu="tdsDropdownMenu">
                         <div  class="w-full">
                             <div tds-dropdown-item class="px-3 py-4" (click)="deleteProductOnShopCart()">
-                                <a class="text-neutral-1-900 text-body-2 font-regular">Xóa sản phẩm trong giỏ hàng</a>
+                                <a class="text-neutral-1-900 text-body-2 font-regular">Xóa nhiều</a>
                             </div>
                         </div>
-
                     </tds-dropdown-menu>
                 </tds-button-group>
                 <tds-form-field class="w-2/3">
@@ -70,12 +69,7 @@
                                 </span>
                             </td>
                             <td [tdsRight]="true">
-                                <button tds-button-icon color="secondary" size="sm" class="mr-2" tds-tooltip="Chỉnh sửa">
-                                    <span class="flex items-center">
-                                        <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
-                                    </span>
-                                </button>
-                                <button tds-button-icon color="secondary" size="sm" tds-tooltip="Xóa">
+                                <button tds-button-icon color="secondary" type="button" size="sm" tds-tooltip="Xóa" (click)="onDelete(data)">
                                     <span class="flex items-center">
                                         <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
                                     </span>

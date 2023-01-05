@@ -289,37 +289,10 @@ export class ListProductVariantComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.productShopCartService.addProductOnShopCart({model: model}).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productShopCartService.addProductOnShopCart({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.message.success("Thêm sản phẩm vào giỏ hàng thành công");
           this.isLoading = false;
-          return;
-      },
-      error: (err: any) => {
-          this.message.error(err?.error?.message);
-          this.isLoading = false;
-      }
-    })
-  }
-
-  deleteProductOnShopCart() {
-    if (this.checkValueEmpty() == 0) return;
-    let team = this.teamShopCart as CRMTeamDTO;
-    if(!team) {
-        this.message.error('Không tìm thấy Team ShopCart');
-        return;
-    };
-
-    let model = {
-      TeamId: team.Id,
-      Ids: this.idsModel
-    }
-
-    this.productShopCartService.deleteProductOnShopCart({model: model}).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.message.success("Xóa sản phẩm trong giỏ hàng thành công");
-          this.isLoading = false;
-          return;
       },
       error: (err: any) => {
           this.message.error(err?.error?.message);
