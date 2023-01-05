@@ -206,24 +206,6 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
         }
     }
 
-    if(TDSHelperArray.hasListValue(this.priceListItems)) {
-        data.forEach((x: DataPouchDBDTO) => {
-          if(x.SaleOK && ! x.IsDiscount) {
-              let price = this.priceListItems[`${x.ProductTmplId}_${x.UOMId}`];
-              if (price) {
-                if (!x.OldPrice) {
-                    x.OldPrice = x.Price;
-                }
-                x.Price = price;
-              } else {
-                if (x.OldPrice >= 0) {
-                    x.Price = x.OldPrice;
-                }
-              }
-          }
-        })
-    }
-
     this.cdRef.detectChanges();
     return this.lstOfData = [...data];
   }
