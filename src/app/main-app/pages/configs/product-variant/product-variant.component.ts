@@ -285,11 +285,11 @@ export class ListProductVariantComponent implements OnInit {
 
     let model = {
       TeamId: team.Id,
-      Ids: [this.idsModel]
+      Ids: this.idsModel
     }
 
     this.isLoading = true;
-    this.productShopCartService.addProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productShopCartService.addProductOnShopCart({model: model}).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.message.success("Thêm sản phẩm vào giỏ hàng thành công");
           this.isLoading = false;
@@ -312,10 +312,10 @@ export class ListProductVariantComponent implements OnInit {
 
     let model = {
       TeamId: team.Id,
-      Ids: [this.idsModel]
+      Ids: this.idsModel
     }
 
-    this.productShopCartService.deleteProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productShopCartService.deleteProductOnShopCart({model: model}).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.message.success("Xóa sản phẩm trong giỏ hàng thành công");
           this.isLoading = false;

@@ -23,7 +23,7 @@ export class ProductShopCartService extends BaseSevice {
   initShopCart(): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/crmteam/initshopcart`,
-      method: CoreApiMethodType.get,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<any>(api, null);
@@ -31,7 +31,7 @@ export class ProductShopCartService extends BaseSevice {
 
   addProductOnShopCart(data: any): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.AddProductOnShopCart`,
+      url: `${this._BASE_URL}/odata/Product/OdataService.AddProductOnShopCart`,
       method: CoreApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -39,8 +39,8 @@ export class ProductShopCartService extends BaseSevice {
 
   deleteProductOnShopCart(data: any): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.DeleteProductOnShopCart`,
-      method: CoreApiMethodType.post
+      url: `${this._BASE_URL}/odata/Product/OdataService.DeleteProductOnShopCart`,
+      method: CoreApiMethodType.delete
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
