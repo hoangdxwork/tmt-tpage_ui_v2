@@ -49,22 +49,32 @@
                       <span class="text-neutral-1-600">Xác nhận đơn đặt hàng</span>
                       <span class="text-title-1 font-semibold">{{ wb?.payload?.recipient_name || "N/A"}}</span>
                     </div>
-                    <div class="bg-white px-4 rounded-b-xl">
-                      <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col items-start">
-                        <div class="flex gap-x-2.5">
-                          <img *ngIf="wb?.payload?.order_url" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] object-cover"
-                              src="{{ wb.payload.order_url }}">
-                          <img *ngIf="!wb?.payload?.order_url" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] p-4"
-                              src="../assets/imagesv2/errorPic.svg" alt="" />
-                          <div class="flex flex-col gap-y-1 items-start">
-                            <div class="font-semibold">{{ wb?.payload?.summary?.subtotal || "---" }}</div>
-                            <div class="flex gap-x-2">
-                              <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ wb?.payload?.order_number || '___' }}</span></span>
-                              <span>-</span>
-                              <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ wb?.payload?.currency || '___' }}</span></span>
+                    <div class="w-full bg-white px-4 rounded-b-xl">
+                      <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col w-full items-start">
+
+                        <div class="flex flex-col gap-3 w-full">
+                          <div class="flex w-full gap-x-2.5" *ngFor="let item of wb?.payload?.elements">
+                            <img *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture" src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px]">
+                            <ng-template #noPicture>
+                              <img src="../assets/imagesv2/errorPic.svg" alt="" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] p-4">
+                            </ng-template>
+
+                            <div class="flex flex-col gap-y-1 items-start">
+                              <div class="font-semibold text-left">{{ item?.title || "---" }}</div>
+                              <div class="flex gap-x-2">
+                                <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ item?.quantity || '___' }}</span></span>
+                                <span>-</span>
+                                <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ item?.price || '___' }}</span></span>
+                              </div>
                             </div>
                           </div>
                         </div>
+
+                        <span *ngIf="wb?.payload?.order_number != null && wb?.payload?.order_number != 'Unknown'" class="flex flex-col text-left">
+                          <span class="mt-4 text-neutral-1-600">Mã đơn hàng</span>
+                          <a *ngIf="wb?.payload?.url == null" class="mt-1 text-body-1">{{ wb?.payload?.order_number }}</a>
+                          <a *ngIf="wb?.payload?.url != null" class="mt-1 text-body-1 cursor-pointer font-semibold text-info-400" href="{{wb?.payload?.url}}">{{ wb?.payload?.order_number }}</a>
+                        </span>
                         <span class="mt-4 text-neutral-1-600">Đã thanh toán bằng</span>
                         <span class="mt-1 text-body-1">{{ wb?.payload?.payment_method || '---' }}</span>
                         <span class="mt-2 text-neutral-1-600">Địa chỉ giao hàng</span>
