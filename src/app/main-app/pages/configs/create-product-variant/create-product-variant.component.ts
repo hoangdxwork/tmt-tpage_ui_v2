@@ -246,7 +246,7 @@ export class CreateProductVariantComponent implements OnInit {
       model: { PageId: facebook_PageId, ProductIds: [ids] }
     }
 
-    this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productService.addProductOnFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.notification.success('Thêm thành công',
             'Đã thêm sản phẩm ' + name + ' vào page' );

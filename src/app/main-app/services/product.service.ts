@@ -86,7 +86,7 @@ export class ProductService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  addProductToFacebookPage(data: any): Observable<TDSSafeAny> {
+  addProductOnFacebookPage(data: any): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.AddProductOnFacebookPage`,
         method: CoreApiMethodType.post,
@@ -94,7 +94,7 @@ export class ProductService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  deleteProductToFacebookPage(data: any): Observable<TDSSafeAny> {
+  deleteProductOnFacebookPage(data: any): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.DeleteListProductOnFacebookPage`,
         method: CoreApiMethodType.post,
