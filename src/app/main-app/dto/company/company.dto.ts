@@ -18,16 +18,12 @@ export interface CompanyDTO {
   Fax: string;
   Street: string;
   DepositAccountId?: number;
-
   CurrencyExchangeJournalId?: number;
   CurrencyExchangeJournal: AccountJournalDTO;
-
   IncomeCurrencyExchangeAccountId?: number;
   IncomeCurrencyExchangeAccount: AccountDTO;
-
   ExpenseCurrencyExchangeAccountId?: number;
   ExpenseCurrencyExchangeAccount: AccountDTO;
-
   SecurityLead?: number;
   Logo: string;
   LastUpdated?: Date;
@@ -36,25 +32,20 @@ export interface CompanyDTO {
   City: PartnerCityDTO;
   District: PartnerDistrictDTO;
   Ward: PartnerWardDTO;
-
   // Default Terms and Conditions
   SaleNote: string;
   TaxCode: string;
   WarehouseId?: number;
   Warehouse: StockWarehouseDTO;
-
   // Create Sale Orders when buying to this company
   SoFromPO?: boolean;
-
   // Create Purchase Orders when selling to this company
   PoFromSO?: boolean;
-
   // When a Sale Order or a Purchase Order is created by a multi company rule for this company, it will automatically validate it
   AutoValidation?: boolean;
   Customer?: boolean;
   Supplier?: boolean;
   Active?: boolean;
-
   // Khóa sổ, chỉ có quyền kế toán/cố vấn mới có thể chỉnh sửa sổ sách
   PeriodLockDate?: Date;
   QuatityDecimal?: number;
