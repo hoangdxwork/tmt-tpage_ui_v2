@@ -64,7 +64,7 @@ export class TpageConfigProductComponent implements OnInit {
     })
   }
 
-  setPriceListItem() {debugger
+  setPriceListItem() {
     this.priceListItems = this.productIndexDBService.getStoragePriceListItems();
     if(this.priceListItems && this.priceListItems.Id) {
         let item = this.lstPrices.filter(x=> x.Id == this.priceListItems.Id)[0];
