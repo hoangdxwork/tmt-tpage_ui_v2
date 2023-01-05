@@ -699,30 +699,29 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
       next: (res: any) => {
         if(res) {
             let comments = [...res];
-
             comments.map((x: CommentOrderPost) => {
                 this.commentOrders[x.asuid] = [];
                 this.commentOrders[x.uid] = [];
 
                 //gán lại data bằng syntax
                 x.orders?.map((a: CommentOrder) => {
-                    this.commentOrders![x.asuid].push(a);
+                  if(a) {
+                      this.commentOrders![x.asuid].push(a);
+                  }
                 });
-
-                this.commentOrders![x.asuid].reverse();
 
                 if (x.uid && x.uid != x.asuid) {
                   x.orders?.map((a: any) => {
-                      this.commentOrders[x.uid].push(a);
+                    if(a) {
+                        this.commentOrders[x.uid].push(a);
+                    }
                   });
-
-                  this.commentOrders[x.uid].reverse();
                 }
             });
         }
 
-        this.cdRef.detectChanges();
         this.isLoading = false;
+        this.cdRef.detectChanges();
       },
       error: (error: any) => {
         this.isLoading = false;
@@ -738,7 +737,6 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
     let dataSourceItem = (this.dataSource?.Items || []);
 
     this.dataSource$ = this.chatomniCommentService.nextDataSource(id, dataSourceItem);
-
     this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniDataDto) => {
 
