@@ -18,10 +18,10 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
                 name: "Cấu hình giỏ hàng",
                 link: '/configs/facebook-cart',
             },
-            {
-              name: "Sản phẩm giỏ hàng",
-              link: '/configs/product-shopcart',
-            },
+            // {
+            //   name: "Sản phẩm giỏ hàng",
+            //   link: '/configs/product-shopcart',
+            // },
             {
                 name: "Đối tác giao hàng",
                 link: '/configs/delivery',
