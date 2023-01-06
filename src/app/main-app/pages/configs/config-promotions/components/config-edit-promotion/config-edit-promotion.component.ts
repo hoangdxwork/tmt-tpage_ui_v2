@@ -191,7 +191,8 @@ export class ConfigEditPromotionComponent implements OnInit {
     this.dataEdit.Company = formValue.Company;
     this.dataEdit.CompanyId = formValue.Company?.Id;
     this.dataEdit.RewardType = formValue.RewardType;
-    // this.dataEdit.RewardProductId = formValue.RewardProduct?.Id;
+    this.dataEdit.RewardProductId = formValue.RewardProductId;
+    this.dataEdit.RewardProduct = formValue.RewardProduct;
     this.dataEdit.PromoApplicability = formValue.PromoApplicability;
     this.dataEdit.DiscountType = formValue.DiscountType;
     this.dataEdit.DiscountPercentage = formValue.DiscountPercentage;

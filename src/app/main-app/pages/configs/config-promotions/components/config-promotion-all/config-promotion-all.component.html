@@ -192,8 +192,8 @@
                   <div class="flex flex-row items-center col-span-3">
                       <tds-form-field class="w-full">
                           <tds-select valueField="Id" textField="NameGet" placeholder='Chọn sản phẩm'
-                              disabledField="isActive" formControlName="RewardProduct" [required]='true'
-                              [data]="lstProduct" [allowClear]="true">
+                              disabledField="isActive" formControlName="RewardProduct" [required]='true' [valuePrimitive]='false'
+                              [data]="lstProduct" [allowClear]="true" (selectChange)="onChangeRewardProduct($event)">
                           </tds-select>
                           <tds-error>
                               Vui lòng chọn quà tặng
