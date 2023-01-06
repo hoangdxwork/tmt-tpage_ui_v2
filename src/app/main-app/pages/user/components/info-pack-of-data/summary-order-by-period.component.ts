@@ -68,7 +68,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
     this.currentData = [];
 
     this.currentMonth = new Date().getMonth() + 1;
-    this.previousMonth = new Date().getMonth();
+    this.previousMonth = new Date().getMonth() == 0 ? 12 : new Date().getMonth();
 
     let currentItems = this.sumOrder?.Current?.Items?.filter(x => this.currentMonth == (new Date(x.Time).getMonth() + 1));
     let previousItems = this.sumOrder?.Previous?.Items?.filter(x => this.previousMonth == (new Date(x.Time).getMonth() + 1));
@@ -196,6 +196,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
   }
 
   converseList(items: any[]) {
+    if(!items || items.length == 0) return [];
     let lstItems: any[] = [];
 
     let firstItem = new Date(items[0].Time).getDate();
