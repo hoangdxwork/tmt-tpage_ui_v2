@@ -2,8 +2,8 @@
     <div class="flex gap-x-8 w-full">
         <tds-form-field class="w-1/2">
             <tds-label>Hình thức thanh toán</tds-label>
-            <tds-select valueField="Value" textField="Text" placeholder='Hình thức thanh toán' disabledField="isActive"
-                [required]='true' [data]="paymentMethodOptions" [allowClear]="true" formControlName="PaymentMethod">
+            <tds-select valueField="Id" textField="Name" placeholder='Hình thức thanh toán' disabledField="isActive"
+                [required]='true' [data]="(lstPaymentJournals | async) || []" [allowClear]="true" formControlName="PaymentMethod">
             </tds-select>
         </tds-form-field>
         <tds-form-field class="w-1/2">

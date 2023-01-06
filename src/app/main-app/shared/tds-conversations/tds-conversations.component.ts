@@ -727,7 +727,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let model = this.prepareModel(message);
     model.MessageType = EnumSendMessageType._NORMAl;
 
-    this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
+    this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.UserId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             this.messageResponse(res, model);
@@ -811,7 +811,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         model.MessageType = EnumSendMessageType._NORMAl;
     }
 
-    this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model).pipe(takeUntil(this.destroy$)).subscribe({
+    this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.UserId, model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ResponseAddMessCommentDtoV2[]) => {
             this.messageResponse(res, model);
         },
@@ -880,7 +880,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         model.Attachment.Data.Url = this.uploadedImages[0];
     }
 
-    this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.ConversationId, model)
+    this.chatomniSendMessageService.sendMessage(this.team.Id, this.data.UserId, model)
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
             if(this.uploadedImages.length > 0) {

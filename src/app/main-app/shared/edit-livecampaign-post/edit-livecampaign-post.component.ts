@@ -335,7 +335,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
         this._form.controls['ConfigObject'].patchValue(exist);
     }
 
-    this.initFormDetails(data.Details);
+    let details = data.Details.sort((a: LiveCampaignSimpleDetail, b: LiveCampaignSimpleDetail) => new Date(b.DateCreated || '').getTime() - new Date(a.DateCreated || '').getTime())
+    this.initFormDetails(details);
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
     this.getLstOrderTags(data.Details);
   }
@@ -958,7 +959,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
       next: (res: any) => {
           if(!res) return;
 
-          this.initFormDetails(res.Details);
+          let details = res.Details.sort((a: LiveCampaignSimpleDetail, b: LiveCampaignSimpleDetail) => new Date(b.DateCreated || '').getTime() - new Date(a.DateCreated || '').getTime())
+          this.initFormDetails(details);
           this.livecampaignSimpleDetail = [...this.detailsForm.value];
           this.isLoading = false;
       },

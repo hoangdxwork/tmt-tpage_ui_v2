@@ -830,7 +830,7 @@
                     <th [width]="'240px'">Sản Phẩm</th>
                     <th [width]="'120px'">Số lượng</th>
                     <th [width]="'120px'">Đơn giá</th>
-                    <!-- <th [width]="'100px'">Giá gần đây</th> -->
+                    <th [width]="'100px'" *ngIf="saleConfig?.SaleSetting?.GroupPriceRecent == true" [align]="'right'">Giá gần đây</th>
                     <th [width]="'100px'" *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1" [align]="'center'">Giảm giá</th>
                     <th *ngIf="saleConfig?.SaleSetting?.GroupWeightPerSOLine == 1" [width]="'100px'" [align]="'right'" class="truncate">KL(g)</th>
                     <th [width]="'100px'" [align]="'right'">Thành tiền</th>
@@ -902,7 +902,7 @@
                       </tds-input-number>
                     </td>
                     <!-- Giá gần đây -->
-                    <!-- <td class="text-center">{{ data.PriceRecent || 0 | numberCustom }}</td> -->
+                    <td [align]="'right'" *ngIf="saleConfig?.SaleSetting?.GroupPriceRecent == true">{{ data.PriceRecent || 0 | numberCustom }} đ</td>
                     <!-- Giảm giá -->
                     <td *ngIf="saleConfig?.SaleSetting?.GroupDiscountPerSOLine == 1" class="text-center">
                       <div class="relative">

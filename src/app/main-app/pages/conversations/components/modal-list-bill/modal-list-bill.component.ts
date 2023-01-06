@@ -1,10 +1,12 @@
+import { AccountRegisterPaymentService } from './../../../../services/account-register-payment.service';
+import { AccountJournalPaymentDTO } from './../../../../dto/register-payment/register-payment.dto';
 import { NgxVirtualScrollerDto } from './../../../../dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { CRMTeamService } from './../../../../services/crm-team.service';
 import { GenerateMessageTypeEnum } from './../../../../dto/conversation/message.dto';
 import { SendMessageComponent } from './../../../../shared/tpage-send-message/send-message.component';
 import { fastSaleOrderBillofPartnerDTO, BillofPartnerDTO, paymentMethodDTO } from './../../../../dto/conversation-bill/conversation-bill.dto';
-import { Subject, takeUntil, finalize } from 'rxjs';
+import { Subject, takeUntil, finalize, Observable, map } from 'rxjs';
 import { FastSaleOrderService } from './../../../../services/fast-sale-order.service';
 import { CommonService } from './../../../../services/common.service';
 import { PartnerService } from './../../../../services/partner.service';
@@ -31,6 +33,7 @@ export class ModalListBillComponent implements OnInit {
   public getOrderImageUrl = new EventEmitter<string>();
 
   paymentMethodOptions!: paymentMethodDTO[];
+  lstPaymentJournals!: Observable<AccountJournalPaymentDTO[]>;
   lstBillofPartner!: BillofPartnerDTO[];
   lstBillDeafault!: BillofPartnerDTO[];
   pageCurrent = 1;
@@ -58,7 +61,8 @@ export class ModalListBillComponent implements OnInit {
     private partnerService: PartnerService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
-    private teamService: CRMTeamService
+    private teamService: CRMTeamService,
+    private registerPaymentService: AccountRegisterPaymentService
     ) { }
 
   ngOnInit(): void {
@@ -66,6 +70,11 @@ export class ModalListBillComponent implements OnInit {
       this.paymentMethodOptions = res;
     });
     this.createModal();
+    this.lstPaymentJournals = this.loadPaymentJournals();
+  }
+
+  loadPaymentJournals() {
+    return this.registerPaymentService.getWithCompanyPayment().pipe(map(res => res.value));
   }
 
   createModal() {

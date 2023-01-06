@@ -27,6 +27,7 @@ export class PrepareCopyItemHandler {
         ProductId: x.ProductId || event!.Id,
         ProductUOMId: x.ProductUOMId || event!.UOMId,
         PriceUnit: x.PriceUnit,
+        PriceRecent: x.PriceRecent || null,
         ProductUOMQty: x.ProductUOMQty,
         Discount: x.Discount,
         Discount_Fixed: x.Discount_Fixed,

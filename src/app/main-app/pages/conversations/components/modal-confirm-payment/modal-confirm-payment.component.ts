@@ -1,3 +1,6 @@
+import { AccountRegisterPaymentService } from './../../../../services/account-register-payment.service';
+import { AccountJournalPaymentDTO } from './../../../../dto/register-payment/register-payment.dto';
+import { Observable, map } from 'rxjs';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { FastSaleOrder_DefaultDTOV2 } from './../../../../dto/fastsaleorder/fastsaleorder-default.dto';
@@ -14,6 +17,7 @@ import { TDSModalRef } from 'tds-ui/modal';
 export class ModalConfirmPaymentComponent implements OnInit {
   @Input() data!: FastSaleOrder_DefaultDTOV2;
 
+  lstPaymentJournals!: Observable<AccountJournalPaymentDTO[]>;
   paymentMethodOptions!: paymentMethodDTO[];
   _form!: FormGroup;
 
@@ -37,7 +41,8 @@ export class ModalConfirmPaymentComponent implements OnInit {
     private modal: TDSModalRef,
     private fb: FormBuilder,
     private commonService: CommonService,
-    private message: TDSMessageService
+    private message: TDSMessageService,
+    private registerPaymentService: AccountRegisterPaymentService
   ) { 
     this.createForm();
   }
@@ -48,6 +53,11 @@ export class ModalConfirmPaymentComponent implements OnInit {
     this.commonService.shopPaymentProviders$.subscribe(res=>{
       this.paymentMethodOptions = res;
     });
+    this.lstPaymentJournals = this.loadPaymentJournals();
+  }
+
+  loadPaymentJournals() {
+    return this.registerPaymentService.getWithCompanyPayment().pipe(map(res => res.value));
   }
 
   createForm() {

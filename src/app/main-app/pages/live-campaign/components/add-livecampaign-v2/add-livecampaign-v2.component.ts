@@ -304,8 +304,9 @@ export class AddLiveCampaignV2Component implements OnInit {
     }
 
     if(data && data.Details) {
-       this.initFormDetails(data.Details);
-       this.getLstOrderTags(data.Details);
+      let details = data.Details.sort((a: LiveCampaignSimpleDetail, b: LiveCampaignSimpleDetail) => new Date(b.DateCreated || '').getTime() - new Date(a.DateCreated || '').getTime())
+      this.initFormDetails(details);
+      this.getLstOrderTags(details);
     }
 
     this.datePicker = [data.StartDate, data.EndDate];
