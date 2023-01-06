@@ -62,7 +62,7 @@ export class ListProductVariantComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTeamData();
-    this.loadInitShopCart();
+    // this.loadInitShopCart();
   }
 
   loadData(pageSize: number, pageIndex: number) {
@@ -276,29 +276,30 @@ export class ListProductVariantComponent implements OnInit {
   }
 
   addProductOnShopCart() {
-    if (this.checkValueEmpty() == 0) return;
-    let team = this.teamShopCart as CRMTeamDTO;
-    if(!team) {
-        this.message.error('Không tìm thấy CRMTeam ShopCart');
-        return;
-    };
+    this.message.info('Chức năng chưa khả dụng');
+    // if (this.checkValueEmpty() == 0) return;
+    // let team = this.teamShopCart as CRMTeamDTO;
+    // if(!team) {
+    //     this.message.error('Không tìm thấy CRMTeam ShopCart');
+    //     return;
+    // };
 
-    let model = {
-      TeamId: team.Id,
-      Ids: this.idsModel
-    }
+    // let model = {
+    //   TeamId: team.Id,
+    //   Ids: this.idsModel
+    // }
 
-    this.isLoading = true;
-    this.productShopCartService.addProductOnShopCart({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          this.message.success("Thêm sản phẩm vào giỏ hàng thành công");
-          this.isLoading = false;
-      },
-      error: (err: any) => {
-          this.message.error(err?.error?.message);
-          this.isLoading = false;
-      }
-    })
+    // this.isLoading = true;
+    // this.productShopCartService.addProductOnShopCart({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+    //   next: (res: any) => {
+    //       this.message.success("Thêm sản phẩm vào giỏ hàng thành công");
+    //       this.isLoading = false;
+    //   },
+    //   error: (err: any) => {
+    //       this.message.error(err?.error?.message);
+    //       this.isLoading = false;
+    //   }
+    // })
   }
 
   exportExcel() {

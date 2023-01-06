@@ -54,7 +54,7 @@ export class FacebookCartComponent implements OnInit {
       IsRemoveProductInValid: [false],// Cho phép xóa sản phẩm không hợp lệ (Không mua được)
       IsDisplayInventory: [false],// Cho phép hiện tồn kho
       IsMergeOrder: [false],// Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng
-      IsShopCart: [false]// hiển thị thông tin giỏ hàng
+      // IsShopCart: [false]// hiển thị thông tin giỏ hàng
     })
   }
 
@@ -72,7 +72,7 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsRemoveProductInValid"].disable();
       this._form.controls["IsDisplayInventory"].disable();
       this._form.controls["IsMergeOrder"].disable();
-      this._form.controls["IsShopCart"].disable();
+      // this._form.controls["IsShopCart"].disable();
     }
   }
 
@@ -125,8 +125,8 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsMergeOrder"].setValue(false);
       this._form.controls["IsMergeOrder"].disable();
 
-      this._form.controls["IsShopCart"].setValue(false);
-      this._form.controls["IsShopCart"].disable();
+      // this._form.controls["IsShopCart"].setValue(false);
+      // this._form.controls["IsShopCart"].disable();
 
     } else {
 
@@ -160,8 +160,8 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsMergeOrder"].setValue(false);
       this._form.controls["IsMergeOrder"].enable();
 
-      this._form.controls["IsShopCart"].setValue(true);
-      this._form.controls["IsShopCart"].enable();
+      // this._form.controls["IsShopCart"].setValue(true);
+      // this._form.controls["IsShopCart"].enable();
     }
   }
 
@@ -231,7 +231,7 @@ export class FacebookCartComponent implements OnInit {
         IsRemoveProductInValid: formModel.IsRemoveProductInValid as boolean,
         IsDisplayInventory: formModel.IsDisplayInventory as boolean,
         IsMergeOrder: formModel.IsMergeOrder as boolean,
-        IsShopCart: formModel.IsShopCart as boolean,
+        // IsShopCart: formModel.IsShopCart as boolean,
     } as ConfigFacebookCartDTO
 
     return model;
