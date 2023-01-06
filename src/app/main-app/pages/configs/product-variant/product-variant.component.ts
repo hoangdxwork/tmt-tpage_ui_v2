@@ -62,7 +62,7 @@ export class ListProductVariantComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTeamData();
-    // this.loadInitShopCart();
+    this.loadInitShopCart();
   }
 
   loadData(pageSize: number, pageIndex: number) {
@@ -113,12 +113,9 @@ export class ListProductVariantComponent implements OnInit {
       this.team = team as any;
     });
   }
-  //#endregion Api-request
 
-  //#region Handle
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
-
     this.loadData(params.pageSize, params.pageIndex);
   }
 
@@ -179,14 +176,13 @@ export class ListProductVariantComponent implements OnInit {
 
         this.productService.setActive({ model: active }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-                this.message.success("Đã mở hiệu lực thành công!");
                 this.isLoading = false;
-
+                this.message.success("Đã mở hiệu lực thành công!");
                 this.loadData(this.pageSize, this.pageIndex);
             },
             error: (err) => {
-              this.message.error(err?.error?.message || 'Mở hiệu lực thất bại!');
               this.isLoading = false;
+              this.message.error(err?.error?.message || 'Mở hiệu lực thất bại!');
             }
         })
         break;
@@ -197,14 +193,13 @@ export class ListProductVariantComponent implements OnInit {
 
         this.productService.setActive({ model: unactive }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-                this.message.success("Đã hết hiệu lực!");
                 this.isLoading = false;
-
+                this.message.success("Đã hết hiệu lực!");
                 this.loadData(this.pageSize, this.pageIndex);
             },
             error: (err) => {
-                this.message.error(err?.error?.message || 'Đóng hiệu lực thất bại!');
                 this.isLoading = false;
+                this.message.error(err?.error?.message || 'Đóng hiệu lực thất bại!');
             }
         })
         break;
@@ -222,8 +217,8 @@ export class ListProductVariantComponent implements OnInit {
     this.productService.checkExitProductOnPageFB({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           if (res && res.value && res.value.length == 0) {
-              this.message.error("Sản phẩm đã tồn tại trong Page");
               this.isLoading = false;
+              this.message.error("Sản phẩm đã tồn tại trong Page");
               return;
           }
 
@@ -233,20 +228,20 @@ export class ListProductVariantComponent implements OnInit {
 
           this.productService.addProductOnFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-                this.message.success("Thêm sản phẩm vào Page thành công");
                 this.isLoading = false;
+                this.message.success("Thêm sản phẩm vào Page thành công");
                 return;
             },
             error: (err) => {
-                this.message.error(err?.error?.message);
                 this.isLoading = false;
+                this.message.error(err?.error?.message);
                 return;
             }
           });
       },
       error: (err) => {
-          this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
           this.isLoading = false;
+          this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
           return;
       }
     });
@@ -264,42 +259,41 @@ export class ListProductVariantComponent implements OnInit {
     this.isLoading = true;
     this.productService.deleteProductOnFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-        this.message.success('Đã xóa sản phẩm khỏi Page');
         this.isLoading = false;
+        this.message.success('Đã xóa sản phẩm khỏi Page');
         this.onSelectChange(this.selected);
       },
       error: (err) => {
-        this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!');
         this.isLoading = false;
+        this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!');
       }
     })
   }
 
   addProductOnShopCart() {
-    this.message.info('Chức năng chưa khả dụng');
-    // if (this.checkValueEmpty() == 0) return;
-    // let team = this.teamShopCart as CRMTeamDTO;
-    // if(!team) {
-    //     this.message.error('Không tìm thấy CRMTeam ShopCart');
-    //     return;
-    // };
+    if (this.checkValueEmpty() == 0) return;
+    let team = this.teamShopCart as CRMTeamDTO;
+    if(!team) {
+        this.message.error('Không tìm thấy CRMTeam ShopCart');
+        return;
+    };
 
-    // let model = {
-    //   TeamId: team.Id,
-    //   Ids: this.idsModel
-    // }
+    let model = {
+      TeamId: team.Id,
+      Ids: this.idsModel
+    }
 
-    // this.isLoading = true;
-    // this.productShopCartService.addProductOnShopCart({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
-    //   next: (res: any) => {
-    //       this.message.success("Thêm sản phẩm vào giỏ hàng thành công");
-    //       this.isLoading = false;
-    //   },
-    //   error: (err: any) => {
-    //       this.message.error(err?.error?.message);
-    //       this.isLoading = false;
-    //   }
-    // })
+    this.isLoading = true;
+    this.productShopCartService.addProductOnShopCart({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.isLoading = false;
+          this.message.success("Thêm sản phẩm vào giỏ hàng thành công");
+      },
+      error: (err: any) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message);
+      }
+    })
   }
 
   exportExcel() {
