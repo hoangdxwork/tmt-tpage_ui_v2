@@ -898,6 +898,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
         return 0;
     }
 
+    if(formValue.StartDate && formValue.EndDate && formValue.StartDate.getTime() > formValue.EndDate.getTime()) {
+      this.message.error('Ngày kết thúc phải sau ngày bắt đầu');
+      return 0;
+    }
+
     return 1;
   }
 
