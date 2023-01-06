@@ -1,18 +1,6 @@
 import { Router } from '@angular/router';
-import {
-  FormGroup,
-  FormBuilder,
-  Validators,
-  FormControl,
-} from '@angular/forms';
-
-import {
-  Component,
-  OnInit,
-  Output,
-  EventEmitter,
-  OnDestroy,
-} from '@angular/core';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
 import { CompanyService } from 'src/app/main-app/services/company.service';
 import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
@@ -39,10 +27,6 @@ import { TDSHelperArray } from 'tds-ui/shared/utility';
   }
 })
 export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
-  lstDiscountType: any = [
-    { text: 'Phần trăm', value: 'percentage' },
-    { text: 'Tiền cố định', value: 'fixed_amount' },
-  ];
 
   dataDefault!: SaleCouponProgramDTO;
   formAddPromotion!: FormGroup;
@@ -119,7 +103,7 @@ export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     let model = { ProgramType: type };
 
-    this.saleCouponProgramService.getDefault({model: model})
+    this.saleCouponProgramService.getDefault({ model: model })
       .pipe(finalize(() => this.isLoading = false))
       .subscribe((res: any) => {
         delete res['@odata.context'];
@@ -135,18 +119,21 @@ export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
   }
 
   onSave() {
+    if (this.isLoading) return;
     this.isLoading = true;
     this.prepareModel();
 
-    if(this.checkValueForm(this.dataDefault) == 1) {
-      this.saleCouponProgramService.insert(this.dataDefault)
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe(res => {
+    if (this.checkValueForm(this.dataDefault) == 1) {
+      this.saleCouponProgramService.insert(this.dataDefault).pipe().subscribe({
+        next: (res) => {
           this.redirectList();
+          this.isLoading = false;
           this.message.success(Message.InsertSuccess);
-        }, error => {
-          this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
-        });
+        }, error: (err) => {
+          this.isLoading = false;
+          this.message.error(`${err?.error?.message}` || Message.ErrorOccurred);
+        }
+      })
     }
     else {
       this.isLoading = false;
@@ -154,20 +141,20 @@ export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
   }
 
   checkValueForm(data: SaleCouponProgramDTO): number {
-    if(!data.Name) {
+    if (!data.Name) {
       this.message.error(Message.Config.Promotion.PromotionNameEmpty);
       return 0;
     }
 
-    if(data.Details && data.Details.length > 0) {
+    if (data.Details && data.Details.length > 0) {
       let ruleCombo = data.Details.findIndex(x => !x.RuleCombo || x.RuleCombo.length < 1) as number;
-      if(Number(ruleCombo) < 0) {
+      if (Number(ruleCombo) < 0) {
         this.message.error(Message.Config.Promotion.ProductBuyEmpty);
         return 0;
       }
     }
 
-    if(data.RuleBasedOn == 'product_category' && !data.RuleCategoryId) {
+    if (data.RuleBasedOn == 'product_category' && !data.RuleCategoryId) {
       this.message.error(Message.Config.Promotion.RuleBasedOnEmpty);
       return 0;
     }
@@ -190,6 +177,8 @@ export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
     this.dataDefault.CompanyId = formValue.Company?.Id;
 
     this.dataDefault.RewardType = formValue.RewardType;
+    this.dataDefault.RewardProductId = formValue.RewardProductId;
+    this.dataDefault.RewardProduct = formValue.RewardProduct;
     this.dataDefault.PromoApplicability = formValue.PromoApplicability;
 
     this.dataDefault.DiscountType = formValue.DiscountType;
@@ -206,11 +195,12 @@ export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
     this.dataDefault.Active = formValue.Active;
     this.dataDefault.NoIncrease = formValue.NoIncrease;
     this.dataDefault.MaximumUseNumber = formValue.MaximumUseNumber;
+
     this.prepareReward();
   }
 
   prepareReward() {
-    if(TDSHelperArray.hasListValue(this.dataDefault?.Details)) {
+    if (TDSHelperArray.hasListValue(this.dataDefault?.Details)) {
       this.dataDefault?.Details?.forEach(detail => {
         this.setReward(detail);
       });
@@ -226,8 +216,8 @@ export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
 
     let maximum = detail.DiscountMaxAmount > 0 ? `, ${not_too_max} ${detail.DiscountMaxAmount} đ` : ``;
 
-    if(this.dataDefault.DiscountType == "percentage") {
-      if(this.dataDefault.DiscountApplyOn == "on_order") {
+    if (this.dataDefault.DiscountType == "percentage") {
+      if (this.dataDefault.DiscountApplyOn == "on_order") {
         detail.Reward = `${sale_off} ${detail.DiscountPercentage} ${on_total_amount_percent}${maximum}`;
       }
       else if (this.dataDefault.DiscountApplyOn == "specific_product") {
