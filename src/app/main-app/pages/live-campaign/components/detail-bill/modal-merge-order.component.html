@@ -1,5 +1,5 @@
-<div class="w-full h-full">
-    <tds-table #rowSelectionTable [listData]="lstPartners" [loading]="isLoading" [scroll]="{ y:'500px' }" [frontPagination]="false" [showPagination]="false">
+<div class="w-full h-full" *ngIf="lstPartner && lstPartner.length > 0">
+    <tds-table #rowSelectionTable [listData]="lstPartner" [loading]="isLoading" [scroll]="{ y:'500px' }" [frontPagination]="false" [showPagination]="false">
         <thead>
             <tr>
                 <th width="3%" [tdsLeft]="true"></th>
@@ -15,7 +15,7 @@
         <tbody>
             <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-i="index">
                 <tr class="text-body-2 text-neutral-900 font-regular" [ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''">
-                    <td [expand]="expandSet.has(data.Id)" class="text-center" (expandChange)="onExpandChange(data.Id, $event)" 
+                    <td [expand]="expandSet.has(data.Id)" class="text-center" (expandChange)="onExpandChange(data.Id, $event)"
                         [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' "></td>
                     <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
                         class="text-center" [tdsLeft]="true"
@@ -26,7 +26,7 @@
                     <td>{{ data.Phone }}</td>
                     <td>{{ data.Street }}</td>
                     <td class="text-center">
-                        <button tds-button color="primary" size="sm" class="text-white" (click)="mergeOrder(data.Id)">
+                        <button tds-button type="button" color="primary" size="sm" class="text-white" (click)="mergeOrder(data.Id)">
                             Gộp đơn
                         </button>
                     </td>
@@ -36,7 +36,7 @@
                 <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full">
                     <div class="w-full p-3 block" *ngIf="expandSet.has(data.Id)">
                         <div class="bg-white border rounded-xl p-4">
-                            <tds-table #basicTable [listData]="lstOrders" [loading]="isLoadingCollapse" [frontPagination]="false" [showPagination]="false">
+                            <tds-table #basicTable [listData]="lstOrders" [loading]="isLoadingExpand" [frontPagination]="false" [showPagination]="false">
                                 <thead>
                                     <tr>
                                         <th width="8%">STT</th>
@@ -58,15 +58,15 @@
                                             <td class="text-right">{{ data.AmountDeposit | numberCustom }} đ</td>
                                             <td class="text-right">{{ data.Residual | numberCustom }} đ</td>
                                             <td>
-                                                <tds-tag [status]="data.State | getColorStatusState" size="sm" type="outline">
-                                                    {{ data.ShowState }}
-                                                </tds-tag>
+                                              <tds-tag [status]="data.State | getColorStatusState" size="sm" type="outline">
+                                                  {{ data.ShowState }}
+                                              </tds-tag>
                                             </td>
                                         </tr>
                                     </ng-template>
                                 </tbody>
                             </tds-table>
-                        </div>                    
+                        </div>
                     </div>
                 </tr>
             </ng-template>
@@ -75,6 +75,6 @@
 </div>
 
 <div class="w-full flex justify-end gap-x-2 p-4" *tdsModalFooter>
-    <button tds-button class="min-w-[100px]" color="primary" (click)="mergeListOrders()" *ngIf="setOfCheckedId.size > 0">Gộp đơn</button>
+    <button tds-button class="min-w-[100px]" color="primary" (click)="mergeOrderAll()" *ngIf="setOfCheckedId.size > 0">Gộp đơn</button>
     <button tds-button class="min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
 </div>

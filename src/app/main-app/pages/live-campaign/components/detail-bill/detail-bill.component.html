@@ -19,7 +19,7 @@
 
         <tds-dropdown-menu #menu="tdsDropdownMenu">
           <div class="w-[272px]">
-            <div tds-dropdown-item (click)="mergeOrder2()"> Gộp đơn</div>
+            <div tds-dropdown-item (click)="mergeOrderAll()"> Gộp đơn</div>
             <div tds-dropdown-item (click)="mergeOrder()"> Gộp đơn thủ công </div>
             <div tds-dropdown-item (click)="sendDelivery()">Gửi lại mã vận đơn</div>
             <div tds-dropdown-item (click)="approveOrder()"> Xác nhận bán hàng </div>
@@ -39,10 +39,10 @@
       </div>
       <!-- TODO: Thao tác -->
       <div class="flex flex-auto flex-row items-center justify-end gap-x-2 pr-4">
-        <div class="w-full flex items-center gap-x-2 pl-4" [ngClass]="setOfCheckedId.size > 0 || countCanMergeOrder == 0 ? 'justify-end' : 'justify-between'">
-          <button tds-button color="primary" class="min-w-[100px]" *ngIf="countCanMergeOrder > 0" (click)="mergeOrder2()">
+        <div class="w-full flex items-center gap-x-2 pl-4" [ngClass]="setOfCheckedId.size > 0 ||  lstPartner?.length == 0 ? 'justify-end' : 'justify-between'">
+          <button tds-button color="primary" class="min-w-[100px]" *ngIf="lstPartner?.length > 0" (click)="mergeOrderAll()">
             <span class="flex items-center">
-              Gộp đơn ({{ countCanMergeOrder }})
+              Gộp đơn ({{ lstPartner.length }})
             </span>
           </button>
 
@@ -74,7 +74,7 @@
 
         <tds-dropdown-menu #menu="tdsDropdownMenu">
           <div class="w-[272px]">
-            <div tds-dropdown-item (click)="mergeOrder2()"> Gộp đơn</div>
+            <div tds-dropdown-item (click)="mergeOrderAll()"> Gộp đơn</div>
             <div tds-dropdown-item (click)="mergeOrder()"> Gộp đơn thủ công </div>
             <div tds-dropdown-item (click)="sendDelivery()">Gửi lại mã vận đơn</div>
             <div tds-dropdown-item (click)="approveOrder()"> Xác nhận bán hàng </div>
