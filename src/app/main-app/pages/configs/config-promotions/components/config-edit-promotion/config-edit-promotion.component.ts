@@ -144,10 +144,10 @@ export class ConfigEditPromotionComponent implements OnInit {
       this.saleCouponProgramService.update(this.promotionId, this.dataEdit).pipe().subscribe({
         next: (res) => {
           this.redirectList();
-          this.isLoading = false
+          this.isLoading = false;
           this.message.success(Message.UpdatedSuccess);
         }, error: (err) => {
-          this.isLoading = false
+          this.isLoading = false;
           this.message.error(`${err?.error?.message}` || Message.ErrorOccurred);
         }
       })
@@ -184,24 +184,31 @@ export class ConfigEditPromotionComponent implements OnInit {
 
     this.dataEdit.Name = formValue.Name;
     this.dataEdit.Details = formValue.Details;
+
     this.dataEdit.RuleBasedOn = formValue.RuleBasedOn;
     this.dataEdit.RuleCategoryId = formValue.RuleCategory?.Id;
     this.dataEdit.RuleMinQuantity = formValue.RuleMinQuantity;
     this.dataEdit.RuleMinimumAmount = formValue.RuleMinimumAmount;
+
     this.dataEdit.Company = formValue.Company;
     this.dataEdit.CompanyId = formValue.Company?.Id;
+
     this.dataEdit.RewardType = formValue.RewardType;
     this.dataEdit.RewardProductId = formValue.RewardProductId;
     this.dataEdit.RewardProduct = formValue.RewardProduct;
     this.dataEdit.PromoApplicability = formValue.PromoApplicability;
+
     this.dataEdit.DiscountType = formValue.DiscountType;
     this.dataEdit.DiscountPercentage = formValue.DiscountPercentage;
+
     this.dataEdit.DiscountApplyOn = formValue.DiscountApplyOn;
     this.dataEdit.DiscountSpecificProductId = formValue.DiscountSpecificProductId;
     this.dataEdit.DiscountMaxAmount = formValue.DiscountMaxAmount;
     this.dataEdit.DiscountFixedAmount = formValue.DiscountFixedAmount;
+
     this.dataEdit.RuleDateFrom = formValue.RuleDateFrom;
     this.dataEdit.RuleDateTo = formValue.RuleDateTo;
+
     this.dataEdit.Active = formValue.Active;
     this.dataEdit.NoIncrease = formValue.NoIncrease;
     this.dataEdit.MaximumUseNumber = formValue.MaximumUseNumber;

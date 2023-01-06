@@ -40,41 +40,43 @@
             <div class="w-full flex-auto pb-2.5">
                     <tds-table #rowSelectionTable
                     [listData]="lstData"
-                    [tableLayout]="'fixed'"
+                    [frontPagination]="false"
                     [showSizeChanger]="true"
                     [loading]="loading"
-                    [pageSize]="20"
+                    [(pageSize)]="pageSize"
+                    [(pageIndex)]="pageIndex"
                     [scroll]="{ x: 'auto', y: 'auto'}"
                     [total]="count"
                     [loading]="isLoading"
                     (clickRefresh)="refreshData()"
+                    (queryParams)="onQueryParamsChange($event)"
                     (currentPageDataChange)="onCurrentPageDataChange($event)"
                     class="tds-promotion-table">
                     <thead>
                         <tr class="text-neutral-1-900 text-body-2 font-semibold">
-                            <th width="5%" [align]="'center'"></th>
-                            <th width="5%" [align]="'center'" class="hover:bg-neutral-3-100" [checked]="checked"
+                            <th class="border-r" width="5%" [align]="'center'"></th>
+                            <th class="border-r" width="5%" [align]="'center'" [checked]="checked"
                                 [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)">
                             </th>
-                            <th width="">Tên</th>
-                            <th width="" [align]="'center'">Hiệu lực</th>
-                            <th width="">Ngày khởi tạo</th>
+                            <th class="border-r">Tên</th>
+                            <th class="border-r" [align]="'center'">Hiệu lực</th>
+                            <th class="border-r">Ngày khởi tạo</th>
                             <th width="20%">Thao tác</th>
                         </tr>
                 </thead>
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
                         <tr class="text-neutral-1-900 text-body-2 font-regular" [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
-                            <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)" [align]="'center'"></td>
-                            <td [checked]="setOfCheckedId.has(data.Id)" [align]="'center'"
+                            <td class="border-r" [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)" [align]="'center'"></td>
+                            <td class="border-r" [checked]="setOfCheckedId.has(data.Id)" [align]="'center'"
                                 (checkedChange)="onItemChecked(data.Id, $event)"></td>
-                            <td>{{ data.Name }}</td>
-                            <td class="w-full flex justify-center">
-                                <span class="flex items-center">
+                            <td class="border-r">{{ data.Name }}</td>
+                            <td class="border-r" [align]="'center'">
+                                <div class="flex w-full items-center justify-center">
                                     <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
-                                </span>
+                                </div>
                             </td>
-                            <td>{{ data.DateCreated | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                            <td class="border-r">{{ data.DateCreated | date:'dd/MM/yyyy HH:mm:ss' }}</td>
                             <td>
                                 <button tds-button-icon color="secondary" size="sm" class="mr-2" (click)="showEditModal(data.Id)">
                                     <span class="flex items-center">

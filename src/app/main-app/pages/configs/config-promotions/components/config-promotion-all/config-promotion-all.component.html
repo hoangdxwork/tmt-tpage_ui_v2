@@ -194,6 +194,9 @@
                           <tds-select valueField="Id" textField="NameGet" placeholder='Chọn sản phẩm'
                               disabledField="isActive" formControlName="RewardProduct" [required]='true' [valuePrimitive]='false'
                               [data]="lstProduct" [allowClear]="true" (selectChange)="onChangeRewardProduct($event)">
+                              <!-- <ng-template tds-label-tmp let-item="item">
+                                [{{item.data.DefaultCode}}] {{item.data.Name}}
+                              </ng-template> -->
                           </tds-select>
                           <tds-error>
                               Vui lòng chọn quà tặng

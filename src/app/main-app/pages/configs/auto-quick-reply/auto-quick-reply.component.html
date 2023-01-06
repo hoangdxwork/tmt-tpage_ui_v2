@@ -32,20 +32,20 @@
                 (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>
                     <tr class="text-neutral-1-900 text-body-2 font-semibold">
-                        <th width="4%">STT</th>
-                        <th width="22%">Tên mẫu</th>
-                        <th width="24%">Nội dung</th>
-                        <th width="13%">Phím tắt</th>
-                        <th width="10%">Trạng thái</th>
-                        <th width="12%">Ngày tạo</th>
+                        <th class="border-r" width="4%">STT</th>
+                        <th class="border-r" width="22%">Tên mẫu</th>
+                        <th class="border-r" width="24%">Nội dung</th>
+                        <th class="border-r" width="13%">Phím tắt</th>
+                        <th class="border-r" width="10%">Trạng thái</th>
+                        <th class="border-r" width="12%">Ngày tạo</th>
                         <th class="text-center" width="15%">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                         <tr class="text-neutral-1-900 text-body-2 font-regular group">
-                            <td>{{ i | numericalOrder:pageSize:pageIndex }}</td>
-                            <td>
+                            <td class="border-r">{{ i | numericalOrder:pageSize:pageIndex }}</td>
+                            <td class="border-r">
                                 <div class="flex flex-col gap-y-2 overflow-hidden">
                                     <span class="truncate">{{ data.Subject }}</span>
                                     <div class="inline-block">
@@ -64,16 +64,16 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
+                            <td class="border-r">
                                 <div showMore [length]="70" [text]="(data.BodyPlain | formatIconLike | bbcodeConvert)"></div>
                             </td>
-                            <td>
+                            <td class="border-r">
                                 {{ data.Command }}
                             </td>
-                            <td>
+                            <td class="border-r">
                                 <tds-switch [(ngModel)]="data.Active" (ngModelChange)="onChangeStatus(data.Id)"></tds-switch>
                             </td>
-                            <td >
+                            <td class="border-r">
                                 {{ data.DateCreated | date:'dd/MM/yyyy HH:mm' }}
                             </td>
                             <td class="text-center">

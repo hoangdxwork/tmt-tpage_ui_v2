@@ -108,6 +108,10 @@ export class ConfigPromotionGroupComponent implements OnInit {
     })
   }
 
+  onChangeRewardProduct(product: DataPouchDBDTO) {
+    this.form.controls["RewardProductId"].setValue(product?.Id);
+  }
+
   isShow(value: string) : boolean {
     let result = false;
 

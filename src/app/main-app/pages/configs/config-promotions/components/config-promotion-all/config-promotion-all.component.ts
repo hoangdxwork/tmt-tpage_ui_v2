@@ -86,8 +86,7 @@ export class ConfigPromotionAllComponent implements OnInit {
     })
   }
 
-  onChangeRewardProduct(product: DataPouchDBDTO)
-  {
+  onChangeRewardProduct(product: DataPouchDBDTO) {
     this.form.controls["RewardProductId"].setValue(product?.Id);
   }
 
