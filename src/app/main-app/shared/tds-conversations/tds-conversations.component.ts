@@ -970,7 +970,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
             this.removeTagOnView(item);
-            this.message.success('Gỡ nhãn thành công');
+            this.message.success(`Đã gỡ nhãn <span class="font-semibold">${item.Name}</span>`);
         },
         error: err=>{
             this.message.error(err.error? err.error.message : 'Xóa nhãn thất bại');
