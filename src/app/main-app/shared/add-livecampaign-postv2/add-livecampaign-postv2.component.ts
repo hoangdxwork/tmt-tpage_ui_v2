@@ -342,7 +342,7 @@ export class AddLivecampaignPostV2Component implements OnInit {
         this._form.controls['ConfigObject'].patchValue(exist);
     }
 
-    let details = data.Details.sort((a: LiveCampaignSimpleDetail, b: LiveCampaignSimpleDetail) => new Date(b.DateCreated || '').getTime() - new Date(a.DateCreated || '').getTime())
+    let details = data.Details.sort((a: LiveCampaignSimpleDetail, b: LiveCampaignSimpleDetail) => Date.parse(b.DateCreated)  - Date.parse(a.DateCreated));
     this.initFormDetails(details);
     this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
     this.getLstOrderTags(details);
