@@ -999,6 +999,9 @@ export class AddBillComponent implements OnInit {
               item.Id = this.idPush - 1;
               this.idPush = item.Id;
             }
+            if(this.saleConfig?.SaleSetting?.GroupPriceRecent && item.PriceRecent && item.PriceRecent > 0) {
+                item.PriceUnit = item.PriceRecent;
+            }
 
             let formArray = <FormArray> this._form.controls['OrderLines'];
             formArray.push(this.updateOrderLinesHandler.initOrderLines(this.dataModel, item));

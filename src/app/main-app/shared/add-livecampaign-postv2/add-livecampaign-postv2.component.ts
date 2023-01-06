@@ -342,9 +342,10 @@ export class AddLivecampaignPostV2Component implements OnInit {
         this._form.controls['ConfigObject'].patchValue(exist);
     }
 
-    this.initFormDetails(data.Details);
-    this.livecampaignSimpleDetail = [...data.Details];
-    this.getLstOrderTags(data.Details);
+    let details = data.Details.sort((a: LiveCampaignSimpleDetail, b: LiveCampaignSimpleDetail) => Date.parse(b.DateCreated)  - Date.parse(a.DateCreated));
+    this.initFormDetails(details);
+    this.livecampaignSimpleDetail = [...this._form.controls["Details"].value];
+    this.getLstOrderTags(details);
   }
 
   //TODO: disable các giá trị ngày không khả dụng

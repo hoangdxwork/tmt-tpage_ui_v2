@@ -21,6 +21,7 @@
     ImageUrl: string;
     IsActive: boolean;
     ProductTmlpId: number;
+    DateCreated: Date | any;
 
     // 2 field không dùng để lưu
     TagWithAttributes?: any;
