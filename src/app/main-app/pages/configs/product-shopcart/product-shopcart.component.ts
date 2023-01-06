@@ -11,6 +11,8 @@ import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
+import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
+import { SortEnum } from '@core/enum';
 
 @Component({
   selector: 'product-shopcart',
@@ -39,6 +41,11 @@ export class ProductShopCartComponent implements OnInit {
     searchText: ''
   }
 
+  sort: Array<SortDataRequestDTO>= [{
+    field: "DateCreated",
+    dir: SortEnum.desc,
+  }];
+
   idsModel: any = [];
   teamShopCart!: CRMTeamDTO;
 
@@ -58,7 +65,7 @@ export class ProductShopCartComponent implements OnInit {
     this.lstOfData = [];
 
     let filters = this.odataProductService.buildFilter(this.filterObj || null);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null, this.sort);
 
     this.isLoading = true;
     this.getViewData(params).subscribe({
@@ -113,7 +120,7 @@ export class ProductShopCartComponent implements OnInit {
     this.filterObj.searchText = ev.value;
 
     let filters = this.odataProductService.buildFilter(this.filterObj || null);
-    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null);
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null, this.sort);
     this.isLoading = true;
 
     this.getViewData(params).subscribe({
@@ -164,7 +171,7 @@ export class ProductShopCartComponent implements OnInit {
 
   apiDeleteProductOnShopCart(model: any) {
     this.isLoading = true;
-    this.productShopCartService.deleteProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productShopCartService.deleteProductOnShopCart({ model: model}).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.message.success("Xóa sản phẩm trong giỏ hàng thành công");
           this.isLoading = false;
