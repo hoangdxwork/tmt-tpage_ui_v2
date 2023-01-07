@@ -139,7 +139,7 @@ export class EditLiveCampaignComponent implements OnInit {
   }
 
   eventEmitter() {
-    this.productTemplateService.onLoadingLiveCampaign$.subscribe({
+    this.productTemplateService.onLoadingLiveCampaign$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: boolean) => {
         this.isLoading = res;
       }

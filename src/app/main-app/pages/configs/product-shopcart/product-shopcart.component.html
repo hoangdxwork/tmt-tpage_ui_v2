@@ -6,7 +6,7 @@
                 <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">SẢN PHẨM GIỎ HÀNG</span>
             </div>
         </div>
-        <div class="flex flex-row w-full items-center justify-between px-4 py-2.5">
+        <div class="flex flex-row w-full items-center justify-between px-4 py-2.5" *ngIf="configCart?.IsShopCart">
             <div class="flex justify-start text-title-1 font-semibold">Danh sách sản phẩm</div>
             <div class="flex flex-row items-center justify-end w-2/5">
                 <tds-button-group class="mr-2">
@@ -32,9 +32,10 @@
                 </tds-form-field>
             </div>
         </div>
-        <div class="w-full flex-auto pb-2.5 text-body-2">
-            <tds-table #rowSelectionTable [listData]="lstOfData" [showSizeChanger]="true" [frontPagination]="false"
-                [loading]="isLoading" [scroll]="{y:'auto', x: 'auto'}" [pageSize]="pageSize" [pageIndex]="pageIndex"
+
+        <div class="w-full flex-auto pb-2.5 text-body-2" *ngIf="configCart?.IsShopCart">
+            <tds-table #rowSelectionTable [listData]="lstOfData" [showSizeChanger]="false" [frontPagination]="false"
+                [loading]="isLoading" [scroll]="{y:'auto', x: 'auto'}" [pageSize]="pageSize" [pageIndex]="pageIndex" 
                 [total]="count" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>
                     <tr class="text-neutral-1-900 text-body-2 font-semibold">
@@ -44,10 +45,10 @@
                         <th width="80px" class="border-r" [tdsLeft]="true">Ảnh</th>
                         <th width="280px" [tdsLeft]="true" class="border-r">Tên</th>
                         <th width="168px" class="border-r">Đơn vị</th>
-                        <th width="168px" class="border-r">Mã vạch</th>
                         <th width="168px" class="border-r" [align]="'right'">Giá bán</th>
+                        <th width="168px" class="border-r" [align]="'right'">Số lượng</th>
                         <th width="168px" class="border-r" [align]="'center'">Hiệu lực</th>
-                        <th width="150px" [tdsRight]="true">Thao tác</th>
+                        <th width="150px" [tdsRight]="true" [align]="'center'">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,19 +58,61 @@
                                 (checkedChange)="onItemChecked(data.Id, $event)"></td>
                             <td [tdsLeft]="true" class="border-r">
                                 <tds-avatar class="rounded-lg" [shape]="'square'" [size]="44"
-                                    [tdsSrc]="data.ImageUrl?data.ImageUrl:(data.Images?data.Images[0].Url:'')"
+                                    [tdsSrc]="data.ImageUrl"
                                     [isAvatar]="false"></tds-avatar>
                             </td>
                             <td class="border-r" [tdsLeft]="true">{{ data.NameGet }}</td>
                             <td class="border-r">{{ data.UOMName }}</td>
-                            <td class="border-r">{{ data.DefaultCode }}</td>
-                            <td class="border-r" [align]="'right'">{{ data.PriceVariant | numberCustom  }} đ</td>
+                            <td class="border-r" [align]="'right'">{{ (data.Price | numberCustom) || 0 }} đ</td>
+                            <td class="border-r" [align]="'right'">
+                                <div class="flex flex-row items-center justify-end">
+                                    <span tds-tooltip tooltipTitle="{{ data.ShopQuantity | numberCustom }}" class="truncate mr-2">{{ data.ShopQuantity }}</span>
+                                    <div class="text-info-400 hover:bg-info-100 active:bg-info-100 rounded-md w-[26px] h-[26px]"
+                                        tds-popover [popoverVisible]="indClickQuantity == data.Id" popoverTrigger="click"
+                                        [popoverFooter]="footerQuantity" [popoverContent]="contentQuantity"
+                                        [popoverBackdrop]="true" popoverPlacement="bottom" [popoverAutoClose]="false"
+                                        tds-tooltip tooltipTitle="Chỉnh sửa số lượng"
+                                        (click)="openQuantityPopover(data)">
+                                        <span class="flex items-center justify-center">
+                                            <i class="tdsi-edit-1-line text-base"></i>
+                                        </span>
+                                    </div>
+                                    <!-- button thêm nhãn -->
+                                    <ng-template #contentQuantity>
+                                        <div class="w-[304px]">
+                                            <tds-form-field>
+                                                <tds-input-number [min]='0' [step]="1" [(ngModel)]="currentQuantity"
+                                                    (ngModelChange)="changeQuantity($event)"
+                                                    [ngModelOptions]="{standalone: true}">
+                                                </tds-input-number>
+                                            </tds-form-field>
+                                        </div>
+                                    </ng-template>
+
+                                    <ng-template #footerQuantity>
+                                        <div class="flex justify-end pt-2">
+                                            <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm"
+                                                (click)="closeQuantityPopover()">
+                                                <span class="flex items-center">
+                                                    <i class="tdsi-close-fill"></i>
+                                                </span>
+                                            </button>
+                                            <button tds-button-icon type="button"  size="sm" color="primary"
+                                                (click)="saveChangeQuantity(data)">
+                                                <span class="flex items-center">
+                                                    <i class="tdsi-tick-fill"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </td>
                             <td class="border-r" [align]="'center'">
                                 <span class="flex items-center justify-center">
                                     <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
                                 </span>
                             </td>
-                            <td [tdsRight]="true">
+                            <td [tdsRight]="true" class="text-center">
                                 <button tds-button-icon color="secondary" type="button" size="sm" tds-tooltip="Xóa" (click)="onDelete(data)">
                                     <span class="flex items-center">
                                         <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
@@ -80,6 +123,21 @@
                     </ng-template>
                 </tbody>
             </tds-table>
+        </div>
+
+        <div *ngIf="!configCart?.IsShopCart" class="p-4">
+            <tds-alert type="info" message="Không thể xem chi tiết giỏ hàng"
+                description='Vui lòng vào "Cấu hình giỏ hàng" và mở hiệu lực "Xem danh sách sản phẩm trong giỏ hàng"'
+                [footer]="footerTemplate" showIcon>
+            </tds-alert>
+
+            <ng-template #footerTemplate>
+                <div class="w-full">
+                    <button tds-button class="mr-2" size="sm" [routerLink]="'/configs/facebook-cart'">
+                        Cấu hình giỏ hàng
+                    </button>
+                </div>
+            </ng-template>
         </div>
     </div>
 </div>

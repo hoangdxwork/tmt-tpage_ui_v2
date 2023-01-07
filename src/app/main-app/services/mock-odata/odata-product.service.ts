@@ -1,3 +1,4 @@
+import { OdataProductShopCartDto } from './../../dto/configs/product/config-product-shopcart.dto';
 import { ODataProductDTOV2 } from './../../dto/product/odata-product.dto';
 import { ODataProductDTO } from './../../dto/configs/product/config-odata-product.dto';
 import { Injectable } from '@angular/core';
@@ -39,7 +40,7 @@ export class OdataProductService extends BaseSevice {
     return this.apiService.getData<ODataProductDTO>(api, null);
   }
 
-  getProductOnShopCart(params: string): Observable<TDSSafeAny>{
+  getProductOnShopCart(params: string): Observable<OdataProductShopCartDto>{
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetProductOnShopCart?${params}&$count=true`,
         method: CoreApiMethodType.get,
