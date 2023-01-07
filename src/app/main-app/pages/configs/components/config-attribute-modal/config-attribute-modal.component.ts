@@ -1,3 +1,4 @@
+import { AttributeLineDto, AttributeValueDto, AttributeDto } from './../../../../dto/configs/product/config-product-variant.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { Message } from '../../../../../lib/consts/message.const';
@@ -17,13 +18,13 @@ import { TDSModalRef } from 'tds-ui/modal';
   providers: [TDSDestroyService]
 })
 export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestroy {
-  @Input() defaultModel: Array<ConfigAttributeLine> = []; //TODO: model thuộc tính- giá trị
+  @Input() lstAttributeLine: Array<AttributeLineDto> = []; //TODO: model thuộc tính- giá trị
 
   _form!: FormGroup;
-  lstData: Array<ConfigAttributeValue> = [];
-  attributeList: Array<ConfigAttribute> = []; //TODO: list get toàn bộ thuộc tính
-  lstValue: Array<ConfigAttributeLine> = [];//TODO: danh sách value (data của select attribute)
-  dataModel: Array<ConfigAttributeLine> = [];
+  lstData: Array<AttributeValueDto> = [];
+  attributeList: Array<AttributeDto> = []; //TODO: list get toàn bộ thuộc tính
+  lstValue: Array<AttributeLineDto> = [];//TODO: danh sách value (data của select attribute)
+  dataModel: Array<AttributeLineDto> = [];
 
   isLoading = false;
 
@@ -71,7 +72,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
           }
         });
 
-        this.dataModel = [...this.defaultModel];
+        this.dataModel = [...this.lstAttributeLine];
         
         //TODO: lấy danh sách select value cho các dòng attribute
         this.lstValue = this.dataModel.map((data) => {
@@ -97,7 +98,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
       return;
     }
     
-    let lstSelectAttr = this._form.controls.Attributes.value as Array<ConfigAttribute> || [];
+    let lstSelectAttr = this._form.controls.Attributes.value as Array<AttributeDto> || [];
 
     if (lstSelectAttr.length == 0) {
       this.message.error('Vui lòng chọn thuộc tính');
@@ -142,7 +143,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
     this.isLoading = false;
   }
 
-  onSelectValues(data: Array<ConfigAttributeValue>, AttributeId: number) {
+  onSelectValues(data: Array<AttributeValueDto>, AttributeId: number) {
     // TODO: gắn value cho attribute
     this.dataModel.map((model) => {
       if (model.AttributeId == AttributeId) {
@@ -169,7 +170,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   }
 
   onCancel() {
-    this.modal.destroy(this.defaultModel);
+    this.modal.destroy(this.lstAttributeLine);
   }
 
   onSave() {

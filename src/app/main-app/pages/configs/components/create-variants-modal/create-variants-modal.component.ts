@@ -1,14 +1,14 @@
+import { ProductTemplateDto } from './../../../../dto/configs/product/config-product-default-v2.dto';
+import { AttributeLineDto, ProductVariantDto, AttributeValueDto } from './../../../../dto/configs/product/config-product-variant.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { Subject, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSSafeAny, TDSHelperString, TDSHelperArray } from 'tds-ui/shared/utility';
 import { ProductTemplateService } from './../../../../services/product-template.service';
-import { ConfigProductVariant, ConfigAttributeValue, ConfigSuggestVariants } from './../../../../dto/configs/product/config-product-default.dto';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ConfigAttributeLine } from '../../../../dto/configs/product/config-product-default.dto';
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CreateVariantsHandler } from './create-variants.handler';
 
 @Component({
@@ -20,13 +20,13 @@ import { CreateVariantsHandler } from './create-variants.handler';
 export class CreateVariantsModalComponent implements OnInit {
 
   @Input() listType!: TDSSafeAny[];
-  @Input() attributeLines!: ConfigAttributeLine[];
-  @Input() defaultModel!: TDSSafeAny;
-  @Input() suggestModel!: ConfigSuggestVariants;
-  @Input() editModel!: ConfigProductVariant;
+  @Input() lstAttributeLine!: AttributeLineDto[];
+  @Input() lstProductDefault!: TDSSafeAny;
+  @Input() suggestModel!: ProductTemplateDto;
+  @Input() lstProductVariant!: ProductVariantDto;
 
   _form!: FormGroup;
-  attributeModel: ConfigAttributeLine[] = [];
+  attributeModel: AttributeLineDto[] = [];
   isEdit = false;
   isRootVariant = false;
   isLoading = false;
@@ -57,10 +57,10 @@ export class CreateVariantsModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._form.controls["ImageUrl"].setValue(this.editModel?.ImageUrl);
+    this._form.controls["ImageUrl"].setValue(this.lstProductVariant?.ImageUrl);
 
-    this.attributeLines.forEach((item) => {
-      let editValues = this.editModel?.AttributeValues.filter(f => f.AttributeId == item.AttributeId);
+    this.lstAttributeLine.forEach((item) => {
+      let editValues = this.lstProductVariant?.AttributeValues.filter(f => f.AttributeId == item.AttributeId);
       this.attributeModel.push({
         AttributeId: item.AttributeId,
         Attribute: item.Attribute,
@@ -68,7 +68,7 @@ export class CreateVariantsModalComponent implements OnInit {
       })
     });
 
-    this._form.patchValue(this.editModel ? this.editModel : this.defaultModel);
+    this._form.patchValue(this.lstProductVariant ? this.lstProductVariant : this.lstProductVariant);
     this.getCondition();
     this.cdRef.markForCheck();
   }
@@ -91,8 +91,8 @@ export class CreateVariantsModalComponent implements OnInit {
   }
 
   getCondition(){
-    if(this.editModel){
-      if(TDSHelperArray.isArray(this.editModel.AttributeValues) && TDSHelperArray.hasListValue(this.editModel.AttributeValues)){
+    if(this.lstProductVariant){
+      if(TDSHelperArray.isArray(this.lstProductVariant.AttributeValues) && TDSHelperArray.hasListValue(this.lstProductVariant.AttributeValues)){
         this.isRootVariant = false;
         this.isEdit = true;
       }else{
@@ -112,10 +112,10 @@ export class CreateVariantsModalComponent implements OnInit {
     this._form.controls.Image.setValue(base64);
   }
 
-  onChangeAttribute(data: ConfigAttributeValue, attributeId: number) {
+  onChangeAttribute(data: AttributeValueDto, attributeId: number) {
     this.attributeModel.map((item) => {
       if (item.AttributeId == attributeId) {
-        item.Values = [data] as ConfigAttributeValue[];
+        item.Values = [data] as AttributeValueDto[];
       }
     }
     )
@@ -133,9 +133,9 @@ export class CreateVariantsModalComponent implements OnInit {
     return res;
   }
 
-  prepareModel(data: ConfigProductVariant) {
+  prepareModel(data: ProductVariantDto) {
     data = CreateVariantsHandler.prepareModel(data, this._form.value);
-    data.AttributeValues = TDSHelperArray.hasListValue(data.AttributeValues) ? data.AttributeValues : this.editModel?.AttributeValues;
+    data.AttributeValues = TDSHelperArray.hasListValue(data.AttributeValues) ? data.AttributeValues : this.lstProductVariant?.AttributeValues;
     return data;
   }
 
@@ -145,9 +145,9 @@ export class CreateVariantsModalComponent implements OnInit {
         this.suggestModel.AttributeLines = [...this.attributeModel];
       }
 
-      if (this.editModel) {
+      if (this.lstProductVariant) {
         this.message.success('Chỉnh sửa biến thể thành công');
-        this.modal.destroy(this.prepareModel(this.editModel));
+        this.modal.destroy(this.prepareModel(this.lstProductVariant));
       } else {
         this.isLoading = true;
 

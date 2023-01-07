@@ -189,8 +189,8 @@
                 </tds-error>
               </tds-form-field>
 
-              <tds-label>Đơn vị mua<span class="text-error-400">*</span> :</tds-label>
-              <tds-form-field class="w-full col-span-2">
+              <tds-label *ngIf="!saleConfig?.SaleSetting || saleConfig.SaleSetting?.GroupUOM == 1">Đơn vị mua<span class="text-error-400">*</span> :</tds-label>
+              <tds-form-field *ngIf="!saleConfig?.SaleSetting || saleConfig.SaleSetting?.GroupUOM == 1" class="w-full col-span-2">
                 <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị' disabledField="isActive"
                   formControlName="UOMPO" [valuePrimitive]="false" [data]="UOMPOList" [allowClear]="false" [required]="true"
                   [optionOverflowSize]="5">
@@ -476,7 +476,7 @@
 
           <div class="flex flex-col gap-y-8 justify-center items-center" *ngIf="lstVariants.length > 0; else tableAttribute">
             <div class="w-full">
-              <tds-table #variantsTable [widthConfig]="['6%','34%','20%','20%','20%']" [listData]="lstVariants" [showPagination]="false">
+              <tds-table #variantsTable [listData]="lstVariants" [showPagination]="false">
                 <thead>
                   <tr>
                     <th width="6%">STT</th>
@@ -485,7 +485,7 @@
                     <th width="20%">Giá</th>
                     <th width="20%">Số lượng</th>
                     <th width="15%">Hoạt động</th>
-                    <th width="15%">Thao tác</th>
+                    <th width="15%" [align]="'center'">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -522,8 +522,8 @@
                       <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
                     </td>
                     <td>
-                      <div class="flex flex-row items-center gap-x-1">
-                        <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
+                      <div class="flex flex-row items-center justify-center w-full gap-x-1">
+                        <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2" *ngIf="id"
                           (click)="showEditVariantsModal(data)">
                           <span class="flex items-center">
                             <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>

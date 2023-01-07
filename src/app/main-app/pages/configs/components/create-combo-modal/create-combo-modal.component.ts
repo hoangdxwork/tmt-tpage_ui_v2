@@ -1,4 +1,4 @@
-import { ComboProductDTO } from './../../../../dto/product/product-combo.dto';
+import { ProductComboDto } from './../../../../dto/product/product-combo.dto';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { THelperDataRequest } from './../../../../../lib/services/helper-data.service';
 import { FilterObjDTO } from './../../../../services/mock-odata/odata-product.service';
@@ -19,7 +19,7 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class CreateComboModalComponent implements OnInit {
   
-  @Input() data!: ComboProductDTO;
+  @Input() data!: ProductComboDto;
   @Output() getProductCombo$ = new EventEmitter<any>();
 
   _form!: FormGroup;

@@ -1,4 +1,4 @@
-export interface ConfigUOMTypeDTO {
+export interface ProductUOMTypeDto {
     Id: number;
     Name: string;
     NameNoSign: string;
@@ -12,13 +12,13 @@ export interface ConfigUOMTypeDTO {
     Note?: any;
 }
 
-export interface OdataUOMTypeDTO {
+export interface OdataUOMTypeDto {
     "@odata.context": string;
     "@odata.count": number;
-    value: ConfigUOMTypeDTO[];
+    value: ProductUOMTypeDto[];
 }
 
-export interface ConfigOriginCountryDTO {
+export interface OriginCountryDto {
     Id: number;
     Name: string;
     Code: string;
@@ -28,8 +28,8 @@ export interface ConfigOriginCountryDTO {
     LastUpdated?: any;
 }
 
-export interface OdataOriginCountryDTO {
+export interface OdataOriginCountryDto {
     "@odata.context": string;
     "@odata.count": number;
-    value: ConfigOriginCountryDTO[];
+    value: OriginCountryDto[];
 }

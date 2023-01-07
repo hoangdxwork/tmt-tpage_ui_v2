@@ -1,3 +1,5 @@
+import { ProductTemplateDto } from './../../../../dto/configs/product/config-product-default-v2.dto';
+import { AttributeLineDto, ProductVariantDto } from './../../../../dto/configs/product/config-product-variant.dto';
 import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
@@ -37,12 +39,12 @@ import { ProductTemplateFacade } from '@app/services/facades/product-template.fa
 export class DrawerAddProductComponent implements OnInit {
   @Input() lstOrderTags!: string[];
   _form!: FormGroup;
-  defaultGet!: ProductTemplateDTO;
+  defaultGet!: ProductTemplateDto;
 
   lstCategory!: Array<ProductCategoryDTO>;
   lstUOMCategory!: Array<ProductUOMDTO>;
-  lstAttributes: Array<ConfigAttributeLine> = [];
-  lstVariants: Array<ConfigProductVariant> = [];
+  lstAttributeLine: Array<AttributeLineDto> = [];
+  lstProductVariant: Array<ProductVariantDto> = [];
   productTypeList: Array<TDSSafeAny> = [];
   hasVariants: boolean = false;
   cacheObject!: KeyCacheIndexDBDTO;
@@ -190,8 +192,8 @@ export class DrawerAddProductComponent implements OnInit {
   }
 
   prepareModel() {
-    const formModel = this._form.value as ProductTemplateDTO;
-    let ProductVariants = [...this.lstVariants];
+    const formModel = this._form.value as ProductTemplateDto;
+    let ProductVariants = [...this.lstProductVariant];
     ProductVariants.map(x => {
       x.OrderTag = (TDSHelperArray.isArray(x.OrderTag) && TDSHelperArray.hasListValue(x.OrderTag)) ? x.OrderTag.join(',') : x.OrderTag
     });
@@ -269,7 +271,7 @@ export class DrawerAddProductComponent implements OnInit {
 
             // TODO: gọi cập nhật tồn kho
             let id = data.productTmpl.Id;
-            let mapping = this.lstVariants?.map(v => v.QtyAvailable) as any[];
+            let mapping = this.lstProductVariant?.map(v => v.QtyAvailable) as any[];
             let exist = model.InitInventory && Number(model.InitInventory) > 0 && this.checkMapping(mapping) && mapping && mapping.length > 0;
             if(exist) {
               mapping[0] = model.InitInventory;
@@ -389,22 +391,22 @@ export class DrawerAddProductComponent implements OnInit {
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          defaultModel: this.lstAttributes
+          lstAttributeLine: this.lstAttributeLine
         }
       });
 
-      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: Array<ConfigAttributeLine>) => {
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: Array<AttributeLineDto>) => {
         if (TDSHelperObject.hasValue(result)) {
           this.isLoading = true;
-          this.lstAttributes = [...result];
+          this.lstAttributeLine = [...result];
 
-          let model = this.prepareModel() as ConfigProductDefaultDTO;
-          let suggestModel = AddProductHandler.prepareSuggestModel(model);
-          suggestModel.AttributeLines = [...result];
+          let model = this.prepareModel() as ProductTemplateDto;
+          // let suggestModel = AddProductHandler.prepareSuggestModel(model);
+          model.AttributeLines = [...result];
 
-          this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe({
+          this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
             next:(res) => {
-              this.lstVariants = [...res.value];
+              this.lstProductVariant = [...res.value];
 
               this.isLoading = false;
               this.cdRef.detectChanges();
@@ -422,12 +424,12 @@ export class DrawerAddProductComponent implements OnInit {
     }
   }
 
-  showEditVariantsModal(data: ConfigProductVariant) {
+  showEditVariantsModal(data: ProductVariantDto) {
     let name = this._form.controls["Name"].value;
 
     if(name) {
-      let model = this.prepareModel() as ConfigProductDefaultDTO;
-      let suggestModel = AddProductHandler.prepareSuggestModel(model);
+      let model = this.prepareModel() as ProductTemplateDto;
+      // let suggestModel = AddProductHandler.prepareSuggestModel(model);
 
       const modal = this.modal.create({
         title: 'Sửa biến thể sản phẩm',
@@ -436,17 +438,17 @@ export class DrawerAddProductComponent implements OnInit {
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           listType: this.productTypeList,
-          attributeLines: this.lstAttributes,//TODO: danh sách thuộc tính-giá trị đã được chọn
-          suggestModel: suggestModel, //TODO: model param dùng để gọi API tạo biến thể
-          editModel: data //TODO: model variants được chọn để chỉnh sửa
+          lstAttributeLine: this.lstAttributeLine,//TODO: danh sách thuộc tính-giá trị đã được chọn
+          lstProductDefault: model, //TODO: model param dùng để gọi API tạo biến thể
+          lstProductVariant: data //TODO: model variants được chọn để chỉnh sửa
         }
       });
 
-      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ConfigProductVariant) => {
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductVariantDto) => {
         if (TDSHelperObject.hasValue(result)) {
-          this.lstVariants.map((item, index) => {
+          this.lstProductVariant.map((item, index) => {
             if (item.AttributeValues[0]?.Id == result.AttributeValues[0]?.Id) {
-              this.lstVariants[index] = {...result};
+              this.lstProductVariant[index] = {...result};
             }
           });
         }
@@ -456,10 +458,10 @@ export class DrawerAddProductComponent implements OnInit {
     }
   }
 
-  removeVariants(data: ConfigProductVariant) {
-    if (this.lstVariants.length > 1) {
-      let variants = this.lstVariants.filter(f => f.NameGet != data.NameGet || f.Id != data.Id);
-      this.lstVariants = [...variants];
+  removeVariants(data: ProductVariantDto) {
+    if (this.lstProductVariant.length > 1) {
+      let variants = this.lstProductVariant.filter(f => f.NameGet != data.NameGet || f.Id != data.Id);
+      this.lstProductVariant = [...variants];
     } else {
       this.message.error('Sản phẩm phải tồn tại ít nhất một biến thể');
     }
@@ -483,17 +485,17 @@ export class DrawerAddProductComponent implements OnInit {
   changeTags(event:any,i:number){
     let strs = [...this.checkInputMatch(event)];
 
-    this.lstVariants[i].OrderTag = strs.length > 0 ? [...strs] : null;
-    this.lstVariants[i] = this.lstVariants[i];
-    this.lstVariants = [...this.lstVariants];
+    this.lstProductVariant[i].OrderTag = strs.length > 0 ? [...strs] : null;
+    this.lstProductVariant[i] = this.lstProductVariant[i];
+    this.lstProductVariant = [...this.lstProductVariant];
 
     // this.lstVariants[i].Tags = TDSHelperArray.hasListValue(event) ? event.join(',') : null;
 
-    this.lstCheckOrderTags = this.getOrderTagsVariants(this.lstVariants);
+    this.lstCheckOrderTags = this.getOrderTagsVariants(this.lstProductVariant);
   }
 
   checkOrderTags() {
-    let lstOrderTagsVariants: string[] = this.getOrderTagsVariants(this.lstVariants);
+    let lstOrderTagsVariants: string[] = this.getOrderTagsVariants(this.lstProductVariant);
     let exist: string[] = [];
 
     if(!TDSHelperArray.hasListValue(this.lstOrderTags)) {
@@ -513,7 +515,7 @@ export class DrawerAddProductComponent implements OnInit {
     return [...exist];
   }
 
-  getOrderTagsVariants(data: ConfigProductVariant[]) {
+  getOrderTagsVariants(data: ProductVariantDto[]) {
     let tagsVariants: string[] = [];
 
     let dataTags = data.filter(x => x.OrderTag);
@@ -550,15 +552,15 @@ export class DrawerAddProductComponent implements OnInit {
   }
 
   getUrl(event: string, index: number) {
-    this.lstVariants[index].ImageUrl = event;
+    this.lstProductVariant[index].ImageUrl = event;
   }
 
   getBase64(event: string, index: number) {
-    this.lstVariants[index].Image = event;
+    this.lstProductVariant[index].Image = event;
   }
 
   onRemoveImage(event: any, index: number) {
-    this.lstVariants[index].ImageUrl = '';
-    delete this.lstVariants[index].Image;
+    this.lstProductVariant[index].ImageUrl = '';
+    delete this.lstProductVariant[index].Image;
   }
 }
