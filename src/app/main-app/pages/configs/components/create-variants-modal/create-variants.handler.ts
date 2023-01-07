@@ -1,5 +1,5 @@
+import { ProductVariantDto } from './../../../../dto/configs/product/config-product-variant.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { ConfigProductVariant, ConfigAttributeValue } from './../../../../dto/configs/product/config-product-default.dto';
 import { Injectable } from "@angular/core";
 
 @Injectable({
@@ -7,7 +7,7 @@ import { Injectable } from "@angular/core";
 })
 export abstract class CreateVariantsHandler {
 
-   static prepareModel(dataModel: ConfigProductVariant, formModel: TDSSafeAny) {
+   static prepareModel(dataModel: ProductVariantDto, formModel: TDSSafeAny) {
       dataModel = {...dataModel,...formModel};
       return dataModel;
    }

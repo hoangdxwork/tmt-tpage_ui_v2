@@ -1,3 +1,8 @@
+import { SaleSettingConfigDto_V2 } from './../../../dto/setting/sale-setting-config.dto';
+import { UserInitDTO } from 'src/app/lib/dto';
+import { TAuthService } from 'src/app/lib';
+import { ProductTemplateDto, ProductCategoryDto, ProductUOMPODto, ProductUOMDto, ProductUOMLineDto } from './../../../dto/configs/product/config-product-default-v2.dto';
+import { ProductVariantDto, AttributeLineDto } from './../../../dto/configs/product/config-product-variant.dto';
 import { CompanyCurrentDTO } from './../../../dto/configs/company-current.dto';
 import { ProductService } from '@app/services/product.service';
 import { SharedService } from './../../../services/shared.service';
@@ -7,7 +12,7 @@ import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb
 import { UpdateInitInventoryComponent } from './../components/update-init-inventory/update-init-inventory.component';
 import { StockChangeProductQtyDTO } from './../../../dto/product/stock-change-product-qty.dto';
 import { StockChangeProductQtyService } from './../../../services/stock-change-product-qty.service';
-import { ComboProductDTO } from './../../../dto/product/product-combo.dto';
+import { ProductComboDto } from './../../../dto/product/product-combo.dto';
 import { CreateComboModalComponent } from './../components/create-combo-modal/create-combo-modal.component';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TpageAddCategoryComponent } from '../../../shared/tpage-add-category/tpage-add-category.component';
@@ -15,9 +20,7 @@ import { ProductCategoryService } from '../../../services/product-category.servi
 import { WallPicturesDTO } from '../../../dto/attachment/wall-pictures.dto';
 import { Message } from '../../../../lib/consts/message.const';
 import { CreateVariantsModalComponent } from '../components/create-variants-modal/create-variants-modal.component';
-import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants, UOMLine } from '../../../dto/configs/product/config-product-default.dto';
-import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from '../../../dto/configs/product/config-UOM-type.dto';
-import { ConfigProductVariant } from '../../../dto/configs/product/config-product-default.dto';
+import { ProductUOMTypeDto, OriginCountryDto } from '../../../dto/configs/product/config-UOM-type.dto';
 import { ConfigAddAttributeProductModalComponent } from '../components/config-attribute-modal/config-attribute-modal.component';
 import { ProductTemplateUOMLineService } from '../../../services/product-template-uom-line.service';
 import { ProductTemplateService } from '../../../services/product-template.service';
@@ -26,7 +29,6 @@ import { CreateUOMModalComponent } from '../components/create-UOM-modal/create-U
 import { takeUntil, finalize } from 'rxjs/operators';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
-import { ConfigProductDefaultDTO } from 'src/app/main-app/dto/configs/product/config-product-default.dto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
@@ -44,24 +46,25 @@ import { TDSConfigService } from 'tds-ui/core/config';
   providers: [TDSDestroyService]
 })
 export class ConfigAddProductComponent implements OnInit {
-  //#region Declare
+  
   _form!: FormGroup;
   productTypeList: Array<TDSSafeAny> = [];
-  categoryList: Array<ConfigCateg> = [];
-  UOMPOList: Array<ConfigUOMPO> = [];
-  UOMList: Array<ConfigUOM> = [];
+  categoryList: Array<ProductCategoryDto> = [];
+  UOMPOList: Array<ProductUOMPODto> = [];
+  UOMList: Array<ProductUOMDto> = [];
   POSCategoryList: Array<TDSSafeAny> = [];
   trackingList: Array<TDSSafeAny> = [];
-  producerList: Array<ConfigUOMTypeDTO> = [];
-  importerList: Array<ConfigUOMTypeDTO> = [];
-  distributorList: Array<ConfigUOMTypeDTO> = [];
-  originCountryList: Array<ConfigOriginCountryDTO> = [];
-  lstAttributes: Array<ConfigAttributeLine> = [];
-  lstUOM: Array<UOMLine> = [];
-  lstVariants: Array<ConfigProductVariant> = [];
-  lstProductCombo: Array<ComboProductDTO> = [];
+  producerList: Array<ProductUOMTypeDto> = [];
+  importerList: Array<ProductUOMTypeDto> = [];
+  distributorList: Array<ProductUOMTypeDto> = [];
+  originCountryList: Array<OriginCountryDto> = [];
+  lstAttributeLine: Array<AttributeLineDto> = [];
+  lstUOM: Array<ProductUOMLineDto> = [];
+  lstVariants: Array<ProductVariantDto> = [];
+  lstProductCombo: Array<ProductComboDto> = [];
   stockChangeProductList: Array<StockChangeProductQtyDTO> = [];
-  dataModel!: ConfigProductDefaultDTO;
+  saleConfig!: SaleSettingConfigDto_V2;
+  dataModel!: ProductTemplateDto;
   initInventory:number = 0;
   isLoading = false;
   isLoadingVariant = false;
@@ -91,9 +94,7 @@ export class ConfigAddProductComponent implements OnInit {
     }
     return value;
   };
-  //#endregion Declare
-
-  //#region Initialization
+ 
   constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
@@ -130,6 +131,7 @@ export class ConfigAddProductComponent implements OnInit {
       this.loadDefault();
     }
 
+    this.loadSaleConfig();
     this.loadProductTypeList();
     this.loadProductCategory();
     this.loadProductUOM();
@@ -138,7 +140,6 @@ export class ConfigAddProductComponent implements OnInit {
     this.loadTrackingList();
     this.loadUOMAddType();
     this.loadOriginCountry();
-
     this.onEventEmitter();
     this.loadCurrentCompany();
 
@@ -162,6 +163,18 @@ export class ConfigAddProductComponent implements OnInit {
       },
       error: (err: any) => {
         this.message.error(err?.error?.message);
+      }
+    })
+  }
+
+  loadSaleConfig() {
+    this.sharedService.setSaleConfig();
+    this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.saleConfig = {...res} as SaleSettingConfigDto_V2;
+      },
+      error:(err) => {
+        this.message.error(err?.error?.message || 'Không thể tải cấu hình');
       }
     })
   }
@@ -374,7 +387,7 @@ export class ConfigAddProductComponent implements OnInit {
     this.productTemplateService.getProductAttributeLine(id).pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res) => {
-          this.lstAttributes = [...res.value];
+          this.lstAttributeLine = [...res.value];
         },
         error: error => {
           this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -396,10 +409,8 @@ export class ConfigAddProductComponent implements OnInit {
       }
     )
   }
-  //#endregion Api-request
-
-  //#region Handle
-  formatProperty(data: ConfigProductDefaultDTO) {
+  
+  formatProperty(data: ProductTemplateDto) {
     //TODO: xử lý array form
     if (TDSHelperArray.hasListValue(data.Images)) {
       data.Images.forEach((x: WallPicturesDTO) => {
@@ -408,7 +419,7 @@ export class ConfigAddProductComponent implements OnInit {
     }
 
     if (TDSHelperArray.hasListValue(data.ProductVariants)) {
-      data.ProductVariants.forEach((x: ConfigProductVariant) => {
+      data.ProductVariants.forEach((x: ProductVariantDto) => {
         this.addProductVariants(x);
       });
     }
@@ -471,7 +482,7 @@ export class ConfigAddProductComponent implements OnInit {
     }
   }
 
-  initProductVariants(data: ConfigProductVariant | null) {
+  initProductVariants(data: ProductVariantDto | null) {
     if (data != null) {
       return this.fb.group(data)
     } else {
@@ -484,12 +495,12 @@ export class ConfigAddProductComponent implements OnInit {
     control.push(this.initImages(data));
   }
 
-  addProductVariants(data: ConfigProductVariant) {
+  addProductVariants(data: ProductVariantDto) {
     let control = <FormArray>this._form.controls['ProductVariants'];
     control.push(this.initProductVariants(data));
   }
 
-  removeVariants(data: ConfigProductVariant) {
+  removeVariants(data: ProductVariantDto) {
     if (this.lstVariants.length > 1) {
       let variants = this.lstVariants.filter(f => f.NameGet != data.NameGet || f.Id != data.Id);
       this.lstVariants = [...variants];
@@ -553,7 +564,7 @@ export class ConfigAddProductComponent implements OnInit {
   }
 
   prepareModel() {
-    return AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributes, this.lstVariants, this.lstProductCombo, this.lstUOM);
+    return AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributeLine, this.lstVariants, this.lstProductCombo, this.lstUOM);
   }
 
   backToMain() {
@@ -615,18 +626,17 @@ export class ConfigAddProductComponent implements OnInit {
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          defaultModel: this.lstAttributes
+          lstAttributeLine: this.lstAttributeLine
         }
       });
 
-      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: Array<ConfigAttributeLine>) => {
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: Array<AttributeLineDto>) => {
         if (TDSHelperArray.hasListValue(result)) {
-          this.lstAttributes = [...result];
+          this.lstAttributeLine = [...result];
           let model = this.prepareModel();
-          let suggestModel = AddProductHandler.prepareSuggestModel(model);
-          suggestModel.AttributeLines = [...result];
+          model.AttributeLines = [...result];
 
-          this.productTemplateService.suggestVariants({ model: suggestModel }).pipe(takeUntil(this.destroy$)).subscribe({
+          this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
               next: (res) => {
                 this.lstVariants = [...res.value];
                 this.lstVariants.map(attr => {
@@ -648,11 +658,10 @@ export class ConfigAddProductComponent implements OnInit {
     }
   }
 
-  showEditVariantsModal(data: ConfigProductVariant) {
+  showEditVariantsModal(data: ProductVariantDto) {
     let name = this._form.controls["Name"].value;
     if (name) {
       let model = this.prepareModel();
-      let suggestModel = AddProductHandler.prepareSuggestModel(model);
 
       const modal = this.modalService.create({
         title: 'Sửa biến thể sản phẩm',
@@ -661,13 +670,13 @@ export class ConfigAddProductComponent implements OnInit {
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           listType: this.productTypeList,
-          attributeLines: this.lstAttributes,//TODO: danh sách thuộc tính-giá trị đã được chọn
-          suggestModel: suggestModel, //TODO: model param dùng để gọi API tạo biến thể
-          editModel: data //TODO: model variants được chọn để chỉnh sửa
+          lstAttributeLine: this.lstAttributeLine,//TODO: danh sách thuộc tính-giá trị đã được chọn
+          lstProductDefault: model, //TODO: model param dùng để gọi API tạo biến thể
+          lstProductVariant: data //TODO: model variants được chọn để chỉnh sửa
         }
       });
 
-      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ConfigProductVariant) => {
+      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductVariantDto) => {
         if (TDSHelperObject.hasValue(result)) {
           this.lstVariants.map((item) => {
             if (item.Id == result.Id) {
@@ -681,7 +690,7 @@ export class ConfigAddProductComponent implements OnInit {
     }
   }
 
-  showCreateComboModal(data?: ComboProductDTO, index?:number){
+  showCreateComboModal(data?: ProductComboDto, index?:number) {
     const modal = this.modalService.create({
       title: data ? 'Sửa thành phần' : 'Thêm thành phần',
       content: CreateComboModalComponent,
@@ -709,7 +718,7 @@ export class ConfigAddProductComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ConfigCateg) => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ProductCategoryDto) => {
       if(res) {
         this.categoryList = [...[res],...this.categoryList];
       }
@@ -727,7 +736,7 @@ export class ConfigAddProductComponent implements OnInit {
       }
     });
 
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ConfigUOMTypeDTO) => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ProductUOMTypeDto) => {
       if(res) {
         this.producerList = [...[res],...this.producerList];
       }
@@ -745,7 +754,7 @@ export class ConfigAddProductComponent implements OnInit {
       }
     });
 
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ConfigUOMTypeDTO) => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ProductUOMTypeDto) => {
       if(res) {
         this.importerList = [...[res],...this.importerList];
       }
@@ -763,7 +772,7 @@ export class ConfigAddProductComponent implements OnInit {
       }
     });
 
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ConfigUOMTypeDTO) => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ProductUOMTypeDto) => {
       if(res) {
         this.distributorList = [...[res],...this.distributorList];
       }
@@ -778,7 +787,7 @@ export class ConfigAddProductComponent implements OnInit {
       viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ConfigOriginCountryDTO) => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: OriginCountryDto) => {
       if(res) {
         this.originCountryList = [...[res],...this.originCountryList];
       }
@@ -805,7 +814,7 @@ export class ConfigAddProductComponent implements OnInit {
     });
   }
 
-  editUOMModal(data: UOMLine, index: number){
+  editUOMModal(data: ProductUOMLineDto, index: number){
     const modal = this.modalService.create({
       title: 'Sửa đơn vị tính',
       content: CreateUnitComponent,

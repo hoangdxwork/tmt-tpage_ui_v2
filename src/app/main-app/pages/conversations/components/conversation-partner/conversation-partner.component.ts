@@ -288,6 +288,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.conversationService.getNotes(page_id, psid).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.noteData.items = [...this.noteData.items, ...res?.Items];
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load ghi chú khách hàng đã xảy ra lỗi');

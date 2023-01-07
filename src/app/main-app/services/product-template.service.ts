@@ -1,4 +1,4 @@
-import { ODataComboProductTemplateDTO } from './../dto/product/product-combo.dto';
+import { ODataComboProductTemplateDto } from './../dto/product/product-combo.dto';
 import { ODataProductInventoryDTO } from './../dto/configs/product/config-odata-product.dto';
 import { Injectable, EventEmitter } from "@angular/core";
 import { Observable } from "rxjs";
@@ -139,7 +139,7 @@ export class ProductTemplateService extends BaseSevice {
       method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataComboProductTemplateDTO>(api, null);
+    return this.apiService.getData<ODataComboProductTemplateDto>(api, null);
   }
 
   getProductUOM():Observable<TDSSafeAny> {
