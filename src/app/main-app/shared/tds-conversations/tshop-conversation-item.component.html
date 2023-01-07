@@ -18,9 +18,9 @@
           </div>
 
           <!-- Tin nhắn văn bản -->
-          <div *ngIf="dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
-            <div class="text-left hidden" [innerHtml]="dataItem.Message | jsonPayload | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
-            <div showMore [isMessageItem]="true" [length]="640" [text]="dataItem.Message" [searchText]="searchText" class="text-left" ></div>
+          <div *ngIf="dataItem.MessageFormatted || dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
+            <div class="text-left hidden" [innerHtml]="(dataItem.MessageFormatted || dataItem.Message) | jsonPayload | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
+            <div showMore [isMessageItem]="true" [length]="640" [text]="dataItem.MessageFormatted || dataItem.Message" [searchText]="searchText" class="text-left" ></div>
           </div>
 
           <!-- Tin nhắn hình ảnh -->
@@ -224,12 +224,10 @@
                       <div class="flex flex-auto">
                           <!--Nội dung-->
                           <div *ngIf="dataItem.Message">
-                              <div *ngIf="dataItem.Type == 12 && (dataItem.Data | facebookDataCs)" class="name font-semibold pb-1">{{(dataItem.Data | facebookDataCs)?.from?.name}}</div>
                               <div *ngIf="dataItem.Type == 91 && (dataItem.Data | tshopDataCs)" class="name font-semibold pb-1">{{ (dataItem.Data | tshopDataCs).Actor?.Name }} </div>
-                              <div *ngIf="dataItem.Type == 1001 && (dataItem.Data | tiktokDataCs)" class="name font-semibold pb-1">{{ (dataItem.Data | tiktokDataCs)?.nickname }} </div>
 
-                            <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.Message"></div>
-                            <div class="hidden" [innerHtml]="dataItem.Message | bbcodeConvert | safeHtml" #contentMessage></div>
+                            <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.MessageFormatted || dataItem.Message"></div>
+                            <div class="hidden" [innerHtml]="dataItem.MessageFormatted || dataItem.Message | bbcodeConvert | safeHtml" #contentMessage></div>
                           </div>
                       </div>
                   </div>
@@ -267,7 +265,7 @@
             <div class="chat-acts flex flex-row items-center" style="position: relative;">
 
               <button class="link-act hover:underline" [disabled]="isReplyingComment"
-                  (click)="clickReply(dataItem.Message ? dataItem.Data?.can_remove : null)"> Phản hồi
+                  (click)="clickReply()"> Phản hồi
               </button>
 
               <span *ngIf="isReplyingComment" class="ml-1">
@@ -277,14 +275,14 @@
               <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
               <button class="link-act hover:underline" [disabled]="isLiking" [ngClass]="dataItem.Data?.user_likes ? 'text-secondary-1' : ''"
-                  (click)="addLike(dataItem.Message ? dataItem.Data?.can_like : null)">
+                  (click)="addLike()">
                   {{dataItem.Data?.user_likes ? 'Đã thích' : 'Thích'}}
               </button>
 
               <tds-spinner *ngIf="isLiking" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
               <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
-              <button class="link-act hover:underline" [disabled]="isHiding" (click)="hideComment(dataItem.Message ? dataItem.Data?.can_hide: null)">
+              <button class="link-act hover:underline" [disabled]="isHiding" (click)="hideComment()">
                 {{dataItem.Data?.is_hidden ? 'Hiện' : 'Ẩn'}}
               </button>
 
@@ -370,21 +368,12 @@
                           <div class="chat-body !m-0" tds-tooltip
                               tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}}/{{child.ChannelCreatedTime | date:'MM'}} {{child.ChannelCreatedTime | date:'HH:mm'}}">
                               <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
-                                  <div class="border-activety-comment" *ngIf="child.Message">
-                                        <div *ngIf="dataItem.Type == 12">
-                                            <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
-                                        </div>
-
+                                  <div class="border-activety-comment" *ngIf="child.MessageFormatted || child.Message">
                                         <div *ngIf="dataItem.Type == 91">
                                             <div class="name font-semibold pb-1" *ngIf="child.Data">{{ (child.Data | tshopDataCs).Actor?.Name }} </div>
                                         </div>
-
-                                        <div *ngIf="dataItem.Type == 1001">
-                                            <div class="name font-semibold pb-1" *ngIf="child.Data">{{ (child.Data | tiktokDataCs).nickname }} </div>
-                                        </div>
-
-                                      <div class="content-message font-regular" showMore [length]="300" [text]="child.Message"></div>
-                                      <div class="hidden" [innerHtml]="child.Message | bbcodeConvert | safeHtml" #contentMessageChild></div>
+                                      <div class="content-message font-regular" showMore [length]="300" [text]="child.MessageFormatted || child.Message"></div>
+                                      <div class="hidden" [innerHtml]="(child.MessageFormatted || child.Message) | bbcodeConvert | safeHtml" #contentMessageChild></div>
                                   </div>
                               </div>
                           </div>

@@ -137,7 +137,7 @@
 
                           <!-- nội dung bình luận -->
                           <div class="flex flex-row gap-x-3" style="white-space: pre-line; word-break: break-word;">
-                              <div #contentMessage showMore [length]="100" [text]="(item.Message | formatIconLike | bbcodeConvert )"></div>
+                              <div #contentMessage showMore [length]="100" [text]="((item.MessageFormatted || item.Message) | formatIconLike | bbcodeConvert )"></div>
                           </div>
 
                           <!-- hình ảnh đính kèm -->
@@ -430,7 +430,7 @@
 
                                   <!-- nội dung bình luận -->
                                   <div class="flex flex-row gap-x-3" style="white-space: pre-line; word-break: break-word;">
-                                      <div #contentMessage showMore [length]="100" [text]="(child.Message | formatIconLike | bbcodeConvert )"></div>
+                                      <div #contentMessage showMore [length]="100" [text]="((child.MessageFormatted || child.Message) | formatIconLike | bbcodeConvert )"></div>
                                   </div>
 
                                   <!-- hình ảnh đính kèm -->
