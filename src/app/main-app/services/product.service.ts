@@ -1,9 +1,12 @@
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { ProductDTO } from './../dto/product/product.dto';
 import { Injectable } from "@angular/core";
 import { Observable, ReplaySubject } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "./base.service";
 import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { SocketOnEventService } from './socket-io/socket-onevent.service';
+import { ProductInvertoryUpdatedDto, SoketInvertoryUpdatedDto } from '@app/dto/socket-io/inventory-updated.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +21,40 @@ export class ProductService extends BaseSevice {
   lstInventory: any;
   private readonly _inventorySubject$ = new ReplaySubject<any>();
 
-  constructor(private apiService: TCommonService) {
-    super(apiService)
+  constructor(private apiService: TCommonService,
+    private socketOnEventService: SocketOnEventService) {
+      super(apiService);
+      this.onEventSocket();
+  }
+
+  onEventSocket() {
+    this.socketOnEventService.onActionSocket().subscribe({
+      next: (res: any) => {
+        if(res && res.Action == ChatmoniSocketEventName.inventory_updated) {
+            let exist = this.lstInventory && Object.keys(this.lstInventory).length > 0;
+            if(exist) {
+
+                let existData = res?.Data?.data?.products?.length > 0;
+                if(existData) {
+                    res.Data.data.products?.map((x: ProductInvertoryUpdatedDto) =>  {
+                        let existItem = this.lstInventory[x.Id];
+
+                        if(existItem) {
+                            this.lstInventory[x.Id].QtyAvailable = this.lstInventory[x.Id].QtyAvailable + Number(x.Qty);
+                            this.lstInventory[x.Id].VirtualAvailable = this.lstInventory[x.Id].VirtualAvailable + Number(x.QtyVirtual);
+                        } else {
+                            this.lstInventory[x.Id] = {
+                                Id: x.Id,
+                                QtyAvailable: Number(x.Qty),
+                                VirtualAvailable: Number(x.QtyVirtual)
+                            };
+                        }
+                    })
+                }
+            }
+        }
+      }
+    })
   }
 
   getById(key: number): Observable<TDSSafeAny> {
@@ -36,7 +71,7 @@ export class ProductService extends BaseSevice {
   }
 
   setInventoryWarehouseId(warehouseId: number) {
-    if(this.lstInventory) {
+    if(this.lstInventory && Object.keys(this.lstInventory).length > 0) {
         this._inventorySubject$.next(this.lstInventory);
     } else {
         this.apiInventoryWarehouseId(warehouseId).subscribe({

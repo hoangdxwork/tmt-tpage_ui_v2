@@ -235,7 +235,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       next: (res: SocketEventSubjectDto) => {
         if(!res) return;
 
-        switch(res.EventName) {
+        switch(res?.EventName) {
             case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
               let fbCreated = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exit1 = res && fbCreated && fbCreated.Data?.Facebook_PostId == this.quickOrderModel?.Facebook_PostId

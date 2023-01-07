@@ -191,7 +191,7 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
       next: (res: SocketEventSubjectDto) => {
         if(!res) return;
 
-        switch(res.EventName) {
+        switch(res?.EventName) {
             // Cập nhật bình luận
             case ChatmoniSocketEventName.chatomniOnMessage:
                 let fbComment = {...res.Data?.Message} as MessageSocketioDto;

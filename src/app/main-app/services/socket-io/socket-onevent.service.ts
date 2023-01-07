@@ -7,7 +7,6 @@ import { map, Subject, mergeMap } from "rxjs";
 import { CRMTeamService } from "../crm-team.service";
 import { SocketService } from "./socket.service";
 import { ChatmoniSocketEventName } from "./soketio-event";
-import { SocketioOnUpdateDto } from '@app/dto/socket-io/chatomni-on-update.dto';
 import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-order.dto';
 import { TikTokLiveItemDataDto } from '@app/dto/conversation-all/chatomni/tikitok-live.dto';
 
@@ -32,12 +31,14 @@ export interface SocketEventSubjectDto {
 export class SocketOnEventService {
 
   private readonly socketEvent$ = new Subject<any>();
+  private readonly socketAction$ = new Subject<any>();
+
   public isRegisteredEvent: boolean = false;
 
   constructor(private crmTeamService: CRMTeamService,
     private socketService: SocketService) {
 
-    this.socketService.isConnectedSocket.subscribe({
+    this.socketService.isConnectedSocket$.subscribe({
       next: (res: any) => {
           if (res && !this.isRegisteredEvent) {
               this.initialize();
@@ -54,9 +55,9 @@ export class SocketOnEventService {
           let socketData = JSON.parse(res) as any;
           return socketData;
       }),
-      mergeMap((socketData: SocketioOnMessageDto) => {
+      mergeMap((socketData: any) => {
         let channelId = null;
-        switch (socketData.EventName) {
+        switch (socketData?.EventName) {
 
           case ChatmoniSocketEventName.chatomniOnUpdate:
             channelId = socketData.Data.ChannelId;
@@ -101,18 +102,22 @@ export class SocketOnEventService {
               || socketData.EventName == ChatmoniSocketEventName.onCreatedSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onUpdateSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order
-              || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout;
+              || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout
+              || socketData.action == ChatmoniSocketEventName.inventory_updated;
 
           if(existLive) existTeam = true;
           if (!existTeam) return;
 
-          switch (socketData.EventName) {
+          if(socketData.action == ChatmoniSocketEventName.inventory_updated) {
+              this.publishSocketAction(socketData);
+              return;
+          }
 
+          switch (socketData.EventName) {
             // TODO: thông báo tin nhắn, comment
             case ChatmoniSocketEventName.chatomniOnMessage:
-
                 let notificationMessage = this.prepareOnMessage(socketData, team);
-                this.pubSocketEvent(notificationMessage, socketData, team); //SocketioOnMessageDto
+                this.publishSocketEvent(notificationMessage, socketData, team); //SocketioOnMessageDto
             break;
 
             // TODO: cập nhật tin nhắn lỗi
@@ -122,50 +127,50 @@ export class SocketOnEventService {
                 if (status) {
                     notificationUpdate = this.prepareOnUpdateMessageError(socketData, team);
                 }
-                this.pubSocketEvent(notificationUpdate, socketData, team); //SocketioOnUpdateDto
+                this.publishSocketEvent(notificationUpdate, socketData, team); //SocketioOnUpdateDto
             break;
 
             // TODO: tạo đơn hàng bài viết
             case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
                 let notificationCreate = this.prepareOnCreatedOrder(socketData);
-                this.pubSocketEvent(notificationCreate, socketData, team); //OnSocketOnSaleOnline_OrderDto
+                this.publishSocketEvent(notificationCreate, socketData, team); //OnSocketOnSaleOnline_OrderDto
             break;
 
             // TODO: update đơn hàng bài viết
             case ChatmoniSocketEventName.onUpdateSaleOnline_Order:
                 let notificationOrder = this.prepareOnUpdateOrder(socketData);
-                this.pubSocketEvent(null, socketData, team); //OnSocketOnSaleOnline_OrderDto
+                this.publishSocketEvent(null, socketData, team); //OnSocketOnSaleOnline_OrderDto
             break;
 
             // TODO: delete đơn hàng bài viết
             case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
                 let notificationDelete = this.prepareDeleteOrder(socketData);
-                this.pubSocketEvent(notificationDelete, socketData, team); //OnSocketOnSaleOnline_OrderDto
+                this.publishSocketEvent(notificationDelete, socketData, team); //OnSocketOnSaleOnline_OrderDto
             break;
 
             // TODO: tạo hóa đơn bài viết
             case ChatmoniSocketEventName.livecampaign_CartCheckout:
-                this.pubSocketEvent(null, socketData, team); //OnSocketOnSaleOnline_OrderDto
+                this.publishSocketEvent(null, socketData, team); //OnSocketOnSaleOnline_OrderDto
             break;
 
             // TODO: user đang xem
             case ChatmoniSocketEventName.chatomniMarkseen:
-                this.pubSocketEvent(null, socketData, team); //SocketioOnMarkseenDto
+                this.publishSocketEvent(null, socketData, team); //SocketioOnMarkseenDto
               break;
 
               // Thông báo Số lượng sản phẩm chiến dịch chờ chốt
             case ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout:
-                this.pubSocketEvent(null, socketData, team); //SocketLiveCampaignPendingCheckoutDto
+                this.publishSocketEvent(null, socketData, team); //SocketLiveCampaignPendingCheckoutDto
               break;
 
             // Thông báo Số lượng sản phẩm chiến dịch có thểm mua
             case ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy:
-                this.pubSocketEvent(null, socketData, team); //SocketLiveCampaignAvailableToBuyDto
+                this.publishSocketEvent(null, socketData, team); //SocketLiveCampaignAvailableToBuyDto
               break;
 
             // Thông báo kết thúc live TShop
             case ChatmoniSocketEventName.chatomniPostLiveEnd:
-                this.pubSocketEvent(null, socketData, team); //SocketioChatomniPostLiveEndDto
+                this.publishSocketEvent(null, socketData, team); //SocketioChatomniPostLiveEndDto
               break;
           }
         },
@@ -175,12 +180,19 @@ export class SocketOnEventService {
       })
   }
 
-  pubSocketEvent(notification: SocketEventNotificationDto | any, socketData: any, team: CRMTeamDTO | any) {
+  publishSocketEvent(notification: SocketEventNotificationDto | any, socketData: any, team: CRMTeamDTO | any) {
     this.socketEvent$.next({
         Notification: notification,
         Data: socketData,
         Team: team,
         EventName: socketData.EventName
+    });
+  }
+
+  publishSocketAction(socketData: any) {
+    this.socketAction$.next({
+        Data: socketData,
+        Action: socketData.action
     });
   }
 
@@ -301,5 +313,9 @@ export class SocketOnEventService {
 
   public onEventSocket() {
     return this.socketEvent$.asObservable();
+  }
+
+  public onActionSocket() {
+    return this.socketAction$.asObservable();
   }
 }

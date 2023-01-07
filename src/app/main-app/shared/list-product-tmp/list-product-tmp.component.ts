@@ -111,7 +111,7 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
       next:(res: KeyCacheIndexDBDTO) => {
           this.indexDbStorage = [...res?.cacheDbStorage || []];
           this.loadDataTable();
-          
+
           this.isLoading = false;
           this.disabledReload = false;
         },
