@@ -184,7 +184,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onEventSocket(){
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        switch(res && res.EventName){
+        switch(res?.EventName) {
 
           case ChatmoniSocketEventName.chatomniOnMessage:
               let exist = res.Data && res.Data.Conversation && this.currentTeam?.ChannelId == res.Data.Conversation?.ChannelId;

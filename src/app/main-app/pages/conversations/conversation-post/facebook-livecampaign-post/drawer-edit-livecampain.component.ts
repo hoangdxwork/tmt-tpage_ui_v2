@@ -142,13 +142,13 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
       next: (res: SocketEventSubjectDto) => {
           if(!this.liveCampaignId) return;
 
-          switch(res && res.EventName) {
+          switch(res?.EventName) {
               // Số lượng sản phẩm chiến dịch chờ chốt
               case ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout:
 
                   let pCheckout = res.Data.Data as LiveCampaigntPendingCheckoutDto;
                   if(pCheckout && pCheckout.LiveCampaignId != this.liveCampaignId) break;
-                  
+
                   if(this.startIndex == 0) {
                     //sắp xếp lên đầu danh sách
                     this.arrangeChangedItem(pCheckout);
@@ -163,9 +163,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
                   this.lstDetail[iCheckout].QueueQuantity = pCheckout.Quantity;
                   this.lstDetail[iCheckout] = {...this.lstDetail[iCheckout]};
                   this.lstDetail = [...this.lstDetail];
-                  
+
                   this.destroyTimer();
-                  this.changeDetailTimer = setTimeout(() => { 
+                  this.changeDetailTimer = setTimeout(() => {
                     this.animateSocket = {};
                     this.cdRef.markForCheck();
                   }, 2000);
@@ -185,7 +185,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
                   } else {
                     this.lstWaitingItems.push(toBuy);
                   }
-                  
+
                   const iToBuy = this.lstDetail.findIndex(x => x.ProductId == toBuy.ProductId && x.UOMId == toBuy.ProductUOMId);
                   if(Number(iToBuy) < 0) break;
                   this.animateSocket[`${this.lstDetail[iToBuy].ProductId}_${this.lstDetail[iToBuy].UOMId}_usedQty`] = true;
@@ -195,7 +195,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
                   this.lstDetail = [...this.lstDetail];
 
                   this.destroyTimer();
-                  this.changeDetailTimer = setTimeout(() => { 
+                  this.changeDetailTimer = setTimeout(() => {
                     this.animateSocket = {};
                     this.cdRef.markForCheck();
                   }, 2000);
@@ -458,7 +458,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.liveCampaignService.updateDetails(id, items).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-          
+
           if(!res) {
             this.isLoading = false;
             return;
@@ -1037,7 +1037,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
   prepareDetailModel(data: LiveCampaignSimpleDetail) {
     let model = {} as ReportLiveCampaignDetailDTO;
-    
+
     model.Id = data.Id;
     model.Index = data.Index;
     model.Quantity = data.Quantity;

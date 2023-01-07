@@ -13,7 +13,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
 export class SocketService {
 
   @Output()
-  isConnectedSocket = new EventEmitter<boolean>();
+  isConnectedSocket$ = new EventEmitter<boolean>();
 
   socket!: Socket;
   retryNoti: number = 1;
@@ -49,7 +49,7 @@ export class SocketService {
 
     this.socket.on("connect", () => {
         console.log("Connected to socket.io server");
-        this.isConnectedSocket.emit(true);
+        this.isConnectedSocket$.emit(true);
     });
 
     this.socket.on("connect_error", (err) => {
