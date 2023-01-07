@@ -611,7 +611,9 @@ export class ConfigAddProductComponent implements OnInit {
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result){
-        this._form.controls["InitInventory"].setValue(result);
+        if (this.id) {
+          this.loadData(this.id);
+        }
       }
     });
   }
@@ -678,11 +680,11 @@ export class ConfigAddProductComponent implements OnInit {
 
       modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductVariantDto) => {
         if (TDSHelperObject.hasValue(result)) {
-          this.lstVariants.map((item) => {
-            if (item.Id == result.Id) {
-              item = result;
-            }
-          });
+          
+          let index = this.lstVariants.findIndex(x => x.Id == result.Id && x.UOMId == result.UOMId);
+          if(index > -1) {
+            this.lstVariants[index] = {...result};
+          }
         }
       });
     } else {

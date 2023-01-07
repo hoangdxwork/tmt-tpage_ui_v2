@@ -416,39 +416,39 @@ export class ModalProductTemplateComponent implements OnInit {
     }
   }
 
-  showEditVariantsModal(data: ProductVariantDto) {
-    let name = this._form.controls["Name"].value;
+  // showEditVariantsModal(data: ProductVariantDto) {
+  //   let name = this._form.controls["Name"].value;
 
-    if (name) {
-      let model = this.prepareModel() as ProductTemplateDto;
-      // let suggestModel = AddProductHandler.prepareSuggestModel(model);
+  //   if (name) {
+  //     let model = this.prepareModel() as ProductTemplateDto;
+  //     // let suggestModel = AddProductHandler.prepareSuggestModel(model);
 
-      const modal = this.modal.create({
-        title: 'Sửa biến thể sản phẩm',
-        content: CreateVariantsModalComponent,
-        size: "lg",
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          listType: this.productTypeList,
-          lstAttributeLine: this.lstAttributeLine,//TODO: danh sách thuộc tính-giá trị đã được chọn
-          lstProductDefault: model, //TODO: model param dùng để gọi API tạo biến thể
-          lstProductVariant: data //TODO: model variants được chọn để chỉnh sửa
-        }
-      });
+  //     const modal = this.modal.create({
+  //       title: 'Sửa biến thể sản phẩm',
+  //       content: CreateVariantsModalComponent,
+  //       size: "lg",
+  //       viewContainerRef: this.viewContainerRef,
+  //       componentParams: {
+  //         listType: this.productTypeList,
+  //         lstAttributeLine: this.lstAttributeLine,//TODO: danh sách thuộc tính-giá trị đã được chọn
+  //         lstProductDefault: model, //TODO: model param dùng để gọi API tạo biến thể
+  //         lstProductVariant: data //TODO: model variants được chọn để chỉnh sửa
+  //       }
+  //     });
 
-      modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductVariantDto) => {
-        if (TDSHelperObject.hasValue(result)) {
-          this.lstProductVariant.map((item, index) => {
-            if (item.AttributeValues[0]?.Id == result.AttributeValues[0]?.Id) {
-              this.lstProductVariant[index] = {...result};
-            }
-          });
-        }
-      });
-    } else {
-      this.message.error('Vui lòng nhập tên sản phẩm');
-    }
-  }
+  //     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: ProductVariantDto) => {
+  //       if (TDSHelperObject.hasValue(result)) {
+  //         this.lstProductVariant.map((item, index) => {
+  //           if (item.AttributeValues[0]?.Id == result.AttributeValues[0]?.Id) {
+  //             this.lstProductVariant[index] = {...result};
+  //           }
+  //         });
+  //       }
+  //     });
+  //   } else {
+  //     this.message.error('Vui lòng nhập tên sản phẩm');
+  //   }
+  // }
 
   removeVariants(data: ProductVariantDto) {
     if (this.lstProductVariant.length > 1) {

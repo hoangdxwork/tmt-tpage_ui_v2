@@ -34,7 +34,7 @@
         </div>
 
         <div class="w-full flex-auto pb-2.5 text-body-2" *ngIf="configCart?.IsShopCart">
-            <tds-table #rowSelectionTable [listData]="lstOfData" [showSizeChanger]="false" [frontPagination]="false"
+            <tds-table #rowSelectionTable [listData]="lstOfData" [showSizeChanger]="true" [frontPagination]="false"
                 [loading]="isLoading" [scroll]="{y:'auto', x: 'auto'}" [pageSize]="pageSize" [pageIndex]="pageIndex" 
                 [total]="count" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>

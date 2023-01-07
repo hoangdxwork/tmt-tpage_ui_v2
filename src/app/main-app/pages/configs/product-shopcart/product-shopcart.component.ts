@@ -36,7 +36,7 @@ export class ProductShopCartComponent implements OnInit {
   checked = false;
   indeterminate = false;
 
-  pageSize: number = 10;
+  pageSize: number = 20;
   pageIndex: number = 1;
   count: number = 0;
 
@@ -125,6 +125,7 @@ export class ProductShopCartComponent implements OnInit {
 
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageIndex = params.pageIndex;
+    this.pageSize = params.pageSize;
     this.loadData(params.pageSize, params.pageIndex);
   }
 

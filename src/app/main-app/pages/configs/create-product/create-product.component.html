@@ -483,8 +483,8 @@
                     <th width="24%">Tên</th>
                     <!-- <th width="30%">Mã chốt đơn</th> -->
                     <th width="20%">Giá</th>
-                    <th width="20%">Số lượng</th>
-                    <th width="15%">Hoạt động</th>
+                    <th width="20%" [align]="'center'">Số lượng</th>
+                    <th width="15%" [align]="'center'">Hoạt động</th>
                     <th width="15%" [align]="'center'">Thao tác</th>
                   </tr>
                 </thead>
@@ -513,12 +513,16 @@
                         class="text-neutral-1-900 text-body-2 font-regular">
                       </tds-input-number>
                     </td>
-                    <td>
-                      <tds-input-number [(ngModel)]="data.QtyAvailable" [ngModelOptions]="{standalone: true}"
+                    <td class="text-center">
+                      <tds-input-number *ngIf="!id" [(ngModel)]="data.QtyAvailable" [ngModelOptions]="{standalone: true}"
                         [min]="0" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">
                       </tds-input-number>
+
+                      <div *ngIf="id">
+                        {{ data.QtyAvailable | numberCustom }}
+                      </div>
                     </td>
-                    <td>
+                    <td class="text-center">
                       <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
                     </td>
                     <td>
