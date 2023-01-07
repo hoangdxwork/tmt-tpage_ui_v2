@@ -991,7 +991,6 @@ export class AddBillComponent implements OnInit {
     this.isLoadingProduct = true;
     this.fsOrderLineService.onChangeProduct(data).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: FSOrderLines) => {
-
             delete res['@odata.context'];
             let item: OrderLineV2 = this.prepareCopyItemHandler.prepareOnChangeProductModel(res, this.dataModel, event);
 
@@ -999,7 +998,7 @@ export class AddBillComponent implements OnInit {
               item.Id = this.idPush - 1;
               this.idPush = item.Id;
             }
-            if(this.saleConfig?.SaleSetting?.GroupPriceRecent && item.PriceRecent && item.PriceRecent > 0) {
+            if(this.saleConfig?.SaleSetting?.GroupPriceRecent && Number(item.PriceRecent) > 0) {
                 item.PriceUnit = item.PriceRecent;
             }
 
@@ -1014,7 +1013,7 @@ export class AddBillComponent implements OnInit {
             this.isLoadingProduct = false;
             this.message.error(`${error?.error?.message}` || 'Thêm sản phẩm thất bại')
         }
-      })
+    })
   }
 
   updateInsuranceFeeEqualAmountTotal() {
