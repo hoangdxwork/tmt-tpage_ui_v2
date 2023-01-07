@@ -7,10 +7,10 @@
 
         <div class="flex flex-col gap-y-4" *ngIf="dataModel.IsEnableAutoReplyComment">
             <div>
-                <tds-form-field>
-                    <tds-label>Nội dung phản hồi tự động</tds-label>
-                    <input tdsInput autocomplete="off" placeholder="Nhập nội dung phản hồi tự động" [(ngModel)]="dataModel.ContentForAutoReplyWithComment"/>
-                </tds-form-field>
+                <tds-label>Nội dung phản hồi tự động</tds-label>
+                <!-- <input tdsInput autocomplete="off" placeholder="Nhập nội dung phản hồi tự động" [(ngModel)]="dataModel.ContentForAutoReplyWithComment"/> -->
+                <quill-editor [spellcheck]="false" placeholder="Nhập nội dung" [(ngModel)]="dataModel.ContentForAutoReplyWithComment"
+                  [modules]="quillTagHelpers" class="input-quill-editor" [ngModelOptions]="{standalone: true}"></quill-editor>
             </div>
 
             <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full flex flex-col gap-y-3">
@@ -62,10 +62,10 @@
                 </div>
 
                 <div *ngIf="dataModel.IsEnableAutoReplyCommentInMessage">
-                    <tds-form-field>
-                        <tds-label>Nội dung phản hồi với tin nhắn:</tds-label>
-                        <input tdsInput autocomplete="off" placeholder="Nhập nội dung phản hồi" [(ngModel)]="dataModel.ContentForAutoReplyWithMessage"/>
-                    </tds-form-field>
+                    <tds-label>Nội dung phản hồi với tin nhắn:</tds-label>
+                    <!-- <input tdsInput autocomplete="off" placeholder="Nhập nội dung phản hồi" [(ngModel)]="dataModel.ContentForAutoReplyWithMessage"/> -->
+                    <quill-editor [spellcheck]="false" placeholder="Nhập nội dung" [(ngModel)]="dataModel.ContentForAutoReplyWithMessage"
+                      [modules]="quillTagHelpers" class="input-quill-editor" [ngModelOptions]="{standalone: true}"></quill-editor>
                 </div>
             </div>
         </div>
