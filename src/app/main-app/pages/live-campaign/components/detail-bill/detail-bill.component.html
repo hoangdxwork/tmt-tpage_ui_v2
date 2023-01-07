@@ -39,10 +39,10 @@
       </div>
       <!-- TODO: Thao tác -->
       <div class="flex flex-auto flex-row items-center justify-end gap-x-2 pr-4">
-        <div class="w-full flex items-center gap-x-2 pl-4" [ngClass]="setOfCheckedId.size > 0 ||  lstPartner?.length == 0 ? 'justify-end' : 'justify-between'">
-          <button tds-button color="primary" class="min-w-[100px]" *ngIf="lstPartner?.length > 0" (click)="mergeOrderAll()">
+        <div class="w-full flex items-center gap-x-2 pl-4" [ngClass]="setOfCheckedId.size > 0 ||  countPartner == 0 ? 'justify-end' : 'justify-between'">
+          <button tds-button color="primary" class="min-w-[100px]" *ngIf="countPartner > 0" (click)="mergeOrderAll()">
             <span class="flex items-center">
-              Gộp đơn ({{ lstPartner.length }})
+              Gộp đơn ({{ countPartner }})
             </span>
           </button>
 

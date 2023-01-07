@@ -7,11 +7,8 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { SendDeliveryComponent } from './../../../bill/components/send-delivery/send-delivery.component';
 import { TDSModalService } from 'tds-ui/modal';
 import { PrinterService } from './../../../../services/printer.service';
-import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { takeUntil, map } from 'rxjs';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
-import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
-import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { CRMTeamService } from './../../../../services/crm-team.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PartnerService } from './../../../../services/partner.service';
@@ -31,6 +28,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { ColumnTableDTO } from '@app/dto/common/table.dto';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { PartnerCanMergeOrdersDto } from '@app/dto/live-campaign/sale-order-livecampaign.dto';
 
 @Component({
   selector: 'detail-bill',
@@ -85,7 +83,9 @@ export class DetailBillComponent implements OnInit {
   indeterminate = false;
   setOfCheckedId = new Set<number>();
   idsModel: any = [];
-  lstPartner: any = [];
+
+  lstPartner: PartnerCanMergeOrdersDto[] = [];
+  countPartner: number = 0;
 
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
@@ -169,11 +169,19 @@ export class DetailBillComponent implements OnInit {
   }
 
   loadPartnerCanMergeOrders() {
-    this.isLoading = true;
     let id = this.liveCampaignId;
+    this.lstPartner = [];
+    this.isLoading = true;
 
-    this.fastSaleOrderService.getPartnerCanMergeOrders(id).pipe(takeUntil(this.destroy$)).subscribe({
+    let pageSize = 10;
+    let pageIndex = 1;
+
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+    this.fastSaleOrderService.getPartnerCanMergeOrders(id, params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
+          delete res['@odata.context'];
+          this.countPartner = res['@odata.count'];
+
           this.lstPartner = [...(res?.value || 0)];
           this.isLoading = false;
       },
@@ -268,8 +276,8 @@ export class DetailBillComponent implements OnInit {
         })
       },
       onCancel: () => {
-        this.isProcessing = false;
-        this.isLoading = false;
+          this.isProcessing = false;
+          this.isLoading = false;
       },
       okText: "Xác nhận",
       cancelText: "Đóng",
@@ -812,38 +820,32 @@ export class DetailBillComponent implements OnInit {
 
   mergeOrderAll() {
     if (this.isLoading || this.isProcessing) return;
-    this.fastSaleOrderService.getPartnerCanMergeOrders(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
-        let exist = res && res.valu && res.value.length == 0;
-        if(exist) {
-          this.notification.error('Không thể gộp đơn', 'Không có đơn nào hợp lệ');
-          return;
-        }
 
-        let modal =  this.modal.create({
-          title: 'Danh sách có thể gộp đơn',
-          content: ModalMergeOrderComponent,
-          onCancel: function(){
-            modal.componentInstance?.onCancel();
-          },
-          size: "xl",
-          viewContainerRef: this.viewContainerRef,
-          componentParams: {
-              liveCampaignId: this.liveCampaignId
-          }
-        });
+    let exist = this.lstPartner && this.lstPartner.length == 0;
+    if(exist) {
+      this.notification.error('Không thể gộp đơn', 'Không có đơn nào hợp lệ');
+      return;
+    }
 
-        modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res: boolean) => {
-            if(res) {
-                this.loadData(this.pageSize, this.pageIndex);
-                this.loadPartnerCanMergeOrders();
-            }
-          }
-        })
+    let modal =  this.modal.create({
+      title: 'Danh sách có thể gộp đơn',
+      content: ModalMergeOrderComponent,
+      onCancel: function(){
+        modal.componentInstance?.onCancel();
       },
-      error: (err) => {
-        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+          liveCampaignId: this.liveCampaignId
+      }
+    });
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: boolean) => {
+        if(res) {
+            this.loadData(this.pageSize, this.pageIndex);
+            this.loadPartnerCanMergeOrders();
+        }
       }
     })
   }
@@ -860,6 +862,7 @@ export class DetailBillComponent implements OnInit {
           this.pageIndex = 1;
           this.removeCheckedRow();
           this.loadData(this.pageSize, this.pageIndex);
+          this.loadPartnerCanMergeOrders();
 
           this.setOfCheckedId.add(res.Id);
           this.isLoading = false;
