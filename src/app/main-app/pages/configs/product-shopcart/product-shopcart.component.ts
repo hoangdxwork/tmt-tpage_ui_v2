@@ -1,11 +1,13 @@
+import { Router, ActivatedRoute } from '@angular/router';
+import { ConfigFacebookCartDTO } from './../../../dto/configs/facebook-cart/config-facebook-cart.dto';
+import { GeneralConfigService } from './../../../services/general-config.service';
+import { OdataProductShopCartDto, ProductShopCartDto } from './../../../dto/configs/product/config-product-shopcart.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { OdataProductService } from '../../../services/mock-odata/odata-product.service';
 import { takeUntil } from 'rxjs/operators';
 import { THelperDataRequest } from '../../../../lib/services/helper-data.service';
-import { Subject, Observable } from 'rxjs';
-import { Router } from '@angular/router';
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
-import { ODataProductDTO } from 'src/app/main-app/dto/configs/product/config-odata-product.dto';
+import { Observable } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
@@ -26,14 +28,15 @@ import { SortEnum } from '@core/enum';
 export class ProductShopCartComponent implements OnInit {
 
   setOfCheckedId = new Set<number>();
-  lstOfData: any[] = [];
+  lstOfData: ProductShopCartDto[] = [];
+  configCart!: ConfigFacebookCartDTO;
 
   isLoading: boolean = false;
   isProcessing: boolean = false;
   checked = false;
   indeterminate = false;
 
-  pageSize: number = 20;
+  pageSize: number = 10;
   pageIndex: number = 1;
   count: number = 0;
 
@@ -49,15 +52,20 @@ export class ProductShopCartComponent implements OnInit {
   idsModel: any = [];
   teamShopCart!: CRMTeamDTO;
 
+  indClickQuantity: number = -1;
+  currentQuantity: number = 0;
+
   constructor(private router: Router,
-    private viewContainerRef: ViewContainerRef,
+    private route: ActivatedRoute,
     private destroy$: TDSDestroyService,
     private odataProductService: OdataProductService,
+    private generalConfigService: GeneralConfigService,
     private message: TDSMessageService,
     private productShopCartService: ProductShopCartService) {
   }
 
   ngOnInit(): void {
+    this.loadConfigCart();
     this.loadInitShopCart();
   }
 
@@ -84,6 +92,22 @@ export class ProductShopCartComponent implements OnInit {
     });
   }
 
+  loadConfigCart() {
+    let name = "ConfigCart";
+    this.isLoading  = true;
+
+    this.generalConfigService.getByName(name).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        this.configCart = {...(res || {})};
+        this.isLoading = false;
+      },
+      error:(err) => {
+        this.isLoading = false;
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
   loadInitShopCart() {
     this.productShopCartService.initShopCart().pipe(takeUntil(this.destroy$)).subscribe({
       next: (team: any) => {
@@ -95,12 +119,12 @@ export class ProductShopCartComponent implements OnInit {
     })
   }
 
-  private getViewData(params: string): Observable<ODataProductDTO> {
+  private getViewData(params: string): Observable<OdataProductShopCartDto> {
     return this.odataProductService.getProductOnShopCart(params).pipe(takeUntil(this.destroy$));
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
-    this.pageSize = params.pageSize;
+    this.pageIndex = params.pageIndex;
     this.loadData(params.pageSize, params.pageIndex);
   }
 
@@ -150,14 +174,53 @@ export class ProductShopCartComponent implements OnInit {
     return 1;
   }
 
-  updateQuantityProductOnShopCart() {
-
+  openQuantityPopover(data: ProductShopCartDto) {
+    this.indClickQuantity = data.Id;
+    this.currentQuantity = data.ShopQuantity || 0;
   }
 
-  onDelete(data: any) {
+  changeQuantity(value: number) {
+      this.currentQuantity = value;
+  }
+
+  saveChangeQuantity(data: ProductShopCartDto) {
+    this.isLoading = true;
+
+    let model = {
+      models: [{
+        ProductId: data.Id,
+        Quantity: this.currentQuantity
+      }]
+    }
+
+    this.productShopCartService.updateQuantityProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+          this.isLoading = false;
+          let index = this.lstOfData.findIndex(x => x.Id == data.Id && x.UOMId == data.UOMId);
+          if(index > -1) {
+            this.lstOfData[index].ShopQuantity = this.currentQuantity;
+          }
+
+          this.message.success('Cập nhật thành công');
+          this.indClickQuantity = -1;
+      },
+      error:(err) => {
+          this.isLoading = false;
+          this.message.error(err.error?.message);
+          this.indClickQuantity = -1;
+      }
+    })
+  }
+
+  closeQuantityPopover(): void {
+      this.indClickQuantity = -1;
+  }
+
+  onDelete(data: ProductShopCartDto) {
     let model = {
       Ids: [data.Id]
     }
+    
     this.apiDeleteProductOnShopCart(model);
   }
 
@@ -166,6 +229,7 @@ export class ProductShopCartComponent implements OnInit {
     let model = {
       Ids: this.idsModel
     }
+
     this.apiDeleteProductOnShopCart(model);
   }
 
@@ -174,7 +238,10 @@ export class ProductShopCartComponent implements OnInit {
     this.productShopCartService.deleteProductOnShopCart({ model: model}).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.message.success("Xóa sản phẩm trong giỏ hàng thành công");
-          this.isLoading = false;
+
+          if(this.pageIndex > 1 && this.lstOfData.length == model.Ids?.length) {
+            this.pageIndex = this.pageIndex - 1;
+          }
           this.loadData(this.pageSize, this.pageIndex);
       },
       error: (err: any) => {
