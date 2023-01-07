@@ -236,6 +236,7 @@ export class DetailBillComponent implements OnInit {
 
     this.billFilterOptions.onCancel();
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadPartnerCanMergeOrders();
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {

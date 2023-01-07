@@ -1,3 +1,4 @@
+import { THelperDataRequest } from './../../../../../lib/services/helper-data.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { FastSaleOrderModelDTO } from './../../../../dto/fastsaleorder/fastsaleorder.dto';
 import { takeUntil } from 'rxjs';
@@ -46,16 +47,19 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['liveCampaignId'] && !changes['liveCampaignId'].firstChange) {
         this.liveCampaignId = changes['liveCampaignId'].currentValue;
-        this.loadPartnerCanMergeOrders();
+        this.validateData();
+        this.loadPartnerCanMergeOrders(this.pageSize, this.pageIndex);
     }
   }
 
-  loadPartnerCanMergeOrders() {
+  loadPartnerCanMergeOrders(pageSize: number, pageIndex: number) {
     let id = this.liveCampaignId;
     this.isLoading = true;
     this.lstPartner = [];
 
-    this.fastSaleOrderService.getPartnerCanMergeOrders(id).pipe(takeUntil(this.destroy$)).subscribe({
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+
+    this.fastSaleOrderService.getPartnerCanMergeOrders(id, params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           delete res['@odata.context'];
           this.count = res['@odata.count'];
@@ -87,10 +91,12 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
     this.pageIndex = params.pageIndex;
-    this.loadPartnerCanMergeOrders();
+    this.loadPartnerCanMergeOrders(params.pageSize, params.pageIndex);
   }
 
   refreshData() {
+    this.validateData();
+    this.loadPartnerCanMergeOrders(this.pageSize, this.pageIndex);
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -200,5 +206,13 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
 
   onCancel() {
     this.modal.destroy(this.isMerge);
+  }
+
+  validateData() {
+    this.isLoading = false;
+    this.isLoadingAll = false;
+    this.pageSize = 10;
+    this.pageIndex  = 1;
+    this.lstPartner = [];
   }
 }
