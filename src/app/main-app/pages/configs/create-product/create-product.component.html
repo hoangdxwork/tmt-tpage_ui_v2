@@ -4,16 +4,21 @@
       <div class="flex flex-col w-full bg-white rounded-t-xl">
         <div class="flex flex-row items-center justify-between px-4 py-3">
           <div class="flex flex-row items-center">
-            <button tds-flat-button-icon size="md" type="button" (click)="backToMain()"  type="button">
+            <button tds-flat-button-icon size="md" type="button" (click)="onBack()"  type="button">
               <span class="flex items-center">
                 <i class="tdsi-back-fill text-xl leading-5"></i>
               </span>
             </button>
             <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">{{ id ? "CHỈNH SỬA SẢN PHẨM" : "THÊM MỚI SẢN PHẨM" }}</span>
           </div>
-          <button tds-button color="primary" type="submit" class="min-w-[100px]" (click)="onSave()">
-            <span class="text-body-2 font-semibold">Lưu</span>
-          </button>
+          <div class="flex flex-row items-center gap-x-4">
+            <button *ngIf="id" tds-button color="primary" type="submit" class="min-w-[100px]" (click)="routeToCreate()">
+              <span class="text-body-2 font-semibold">Thêm mới</span>
+            </button>
+            <button tds-button color="primary" type="submit" class="min-w-[100px]" (click)="onSave()">
+              <span class="text-body-2 font-semibold">Lưu</span>
+            </button>
+          </div>
         </div>
         <div class="flex flex-col p-4">
           <div class="flex flex-row items-center justify-start w-full pb-6">

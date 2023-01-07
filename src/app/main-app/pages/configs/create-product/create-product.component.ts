@@ -196,7 +196,6 @@ export class ConfigAddProductComponent implements OnInit {
     });
   }
 
-  //#region Api-request
   loadData(id: TDSSafeAny) {
     this.isLoading = true;
 
@@ -258,6 +257,7 @@ export class ConfigAddProductComponent implements OnInit {
       {
         next: (res) => {
           this.stockChangeProductList = [...res.value];
+          this.initInventory = 0;
           // TODO: số lượng tồn thực tế
           this.stockChangeProductList.forEach(item => {
             this.initInventory += item.NewQuantity;
@@ -567,8 +567,12 @@ export class ConfigAddProductComponent implements OnInit {
     return AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributeLine, this.lstVariants, this.lstProductCombo, this.lstUOM);
   }
 
-  backToMain() {
-    this.router.navigateByUrl('/configs/products');
+  onBack() {
+    history.back();
+  }
+
+  routeToCreate() {
+    this.router.navigateByUrl('/configs/products/create');
   }
 
   onSave() {
