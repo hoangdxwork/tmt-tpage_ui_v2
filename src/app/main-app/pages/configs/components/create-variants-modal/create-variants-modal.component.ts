@@ -9,7 +9,6 @@ import { ProductTemplateService } from './../../../../services/product-template.
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ConfigAttributeLine } from '../../../../dto/configs/product/config-product-default.dto';
 import { Component, Input, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { CreateVariantsHandler } from './create-variants.handler';
 
 @Component({
   selector: 'app-create-variants-modal',
@@ -134,7 +133,7 @@ export class CreateVariantsModalComponent implements OnInit {
   }
 
   prepareModel(data: ProductVariantDto) {
-    data = CreateVariantsHandler.prepareModel(data, this._form.value);
+    data = {...data, ...this._form.value};
     data.AttributeValues = TDSHelperArray.hasListValue(data.AttributeValues) ? data.AttributeValues : this.lstProductVariant?.AttributeValues;
     return data;
   }

@@ -20,13 +20,24 @@ export class AddProductHandler {
          dataModel.AttributeLines = listAttributeLines;
       }
 
-      if(listProductVariants){
+      if(listProductVariants && listProductVariants.length > 0){
          listProductVariants.map(x => {
             if(x.Tags && TDSHelperArray.isArray(x.Tags)){
                x.Tags = x.Tags.toString();
             }
          });
-         dataModel.ProductVariants = listProductVariants;
+         
+         if(dataModel.InitInventory > 0) {
+            let exist = listProductVariants.every(x => x.InitInventory == 0);
+
+            if(exist) {
+               listProductVariants[0].QtyAvailable = dataModel.InitInventory;
+               dataModel.InitInventory = 0;
+               
+            }
+         }
+
+         dataModel.ProductVariants = [...listProductVariants];
          dataModel.ProductVariantCount = listProductVariants?.length;
       }
 
