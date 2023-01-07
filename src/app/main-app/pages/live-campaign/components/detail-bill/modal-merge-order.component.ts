@@ -7,6 +7,7 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { PartnerCanMergeOrdersDto, OrderLiveCampaignCanMergeDto } from './../../../../dto/live-campaign/sale-order-livecampaign.dto';
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'app-modal-merge-order',
@@ -30,6 +31,10 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
   isMerge: boolean = false;
   isLoadingAll: boolean = false;
 
+  pageSize: number = 10;
+  pageIndex: number = 1;
+  count: number = 0;
+
   constructor(private fastSaleOrderService: FastSaleOrderService,
     private modal: TDSModalRef,
     private destroy$: TDSDestroyService,
@@ -43,13 +48,26 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
         this.liveCampaignId = changes['liveCampaignId'].currentValue;
         this.loadPartnerCanMergeOrders();
     }
-
-    // if(changes['lstPartner'] && !changes['lstPartner'].firstChange) {
-    //     this.lstPartner = changes['lstPartner'].currentValue;
-    // }
   }
 
   loadPartnerCanMergeOrders() {
+    let id = this.liveCampaignId;
+    this.isLoading = true;
+    this.lstPartner = [];
+
+    this.fastSaleOrderService.getPartnerCanMergeOrders(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          delete res['@odata.context'];
+          this.count = res['@odata.count'];
+
+          this.lstPartner = [...(res?.value || 0)];
+          this.isLoading = false;
+      },
+      error: (err) => {
+          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+          this.isLoading = false;
+      }
+    })
   }
 
   loadOrderCanMergeByPartnerId(partnerId: number) {
@@ -64,6 +82,15 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
           this.message.error(err?.error?.message);
       }
     })
+  }
+
+  onQueryParamsChange(params: TDSTableQueryParams) {
+    this.pageSize = params.pageSize;
+    this.pageIndex = params.pageIndex;
+    this.loadPartnerCanMergeOrders();
+  }
+
+  refreshData() {
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -108,7 +135,7 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
 
     this.setOfCheckedId.forEach(x => {
       if(this.isLoadingAll) {
-          this.mergeOrder(x);
+          this.mergeOrderItem(x);
       }
     });
 
@@ -116,7 +143,7 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
     this.isLoading = false;
   }
 
-  mergeOrder(partnerId: number) {
+  mergeOrderItem(partnerId: number) {
     this.isLoading = true;
     let id = this.liveCampaignId;
 

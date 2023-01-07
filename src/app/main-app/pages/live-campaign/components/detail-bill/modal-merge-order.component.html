@@ -1,5 +1,9 @@
 <div class="w-full h-full" *ngIf="lstPartner && lstPartner.length > 0">
-    <tds-table #rowSelectionTable [listData]="lstPartner" [loading]="isLoading" [scroll]="{ y:'500px' }" [frontPagination]="false" [showPagination]="false">
+    <tds-table #rowSelectionTable [listData]="lstPartner"
+        [loading]="isLoading" [scroll]="{ y:'500px' }"
+        [frontPagination]="false" [showPagination]="true"
+        [total]="count"[pageSize]="pageSize" [pageIndex]="pageIndex"
+        (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
         <thead>
             <tr>
                 <th width="3%" [tdsLeft]="true"></th>
@@ -26,7 +30,7 @@
                     <td>{{ data.Phone }}</td>
                     <td>{{ data.Street }}</td>
                     <td class="text-center">
-                        <button tds-button type="button" color="primary" size="sm" class="text-white" (click)="mergeOrder(data.Id)">
+                        <button tds-button type="button" color="primary" size="sm" class="text-white" (click)="mergeOrderItem(data.Id)">
                             Gộp đơn
                         </button>
                     </td>

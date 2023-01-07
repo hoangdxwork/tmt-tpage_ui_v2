@@ -2,7 +2,7 @@ import { GenerateMessageDTO } from './../dto/conversation/inner.dto';
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
 import { CalculateFeeResponse_DataDTO, DeliveryCarrierDTO, ShippingCalculateFeeInputDTO } from '../dto/carrier/delivery-carrier.dto';
 import { ConversationOrderBillByPartnerDTO } from '../dto/conversation/conversation.dto';
@@ -588,9 +588,9 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData(api, data);
   }
 
-  getPartnerCanMergeOrders(liveCampaignId: string): Observable<any> {
+  getPartnerCanMergeOrders(liveCampaignId: string, params?: string): Observable<any> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetPartnerCanMergeOrders?liveCampaignId=${liveCampaignId}`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetPartnerCanMergeOrders?liveCampaignId=${liveCampaignId}&${params}&$count=true`,
       method: CoreApiMethodType.get,
     }
 

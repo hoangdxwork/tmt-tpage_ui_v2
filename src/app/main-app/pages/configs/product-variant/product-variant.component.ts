@@ -72,7 +72,6 @@ export class ListProductVariantComponent implements OnInit {
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null);
 
     this.isLoading = true;
-
     this.getViewData(params).subscribe({
       next:(res: any) => {
         if(res && res.value && TDSHelperArray.isArray(res.value)) {
