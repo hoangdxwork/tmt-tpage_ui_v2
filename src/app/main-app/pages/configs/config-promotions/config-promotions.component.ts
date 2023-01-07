@@ -10,6 +10,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'app-config-promotions',
@@ -56,7 +57,7 @@ export class ConfigPromotionsComponent implements OnInit {
   lstData!: SaleCouponProgramDTO[];
   pageSize = 20;
   pageIndex = 1;
-  count: number = 0;
+  count: number = 1;
   isLoading: boolean = false;
   indClickTag = -1;
 
@@ -144,6 +145,13 @@ export class ConfigPromotionsComponent implements OnInit {
     }
 
     this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  onQueryParamsChange(params: TDSTableQueryParams) {
+    this.pageSize = params.pageSize;
+    this.loadData(params.pageSize, params.pageIndex);
+    this.checked = false;
+    this.indeterminate = false;
   }
 
   sendRequestTableTab(): void {

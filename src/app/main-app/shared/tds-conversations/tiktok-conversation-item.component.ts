@@ -175,7 +175,7 @@ export class TiktokConversationItemComponent implements OnInit, OnChanges  {
     }
   }
 
-  clickReply(event: any) {
+  clickReply() {
     this.isReply = !this.isReply;
 
     setTimeout(() => {
@@ -184,7 +184,7 @@ export class TiktokConversationItemComponent implements OnInit, OnChanges  {
       }, 350);
   }
 
-  addLike(event: any) {
+  addLike() {
     if(this.isLiking){
       return
     }
@@ -211,7 +211,7 @@ export class TiktokConversationItemComponent implements OnInit, OnChanges  {
     });
   }
 
-  hideComment(status: any) {
+  hideComment() {
     if(this.isHiding){
       return
     }

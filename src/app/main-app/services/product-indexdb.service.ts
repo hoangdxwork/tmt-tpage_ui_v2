@@ -3,8 +3,8 @@ import { Observable, Subject } from "rxjs";
 import { map, mergeMap } from "rxjs/operators";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
 import { TDSMessageService } from "tds-ui/message";
-import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
-import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from "../dto/product-pouchDB/product-pouchDB.dto";
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO, StoragePriceListItemsDto } from "../dto/product-pouchDB/product-pouchDB.dto";
 import { BaseSevice } from "./base.service";
 
 @Injectable({
@@ -18,6 +18,7 @@ export class ProductIndexDBService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/product";
 
   _keyCacheProductIndexDB: string = "_product_UOMLine_V2";
+  _keyCachePriceListItems: string = "_price_List_Items"
 
   cacheObject: KeyCacheIndexDBDTO = {
     cacheCount: 0,
@@ -154,6 +155,25 @@ export class ProductIndexDBService extends BaseSevice {
               data.cacheDbStorage = [...data.cacheDbStorage];
               data.cacheDbStorage = data.cacheDbStorage?.sort((a: any,b: any) => b.Version - a.Version);
 
+              let priceListItems = this.getStoragePriceListItems() as StoragePriceListItemsDto;
+              if(priceListItems && priceListItems.Value) {
+                data.cacheDbStorage.map((x: DataPouchDBDTO) => {
+                    if(x.SaleOK && ! x.IsDiscount) {
+                        let price = priceListItems.Value[`${x.ProductTmplId}_${x.UOMId}`];
+                        if (price) {
+                          if (!x.OldPrice) {
+                              x.OldPrice = x.Price;
+                          }
+                          x.Price = price;
+                        } else {
+                          if (x.OldPrice >= 0) {
+                              x.Price = x.OldPrice;
+                          }
+                        }
+                    }
+                  })
+              }
+
               //TODO: check số version
               let versions = data.cacheDbStorage?.map((x: DataPouchDBDTO) => x.Version);
               let lastVersion = this.getLastVersion(versions);
@@ -198,6 +218,27 @@ export class ProductIndexDBService extends BaseSevice {
       method: CoreApiMethodType.get
     }
     return this.apiService.getData<ProductPouchDBDTO>(api, null);
+  }
+
+  setStoragePriceListItems(model: StoragePriceListItemsDto): any {
+    const _keyCache = this._keyCachePriceListItems;
+    sessionStorage.setItem(_keyCache, JSON.stringify(model));
+  }
+
+  getStoragePriceListItems(): any {
+    const _keyCache = this._keyCachePriceListItems;
+    let item = sessionStorage.getItem(_keyCache) as any;
+
+    if(item) {
+        return JSON.parse(item);
+    } else {
+        return null;
+    }
+  }
+
+  removeStoragePriceListItems() {
+    const _keyCache = this._keyCachePriceListItems;
+    sessionStorage.removeItem(_keyCache);
   }
 
 }

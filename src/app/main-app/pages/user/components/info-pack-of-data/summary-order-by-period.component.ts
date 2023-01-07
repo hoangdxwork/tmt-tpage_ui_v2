@@ -1,3 +1,4 @@
+import { TenantService } from './../../../../services/tenant.service';
 import { takeUntil } from 'rxjs/operators';
 import { TDSMessageService } from 'tds-ui/message';
 import { formatDate } from '@angular/common';
@@ -33,6 +34,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
 
   constructor(private eventSummaryService: EventSummaryService,
     private destroy$: TDSDestroyService,
+    private tenantService: TenantService,
     private message: TDSMessageService) {}
 
   ngOnInit(): void {
@@ -41,34 +43,46 @@ export class SummaryOrderByPeriodComponent implements OnInit {
 
   loadData() {
     this.isLoading = true;
-    let since = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    let until = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+    this.tenantService.getInfo().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        let dataExpired = res?.Tenant?.DateExpired;
 
-    this.eventSummaryService.getSummaryOrderByPeriod(since, until).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res:any) => {
-        if(res?.Previous?.Items && res?.Current?.Items){
+        if(dataExpired) {
+          let currentDate = new Date().getTime() < new Date(dataExpired).getTime() ? new Date() : new Date(dataExpired);
+          let since = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+          let until = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
-          this.sumOrder = {...res};
-          this.buildData();
-          this.buildSummaryOrderChart();
+          this.eventSummaryService.getSummaryOrderByPeriod(since, until).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res:any) => {
+              if(res?.Previous?.Items && res?.Current?.Items){
+                this.sumOrder = {...res};
+                this.buildData(currentDate);
+                this.buildSummaryOrderChart();
+              }
+
+              this.isLoading = false;
+            },
+            error: (err) => {
+              this.isLoading = false;
+              this.message.error(err.error?.message || 'Không thể tải dữ liệu thống kê đơn hàng');
+            }
+          })
         }
-
+      }, 
+      error: (error) => {
         this.isLoading = false;
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.message.error(err.error?.message || 'Không thể tải dữ liệu thống kê đơn hàng');
+        this.message.error(error?.error?.message);
       }
-    })
+    });
   }
 
-  buildData() {
+  buildData(currentDate: Date) {
     this.axisData = [];
     this.previousData = [];
     this.currentData = [];
 
-    this.currentMonth = new Date().getMonth() + 1;
-    this.previousMonth = new Date().getMonth();
+    this.currentMonth = new Date(currentDate).getMonth() + 1;
+    this.previousMonth = new Date(currentDate).getMonth() == 0 ? 12 : new Date(currentDate).getMonth();
 
     let currentItems = this.sumOrder?.Current?.Items?.filter(x => this.currentMonth == (new Date(x.Time).getMonth() + 1));
     let previousItems = this.sumOrder?.Previous?.Items?.filter(x => this.previousMonth == (new Date(x.Time).getMonth() + 1));
@@ -196,6 +210,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
   }
 
   converseList(items: any[]) {
+    if(!items || items.length == 0) return [];
     let lstItems: any[] = [];
 
     let firstItem = new Date(items[0].Time).getDate();

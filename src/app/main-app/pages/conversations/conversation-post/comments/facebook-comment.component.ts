@@ -193,7 +193,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
         next: (res: SocketEventSubjectDto) => {
             if(!res) return;
 
-            switch(res.EventName) {
+            switch(res?.EventName) {
                 // Cập nhật bình luận
                 case ChatmoniSocketEventName.chatomniOnMessage:
                     let fbComment = {...res.Data?.Message} as MessageSocketioDto;
@@ -290,7 +290,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
         if(index >= 0) {
             orders[index] = {...item};
         } else {
-            orders.push(item);
+            orders = [...[item],...orders];
         }
 
         this.commentOrders[model.Data.Facebook_ASUserId] = [...orders];
@@ -687,12 +687,16 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
                 //gán lại data bằng syntax
                 x.orders?.map((a: CommentOrder) => {
-                    this.commentOrders![x.asuid].push(a);
+                  if(a) {
+                      this.commentOrders![x.asuid].push(a);
+                  }
                 });
 
                 if (x.uid && x.uid != x.asuid) {
                   x.orders?.map((a: any) => {
-                      this.commentOrders[x.uid].push(a);
+                    if(a) {
+                        this.commentOrders[x.uid].push(a);
+                    }
                   });
                 }
             });

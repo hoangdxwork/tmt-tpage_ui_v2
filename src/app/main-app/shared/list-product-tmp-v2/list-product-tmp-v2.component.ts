@@ -119,7 +119,7 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
       next:(res: KeyCacheIndexDBDTO) => {
           this.indexDbStorage = [...res?.cacheDbStorage || []];
           this.loadDataTable();
-          
+
           this.isLoading = false;
           this.disabledReload = false;
         },
@@ -230,24 +230,6 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
 
           default: break;
         }
-    }
-
-    if(TDSHelperArray.hasListValue(this.priceListItems)) {
-        data.forEach((x: DataPouchDBDTO) => {
-          if(x.SaleOK && ! x.IsDiscount) {
-              let price = this.priceListItems[`${x.ProductTmplId}_${x.UOMId}`];
-              if (price) {
-                if (!x.OldPrice) {
-                    x.OldPrice = x.Price;
-                }
-                x.Price = price;
-              } else {
-                if (x.OldPrice >= 0) {
-                    x.Price = x.OldPrice;
-                }
-              }
-          }
-        })
     }
 
     this.cdRef.detectChanges();

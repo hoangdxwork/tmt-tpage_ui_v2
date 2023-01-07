@@ -68,8 +68,8 @@
                             </button>
                             <tds-dropdown-menu #menu="tdsDropdownMenu">
                                 <div class="w-full">
-                                    <div *ngFor="let item of paymentMethodOptions" tds-dropdown-item (click)="selectPayment(i, item.Text)">
-                                        {{item.Text}}
+                                    <div *ngFor="let item of (lstPaymentJournals | async) || []" tds-dropdown-item (click)="selectPayment(i, item.Name)">
+                                        {{item.Name}}
                                     </div>
                                 </div>
                             </tds-dropdown-menu>

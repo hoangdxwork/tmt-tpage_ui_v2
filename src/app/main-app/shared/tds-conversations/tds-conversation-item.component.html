@@ -20,8 +20,8 @@
                           </ng-template>
 
                           <tds-card-content class="px-4 py-3 w-full flex flex-col gap-y-1">
-                            <span class="text-body-2 font-semibold break-words break-all text-left">{{ item?.title }}</span>
-                            <span class="text-body-2 text-neutral-1-400 text-left">{{ item?.price || "---" | numberCustom }}</span>
+                            <span class="text-caption-1 font-semibold text-left w-full truncate">{{ item?.title }}</span>
+                            <span class="text-caption-1 text-neutral-1-400 text-left">{{ item?.price || "---" | numberCustom }}</span>
                           </tds-card-content>
                         </tds-card>
                       </div>
@@ -49,22 +49,32 @@
                       <span class="text-neutral-1-600">Xác nhận đơn đặt hàng</span>
                       <span class="text-title-1 font-semibold">{{ wb?.payload?.recipient_name || "N/A"}}</span>
                     </div>
-                    <div class="bg-white px-4 rounded-b-xl">
-                      <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col items-start">
-                        <div class="flex gap-x-2.5">
-                          <img *ngIf="wb?.payload?.order_url" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] object-cover"
-                              src="{{ wb.payload.order_url }}">
-                          <img *ngIf="!wb?.payload?.order_url" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] p-4"
-                              src="../assets/imagesv2/errorPic.svg" alt="" />
-                          <div class="flex flex-col gap-y-1 items-start">
-                            <div class="font-semibold">{{ wb?.payload?.summary?.subtotal || "---" }}</div>
-                            <div class="flex gap-x-2">
-                              <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ wb?.payload?.order_number || '___' }}</span></span>
-                              <span>-</span>
-                              <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ wb?.payload?.currency || '___' }}</span></span>
+                    <div class="w-full bg-white px-4 rounded-b-xl">
+                      <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col w-full items-start">
+
+                        <div class="flex flex-col gap-3 w-full">
+                          <div class="flex w-full gap-x-2.5" *ngFor="let item of wb?.payload?.elements">
+                            <img *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture" src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px]">
+                            <ng-template #noPicture>
+                              <img src="../assets/imagesv2/errorPic.svg" alt="" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] p-4">
+                            </ng-template>
+
+                            <div class="flex flex-col gap-y-1 items-start">
+                              <div class="font-semibold text-left">{{ item?.title || "---" }}</div>
+                              <div class="flex gap-x-2">
+                                <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ item?.quantity || '___' }}</span></span>
+                                <span>-</span>
+                                <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ item?.price || '___' }}</span></span>
+                              </div>
                             </div>
                           </div>
                         </div>
+
+                        <span *ngIf="wb?.payload?.order_number != null && wb?.payload?.order_number != 'Unknown'" class="flex flex-col text-left">
+                          <span class="mt-4 text-neutral-1-600">Mã đơn hàng</span>
+                          <a *ngIf="wb?.payload?.url == null" class="mt-1 text-body-1">{{ wb?.payload?.order_number }}</a>
+                          <a *ngIf="wb?.payload?.url != null" class="mt-1 text-body-1 cursor-pointer font-semibold text-info-400" href="{{wb?.payload?.url}}">{{ wb?.payload?.order_number }}</a>
+                        </span>
                         <span class="mt-4 text-neutral-1-600">Đã thanh toán bằng</span>
                         <span class="mt-1 text-body-1">{{ wb?.payload?.payment_method || '---' }}</span>
                         <span class="mt-2 text-neutral-1-600">Địa chỉ giao hàng</span>
@@ -92,9 +102,9 @@
           </div>
 
           <!-- Tin nhắn văn bản -->
-          <div *ngIf="dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
-            <div class="text-left hidden" [innerHtml]="dataItem.Message | jsonPayload | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
-            <div showMore [isMessageItem]="true" [length]="640" [text]="dataItem.Message" [searchText]="searchText" class="text-left" ></div>
+          <div *ngIf="dataItem.MessageFormatted || dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
+            <div class="text-left hidden" [innerHtml]="(dataItem.MessageFormatted || dataItem.Message) | jsonPayload | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
+            <div showMore [isMessageItem]="true" [length]="640" [text]="dataItem.MessageFormatted || dataItem.Message" [searchText]="searchText" class="text-left" ></div>
           </div>
 
           <!-- Tin nhắn hình ảnh facebook -->
@@ -248,10 +258,10 @@
                   <div class="chat-content bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
                       <div class="flex flex-auto">
                           <!--Nội dung-->
-                          <div *ngIf="dataItem.Message">
+                          <div *ngIf="dataItem.MessageFormatted || dataItem.Message">
                             <div *ngIf="dataItem.Type == 12 && (dataItem.Data | facebookDataCs)" class="name font-semibold pb-1">{{(dataItem.Data | facebookDataCs)?.from?.name}}</div>
-                            <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.Message"></div>
-                            <div class="hidden" [innerHtml]="dataItem.Message | bbcodeConvert | safeHtml" #contentMessage></div>
+                            <div class="content-message font-regular" showMore [length]="300" [text]="dataItem.MessageFormatted || dataItem.Message"></div>
+                            <div class="hidden" [innerHtml]="(dataItem.MessageFormatted || dataItem.Message) | bbcodeConvert | safeHtml" #contentMessage></div>
                           </div>
                       </div>
                   </div>
@@ -289,7 +299,7 @@
             <div class="chat-acts flex flex-row items-center" style="position: relative;">
 
               <button class="link-act hover:underline" [disabled]="isReplyingComment"
-                  (click)="clickReply(dataItem.Message ? dataItem.Data?.can_remove : null)"> Phản hồi
+                  (click)="clickReply()"> Phản hồi
               </button>
 
               <span *ngIf="isReplyingComment" class="ml-1">
@@ -299,14 +309,14 @@
               <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
               <button class="link-act hover:underline" [disabled]="isLiking" [ngClass]="dataItem.Data?.user_likes ? 'text-secondary-1' : ''"
-                  (click)="addLike(dataItem.Message ? dataItem.Data?.can_like : null)">
+                  (click)="addLike()">
                   {{dataItem.Data?.user_likes ? 'Đã thích' : 'Thích'}}
               </button>
 
               <tds-spinner *ngIf="isLiking" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
               <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
-              <button class="link-act hover:underline" [disabled]="isHiding" (click)="hideComment(dataItem.Message ? dataItem.Data?.can_hide: null)">
+              <button class="link-act hover:underline" [disabled]="isHiding" (click)="hideComment()">
                 {{dataItem.Data?.is_hidden ? 'Hiện' : 'Ẩn'}}
               </button>
 
@@ -384,13 +394,13 @@
                           <div class="chat-body !m-0" tds-tooltip
                               tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}}/{{child.ChannelCreatedTime | date:'MM'}} {{child.ChannelCreatedTime | date:'HH:mm'}}">
                               <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
-                                  <div class="border-activety-comment" *ngIf="child.Message">
+                                  <div class="border-activety-comment" *ngIf="child.MessageFormatted || child.Message">
                                         <div *ngIf="dataItem.Type == 12">
                                             <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
                                         </div>
 
-                                      <div class="content-message font-regular" showMore [length]="300" [text]="child.Message"></div>
-                                      <div class="hidden" [innerHtml]="child.Message | bbcodeConvert | safeHtml" #contentMessageChild></div>
+                                      <div class="content-message font-regular" showMore [length]="300" [text]="child.MessageFormatted || child.Message"></div>
+                                      <div class="hidden" [innerHtml]="(child.MessageFormatted || child.Message) | bbcodeConvert | safeHtml" #contentMessageChild></div>
                                   </div>
                               </div>
                           </div>

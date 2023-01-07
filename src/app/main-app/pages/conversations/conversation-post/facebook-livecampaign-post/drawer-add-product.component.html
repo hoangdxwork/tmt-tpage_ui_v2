@@ -55,7 +55,7 @@
             </button>
         </div>
         <div class="w-full h-[350px]">
-            <tds-table #variantsTable [listData]="lstVariants" [showPagination]="false"
+            <tds-table #variantsTable [listData]="lstProductVariant" [showPagination]="false"
                 [scroll]="{ y: 'auto' }">
                 <thead>
                   <tr>
@@ -70,7 +70,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let data of lstVariants; let i = index">
+                  <tr *ngFor="let data of lstProductVariant; let i = index">
                     <td>{{ 1 + i }}</td>
                     <td>
                       <div tds-tooltip [tooltipTitle]="data.ImageUrl ? 'Xem ảnh' : 'Tải ảnh'">

@@ -1,18 +1,21 @@
+import { TDSHelperObject } from 'tds-ui/shared/utility';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AutoInteractionDTO } from 'src/app/main-app/dto/configs/general-config.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { GeneralConfigService } from 'src/app/main-app/services/general-config.service';
 import { ConfigFacebookCartDTO } from 'src/app/main-app/dto/configs/facebook-cart/config-facebook-cart.dto';
+import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
 
 @Component({
   selector: 'facebook-cart',
   templateUrl: './facebook-cart.component.html',
   host: {
     class: 'w-full h-full flex'
-  }
+  },
+  providers: [TDSDestroyService]
 })
 
 export class FacebookCartComponent implements OnInit {
@@ -20,10 +23,12 @@ export class FacebookCartComponent implements OnInit {
   _form!: FormGroup;
   isLoading: boolean = false;
   dataModel!: ConfigFacebookCartDTO;
+  teamShopCart!: CRMTeamDTO;
 
   constructor(private fb: FormBuilder,
     private generalConfigService: GeneralConfigService,
     private message: TDSMessageService,
+    private productShopCartService: ProductShopCartService,
     private destroy$: TDSDestroyService) {
       this.createForm();
   }
@@ -48,7 +53,8 @@ export class FacebookCartComponent implements OnInit {
       IsRemoveProduct: [false],//Cho phép xóa sản phẩm mua được
       IsRemoveProductInValid: [false],// Cho phép xóa sản phẩm không hợp lệ (Không mua được)
       IsDisplayInventory: [false],// Cho phép hiện tồn kho
-      IsMergeOrder: [false]// Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng
+      IsMergeOrder: [false],// Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng
+      IsShopCart: [false]// hiển thị thông tin giỏ hàng
     })
   }
 
@@ -66,6 +72,7 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsRemoveProductInValid"].disable();
       this._form.controls["IsDisplayInventory"].disable();
       this._form.controls["IsMergeOrder"].disable();
+      this._form.controls["IsShopCart"].disable();
     }
   }
 
@@ -118,6 +125,9 @@ export class FacebookCartComponent implements OnInit {
       this._form.controls["IsMergeOrder"].setValue(false);
       this._form.controls["IsMergeOrder"].disable();
 
+      this._form.controls["IsShopCart"].setValue(false);
+      this._form.controls["IsShopCart"].disable();
+
     } else {
 
       this._form.controls["IsUpdatePartnerInfo"].setValue(true);
@@ -149,6 +159,9 @@ export class FacebookCartComponent implements OnInit {
 
       this._form.controls["IsMergeOrder"].setValue(false);
       this._form.controls["IsMergeOrder"].enable();
+
+      this._form.controls["IsShopCart"].setValue(true);
+      this._form.controls["IsShopCart"].enable();
     }
   }
 
@@ -165,6 +178,26 @@ export class FacebookCartComponent implements OnInit {
       error: (error: any) => {
           this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+      }
+    })
+  }
+
+  onChangeIsShopCart(event: boolean) {
+    if(event == true && !TDSHelperObject.hasValue(this.teamShopCart)) {
+        this.loadInitShopCart();
+    }
+  }
+
+  loadInitShopCart() {
+    this.isLoading = true;
+    this.productShopCartService.initShopCart().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (team: any) => {
+          this.teamShopCart = team;
+          this.isLoading = false;
+      },
+      error: (err: any) => {
+          this.message.error(err?.error?.message);
+          this.isLoading = false;
       }
     })
   }
@@ -197,7 +230,8 @@ export class FacebookCartComponent implements OnInit {
         IsRemoveProduct: formModel.IsRemoveProduct as boolean,
         IsRemoveProductInValid: formModel.IsRemoveProductInValid as boolean,
         IsDisplayInventory: formModel.IsDisplayInventory as boolean,
-        IsMergeOrder: formModel.IsMergeOrder as boolean
+        IsMergeOrder: formModel.IsMergeOrder as boolean,
+        IsShopCart: formModel.IsShopCart as boolean
     } as ConfigFacebookCartDTO
 
     return model;

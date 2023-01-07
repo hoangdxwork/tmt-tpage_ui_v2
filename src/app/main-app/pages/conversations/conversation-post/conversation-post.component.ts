@@ -254,7 +254,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   onEventSocket() {
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
-        switch(res && res.EventName){
+        switch(res?.EventName){
             case ChatmoniSocketEventName.chatomniPostLiveEnd:
               let exist = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop && res.Data && res.Data.Data && res.Data.Data.ObjectId;
 

@@ -1,17 +1,18 @@
-import { ProductTemplateDTO } from './../../dto/product/product.dto';
+import { UserInitDTO } from 'src/app/lib/dto';
+import { TAuthService } from 'src/app/lib';
+import { ProductTemplateDto, ProductUOMLineDto } from './../../dto/configs/product/config-product-default-v2.dto';
+import { AttributeLineDto, ProductVariantDto } from './../../dto/configs/product/config-product-variant.dto';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
-import { UOMLine, ConfigUOM, ConfigUOMPO, ConfigSuggestVariants } from './../../dto/configs/product/config-product-default.dto';
-import { ComboProductDTO } from './../../dto/product/product-combo.dto';
+import { ProductComboDto } from './../../dto/product/product-combo.dto';
 import { Injectable } from "@angular/core";
 import { WallPicturesDTO } from "../../dto/attachment/wall-pictures.dto";
-import { ConfigAttributeLine, ConfigProductDefaultDTO, ConfigProductVariant } from "../../dto/configs/product/config-product-default.dto";
 
 @Injectable({
    providedIn: 'root'
 })
 export class AddProductHandler {
 
-   static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[], listAttributeLines?: ConfigAttributeLine[], listProductVariants?: ConfigProductVariant[], listComboProducts?: ComboProductDTO[], lstUOM?: any[]) {
+   static prepareModel(dataModel: ProductTemplateDto, formModel: any, images: WallPicturesDTO[], listAttributeLines?: AttributeLineDto[], listProductVariants?: ProductVariantDto[], listComboProducts?: ProductComboDto[], lstUOM?: any[]) {
 
       dataModel = {...dataModel,...formModel};
 
@@ -19,13 +20,24 @@ export class AddProductHandler {
          dataModel.AttributeLines = listAttributeLines;
       }
 
-      if(listProductVariants){
+      if(listProductVariants && listProductVariants.length > 0){
          listProductVariants.map(x => {
             if(x.Tags && TDSHelperArray.isArray(x.Tags)){
                x.Tags = x.Tags.toString();
             }
          });
-         dataModel.ProductVariants = listProductVariants;
+         
+         if(dataModel.InitInventory > 0) {
+            let exist = listProductVariants.every(x => x.InitInventory == 0);
+
+            if(exist) {
+               listProductVariants[0].QtyAvailable = dataModel.InitInventory;
+               dataModel.InitInventory = 0;
+               
+            }
+         }
+
+         dataModel.ProductVariants = [...listProductVariants];
          dataModel.ProductVariantCount = listProductVariants?.length;
       }
 
@@ -136,52 +148,4 @@ export class AddProductHandler {
       dataModel["OrderTag"] = formModel.OrderTag ? formModel.OrderTag.toString(): null;
       return dataModel;
    }
-
-   static prepareSuggestModel(data: ConfigProductDefaultDTO) {
-      let model = {} as ConfigSuggestVariants;
-  
-      model.Active = data.Active;
-      model.AttributeLines = data.AttributeLines as ConfigAttributeLine[];
-      model.AvailableInPOS = data.AvailableInPOS as boolean;
-      model.BOMCount = data.BOMCount;
-      model.Categ = data.Categ;
-      model.CategId = data.CategId;
-      model.ComboProducts = data.ComboProducts;
-      model.CompanyId = data.CompanyId as number;
-      model.DiscountPurchase = data.DiscountPurchase as number;
-      model.DiscountSale = data.DiscountSale as number;
-      model.EnableAll = data.EnableAll;
-      model.Id = data.Id;
-      model.IncomingQty = data.IncomingQty;
-      model.InitInventory = data.InitInventory as number;
-      model.InvoicePolicy = data.InvoicePolicy;
-      model.IsCombo = data.IsCombo as boolean;
-      model.IsProductVariant = data.IsProductVariant;
-      model.Items = data.Items;
-      model.ListPrice = data.ListPrice as number;
-      model.Name = data.Name;
-      model.OutgoingQty = data.OutgoingQty;
-      model.ProductSupplierInfos = data.ProductSupplierInfos;
-      model.ProductVariantCount = data.ProductVariantCount;
-      model.PurchaseMethod = data.PurchaseMethod;
-      model.PurchaseOK = data.PurchaseOK;
-      model.PurchasePrice = data.PurchasePrice as number;
-      model.QtyAvailable = data.QtyAvailable;
-      model.SaleDelay = data.SaleDelay as number;
-      model.SaleOK = data.SaleOK;
-      model.ShowType = data.ShowType;
-      model.StandardPrice = data.StandardPrice as number;
-      model.Tracking = data.Tracking;
-      model.Type = data.Type;
-      model.UOM = data.UOM as ConfigUOM;
-      model.UOMId = data.UOMId;
-      model.UOMLines = data.UOMLines;
-      model.UOMPO = data.UOMPO as ConfigUOMPO;
-      model.UOMPOId = data.UOMPOId;
-      model.Version = data.Version;
-      model.VirtualAvailable = data.VirtualAvailable;
-      model.Weight = data.Weight as number;
-  
-      return {...model};
-    }
 }

@@ -189,6 +189,7 @@ export interface ChatomniDataItemDto {
   ObjectId: string;
   ParentId?: string | any;
   Message: string;
+  MessageFormatted: string;
   Source?: any;
   Type: ChatomniMessageType;
   UserId: string;
@@ -277,6 +278,7 @@ export interface ExtrasChildsDto {
   ObjectId: string;
   ParentId?: string;
   Message: string;
+  MessageFormatted: string;
   Source?: any;
   Type: ChatomniMessageType;
   UserId: string;

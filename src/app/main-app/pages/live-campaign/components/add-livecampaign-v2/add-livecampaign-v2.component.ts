@@ -151,7 +151,7 @@ export class AddLiveCampaignV2Component implements OnInit {
   }
 
   eventEmitter() {
-    this.productTemplateService.onLoadingLiveCampaign$.subscribe({
+    this.productTemplateService.onLoadingLiveCampaign$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: boolean) => {
         this.isLoading = res;
       }
@@ -304,8 +304,9 @@ export class AddLiveCampaignV2Component implements OnInit {
     }
 
     if(data && data.Details) {
-       this.initFormDetails(data.Details);
-       this.getLstOrderTags(data.Details);
+      let details = data.Details.sort((a, b) => Date.parse(b.DateCreated)  - Date.parse(a.DateCreated));
+      this.initFormDetails(details);
+      this.getLstOrderTags(details);
     }
 
     this.datePicker = [data.StartDate, data.EndDate];

@@ -27,21 +27,55 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
+  numberWithCommas =(value:TDSSafeAny) => {
+    if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     return value;
   } ;
-  
-  parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
+
+  parserComas = (value: TDSSafeAny) => {
+    if(value != null) {
       return TDSHelperString.replaceAll(value,'.','');
     }
     return value;
   };
+
+  tagHelpers = [
+    { id: "Tên Facebook khách hàng", value: "{facebook.name}" },
+    { id: "Bình luận Facebook của khách hàng", value: "{facebook.comment}" },
+  ];
+
+  quillTagHelpers = {
+    toolbar: null,
+    mention: {
+      allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+      // readOnly: true,
+      mentionDenotationChars: ["@"],
+      showDenotationChar: false,
+      positioningStrategy: "relative",
+      defaultMenuOrientation: "bottom",
+      mentionContainerClass: "ql-mention-list-container",
+      renderItem: (item: { id: any; }, searItem: any) => {
+        return item.id;
+      },
+      source: (searchTerm: string, renderList: (arg0: { id: string; value: string; }[], arg1: any) => void, mentionChar: any) => {
+        let values;
+        values = this.tagHelpers as any;
+
+        if (searchTerm.length === 0) {
+          renderList(values, searchTerm);
+        } else {
+          const matches = [];
+          for (var i = 0; i < values.length; i++)
+            if (  ~values[i].id.toLowerCase().indexOf(searchTerm.toLowerCase()))
+              matches.push(values[i]);
+
+          renderList(matches, searchTerm);
+        }
+      },
+    } as any
+  } as any;
 
   constructor(
     private formBuilder: FormBuilder,

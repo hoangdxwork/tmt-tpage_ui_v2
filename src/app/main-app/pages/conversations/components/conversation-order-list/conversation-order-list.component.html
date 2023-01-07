@@ -73,7 +73,7 @@
         </div>
         <!-- danh sách đơn hàng -->
         <div class="flex flex-col justify-between w-full h-full pl-4 pb-4 overflow-hidden" *ngIf="lstOfData.length > 0; else noData">
-            <div class="flex-auto flex flex-col gap-y-4 overflow-auto tds-custom-scroll w-full  pr-2">
+            <div class="flex-auto flex flex-col gap-y-4 overflow-auto tds-custom-scroll w-full pr-2">
                 <tds-collapse accordion="true" *ngFor="let order of lstOfData; let index = index" class="!rounded-xl">
                     <tds-collapse-panel [header]="headerOrder" [active]="false" (activeChange)="onActiveChange(order, $event, index)" class="!rounded-xl"
                         [extra]="extraTpl1">
@@ -139,25 +139,25 @@
                         </div>
                         </ng-template>
                         <!-- Content  -->
-                        <div class="flex flex-auto" *ngIf="lstLine">
+                        <div class="flex flex-auto border-x border-t" *ngIf="lstLine">
                             <tds-table #tableInCollapse
                                 [listData]="lstLine[index] || []"
                                 [loading]="isLoadingLine[index] || false"
                                 [loadingIndicator]="loadingTemp"
-                                [noResult]="' '"
+                                [noResult]="emptyTable"
                                 [showPagination]="false" [tableLayout]="'fixed'">
                                 <thead>
                                     <tr>
-                                        <th width="40%">Sản phẩm</th>
-                                        <th width="20%">Số lượng</th>
-                                        <th width="20%">Thành tiền</th>
+                                        <th class="border-r" width="40%">Sản phẩm</th>
+                                        <th class="border-r" [align]="'center'" width="20%">Số lượng</th>
+                                        <th class="border-r" [align]="'right'" width="20%">Thành tiền</th>
                                         <th width="20%">Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <ng-template ngFor let-data [ngForOf]="tableInCollapse.data">
                                         <tr class="text-caption-2">
-                                            <td>
+                                            <td class="border-r">
                                                 <div class="flex flex-col" tds-tooltip tooltipTitle="{{ data.ProductNameGet }}">
                                                     <span class="truncate">{{ data.ProductNameGet }}</span>
                                                     <span class="text-neutral-1-400 inline-flex">
@@ -166,8 +166,8 @@
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td>{{ data.Quantity | numberCustom }}</td>
-                                            <td>{{ data.Quantity * data.Price | numberCustom }}đ</td>
+                                            <td class="border-r" [align]="'center'">{{ data.Quantity | numberCustom }}</td>
+                                            <td class="border-r" [align]="'right'">{{ data.Quantity * data.Price | numberCustom }} đ</td>
                                             <td>
                                               <div *ngIf="data.IsOrderPriority != null">
                                                 <tds-tag [status]="data.IsOrderPriority ? 'primary' : 'secondary'">
@@ -183,6 +183,11 @@
                             <ng-template #loadingTemp>
                                 <tds-spinner [color]="'primary'" class="mr-1 w-5 h-5"></tds-spinner>
                             </ng-template>
+                            <ng-template #emptyTable>
+                              <div  class="w-full pb-3 border-b">
+                                  <tds-empty></tds-empty>
+                              </div>
+                          </ng-template>
                         </div>
                     </tds-collapse-panel>
                 </tds-collapse>

@@ -1,3 +1,4 @@
+import { OdataProductShopCartDto } from './../../dto/configs/product/config-product-shopcart.dto';
 import { ODataProductDTOV2 } from './../../dto/product/odata-product.dto';
 import { ODataProductDTO } from './../../dto/configs/product/config-odata-product.dto';
 import { Injectable } from '@angular/core';
@@ -39,6 +40,14 @@ export class OdataProductService extends BaseSevice {
     return this.apiService.getData<ODataProductDTO>(api, null);
   }
 
+  getProductOnShopCart(params: string): Observable<OdataProductShopCartDto>{
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetProductOnShopCart?${params}&$count=true`,
+        method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
   getProductCombo(params: string): Observable<ODataProductDTOV2> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?%24format=json&${params}&%24count=true`,
@@ -53,16 +62,17 @@ export class OdataProductService extends BaseSevice {
         logic: "and",
         filters: []
     }
-
-    // dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true });
     dataFilter.logic = "and";
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
+        let text = TDSHelperString.stripSpecialChars(filterObj?.searchText.toLocaleLowerCase().trim());
         dataFilter.filters.push( {
             filters: [
-              { field: "NameGet", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "UOMName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "DefaultCode", operator: OperatorEnum.contains, value: filterObj.searchText }
+              { field: "Name", operator: OperatorEnum.contains, value: text },
+              { field: "NameGet", operator: OperatorEnum.contains, value: text },
+              { field: "UOMName", operator: OperatorEnum.contains, value: text },
+              { field: "DefaultCode", operator: OperatorEnum.contains, value: text },
+              { field: "Barcode", operator: OperatorEnum.contains, value: text }
             ],
             logic: 'or'
         })

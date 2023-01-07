@@ -54,6 +54,11 @@ export interface SyncCreateProductTemplateDto {
   productTmpl: ProductTemplateV2DTO;
 }
 
+export interface StoragePriceListItemsDto {
+  Id: any;
+  Value: {[key: string] : number };
+}
+
 export enum InventoryChangeType {
   _EDIT_LIVECAMPAIGN_POST = "_EDIT_LIVECAMPAIGN_POST",
   _TAB_ORDER = "_TAB_ORDER",

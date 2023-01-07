@@ -139,7 +139,7 @@ export class EditLiveCampaignComponent implements OnInit {
   }
 
   eventEmitter() {
-    this.productTemplateService.onLoadingLiveCampaign$.subscribe({
+    this.productTemplateService.onLoadingLiveCampaign$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: boolean) => {
         this.isLoading = res;
       }
@@ -268,14 +268,16 @@ export class EditLiveCampaignComponent implements OnInit {
         this._form.controls['ConfigObject'].patchValue(exist);
     }
 
-    this.initFormDetails(data.Details);
-    this.getLstOrderTags(data.Details)
+    let details = data.Details;
+    this.initFormDetails(details);
+    this.getLstOrderTags(details)
 
     this.datePicker = [data.StartDate, data.EndDate];
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
   }
 
   initFormDetails(details: any[]) {
+    details = details?.sort((a, b) => Date.parse(b.DateCreated) - Date.parse(a.DateCreated));
     details?.forEach(x => {
         this.detailsForm.push(this.initDetail(x));
     });

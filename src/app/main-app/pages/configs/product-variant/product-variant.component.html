@@ -45,14 +45,21 @@
                                 <a class="text-neutral-1-900 text-body-2 font-regular">Hết hiệu lực</a>
                             </div>
                         </div>
-                        <div class="w-full">
-                            <div tds-dropdown-item class="px-3 py-4" (click)="addProductToPageFB()">
-                                <a class="text-neutral-1-900 text-body-2 font-regular">Thêm SP vào Page</a>
+
+                        <div *ngIf="selected == 0" class="w-full">
+                            <div tds-dropdown-item class="px-3 py-4" (click)="addProductOnPageFB()">
+                                <a class="text-neutral-1-900 text-body-2 font-regular">Thêm sản phẩm vào Page</a>
                             </div>
                         </div>
-                        <div class="w-full">
-                            <div tds-dropdown-item class="px-3 py-4" (click)="deleteProductToPageFB()">
-                                <a class="text-neutral-1-900 text-body-2 font-regular">Xóa SP trong Page</a>
+                        <div  class="w-full">
+                            <div tds-dropdown-item class="px-3 py-4" (click)="deleteProductOnPageFB()">
+                                <a class="text-neutral-1-900 text-body-2 font-regular">Xóa sản phẩm trong Page</a>
+                            </div>
+                        </div>
+
+                        <div *ngIf="selected == 0" class="w-full">
+                            <div tds-dropdown-item class="px-3 py-4" (click)="addProductOnShopCart()">
+                                <a class="text-neutral-1-900 text-body-2 font-regular">Thêm sản phẩm vào giỏ hàng</a>
                             </div>
                         </div>
                     </tds-dropdown-menu>

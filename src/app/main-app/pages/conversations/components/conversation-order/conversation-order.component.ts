@@ -1,4 +1,4 @@
-import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
+import { InventoryChangeType, StoragePriceListItemsDto } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { SocketOnEventService, SocketEventSubjectDto } from '@app/services/socket-io/socket-onevent.service';
@@ -7,7 +7,7 @@ import { ProductTemplateUOMLineService } from './../../../../services/product-te
 import { ChangeDetectionStrategy, ChangeDetectorRef, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { takeUntil } from 'rxjs';
+import { takeUntil, pipe } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -235,7 +235,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       next: (res: SocketEventSubjectDto) => {
         if(!res) return;
 
-        switch(res.EventName) {
+        switch(res?.EventName) {
             case ChatmoniSocketEventName.onCreatedSaleOnline_Order:
               let fbCreated = {...res?.Data} as OnSocketOnSaleOnline_OrderDto;
               let exit1 = res && fbCreated && fbCreated.Data?.Facebook_PostId == this.quickOrderModel?.Facebook_PostId
@@ -1089,12 +1089,21 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   showModalConfigProduct() {
-    this.modal.create({
+    const modal = this.modal.create({
         title: 'Chọn bảng giá',
         content: TpageConfigProductComponent,
         size: "lg",
         viewContainerRef: this.viewContainerRef
     });
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: StoragePriceListItemsDto) => {
+          let exist = res && Object.keys(res.Value || {}).length > 0;
+          if(exist) {
+            this.productIndexDB();
+          }
+        }
+    })
   }
 
   showModalListProduct(){

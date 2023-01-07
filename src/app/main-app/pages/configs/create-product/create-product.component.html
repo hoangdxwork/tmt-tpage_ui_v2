@@ -4,16 +4,21 @@
       <div class="flex flex-col w-full bg-white rounded-t-xl">
         <div class="flex flex-row items-center justify-between px-4 py-3">
           <div class="flex flex-row items-center">
-            <button tds-flat-button-icon size="md" type="button" (click)="backToMain()"  type="button">
+            <button tds-flat-button-icon size="md" type="button" (click)="onBack()"  type="button">
               <span class="flex items-center">
                 <i class="tdsi-back-fill text-xl leading-5"></i>
               </span>
             </button>
             <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">{{ id ? "CHỈNH SỬA SẢN PHẨM" : "THÊM MỚI SẢN PHẨM" }}</span>
           </div>
-          <button tds-button color="primary" type="submit" class="min-w-[100px]" (click)="onSave()">
-            <span class="text-body-2 font-semibold">Lưu</span>
-          </button>
+          <div class="flex flex-row items-center gap-x-4">
+            <button *ngIf="id" tds-button color="primary" type="submit" class="min-w-[100px]" (click)="routeToCreate()">
+              <span class="text-body-2 font-semibold">Thêm mới</span>
+            </button>
+            <button tds-button color="primary" type="submit" class="min-w-[100px]" (click)="onSave()">
+              <span class="text-body-2 font-semibold">Lưu</span>
+            </button>
+          </div>
         </div>
         <div class="flex flex-col p-4">
           <div class="flex flex-row items-center justify-start w-full pb-6">
@@ -189,8 +194,8 @@
                 </tds-error>
               </tds-form-field>
 
-              <tds-label>Đơn vị mua<span class="text-error-400">*</span> :</tds-label>
-              <tds-form-field class="w-full col-span-2">
+              <tds-label *ngIf="!saleConfig?.SaleSetting || saleConfig.SaleSetting?.GroupUOM == 1">Đơn vị mua<span class="text-error-400">*</span> :</tds-label>
+              <tds-form-field *ngIf="!saleConfig?.SaleSetting || saleConfig.SaleSetting?.GroupUOM == 1" class="w-full col-span-2">
                 <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị' disabledField="isActive"
                   formControlName="UOMPO" [valuePrimitive]="false" [data]="UOMPOList" [allowClear]="false" [required]="true"
                   [optionOverflowSize]="5">
@@ -476,16 +481,16 @@
 
           <div class="flex flex-col gap-y-8 justify-center items-center" *ngIf="lstVariants.length > 0; else tableAttribute">
             <div class="w-full">
-              <tds-table #variantsTable [widthConfig]="['6%','34%','20%','20%','20%']" [listData]="lstVariants" [showPagination]="false">
+              <tds-table #variantsTable [listData]="lstVariants" [showPagination]="false">
                 <thead>
                   <tr>
                     <th width="6%">STT</th>
                     <th width="24%">Tên</th>
                     <!-- <th width="30%">Mã chốt đơn</th> -->
                     <th width="20%">Giá</th>
-                    <th width="20%">Số lượng</th>
-                    <th width="15%">Hoạt động</th>
-                    <th width="15%">Thao tác</th>
+                    <th width="20%" [align]="'center'">Số lượng</th>
+                    <th width="15%" [align]="'center'">Hoạt động</th>
+                    <th width="15%" [align]="'center'">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -513,17 +518,21 @@
                         class="text-neutral-1-900 text-body-2 font-regular">
                       </tds-input-number>
                     </td>
-                    <td>
-                      <tds-input-number [(ngModel)]="data.QtyAvailable" [ngModelOptions]="{standalone: true}"
+                    <td class="text-center">
+                      <tds-input-number *ngIf="!id" [(ngModel)]="data.QtyAvailable" [ngModelOptions]="{standalone: true}"
                         [min]="0" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">
                       </tds-input-number>
+
+                      <div *ngIf="id">
+                        {{ data.QtyAvailable | numberCustom }}
+                      </div>
                     </td>
-                    <td>
+                    <td class="text-center">
                       <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
                     </td>
                     <td>
-                      <div class="flex flex-row items-center gap-x-1">
-                        <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
+                      <div class="flex flex-row items-center justify-center w-full gap-x-1">
+                        <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2" *ngIf="id"
                           (click)="showEditVariantsModal(data)">
                           <span class="flex items-center">
                             <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>

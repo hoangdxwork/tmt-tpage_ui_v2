@@ -54,9 +54,9 @@
             </div>
             <!-- variants - add product -->
             <div *ngIf="!isEdit">
-                <div *ngFor="let line of attributeLines; let i = index" class="grid grid-cols-4 gap-x-6 items-end">
+                <div *ngFor="let line of lstAttributeLine; let i = index" class="grid grid-cols-4 gap-x-6 items-end">
                     <tds-label class="mt-4">{{ line?.Attribute?.Name }}</tds-label>
-                    <tds-form-field class="w-full col-span-3 mt-4" *ngIf="!editModel">
+                    <tds-form-field class="w-full col-span-3 mt-4" *ngIf="!lstProductVariant">
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn loại sản phẩm'
                             disabledField="isActive" [valuePrimitive]="false"
                             (selectChange)="onChangeAttribute($event,line.AttributeId)" [data]="line?.Values || []"
@@ -70,7 +70,7 @@
             </div>
 
             <div *ngIf="isEdit">
-                <div *ngFor="let value of editModel.AttributeValues; let i = index"
+                <div *ngFor="let value of lstProductDefault.AttributeValues; let i = index"
                     class="grid grid-cols-4 gap-x-6 items-end">
                     <tds-label class="mt-4">{{ value.AttributeName }}</tds-label>
                     <tds-tag status='secondary' rounded="rounded-full" class="w-fit h-fit col-span-3 mt-4">

@@ -172,9 +172,9 @@
             </form>
         </tds-tab>
         <tds-tab *ngIf="type == 'liveCampaign'" title="Biến thể" clsContent="h-full w-full pb-2.5 border-t border-neutral-2-200">
-            <div class="flex flex-col gap-y-8 justify-center items-center" *ngIf="lstVariants.length > 0; else tableAttribute">
+            <div class="flex flex-col gap-y-8 justify-center items-center" *ngIf="lstProductVariant.length > 0; else tableAttribute">
                 <div class="w-full h-[350px]">
-                    <tds-table #variantsTable [listData]="lstVariants" [showPagination]="false" [scroll]="{y:'auto'}">
+                    <tds-table #variantsTable [listData]="lstProductVariant" [showPagination]="false" [scroll]="{y:'auto'}">
                       <thead>
                         <tr>
                           <th width="6%">STT</th>
@@ -188,7 +188,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let data of lstVariants; let i = index">
+                        <tr *ngFor="let data of lstProductVariant; let i = index">
                           <td>{{ 1 + i }}</td>
                           <td>
                             <div tds-tooltip [tooltipTitle]="data.ImageUrl?'Xem ảnh':'Tải ảnh'">
@@ -227,12 +227,12 @@
                             <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
                           </td>
                           <td class="w-full text-center">
-                            <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
+                            <!-- <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
                               (click)="showEditVariantsModal(data)">
                               <span class="flex items-center">
                                 <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
                               </span>
-                            </button>
+                            </button> -->
                             <button tds-button-icon color="secondary" type="button" size="sm"
                               (click)="removeVariants(data)">
                               <span class="flex items-center">

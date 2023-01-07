@@ -16,6 +16,7 @@ import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
 
 @Component({
   selector: 'product-variant',
@@ -45,9 +46,8 @@ export class ListProductVariantComponent implements OnInit {
     searchText: ''
   }
   idsModel: any = [];
-  //#endregion Declare
+  teamShopCart!: CRMTeamDTO;
 
-  //#region Initallization
   constructor(private router: Router,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
@@ -56,15 +56,15 @@ export class ListProductVariantComponent implements OnInit {
     private message: TDSMessageService,
     private crmTeamService: CRMTeamService,
     private productService: ProductService,
+    private productShopCartService: ProductShopCartService,
     private excelExportService: ExcelExportService) {
   }
 
   ngOnInit(): void {
     this.loadTeamData();
+    this.loadInitShopCart();
   }
-  //#endregion Initallization
 
-  //#region Api-request
   loadData(pageSize: number, pageIndex: number) {
     this.lstOfData = [];
 
@@ -72,7 +72,6 @@ export class ListProductVariantComponent implements OnInit {
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null);
 
     this.isLoading = true;
-
     this.getViewData(params).subscribe({
       next:(res: any) => {
         if(res && res.value && TDSHelperArray.isArray(res.value)) {
@@ -89,6 +88,17 @@ export class ListProductVariantComponent implements OnInit {
     });
   }
 
+  loadInitShopCart() {
+    this.productShopCartService.initShopCart().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (team: any) => {
+          this.teamShopCart = team;
+      },
+      error: (err: any) => {
+          this.message.error(err?.error?.message);
+      }
+    })
+  }
+
   private getViewData(params: string): Observable<ODataProductDTO> {
     if (this.selected == 0) {
       return this.odataProductService.getView(params).pipe(takeUntil(this.destroy$));
@@ -102,12 +112,9 @@ export class ListProductVariantComponent implements OnInit {
       this.team = team as any;
     });
   }
-  //#endregion Api-request
 
-  //#region Handle
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
-
     this.loadData(params.pageSize, params.pageIndex);
   }
 
@@ -133,9 +140,9 @@ export class ListProductVariantComponent implements OnInit {
 
     this.getViewData(params).subscribe({
       next: (res: any) => {
-        if(res && res.value && TDSHelperArray.isArray(res.value)) {
-          this.count = res['@odata.count'] as number;
-          this.lstOfData = [...res.value];
+        if(res && res.value) {
+            this.count = res['@odata.count'] as number;
+            this.lstOfData = [...(res.value || [])];
         }
 
         this.isLoading = false;
@@ -159,102 +166,143 @@ export class ListProductVariantComponent implements OnInit {
   }
 
   setActive(type: string) {
-    if (this.checkValueEmpty() == 1) {
-      switch (type) {
-        case 'active':
-          let active = { Active: true, Ids: this.idsModel };
-          this.productService.setActive({ model: active }).pipe(takeUntil(this.destroy$)).subscribe({
+    if (this.checkValueEmpty() == 0) return;
+
+    switch (type) {
+      case 'active':
+        let active = { Active: true, Ids: this.idsModel };
+        this.isLoading = true;
+
+        this.productService.setActive({ model: active }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-              this.message.success("Đã mở hiệu lực thành công!");
-              this.loadData(this.pageSize, this.pageIndex);
+                this.isLoading = false;
+                this.message.success("Đã mở hiệu lực thành công!");
+                this.loadData(this.pageSize, this.pageIndex);
             },
             error: (err) => {
+              this.isLoading = false;
               this.message.error(err?.error?.message || 'Mở hiệu lực thất bại!');
             }
-          })
-          break;
+        })
+        break;
 
-        case 'unactive':
-          let unactive = { Active: false, Ids: this.idsModel }
-          this.productService.setActive({ model: unactive }).pipe(takeUntil(this.destroy$)).subscribe({
+      case 'unactive':
+        let unactive = { Active: false, Ids: this.idsModel };
+        this.isLoading = true;
+
+        this.productService.setActive({ model: unactive }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-              this.message.success("Đã hết hiệu lực!");
-              this.loadData(this.pageSize, this.pageIndex);
+                this.isLoading = false;
+                this.message.success("Đã hết hiệu lực!");
+                this.loadData(this.pageSize, this.pageIndex);
             },
             error: (err) => {
-              this.message.error(err?.error?.message || 'Đóng hiệu lực thất bại!');
+                this.isLoading = false;
+                this.message.error(err?.error?.message || 'Đóng hiệu lực thất bại!');
             }
-          })
-          break;
+        })
+        break;
 
-        default:
-          break;
-      }
+      default:
+        break;
     }
   }
 
-  addProductToPageFB() {
-    if (this.checkValueEmpty() == 1) {
-      let model = { PageId: this.team.ChannelId, ProductIds: this.idsModel };
+  addProductOnPageFB() {
+    if (this.checkValueEmpty() == 0) return;
 
-      this.productService.checkExitProductOnPageFB({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res: any) => {
-          if (!TDSHelperArray.hasListValue(res.value)) {
-            this.message.error("Sản phẩm đã tồn tại trong page");
-          } else {
-            let data = {
-              model: { PageId: this.team.ChannelId, ProductIds: res.value }
-            }
-            this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
-              next: (res: any) => {
-                this.message.success("Thao tác thành công");
-              },
-              error: (err) => {
-                this.message.error(err?.error?.message || "Thêm mới sản phẩm vào page thất bại");
-              }
-            });
+    let model = { PageId: this.team.ChannelId, ProductIds: this.idsModel };
+    this.isLoading = true;
+    this.productService.checkExitProductOnPageFB({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          if (res && res.value && res.value.length == 0) {
+              this.isLoading = false;
+              this.message.error("Sản phẩm đã tồn tại trong Page");
+              return;
           }
-        },
-        error: (err) => {
+
+          let data = {
+            model: { PageId: this.team.ChannelId, ProductIds: res.value }
+          }
+
+          this.productService.addProductOnFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                this.isLoading = false;
+                this.message.success("Thêm sản phẩm vào Page thành công");
+                return;
+            },
+            error: (err) => {
+                this.isLoading = false;
+                this.message.error(err?.error?.message);
+                return;
+            }
+          });
+      },
+      error: (err) => {
+          this.isLoading = false;
           this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
-        }
-      });
-    }
+          return;
+      }
+    });
   }
 
-  deleteProductToPageFB() {
-    if (this.checkValueEmpty() == 1) {
-      let data = {
-        model:{
+  deleteProductOnPageFB() {
+    if (this.checkValueEmpty() == 0) return;
+    let data = {
+      model:{
           PageId: this.team.ChannelId,
           ProductIds: this.idsModel
-        }
-      };
+      }
+    };
 
-      this.productService.deleteProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res) => {
-          this.message.success('Đã xóa sản phẩm khỏi page');
-          this.onSelectChange(this.selected);
-          return;
-        },
-        error: (err) => {
-          this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
-        }
-      })
+    this.isLoading = true;
+    this.productService.deleteProductOnFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.message.success('Đã xóa sản phẩm khỏi Page');
+        this.onSelectChange(this.selected);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!');
+      }
+    })
+  }
+
+  addProductOnShopCart() {
+    if (this.checkValueEmpty() == 0) return;
+    let team = this.teamShopCart as CRMTeamDTO;
+    if(!team) {
+        this.message.error('Không tìm thấy CRMTeam ShopCart');
+        return;
+    };
+
+    let model = {
+      TeamId: team.Id,
+      Ids: this.idsModel
     }
+
+    this.isLoading = true;
+    this.productShopCartService.addProductOnShopCart({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.isLoading = false;
+          this.message.success("Thêm sản phẩm vào giỏ hàng thành công");
+      },
+      error: (err: any) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message);
+      }
+    })
   }
 
   exportExcel() {
-    if (this.isProcessing) {
-      return
-    }
-
+    if (this.isProcessing) return;
     let state = {
       skip: 0,
       take: 20,
       filter: {
         filters: [],
-        logic: "and",
+        logic: "and"
       }
     };
 
@@ -302,9 +350,7 @@ export class ListProductVariantComponent implements OnInit {
     this.checked = this.lstOfData.every(x => this.setOfCheckedId.has(x.Id));
     this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
-  //#endregion Handle
 
-  //#region Modal
   showEditModal(id: number) {
     let modal = this.modalService.create({
       title: 'Cập nhật biến thể sản phẩm',
@@ -363,7 +409,7 @@ export class ListProductVariantComponent implements OnInit {
             }
           };
 
-          this.productService.deleteProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
+          this.productService.deleteProductOnFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res) => {
               this.message.success('Đã xóa sản phẩm khỏi page')
               this.onSelectChange(this.selected);
@@ -380,5 +426,5 @@ export class ListProductVariantComponent implements OnInit {
       })
     }
   }
-  //#endregion Modal
+
 }

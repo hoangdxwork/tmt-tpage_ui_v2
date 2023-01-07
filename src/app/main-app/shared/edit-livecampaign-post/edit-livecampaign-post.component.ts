@@ -335,7 +335,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
         this._form.controls['ConfigObject'].patchValue(exist);
     }
 
-    this.initFormDetails(data.Details);
+    let details = data.Details;
+    this.initFormDetails(details);
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
     this.getLstOrderTags(data.Details);
   }
@@ -395,6 +396,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   initFormDetails(details: any[]) {
+    details = details?.sort((a, b) => Date.parse(b.DateCreated) - Date.parse(a.DateCreated))
     details?.forEach(x => {
         this.detailsForm.push(this.initDetail(x));
     });
@@ -897,6 +899,11 @@ export class EditLiveCampaignPostComponent implements OnInit {
         return 0;
     }
 
+    if(formValue.StartDate && formValue.EndDate && formValue.StartDate.getTime() > formValue.EndDate.getTime()) {
+      this.message.error('Ngày kết thúc phải sau ngày bắt đầu');
+      return 0;
+    }
+
     return 1;
   }
 
@@ -958,7 +965,8 @@ export class EditLiveCampaignPostComponent implements OnInit {
       next: (res: any) => {
           if(!res) return;
 
-          this.initFormDetails(res.Details);
+          let details = res.Details;
+          this.initFormDetails(details);
           this.livecampaignSimpleDetail = [...this.detailsForm.value];
           this.isLoading = false;
       },

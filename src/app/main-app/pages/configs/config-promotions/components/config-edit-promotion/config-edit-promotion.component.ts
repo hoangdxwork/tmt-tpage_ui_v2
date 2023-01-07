@@ -88,15 +88,18 @@ export class ConfigEditPromotionComponent implements OnInit {
 
   getById(id: number) {
     this.isLoading = true;
-    this.saleCouponProgramService.getById(id)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
+
+    this.saleCouponProgramService.getById(id).pipe().subscribe({
+      next: (res: any) => {
         this.dataEdit = res;
         this.updateForm(res);
-      }, error => {
-        this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
+        this.isLoading = false;
+      }, error : (err) => {
+        this.isLoading = false;
+        this.message.error(`${err?.error?.message}` || Message.ErrorOccurred);
         this.redirectList();
-      });
+      }
+    })
   }
 
   updateForm(value: SaleCouponProgramDTO) {
@@ -133,18 +136,21 @@ export class ConfigEditPromotionComponent implements OnInit {
   }
 
   onSave() {
+    if(this.isLoading) return;
     this.isLoading = true;
     this.prepareModel();
 
     if(this.checkValueForm(this.dataEdit) == 1) {
-      this.saleCouponProgramService.update(this.promotionId, this.dataEdit)
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe(res => {
+      this.saleCouponProgramService.update(this.promotionId, this.dataEdit).pipe().subscribe({
+        next: (res) => {
           this.redirectList();
+          this.isLoading = false;
           this.message.success(Message.UpdatedSuccess);
-        }, error => {
-          this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
-        });
+        }, error: (err) => {
+          this.isLoading = false;
+          this.message.error(`${err?.error?.message}` || Message.ErrorOccurred);
+        }
+      })
     }
     else {
       this.isLoading = false;
@@ -188,6 +194,8 @@ export class ConfigEditPromotionComponent implements OnInit {
     this.dataEdit.CompanyId = formValue.Company?.Id;
 
     this.dataEdit.RewardType = formValue.RewardType;
+    this.dataEdit.RewardProductId = formValue.RewardProductId;
+    this.dataEdit.RewardProduct = formValue.RewardProduct;
     this.dataEdit.PromoApplicability = formValue.PromoApplicability;
 
     this.dataEdit.DiscountType = formValue.DiscountType;
@@ -205,10 +213,10 @@ export class ConfigEditPromotionComponent implements OnInit {
     this.dataEdit.NoIncrease = formValue.NoIncrease;
     this.dataEdit.MaximumUseNumber = formValue.MaximumUseNumber;
 
-    this.prepareReward();
+    this.prepareDetail();
   }
 
-  prepareReward() {
+  prepareDetail() {
     if(TDSHelperArray.hasListValue(this.dataEdit?.Details)) {
       this.dataEdit?.Details?.forEach(detail => {
         this.setReward(detail);

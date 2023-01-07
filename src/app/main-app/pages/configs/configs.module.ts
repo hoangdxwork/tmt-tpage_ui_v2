@@ -37,7 +37,6 @@ import { OdataCRMTagService } from '../../services/mock-odata/odata-crmtag.servi
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { OdataQuickReplyService } from '../../services/mock-odata/odata-quick-reply.service';
 import { RestSMSService } from '../../services/sms.service';
-import { ProductService } from '../../services/product.service';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 import { ModalUpdateUserComponent } from './components/modal-update-user/modal-update-user.component';
 import { ModalChangePasswordComponent } from './components/modal-change-password/modal-change-password.component';
@@ -123,6 +122,8 @@ import { PartnerStatusComponent } from './components/partner-status/partner-stat
 import { DeliveryListComponent } from './components/delivery-list/delivery-list.component';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 import { AccountJournalService } from '@app/services/account-journal.service';
+import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
+import { ProductShopCartComponent } from './product-shopcart/product-shopcart.component';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -150,6 +151,7 @@ const SERVICES = [
     StockChangeProductQtyService,
     FirebaseRegisterService,
     AccountJournalService,
+    ProductShopCartService
 ]
 
 @NgModule({
@@ -211,6 +213,7 @@ const SERVICES = [
     CreateOrderStatusComponent,
     PartnerStatusComponent,
     DeliveryListComponent,
+    ProductShopCartComponent
   ],
   imports: [
     CommonModule,
