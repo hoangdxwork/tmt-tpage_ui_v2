@@ -70,19 +70,21 @@
                 </tds-form-field>
             </div>
             <!-- Nội dung phản hồi -->
-            <tds-form-field>
+            <div>
                 <tds-label>Nội dung phản hồi tự động:</tds-label>
-                <textarea class="resize-none" tdsInput placeholder="Nhập nội dung" formControlName="ContentForAutoReplyWithComment"></textarea>
-            </tds-form-field>
+                <!-- <textarea class="resize-none" tdsInput placeholder="Nhập nội dung" formControlName="ContentForAutoReplyWithComment"></textarea> -->
+                <quill-editor [spellcheck]="false" placeholder="Nhập nội dung" formControlName="ContentForAutoReplyWithComment" [modules]="quillTagHelpers" class="input-quill-editor"></quill-editor>
+            </div>
             <!-- Phản hồi với tin nhắn -->
             <div class="flex gap-x-2 items-center">
                 <tds-switch formControlName="IsEnableAutoReplyCommentInMessage" size="md"></tds-switch>
                 <span class="">Phản hồi với tin nhắn?</span>
             </div>
-            <tds-form-field *ngIf="formConfigAutoReply.value?.IsEnableAutoReplyCommentInMessage">
+            <div *ngIf="formConfigAutoReply.value?.IsEnableAutoReplyCommentInMessage">
                 <tds-label>Nội dung phản hồi với tin nhắn:</tds-label>
-                <textarea class="resize-none" tdsInput placeholder="Nhập nội dung" formControlName="ContentForAutoReplyWithMessage"></textarea>
-            </tds-form-field>
+                <!-- <textarea class="resize-none" tdsInput placeholder="Nhập nội dung" formControlName="ContentForAutoReplyWithMessage"></textarea> -->
+                <quill-editor [spellcheck]="false" placeholder="Nhập nội dung" formControlName="ContentForAutoReplyWithMessage" [modules]="quillTagHelpers" class="input-quill-editor"></quill-editor>
+            </div>
         </div>
     </div>
   </form>
