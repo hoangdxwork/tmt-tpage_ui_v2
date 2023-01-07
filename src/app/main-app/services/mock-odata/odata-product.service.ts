@@ -62,16 +62,17 @@ export class OdataProductService extends BaseSevice {
         logic: "and",
         filters: []
     }
-
-    // dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true });
     dataFilter.logic = "and";
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
+        let text = TDSHelperString.stripSpecialChars(filterObj?.searchText.toLocaleLowerCase().trim());
         dataFilter.filters.push( {
             filters: [
-              { field: "NameGet", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "UOMName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "DefaultCode", operator: OperatorEnum.contains, value: filterObj.searchText }
+              { field: "Name", operator: OperatorEnum.contains, value: text },
+              { field: "NameGet", operator: OperatorEnum.contains, value: text },
+              { field: "UOMName", operator: OperatorEnum.contains, value: text },
+              { field: "DefaultCode", operator: OperatorEnum.contains, value: text },
+              { field: "Barcode", operator: OperatorEnum.contains, value: text }
             ],
             logic: 'or'
         })
