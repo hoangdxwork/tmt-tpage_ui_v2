@@ -65,6 +65,7 @@ export class EditLiveCampaignComponent implements OnInit {
   companyCurrents!: CompanyCurrentDTO;
 
   lstOrderTags!: string[];
+  lstImage: {[key: string]: string} = {};
 
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
@@ -135,6 +136,7 @@ export class EditLiveCampaignComponent implements OnInit {
     this.loadUser();
     this.loadQuickReply();
     this.loadCurrentCompany();
+    this.loadImageDetails();
     this.eventEmitter();
   }
 
@@ -176,6 +178,15 @@ export class EditLiveCampaignComponent implements OnInit {
       error:(error) => {
           this.isLoading = false;
           this.message.error(error?.error?.message);
+      }
+    })
+  }
+
+  loadImageDetails() {
+    let id = this.liveCampaignId;
+    this.liveCampaignService.getImageDetails(id).pipe().subscribe({
+      next: (res: any) => {
+        this.lstImage = res
       }
     })
   }
@@ -274,7 +285,11 @@ export class EditLiveCampaignComponent implements OnInit {
 
     this.datePicker = [data.StartDate, data.EndDate];
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
+    console.log(this.livecampaignSimpleDetail);
+
   }
+
+
 
   initFormDetails(details: any[]) {
     details = details?.sort((a, b) => Date.parse(b.DateCreated) - Date.parse(a.DateCreated));

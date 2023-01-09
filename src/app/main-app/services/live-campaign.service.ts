@@ -411,4 +411,13 @@ export class LiveCampaignService extends BaseSevice {
     }
   }
 
+  getImageDetails(id: string): Observable<any>{
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/rest/v1.0/saleonine_livecampaign/${id}/imagedetails`,
+        method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
 }
