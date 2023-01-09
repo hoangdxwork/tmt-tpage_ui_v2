@@ -42,7 +42,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   _form!: FormGroup;
-  @Input() id?: string;
+  @Input() liveCampaignId?: string;
   @Input() itemProduct!: LiveCampaignSimpleDetail;
 
   selectedIndex: number = 0;
@@ -84,6 +84,9 @@ export class EditLiveCampaignPostComponent implements OnInit {
   changedData: boolean = false
 
   lstOrderTags!: string[];
+
+  isShowEditLimitedQuantity!: boolean;
+  limitedQuantityAll: number = 0;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null) {
@@ -128,7 +131,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if(this.id) {
+    if(this.liveCampaignId) {
       this.loadData();
     }
 
@@ -173,7 +176,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   createForm() {
     this._form = this.fb.group({
-      Id: [this.id],
+      Id: [this.liveCampaignId],
       Details: this.fb.array([]),
       Config: [null],
       ConfigObject: [null],// xóa khi lưu
@@ -287,7 +290,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   loadData() {
-    let id = this.id as string;
+    let id = this.liveCampaignId as string;
     this.isLoading = true;
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
@@ -328,7 +331,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   updateForm(data: any) {
     this._form.patchValue(data);
-    this._form.controls['Id'].setValue(this.id);
+    this._form.controls['Id'].setValue(this.liveCampaignId);
 
     let exist = this.lstConfig.filter((x: any) => x.value === data.Config)[0];
     if(exist) {
@@ -428,7 +431,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     });
 
     if(x) {
-        x.LiveCampaign_Id = this.id;
+        x.LiveCampaign_Id = this.liveCampaignId;
         item.patchValue(x);
     }
 
@@ -436,7 +439,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   removeDetail(item: LiveCampaignSimpleDetail) {
-    let id = this.id as string;
+    let id = this.liveCampaignId as string;
     this.isLoading = true;
     this.liveCampaignService.deleteDetails(id, [item.Id]).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
@@ -476,7 +479,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
         content: 'Xác nhận xóa tất cả sản phẩm trong chiến dịch',
         onOk: () => {
             this.isLoading = true;
-            let id = this.id as string;
+            let id = this.liveCampaignId as string;
 
             this.liveCampaignService.deleteDetails(id, ids).pipe(takeUntil(this.destroy$)).subscribe({
               next: (res: any) => {
@@ -568,7 +571,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
                       Price: (x.Price || 0),
                       Note: null,
                       ProductId: x.Id,
-                      LiveCampaign_Id: this.id,
+                      LiveCampaign_Id: this.liveCampaignId,
                       ProductName: x.Name,
                       ProductNameGet: x.NameGet,
                       UOMId: x.UOMId,
@@ -631,7 +634,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
               Price: x.Price || 0,
               Note: null,
               ProductId: x.Id,
-              LiveCampaign_Id: this.id,
+              LiveCampaign_Id: this.liveCampaignId,
               ProductName: x.Name,
               ProductNameGet: x.NameGet,
               UOMId: x.UOMId,
@@ -783,7 +786,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   }
 
   addProductLiveCampaignDetails(items: LiveCampaignSimpleDetail[]) {
-    let id = this.id as string;
+    let id = this.liveCampaignId as string;
     items.map(x => {
       if(x && x.Tags) {
           x.Tags = x.Tags.toString();
@@ -861,7 +864,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
         model.Facebook_UserName = team.Name;
     }
 
-    let id = this.id as string;
+    let id = this.liveCampaignId as string;
     this.onUpdateSimple(id, model);
   }
 
@@ -959,7 +962,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.detailsForm.clear();
     this.livecampaignSimpleDetail = [];
 
-    let id = this.id as string;
+    let id = this.liveCampaignId as string;
     this.isLoading = true;
     this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
@@ -1110,5 +1113,43 @@ export class EditLiveCampaignPostComponent implements OnInit {
             this.lstOrderTags = tags.split(',');
         }
       }
+  }
+
+  
+  showEditLimitedQuantity() {
+    let formDetails = this.detailsForm.value as any[];
+
+    if(formDetails && formDetails.length > 0) {
+        this.isShowEditLimitedQuantity = true;
+    } 
+    else {
+        this.message.error('Chưa có sản phẩm nào trong danh sách');
+        this.isShowEditLimitedQuantity = false;
     }
+  }
+
+  onPopoverVisibleLimitedQuantityChange(event: boolean) {
+    if(!event) {
+        this.limitedQuantityAll = 0;
+    }
+  }
+
+  onSavePopover() {
+    this.isLoading = true;
+    let id = this.liveCampaignId as string;
+    this.liveCampaignService.applyLimitQuantity(id, { quantity: this.limitedQuantityAll}).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.refreshData();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err.error?.message);
+      }
+    });
+    
+  }
+
+  onClosePopover() {
+    this.isShowEditLimitedQuantity = false;
+  }
 }

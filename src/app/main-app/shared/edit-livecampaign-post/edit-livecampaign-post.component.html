@@ -235,9 +235,18 @@
                                     </div>
                                   </th>
 
-                                  <th width="10%">Trạng thái</th>
-                                  <th width="13%" class="text-center">Số lượng</th>
-                                  <th width="13%" class="text-center">Giới hạn trên đơn</th>
+                                  <th width="10%" class="text-center">Trạng thái</th>
+                                  <th width="10%" class="text-center">Số lượng</th>
+                                  <th width="16%" class="text-center">
+                                    <span class="flex justify-center items-center gap-x-2">
+                                      Giới hạn trên đơn
+                                      <span class="relative z-20 tdsi-edit-2-fill text-neutral-1-500 leading-none cursor-pointer" (click)="showEditLimitedQuantity()">
+                                        <span tds-tooltip="Chỉnh sửa giới hạn trên đơn cho tất cả" class=" inset-0 absolute z-0"
+                                        tds-popover  popoverTrigger="click" [(popoverVisible)]="isShowEditLimitedQuantity" (popoverVisibleChange)="onPopoverVisibleLimitedQuantityChange($event)"
+                                        [popoverAutoClose]="false" [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate"></span>
+                                      </span>
+                                    </span>
+                                  </th>
                                   <th width="13%" class="text-center">Giá bán</th>
 
                                   <th width="13%" class="text-center">
@@ -257,7 +266,7 @@
                           </thead>
                           <tbody formArrayName="Details" >
                               <tr *ngFor="let detail of detailsForm.controls | simpleSearchV2: searchValue; let index = index" [formGroupName]="detail.value | indexSimpleDetailLiveCampain: detailsForm.controls"
-                                  [ngClass]="{'bg-primary-3':(isEditDetails[detail.value.Id]?.isEdit && id)}" id="dataSourceScroll{{index}}">
+                                  [ngClass]="{'bg-primary-3':(isEditDetails[detail.value.Id]?.isEdit && liveCampaignId)}" id="dataSourceScroll{{index}}">
 
                                   <td>{{ (detail.value | indexSimpleDetailLiveCampain: detailsForm.controls) + 1 }}</td>
 
@@ -340,7 +349,7 @@
                                   </td>
 
                                   <!-- Trạng thái -->
-                                  <td>
+                                  <td class="text-center">
                                     <div *ngIf="isEditDetails[detail.value.Id]?.isEdit">
                                         <tds-checkbox formControlName="IsActive" (ngModelChange)="onChangeIsActive($event, detail.value)"></tds-checkbox>
                                     </div>
@@ -433,7 +442,7 @@
 
     <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
         <button tds-button class="w-[100px]" color="secondary" (click)="onCancel(changedData)" type="button">Đóng</button>
-        <div *ngIf="(selectedIndex == 0 && id)" >
+        <div *ngIf="(selectedIndex == 0 && liveCampaignId)" >
           <button [disabled]="isSave" tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
         </div>
     </div>
@@ -441,6 +450,27 @@
   </form>
 </tds-spin>
 
-
-
-
+<ng-template #contentTemplate>
+  <div class="w-[304px]">
+      <tds-form-field>
+        <tds-label>Áp dụng giới hạn trên đơn cho tất cả</tds-label>
+        <tds-input-number [min]="0" [step]="1" [(ngModel)]="limitedQuantityAll"
+        [formatter]="numberWithCommas" [parser]="parserComas">
+      </tds-input-number>
+      </tds-form-field>
+  </div>
+</ng-template>
+<ng-template #footerTemplate>
+  <div class="flex justify-end pt-2">
+      <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="onClosePopover()">
+      <span class="flex items-center">
+          <i class="tdsi-close-fill"></i>
+      </span>
+      </button>
+      <button tds-button-icon size="sm" color="primary" (click)="onSavePopover()">
+      <span class="flex items-center">
+          <i class="tdsi-tick-fill"></i>
+      </span>
+      </button>
+  </div>
+</ng-template>

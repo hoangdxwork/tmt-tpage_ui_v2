@@ -411,4 +411,12 @@ export class LiveCampaignService extends BaseSevice {
     }
   }
 
+  applyLimitQuantity(liveCampaignId: string, data: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${liveCampaignId}/applylimitquantity`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api, data);
+  }
 }

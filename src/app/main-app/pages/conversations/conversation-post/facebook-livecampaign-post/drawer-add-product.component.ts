@@ -396,12 +396,11 @@ export class DrawerAddProductComponent implements OnInit {
       });
 
       modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: Array<AttributeLineDto>) => {
-        if (TDSHelperObject.hasValue(result)) {
+        if (result) {
           this.isLoading = true;
           this.lstAttributeLine = [...result];
 
           let model = this.prepareModel() as ProductTemplateDto;
-          // let suggestModel = AddProductHandler.prepareSuggestModel(model);
           model.AttributeLines = [...result];
 
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
