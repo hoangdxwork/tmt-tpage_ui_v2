@@ -67,6 +67,9 @@ export class EditLiveCampaignComponent implements OnInit {
   lstOrderTags!: string[];
   lstImage: {[key: string]: string} = {};
 
+  isShowEditLimitedQuantity!: boolean;
+  limitedQuantityAll: number = 0;
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -845,5 +848,41 @@ export class EditLiveCampaignComponent implements OnInit {
             this.lstOrderTags = tags.split(',');
         }
       }
+  }
+
+  showEditLimitedQuantity() {
+    let formDetails = this.detailsForm.value as any[];
+
+    if(formDetails && formDetails.length > 0) {
+        this.isShowEditLimitedQuantity = true;
+    } 
+    else {
+        this.message.error('Chưa có sản phẩm nào trong danh sách');
+        this.isShowEditLimitedQuantity = false;
     }
+  }
+
+  onPopoverVisibleChange(event: boolean) {
+    if(!event) {
+        this.limitedQuantityAll = 0;
+    }
+  }
+
+  onSavePopover() {
+    this.isLoading = true;
+    this.liveCampaignService.applyLimitQuantity(this.liveCampaignId, { quantity: this.limitedQuantityAll}).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.refreshData();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err.error?.message);
+      }
+    });
+    
+  }
+
+  onClosePopover() {
+    this.isShowEditLimitedQuantity = false;
+  }
 }
