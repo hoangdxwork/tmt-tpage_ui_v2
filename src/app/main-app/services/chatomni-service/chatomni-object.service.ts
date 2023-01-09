@@ -25,7 +25,6 @@ export class ChatomniObjectService extends BaseSevice  {
   }
 
   get(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {
-
     let queryString = null;
     if (queryObj) {
         queryString = Object.keys(queryObj).map((key: any): any => {
@@ -47,7 +46,6 @@ export class ChatomniObjectService extends BaseSevice  {
   }
 
   getLink(url: string): Observable<ChatomniObjectsDto> {
-
     let api: CoreAPIDTO = {
         url: `${url}`,
         method: CoreApiMethodType.get
@@ -56,7 +54,6 @@ export class ChatomniObjectService extends BaseSevice  {
   }
 
   getById(id: string, teamId: number): Observable<ChatomniObjectsItemDto> {
-
     let api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/object/${id}?teamId=${teamId}`,
         method: CoreApiMethodType.get
@@ -65,48 +62,37 @@ export class ChatomniObjectService extends BaseSevice  {
   }
 
   makeDataSource(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {
-
     this.urlNext = '';
     this.objFacade.dataSource = {};
 
     return this.get(teamId, queryObj).pipe(map((res: ChatomniObjectsDto) => {
-
-      // TODO: load dữ liệu lần đầu tiên
       if (TDSHelperObject.hasValue(res)) {
           this.objFacade.setData(teamId, res);
       }
 
       this.urlNext = res.Paging?.UrlNext;
-
       let result = this.objFacade.getData(teamId);
       return result;
 
     }), shareReplay({ bufferSize: 1, refCount: true }));
-
   }
 
   nextDataSource(teamId: number): Observable<ChatomniObjectsDto> {
-
     let exist = this.objFacade.getData(teamId);
-
     if (exist && !TDSHelperString.hasValueString(this.urlNext)) {
         return new Observable((obs: any) => {
             obs.next();
             obs.complete();
-        })
-    }
-
-    else {
+        });
+    } else {
       let url = this.urlNext as string;
       return this.getLink(url).pipe(map((res: ChatomniObjectsDto) => {
-
         if(res && res.Extras) {
           exist.Extras = {
               Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
               Childs: Object.assign({}, exist.Extras?.Childs, res.Extras?.Childs)
           }
         }
-
         // TODO: item đầu tiên trong list trả về bị trùng item cuối cùng trong danh sách hiện tại
         if(res && res.Items && res.Items.length > 0) {
             let x = res.Items[0];
@@ -118,19 +104,14 @@ export class ChatomniObjectService extends BaseSevice  {
         }
 
         exist.Items = [...exist.Items, ...(res.Items || [])];
-
-        // TODO nếu trùng urlNext thì xóa không cho load
         if (res && this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
             this.urlNext = res.Paging?.UrlNext;
-
             exist.Paging = { ...res.Paging };
-
         } else {
             delete this.urlNext;
         }
 
         this.objFacade.setData(teamId, exist);
-
         let result = this.objFacade.getData(teamId);
         return result;
 

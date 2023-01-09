@@ -27,7 +27,6 @@ export class ChatomniConversationService extends BaseSevice {
   }
 
   get(teamId: number, type: string, queryObj?: any): Observable<ChatomniConversationDto> {
-
     let queryString = null;
     if (queryObj) {
       queryString = Object.keys(queryObj).map(key => {
@@ -73,28 +72,22 @@ export class ChatomniConversationService extends BaseSevice {
   }
 
   makeDataSource(teamId: number, type: string, queryObj?: any): Observable<ChatomniConversationDto> {
-
     this.urlNext = '';
     this.csFacade.dataSource = {};
 
     return this.get(teamId, type, queryObj).pipe(map((res: any) => {
-
-        // TODO: load dữ liệu lần đầu tiên
         if (TDSHelperObject.hasValue(res)) {
             this.csFacade.setData(teamId, res);
         }
 
         this.urlNext = res.Paging?.UrlNext;
-
         let result = this.csFacade.getData(teamId);
         return result;
 
     }), shareReplay({ bufferSize: 1, refCount: true }));
-
   }
 
-  nextDataSource(teamId: number, type: string, lstConversation: ChatomniConversationItemDto[], queryObj?: any, ): Observable<ChatomniConversationDto> {
-
+  nextDataSource(teamId: number, type: string, lstConversation: ChatomniConversationItemDto[], queryObj?: any): Observable<ChatomniConversationDto> {
     let exist = this.csFacade.getData(teamId);
     lstConversation = lstConversation || [];
 
@@ -103,12 +96,9 @@ export class ChatomniConversationService extends BaseSevice {
             obs.next();
             obs.complete();
         })
-    }
-    else {
+    } else {
       let url = this.urlNext as string;
-
       return this.getLink(url).pipe(map((res: ChatomniConversationDto) => {
-
         if(!res) {
             let result = this.csFacade.getData(teamId);
             return result;
@@ -120,19 +110,17 @@ export class ChatomniConversationService extends BaseSevice {
           }
         }
 
-         // TODO: Lọc conversation item trùng khi socket trả về không có trong lstConversation
         if(res && res.Items && res.Items.length > 0) {
-
           res.Items.forEach((x: ChatomniConversationItemDto) => {
             let idx = lstConversation.findIndex(a => a.ConversationId == x.ConversationId);
 
-            if(idx >= 0) {
-
+            if(Number(idx) >= 0) {
                 let item = {...lstConversation[idx]};
                 lstConversation[idx] = {...x};
 
                 lstConversation[idx].LatestMessage = {...item.LatestMessage} as any;
                 lstConversation[idx].UpdatedTime = item.UpdatedTime;
+
                 res.Items = res.Items.filter(y => x.ConversationId != y.ConversationId);
             }
           });
@@ -140,8 +128,6 @@ export class ChatomniConversationService extends BaseSevice {
 
         exist.Items = [];
         exist.Items = [...lstConversation,...res.Items];
-
-        // TODO nếu trùng urlNext thì xóa không cho load
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
             this.urlNext = res.Paging.UrlNext;
             exist.Paging = { ...res.Paging };
@@ -150,7 +136,6 @@ export class ChatomniConversationService extends BaseSevice {
         }
 
         this.csFacade.setData(teamId, exist);
-
         let result = this.csFacade.getData(teamId);
         return result;
 
