@@ -213,7 +213,6 @@
                                   <th width="6%">STT</th>
                                   <th width="32%">
                                     <div customFilter class="flex justify-between items-center w-full">
-
                                         <span class="w-1/4 py-2"> Sản phẩm </span>
                                           <div class="flex-auto flex justify-end">
                                             <button type="button" *ngIf="!visible; else menu" style="width: 30%; text-align: end;" (click)="onOpenSearchvalue()">
@@ -231,8 +230,8 @@
                                                     <span tdsSuffix (click)="onReset()"><i class="tdsi-close-fill"></i></span>
                                                 </tds-form-field>
                                             </div>
-                                        </ng-template>
-                                    </div>
+                                          </ng-template>
+                                      </div>
                                   </th>
 
                                   <th width="10%" class="text-center">Trạng thái</th>
@@ -274,7 +273,7 @@
                                   <td>
                                     <div class="flex gap-x-2">
                                       <div>
-                                          <tds-avatar size="xl" [shape]="'square'" [isAvatar]="false" class="text-white" tdsSrc="{{ detail?.value?.ImageUrl }}">
+                                          <tds-avatar size="xl" [shape]="'square'" [isAvatar]="false" class="bg-white" [tdsSrc]="detail?.value | getImageLiveCampaign : lstImage">
                                           </tds-avatar>
                                       </div>
 

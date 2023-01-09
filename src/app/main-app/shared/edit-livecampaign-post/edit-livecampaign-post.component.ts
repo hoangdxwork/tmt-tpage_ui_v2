@@ -31,6 +31,7 @@ import { DataPouchDBDTO, KeyCacheIndexDBDTO, SyncCreateProductTemplateDto } from
 import { ProductIndexDBService } from '@app/services/product-indexdb.service';
 import { DOCUMENT } from '@angular/common';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'edit-livecampaign-post',
@@ -42,7 +43,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
 
   @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
   _form!: FormGroup;
-  @Input() liveCampaignId?: string;
+  @Input() liveCampaignId!: string;
   @Input() itemProduct!: LiveCampaignSimpleDetail;
 
   selectedIndex: number = 0;
@@ -84,6 +85,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
   changedData: boolean = false
 
   lstOrderTags!: string[];
+  lstImage: {[key: string]: string} = {};
 
   isShowEditLimitedQuantity!: boolean;
   limitedQuantityAll: number = 0;
@@ -118,6 +120,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     private productService: ProductService,
     private sharedService: SharedService,
     private message: TDSMessageService,
+    private route: ActivatedRoute,
     private productTemplateFacade: ProductTemplateFacade,
     private prepareHandler: PrepareAddCampaignHandler,
     private viewContainerRef: ViewContainerRef,
@@ -139,7 +142,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.loadQuickReply();
     this.loadCurrentCompany();
     this.productLastV2();
-
+    this.loadImageDetails();
     this.eventEmitter();
   }
 
@@ -327,6 +330,16 @@ export class EditLiveCampaignPostComponent implements OnInit {
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
       }
     });
+  }
+
+  loadImageDetails() {
+    this.liveCampaignService.getImageDetails(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.lstImage = res;
+      }, error: (err) => {
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 
   updateForm(data: any) {
@@ -1115,13 +1128,13 @@ export class EditLiveCampaignPostComponent implements OnInit {
       }
   }
 
-  
+
   showEditLimitedQuantity() {
     let formDetails = this.detailsForm.value as any[];
 
     if(formDetails && formDetails.length > 0) {
         this.isShowEditLimitedQuantity = true;
-    } 
+    }
     else {
         this.message.error('Chưa có sản phẩm nào trong danh sách');
         this.isShowEditLimitedQuantity = false;
@@ -1146,7 +1159,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
         this.message.error(err.error?.message);
       }
     });
-    
+
   }
 
   onClosePopover() {

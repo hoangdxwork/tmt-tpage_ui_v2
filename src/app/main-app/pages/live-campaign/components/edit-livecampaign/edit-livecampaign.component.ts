@@ -65,6 +65,7 @@ export class EditLiveCampaignComponent implements OnInit {
   companyCurrents!: CompanyCurrentDTO;
 
   lstOrderTags!: string[];
+  lstImage: {[key: string]: string} = {};
 
   isShowEditLimitedQuantity!: boolean;
   limitedQuantityAll: number = 0;
@@ -138,6 +139,7 @@ export class EditLiveCampaignComponent implements OnInit {
     this.loadUser();
     this.loadQuickReply();
     this.loadCurrentCompany();
+    this.loadImageDetails();
     this.eventEmitter();
   }
 
@@ -179,6 +181,17 @@ export class EditLiveCampaignComponent implements OnInit {
       error:(error) => {
           this.isLoading = false;
           this.message.error(error?.error?.message);
+      }
+    })
+  }
+
+  loadImageDetails() {
+    let id = this.liveCampaignId;
+    this.liveCampaignService.getImageDetails(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.lstImage = res;
+      }, error: (err) => {
+        this.message.error(err?.error?.message);
       }
     })
   }
@@ -277,7 +290,11 @@ export class EditLiveCampaignComponent implements OnInit {
 
     this.datePicker = [data.StartDate, data.EndDate];
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
+    console.log(this.livecampaignSimpleDetail);
+
   }
+
+
 
   initFormDetails(details: any[]) {
     details = details?.sort((a, b) => Date.parse(b.DateCreated) - Date.parse(a.DateCreated));
@@ -840,7 +857,7 @@ export class EditLiveCampaignComponent implements OnInit {
 
     if(formDetails && formDetails.length > 0) {
         this.isShowEditLimitedQuantity = true;
-    } 
+    }
     else {
         this.message.error('Chưa có sản phẩm nào trong danh sách');
         this.isShowEditLimitedQuantity = false;
@@ -864,7 +881,7 @@ export class EditLiveCampaignComponent implements OnInit {
         this.message.error(err.error?.message);
       }
     });
-    
+
   }
 
   onClosePopover() {
