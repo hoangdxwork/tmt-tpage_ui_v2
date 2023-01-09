@@ -187,9 +187,11 @@ export class EditLiveCampaignComponent implements OnInit {
 
   loadImageDetails() {
     let id = this.liveCampaignId;
-    this.liveCampaignService.getImageDetails(id).pipe().subscribe({
+    this.liveCampaignService.getImageDetails(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.lstImage = res
+        this.lstImage = res;
+      }, error: (err) => {
+        this.message.error(err?.error?.message);
       }
     })
   }
@@ -855,7 +857,7 @@ export class EditLiveCampaignComponent implements OnInit {
 
     if(formDetails && formDetails.length > 0) {
         this.isShowEditLimitedQuantity = true;
-    } 
+    }
     else {
         this.message.error('Chưa có sản phẩm nào trong danh sách');
         this.isShowEditLimitedQuantity = false;
@@ -879,7 +881,7 @@ export class EditLiveCampaignComponent implements OnInit {
         this.message.error(err.error?.message);
       }
     });
-    
+
   }
 
   onClosePopover() {
