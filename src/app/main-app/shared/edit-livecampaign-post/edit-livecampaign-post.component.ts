@@ -336,6 +336,7 @@ export class EditLiveCampaignPostComponent implements OnInit {
     this.liveCampaignService.getImageDetails(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.lstImage = res;
+        this.cdRef.markForCheck();
       }, error: (err) => {
         this.message.error(err?.error?.message);
       }
