@@ -97,25 +97,6 @@ export class ProductIndexDBService extends BaseSevice {
               data.cacheDbStorage = [...data.cacheDbStorage];
               data.cacheDbStorage = data.cacheDbStorage?.sort((a: any,b: any) => b.Version - a.Version);
 
-              let priceListItems = this.getStoragePriceListItems() as StoragePriceListItemsDto;
-              if(priceListItems && priceListItems.Value) {
-                data.cacheDbStorage.map((x: DataPouchDBDTO) => {
-                    if(x.SaleOK && ! x.IsDiscount) {
-                        let price = priceListItems.Value[`${x.ProductTmplId}_${x.UOMId}`];
-                        if (price) {
-                          if (!x.OldPrice) {
-                              x.OldPrice = x.Price;
-                          }
-                          x.Price = price;
-                        } else {
-                          if (x.OldPrice >= 0) {
-                              x.Price = x.OldPrice;
-                          }
-                        }
-                    }
-                  })
-              }
-
               //TODO: check số version
               let versions = data.cacheDbStorage?.map((x: DataPouchDBDTO) => x.Version);
               let lastVersion = this.getLastVersion(versions);

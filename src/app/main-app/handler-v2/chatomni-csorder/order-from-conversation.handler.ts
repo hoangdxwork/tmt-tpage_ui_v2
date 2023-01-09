@@ -155,8 +155,13 @@ export class CsOrder_FromConversationHandler {
           partner = csInfo.Partner;
       }
 
+      order.Details = [];
       if(quickOrderModel && quickOrderModel.Id) {
           order = quickOrderModel as any;
+
+          if(quickOrderModel && quickOrderModel.Details && quickOrderModel.Details.length > 0) {
+              order.Details = [...quickOrderModel.Details];
+          }
       }
 
       if(team && !order.CRMTeamId) {
