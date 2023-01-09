@@ -23,7 +23,6 @@ export class ChatomniCommentService extends BaseSevice  {
   }
 
   get(id: any, queryObj?: any): Observable<ChatomniDataDto> {
-
     let queryString = null;
     if (queryObj) {
         queryString = Object.keys(queryObj).map(key => {
@@ -64,29 +63,24 @@ export class ChatomniCommentService extends BaseSevice  {
   }
 
   makeDataSource(teamId: number, objectId: any, queryObj?: any): Observable<ChatomniDataDto> {
-
     this.urlNext = '';
     this.commentFacade.dataSource = {};
     let id = `${teamId}_${objectId}`;
 
     return this.get(id, queryObj).pipe(map((res: ChatomniDataDto) => {
-
-      // TODO: load dữ liệu lần đầu tiên
       this.commentFacade.setData(id, res);
+
       this.urlNext = res.Paging?.UrlNext;
-
       let result = this.commentFacade.getData(id);
-      return result;
 
+      return result;
     }), shareReplay({ bufferSize: 1, refCount: true }));
 
   }
 
   nextDataSource(id: string, dataSourceItem: ChatomniDataItemDto[], queryObj?: TDSSafeAny): Observable<ChatomniDataDto> {
-
     let exist = this.commentFacade.getData(id);
     if(exist && !TDSHelperString.hasValueString(this.urlNext)) {
-
         return new Observable((obs :any) => {
             obs.next();
             obs.complete();
@@ -94,7 +88,6 @@ export class ChatomniCommentService extends BaseSevice  {
     } else {
         let url = this.urlNext  as string;
         return this.getLink(url, queryObj).pipe(map((res: ChatomniDataDto) => {
-
             if(res && res.Extras) {
               exist.Extras = {
                   Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects),
@@ -109,8 +102,6 @@ export class ChatomniCommentService extends BaseSevice  {
             }
 
             exist.Paging = { ...res.Paging };
-
-            // TODO nếu trùng urlNext thì xóa không cho load
             if(this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
                 this.urlNext = res.Paging.UrlNext;
             } else {
