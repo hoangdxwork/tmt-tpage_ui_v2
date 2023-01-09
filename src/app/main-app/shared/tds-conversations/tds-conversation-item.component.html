@@ -7,7 +7,7 @@
           (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
           <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
               <div *ngIf="wb.type == 'template' && wb.payload">
-                <div *ngIf=" wb.payload.template_type == 'generic'" class="w-full justify-end flex relative">
+                <div *ngIf=" wb.payload.template_type == 'generic'" class="w-full justify-end items-center flex relative">
                   <div id="scroll-product{{dataItem.Data.id}}" class="max-w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
                     <div *ngFor="let item of wb?.payload?.elements">
                       <div #itemProduct class="snap-start shrink-0">
@@ -18,16 +18,15 @@
                           <ng-template #noPicture>
                             <img src="../assets/imagesv2/errorPic.svg" alt="" class="w-full h-[192px] rounded-md p-4">
                           </ng-template>
-
                           <tds-card-content class="px-4 py-3 w-full flex flex-col gap-y-1">
-                            <span class="text-caption-1 font-semibold text-left w-full truncate">{{ item?.title }}</span>
-                            <span class="text-caption-1 text-neutral-1-400 text-left">{{ item?.price || "---" | numberCustom }}</span>
+                            <span class="text-caption-1 font-semibold text-left w-full truncate" tooltipPlacement="topLeft" tds-tooltip="{{ item?.title }}">{{ item?.title }}</span>
+                            <span class="text-caption-1 text-neutral-1-400 text-left">{{ item?.subtitle || "---" }}</span>
                           </tds-card-content>
                         </tds-card>
                       </div>
                     </div>
                   </div>
-                  <div [ngClass]="wb?.payload?.elements?.length > 2 ? 'flex' : 'hidden'" class="w-[85%] px-2 h-full justify-between items-center absolute z-1">
+                  <div [ngClass]="wb?.payload?.elements?.length > 2 ? 'flex' : 'hidden'" class="w-[85%] h-[40px] px-2 justify-between items-center absolute z-1">
                     <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="previous(dataItem.Data.id)">
                       <i class="tdsi-arrow-left-line text-neutral-1-400"></i>
                     </button>
@@ -43,7 +42,7 @@
                   </div>
                 </div>
 
-                <div *ngIf="wb.payload.template_type == 'receipt'" class="w-full flex justify-end">
+                <div *ngIf="wb.payload.template_type == 'receipt'" class="w-full flex justify-end text-body-2">
                   <div class="flex flex-col w-[50%]">
                     <div class="bg-neutral-3-50 rounded-t-xl px-4 py-2 flex justify-between items-center">
                       <span class="text-neutral-1-600">Xác nhận đơn đặt hàng</span>
@@ -59,12 +58,12 @@
                               <img src="../assets/imagesv2/errorPic.svg" alt="" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] p-4">
                             </ng-template>
 
-                            <div class="flex flex-col gap-y-1 items-start">
-                              <div class="font-semibold text-left">{{ item?.title || "---" }}</div>
+                            <div class="flex flex-col flex-auto gap-y-1 items-start">
+                              <div class="font-semibold text-left w-full truncate" tooltipPlacement="topLeft" tds-tooltip="{{ item?.title }}">{{ item?.title || "---" }}</div>
                               <div class="flex gap-x-2">
                                 <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ item?.quantity || '___' }}</span></span>
                                 <span>-</span>
-                                <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ item?.price || '___' }}</span></span>
+                                <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ item?.price || '___' | numberCustom }}</span></span>
                               </div>
                             </div>
                           </div>
