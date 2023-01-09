@@ -49,10 +49,8 @@ const cmp =[
     TDSTagModule,
     TDSTypographyModule,
     TDSUploadModule,
-    TDSTypographyModule,
     TDSSpinnerModule,
-    TDSTableModule,
-    PipeModule
+    PipeModule,
   ],
   exports:[
    ...cmp

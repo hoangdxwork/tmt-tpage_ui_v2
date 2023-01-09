@@ -160,7 +160,7 @@ export class FacebookLiveCampaignPostComponent implements OnInit, OnChanges {
       },
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        id: id
+        liveCampaignId: id
       },
       onCancel: function(){
         modal.componentInstance?.onCancel();

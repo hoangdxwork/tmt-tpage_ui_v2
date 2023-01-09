@@ -40,29 +40,6 @@ export class ChatomniCommentFacade extends BaseSevice  {
       return data;
   }
 
-  // mappingExtrasChildsDto(data: ResponseAddMessCommentDto){
-  //   let model  = {
-  //     Id: data.id,
-  //     Type: data.type,
-  //     IsOwner: data.is_admin,
-  //     Data: {
-  //       id: data.message?.id,
-  //       message: data.message?.message,
-  //       from: {
-  //         name: data.name,
-  //       },
-  //     } as unknown,
-  //     ChannelCreatedTime: data.DateCreated,
-  //     Message: data.message_formatted,
-  //     Status: data.status as number,
-  //     CreatedBy: data.CreatedBy,
-  //     CreatedTime: data.DateCreated,
-  //     UserId: data.account_id
-  //   } as unknown as ExtrasChildsDto;
-
-  //   return  {...model};
-  // }
-
   mappingExtrasChildsDtoV2(data: ResponseAddMessCommentDtoV2){
     let model  = {
       Id: data.Id,
@@ -84,7 +61,6 @@ export class ChatomniCommentFacade extends BaseSevice  {
     if(!team) return;
 
     let _key = `${this._keyCachePartnerDict}[${team.Id}]`;
-
     this.cacheApi.getItem(_key).subscribe((data) => {
       if(TDSHelperString.hasValueString(data)) {
 

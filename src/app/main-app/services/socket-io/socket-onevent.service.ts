@@ -92,8 +92,17 @@ export class SocketOnEventService {
       }))
       .subscribe({
         next: ([socketData, team]: any) => {
-
           if(!socketData) return;
+
+          if(socketData.action == ChatmoniSocketEventName.inventory_updated && socketData.type == "Product") {
+            this.publishSocketAction(socketData);
+            return;
+          }
+
+          if(socketData.action == ChatmoniSocketEventName.producttemplate_create && socketData.type == "ProductTemplate") {
+            this.publishSocketAction(socketData);
+            return;
+          }
 
           let existTeam = team && team?.Id;
           let existLive = socketData.EventName == ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy
@@ -108,11 +117,6 @@ export class SocketOnEventService {
 
           if(existLive) existTeam = true;
           if (!existTeam) return;
-
-          if(socketData.action == ChatmoniSocketEventName.inventory_updated) {
-              this.publishSocketAction(socketData);
-              return;
-          }
 
           switch (socketData.EventName) {
             // TODO: thông báo tin nhắn, comment

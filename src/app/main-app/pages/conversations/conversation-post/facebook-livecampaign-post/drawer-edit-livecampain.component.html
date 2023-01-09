@@ -112,12 +112,23 @@
                                         </ng-template>
                                     </div>
 
-                                    <button type="button" class="ml-1" tds-button-icon color="secondary" size="sm"
-                                        (click)="refreshData()" tds-tooltip tooltipTitle="Reload">
-                                        <span class="flex items-center text-neutral-1-500">
-                                            <i class="tdsi-loading-fill"></i>
-                                        </span>
-                                    </button>
+                                    <div class="flex flex-auto gap-x-1">
+                                        <button type="button" tds-button-icon color="secondary" size="sm" (click)="showEditLimitedQuantity()" 
+                                            tds-tooltip tooltipTitle="Chỉnh sửa giới hạn trên đơn cho tất cả"
+                                            tds-popover  popoverTrigger="click" [(popoverVisible)]="isShowEditLimitedQuantity" (popoverVisibleChange)="onPopoverApplyLimitQuantityChange($event)"
+                                            [popoverAutoClose]="false" [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate">
+                                            <span class="flex items-center text-neutral-1-500">
+                                                <i class="tdsi-edit-2-fill"></i>
+                                            </span>
+                                        </button>
+
+                                        <button type="button" tds-button-icon color="secondary" size="sm"
+                                            (click)="refreshData()" tds-tooltip tooltipTitle="Reload">
+                                            <span class="flex items-center text-neutral-1-500">
+                                                <i class="tdsi-loading-fill"></i>
+                                            </span>
+                                        </button>
+                                    </div>
                                 </th>
                             </tr>
                         </thead>
@@ -486,3 +497,28 @@
         </div>
     </tds-tab>
 </tds-tabset>
+
+<ng-template #contentTemplate>
+    <div class="w-[304px]">
+        <tds-form-field>
+          <tds-label>Áp dụng giới hạn trên đơn cho tất cả</tds-label>
+          <tds-input-number [min]="0" [step]="1" [(ngModel)]="limitedQuantityAll"
+          [formatter]="numberWithCommas" [parser]="parserComas">
+        </tds-input-number>
+        </tds-form-field>
+    </div>
+  </ng-template>
+  <ng-template #footerTemplate>
+    <div class="flex justify-end pt-2">
+        <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="onClosePopover()">
+        <span class="flex items-center">
+            <i class="tdsi-close-fill"></i>
+        </span>
+        </button>
+        <button tds-button-icon size="sm" color="primary" (click)="onSavePopover()">
+        <span class="flex items-center">
+            <i class="tdsi-tick-fill"></i>
+        </span>
+        </button>
+    </div>
+  </ng-template>

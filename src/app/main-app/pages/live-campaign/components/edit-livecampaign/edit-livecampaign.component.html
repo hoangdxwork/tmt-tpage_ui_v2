@@ -210,9 +210,19 @@
                       </th>
                       <th [width]="'80px'" class="text-center">Ẩn/ hiện</th>
                       <th [width]="'100px'" class="text-center">Số lượng</th>
-                      <th [width]="'120px'" class="text-center">Giới hạn trên đơn</th>
-                      <th [width]="'120px'" class="text-right">Giá bán</th>
 
+                      <th [width]="'150px'" class="text-center">
+                        <span class="flex justify-center items-center gap-x-2">
+                          Giới hạn trên đơn
+                          <span class="relative z-20 tdsi-edit-2-fill text-neutral-1-500 leading-none cursor-pointer" (click)="showEditLimitedQuantity()">
+                            <span tds-tooltip="Chỉnh sửa giới hạn trên đơn cho tất cả" class=" inset-0 absolute z-0"
+                            tds-popover  popoverTrigger="click" [(popoverVisible)]="isShowEditLimitedQuantity" (popoverVisibleChange)="onPopoverVisibleChange($event)"
+                            [popoverAutoClose]="false" [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate"></span>
+                          </span>
+                        </span>
+                      </th>
+
+                      <th [width]="'120px'" class="text-right">Giá bán</th>
                       <th [width]="'102px'" class="text-center">
                         <button type="button" tds-button-icon color="secondary" size="sm" (click)="removeAllDetail()" tds-tooltip tooltipTitle="Xóa tất cả sản phẩm"
                          [disabled]="_form.controls['Details'].value.length == 0 ? true : false">
@@ -238,7 +248,7 @@
                     <td>
                       <div class="flex gap-x-2">
                         <div class="w-1/5">
-                            <tds-avatar size="xl" [shape]="'square'" [isAvatar]="false" class="bg-white" [tdsSrc]="detail?.value.ImageUrl">
+                            <tds-avatar size="xl" [shape]="'square'" [isAvatar]="false" class="bg-white" [tdsSrc]="detail?.value | getImageLiveCampaign : lstImage">
                             </tds-avatar>
                         </div>
 
@@ -406,3 +416,28 @@
     </div>
   </form>
 </tds-spin>
+
+<ng-template #contentTemplate>
+  <div class="w-[304px]">
+      <tds-form-field>
+        <tds-label>Áp dụng giới hạn trên đơn cho tất cả</tds-label>
+        <tds-input-number [min]="0" [step]="1" [(ngModel)]="limitedQuantityAll"
+        [formatter]="numberWithCommas" [parser]="parserComas">
+      </tds-input-number>
+      </tds-form-field>
+  </div>
+</ng-template>
+<ng-template #footerTemplate>
+  <div class="flex justify-end pt-2">
+      <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="onClosePopover()">
+      <span class="flex items-center">
+          <i class="tdsi-close-fill"></i>
+      </span>
+      </button>
+      <button tds-button-icon size="sm" color="primary" (click)="onSavePopover()">
+      <span class="flex items-center">
+          <i class="tdsi-tick-fill"></i>
+      </span>
+      </button>
+  </div>
+</ng-template>
