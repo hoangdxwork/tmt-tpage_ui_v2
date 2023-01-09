@@ -24,10 +24,10 @@ export class ProductService extends BaseSevice {
   constructor(private apiService: TCommonService,
     private socketOnEventService: SocketOnEventService) {
       super(apiService);
-      this.onEventSocket();
+      this.onActionSocket();
   }
 
-  onEventSocket() {
+  onActionSocket() {
     this.socketOnEventService.onActionSocket().subscribe({
       next: (res: any) => {
         if(res && res.Action == ChatmoniSocketEventName.inventory_updated) {
