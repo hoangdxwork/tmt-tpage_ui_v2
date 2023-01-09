@@ -85,9 +85,10 @@ export class ChatomniObjectService extends BaseSevice  {
 
   }
 
-  nextDataSource(teamId: number): Observable<ChatomniObjectsDto> {
+  nextDataSource(teamId: number, lstObjects: ChatomniObjectsItemDto[]): Observable<ChatomniObjectsDto> {
 
     let exist = this.objFacade.getData(teamId);
+    lstObjects = lstObjects || [];
 
     if (exist && !TDSHelperString.hasValueString(this.urlNext)) {
         return new Observable((obs: any) => {
@@ -110,14 +111,14 @@ export class ChatomniObjectService extends BaseSevice  {
         // TODO: item đầu tiên trong list trả về bị trùng item cuối cùng trong danh sách hiện tại
         if(res && res.Items && res.Items.length > 0) {
             let x = res.Items[0];
-            let f = exist.Items.filter(y => y.ObjectId == x.ObjectId)[0];
+            let f = lstObjects.filter(y => y.ObjectId == x.ObjectId)[0];
 
             if(f && f?.ObjectId) {
                 res.Items = res.Items.filter(y => y.ObjectId !== x.ObjectId);
             }
         }
 
-        exist.Items = [...exist.Items, ...(res.Items || [])];
+        exist.Items = [...lstObjects, ...(res.Items || [])];
 
         // TODO nếu trùng urlNext thì xóa không cho load
         if (res && this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {

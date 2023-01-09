@@ -1585,7 +1585,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             if(!res) return;
             this.indexDbStorage = [...res?.cacheDbStorage || []];
 
-            let priceListItems = this.productIndexDBService.getStoragePriceListItems() as StoragePriceListItemsDto;
+            let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
             if(priceListItems && priceListItems.Value) {
                 this.indexDbStorage?.map((x: DataPouchDBDTO) => {
                     if(x.SaleOK && ! x.IsDiscount) {

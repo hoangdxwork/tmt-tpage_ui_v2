@@ -103,6 +103,7 @@ export class SocketOnEventService {
               || socketData.EventName == ChatmoniSocketEventName.onUpdateSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout
+              || socketData.EventName == ChatmoniSocketEventName.chatomniCreatePost
               || socketData.action == ChatmoniSocketEventName.inventory_updated;
 
           if(existLive) existTeam = true;
@@ -171,6 +172,11 @@ export class SocketOnEventService {
             // Thông báo kết thúc live TShop
             case ChatmoniSocketEventName.chatomniPostLiveEnd:
                 this.publishSocketEvent(null, socketData, team); //SocketioChatomniPostLiveEndDto
+              break;
+
+            // Thông báo bài viết mới TShop
+            case ChatmoniSocketEventName.chatomniCreatePost:
+                this.publishSocketEvent(null, socketData, team); //SocketioChatomniCreatePostDto
               break;
           }
         },

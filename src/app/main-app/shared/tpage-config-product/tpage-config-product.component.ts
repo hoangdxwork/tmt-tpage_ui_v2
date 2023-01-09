@@ -65,7 +65,7 @@ export class TpageConfigProductComponent implements OnInit {
   }
 
   setPriceListItem() {
-    this.priceListItems = this.productIndexDBService.getStoragePriceListItems();
+    this.priceListItems = this.productIndexDBService.getSessionStoragePriceListItems();
     if(this.priceListItems && this.priceListItems.Id) {
         let item = this.lstPrices.filter(x=> x.Id == this.priceListItems.Id)[0];
         this._form.controls['PriceList'].setValue(item);
@@ -95,7 +95,7 @@ export class TpageConfigProductComponent implements OnInit {
               Id: model.Id,
               Value: res
             } as StoragePriceListItemsDto;
-            this.productIndexDBService.setStoragePriceListItems(item);
+            this.productIndexDBService.setSessionStoragePriceListItems(item);
 
             this.message.success(Message.Product.UpdateListPriceSuccess);
             this.onCancel(item);
