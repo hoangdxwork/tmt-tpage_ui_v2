@@ -16,5 +16,7 @@ export enum ChatmoniSocketEventName {
   livecampaign_CartCheckout = "livecampaign.cart-checkout",
   chatomniPostLiveEnd = "chatomni.post-live-end",
   inventory_updated = "inventory_updated",
+  chatomniCreatePost = "chatomni.create-post",
   producttemplate_create = "created",
+
 }
