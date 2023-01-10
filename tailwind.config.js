@@ -487,7 +487,6 @@ const COLORS = {
     },
 };
 
-
 function genarateColorTDS() {
     var colors = [];
     for (const colorName in COLORS) {
@@ -642,6 +641,11 @@ module.exports = {
             },
             borderWidth: {
                 3: "3px"
+            },
+            screens: {
+              'des':'1620px',
+              'lap':'1280px',
+              'tab':'640px',
             }
         },
     },
