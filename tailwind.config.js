@@ -643,9 +643,9 @@ module.exports = {
                 3: "3px"
             },
             screens: {
-              'des':'1620px',
-              'lap':'1280px',
-              'tab':'640px',
+              'desktop':'1620px',
+              'laptop':'1280px',
+              'tablet':'640px',
             }
         },
     },
