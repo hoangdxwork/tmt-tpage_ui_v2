@@ -78,9 +78,7 @@ export class ChatomniObjectService extends BaseSevice  {
   }
 
   nextDataSource(teamId: number): Observable<ChatomniObjectsDto> {
-
     let exist = this.objFacade.getData(teamId);
-
     if (exist && !TDSHelperString.hasValueString(this.urlNext)) {
         return new Observable((obs: any) => {
             obs.next();
@@ -106,8 +104,6 @@ export class ChatomniObjectService extends BaseSevice  {
         }
 
         exist.Items = [...exist.Items, ...(res.Items || [])];
-
-        // TODO nếu trùng urlNext thì xóa không cho load
         if (res && this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
             this.urlNext = res.Paging?.UrlNext;
             exist.Paging = { ...res.Paging };
