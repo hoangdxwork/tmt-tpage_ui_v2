@@ -125,6 +125,7 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
       MaxForAutoReplyMultiple: [1],
       IsEnableAutoReplyAllComment: [false],
       IsEnableAutoReplyCommentWithPhone: [false],
+      IsEnableAutoNotReplyCommentWithPhone: [false],
       IsEnableAutoReplyCommentWithEmail: [false],
       ContentOfCommentForAutoReply: [null],
       ContentOfCommentForNotAutoReply: [null],
@@ -146,6 +147,7 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
       formControls["MaxForAutoReplyMultiple"].setValue(res.MaxForAutoReplyMultiple);
       formControls["IsEnableAutoReplyAllComment"].setValue(res.IsEnableAutoReplyAllComment);
       formControls["IsEnableAutoReplyCommentWithPhone"].setValue(res.IsEnableAutoReplyCommentWithPhone);
+      formControls["IsEnableAutoNotReplyCommentWithPhone"].setValue(res.IsEnableAutoNotReplyCommentWithPhone);
       formControls["IsEnableAutoReplyCommentWithEmail"].setValue(res.IsEnableAutoReplyCommentWithEmail);
       formControls["ContentOfCommentForAutoReply"].setValue(res.ContentOfCommentForAutoReply);
       formControls["IsEnableAutoReplyCommentInMessage"].setValue(res.IsEnableAutoReplyCommentInMessage);
@@ -186,6 +188,7 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
       MaxForAutoReplyMultiple: formValue["MaxForAutoReplyMultiple"],
       IsEnableAutoReplyAllComment: formValue["IsEnableAutoReplyAllComment"],
       IsEnableAutoReplyCommentWithPhone: formValue["IsEnableAutoReplyCommentWithPhone"],
+      IsEnableAutoNotReplyCommentWithPhone: formValue["IsEnableAutoNotReplyCommentWithPhone"],
       IsEnableAutoReplyCommentWithEmail: formValue["IsEnableAutoReplyCommentWithEmail"],
       ContentOfCommentForAutoReply: formValue["ContentOfCommentForAutoReply"],
       ContentOfCommentForNotAutoReply: formValue["ContentOfCommentForAutoReply"],

@@ -30,15 +30,15 @@
             </div>
             <div class="flex gap-x-2 items-center">
                 <tds-switch formControlName="IsEnableAutoReplyAllComment" size="md"></tds-switch>
-                <span class="">Phản hồi tất cả bình luận</span>
+                <span >Phản hồi tất cả bình luận</span>
             </div>
             <div class="flex flex-col gap-y-2" *ngIf="formConfigAutoReply.value?.IsEnableAutoReplyAllComment">
-                <!-- <tds-label>Không phản hồi nếu bình luận chứa nội dung:</tds-label> -->
-                <!-- <div class="p-3 rounded bg-white border border-neutral-2-200">
-                    <span>
-                        {{'.'}}
-                    </span>
-                </div> -->
+                <div class="pl-3">
+                    <div class="flex gap-x-2 items-center">
+                        <tds-switch formControlName="IsEnableAutoNotReplyCommentWithPhone" size="md"></tds-switch>
+                        <span>Không phản hồi bình luận có số điện thoại</span>
+                    </div>
+                </div>
                 <tds-form-field class="p-3">
                     <tds-label>Không phản hồi nếu bình luận chứa nội dung:</tds-label>
                     <tds-select valueField="id" textField="name" formControlName="selectedWord3s"
@@ -48,11 +48,12 @@
             </div>
             <div class="flex gap-x-2 items-center" *ngIf="!formConfigAutoReply.value?.IsEnableAutoReplyAllComment">
                 <tds-switch formControlName="IsEnableAutoReplyCommentWithPhone" size="md"></tds-switch>
-                <span class="">Phản hồi bình luận có điện thoại</span>
+                <span>Phản hồi bình luận có điện thoại</span>
             </div>
+
             <div class="flex gap-x-2 items-center" *ngIf="!formConfigAutoReply.value?.IsEnableAutoReplyAllComment">
                 <tds-switch formControlName="IsEnableAutoReplyCommentWithEmail" size="md"></tds-switch>
-                <span class="">Phản hồi bình luận có địa chỉ email</span>
+                <span >Phản hồi bình luận có địa chỉ email</span>
             </div>
             <div class="flex flex-col gap-y-2"
               *ngIf="formConfigAutoReply.value?.IsEnableAutoReplyComment && !formConfigAutoReply.value?.IsEnableAutoReplyAllComment">
@@ -78,7 +79,7 @@
             <!-- Phản hồi với tin nhắn -->
             <div class="flex gap-x-2 items-center">
                 <tds-switch formControlName="IsEnableAutoReplyCommentInMessage" size="md"></tds-switch>
-                <span class="">Phản hồi với tin nhắn?</span>
+                <span>Phản hồi với tin nhắn?</span>
             </div>
             <div *ngIf="formConfigAutoReply.value?.IsEnableAutoReplyCommentInMessage">
                 <tds-label>Nội dung phản hồi với tin nhắn:</tds-label>
