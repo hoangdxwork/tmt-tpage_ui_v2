@@ -6,7 +6,7 @@ import { TDSModalService, TDSModalRef } from 'tds-ui/modal';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ConfigUOM, UOMLine } from './../../../../dto/configs/product/config-product-default.dto';
+import { ProductUOMDto, ProductUOMLineDto } from './../../../../dto/configs/product/config-product-default.dto';
 import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
 
 @Component({
@@ -16,8 +16,8 @@ import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
 })
 export class CreateUnitComponent implements OnInit {
 
-  @Input() lstUOM: ConfigUOM[] = [];
-  @Input() Item!: UOMLine;
+  @Input() lstUOM: ProductUOMDto[] = [];
+  @Input() Item!: ProductUOMLineDto;
 
   _form!: FormGroup;
 
@@ -60,7 +60,7 @@ export class CreateUnitComponent implements OnInit {
     })
   }
 
-  updateForm(data: UOMLine){
+  updateForm(data: ProductUOMLineDto){
     this._form.patchValue(data);
   }
 
@@ -96,7 +96,7 @@ export class CreateUnitComponent implements OnInit {
   }
 
   prepareModel(){
-    let model = {} as UOMLine;
+    let model = {} as ProductUOMLineDto;
     let formModel = this._form.value;
 
     if(formModel.Barcode){

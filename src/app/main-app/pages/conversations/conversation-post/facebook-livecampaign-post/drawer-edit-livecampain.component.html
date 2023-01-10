@@ -99,7 +99,7 @@
                                         </div>
 
                                         <ng-template #menu>
-                                            <div class="flex-auto">
+                                            <div class="w-3/4">
                                                 <tds-form-field class="w-full font-normal">
                                                     <input type="text" tdsInput placeholder="Nhập tên, mã code..." #innerText
                                                         [tdsInputDebounce]="500" (inputKeyup)="onSearch($event)"
@@ -114,7 +114,7 @@
 
                                     <div class="flex flex-auto gap-x-1">
                                         <button type="button" tds-button-icon color="secondary" size="sm" (click)="showEditLimitedQuantity()" 
-                                            tds-tooltip tooltipTitle="Chỉnh sửa giới hạn trên đơn cho tất cả"
+                                            tds-tooltip tooltipTitle="Chỉnh sửa giới hạn trên đơn cho tất cả sản phẩm"
                                             tds-popover  popoverTrigger="click" [(popoverVisible)]="isShowEditLimitedQuantity" (popoverVisibleChange)="onPopoverApplyLimitQuantityChange($event)"
                                             [popoverAutoClose]="false" [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate">
                                             <span class="flex items-center text-neutral-1-500">
@@ -501,7 +501,7 @@
 <ng-template #contentTemplate>
     <div class="w-[304px]">
         <tds-form-field>
-          <tds-label>Áp dụng giới hạn trên đơn cho tất cả</tds-label>
+          <tds-label>Áp dụng giới hạn trên đơn cho tất cả sản phẩm</tds-label>
           <tds-input-number [min]="0" [step]="1" [(ngModel)]="limitedQuantityAll"
           [formatter]="numberWithCommas" [parser]="parserComas">
         </tds-input-number>
