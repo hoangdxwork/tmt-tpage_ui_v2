@@ -276,10 +276,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 let existItemPost = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop && res.Data && res.Data.Data && res.Data.Data.Data && res.Data.Data.Data.ShopId && this.currentTeam?.ChannelId == res.Data.Data.Data.ShopId;
                       
                 if(existItemPost) {
-                    let index = this.lstObjects.findIndex(x => x.Id == res.Data.Data.Id);
-                    if(Number(index) < 0) {
-                      this.lstObjects = [ ...[res.Data.Data], ...this.lstObjects];
-                    }
+                    this.message.info(`${this.currentTeam?.Name} vừa tạo bài viết mới, ấn nút Refresh để xem`);
                 }
             break;
 
@@ -563,7 +560,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   nextData(event: any): any {
     if(event) {
-      this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id, this.lstObjects);
+      this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: ChatomniObjectsDto) => {
             if(res && res.Extras && res.Extras.Childs) {

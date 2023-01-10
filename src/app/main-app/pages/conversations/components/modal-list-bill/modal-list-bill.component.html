@@ -63,12 +63,13 @@
                             <button tds-button color="secondary" tds-dropdown [backdrop]="true" trigger="click" [tdsDropdownMenu]="menu">
                                 <span class="flex items-center">
                                     {{data.PaymentMethod || "Chưa có PTTT"}}
+                                    <i *ngIf="data.PaymentMethod" class="tdsi-close-fill text-lg leading-none ml-2" (click)="onDeletePayment(data)"></i>
                                     <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
                                 </span>
                             </button>
                             <tds-dropdown-menu #menu="tdsDropdownMenu">
                                 <div class="w-full">
-                                    <div *ngFor="let item of (lstPaymentJournals | async) || []" tds-dropdown-item (click)="selectPayment(i, item.Name)">
+                                    <div *ngFor="let item of lstPaymentJournals" tds-dropdown-item (click)="selectPayment(data, item.Name)">
                                         {{item.Name}}
                                     </div>
                                 </div>
