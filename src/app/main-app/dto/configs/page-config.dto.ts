@@ -4,6 +4,7 @@ export interface AutoReplyConfigDTO {
   MaxForAutoReplyMultiple: number;
   IsEnableAutoReplyAllComment: boolean;
   IsEnableAutoReplyCommentWithPhone: boolean;
+  IsEnableAutoNotReplyCommentWithPhone: boolean;
   IsEnableAutoReplyCommentWithEmail: boolean;
   ContentOfCommentForAutoReply: string;
   ContentOfCommentForNotAutoReply: string;

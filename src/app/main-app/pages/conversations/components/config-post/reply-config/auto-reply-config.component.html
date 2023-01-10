@@ -21,7 +21,7 @@
                     <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Cho phép phản hồi nhiều lần</div>
                 </div>
 
-                <div *ngIf="dataModel.IsEnableAutoReplyMultiple">
+                <div *ngIf="dataModel.IsEnableAutoReplyMultiple" class="pl-4">
                     <tds-form-field>
                         <tds-label>Số lần tối đa phản hồi/bài viết/người dùng:</tds-label>
                         <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0"
@@ -34,7 +34,14 @@
                     <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Phản hồi tất cả bình luận</div>
                 </div>
 
-                <div *ngIf="dataModel.IsEnableAutoReplyAllComment">
+                <div *ngIf="dataModel.IsEnableAutoReplyAllComment" class="pl-4">
+                    <div class="flex items-center gap-x-2">
+                          <tds-switch size="md" [(ngModel)]="dataModel.IsEnableAutoNotReplyCommentWithPhone"></tds-switch>
+                          <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Không phản hồi bình luận có số điện thoại:</div>
+                    </div>
+                </div>
+
+                <div *ngIf="dataModel.IsEnableAutoReplyAllComment" class="pl-4">
                     <tds-form-field class="w-full">
                         <tds-label>Không phản hồi nếu bình luận chứa nội dung:</tds-label>
 
