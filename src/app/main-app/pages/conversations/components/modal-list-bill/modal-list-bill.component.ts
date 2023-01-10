@@ -114,7 +114,7 @@ export class ModalListBillComponent implements OnInit {
       }
     });
     // Return a result when closed
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
         this.outputLoadMessage(result);
       }
