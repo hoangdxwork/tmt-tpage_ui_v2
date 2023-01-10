@@ -190,6 +190,7 @@ export class EditLiveCampaignComponent implements OnInit {
     this.liveCampaignService.getImageDetails(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.lstImage = res;
+        this.cdRef.markForCheck();
       }, error: (err) => {
         this.message.error(err?.error?.message);
       }
@@ -290,8 +291,6 @@ export class EditLiveCampaignComponent implements OnInit {
 
     this.datePicker = [data.StartDate, data.EndDate];
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
-    console.log(this.livecampaignSimpleDetail);
-
   }
 
 

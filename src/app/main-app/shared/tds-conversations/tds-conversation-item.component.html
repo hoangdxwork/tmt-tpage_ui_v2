@@ -6,8 +6,8 @@
       <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
           (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
           <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
-              <div *ngIf="wb.type == 'template' && wb.payload">
-                <div *ngIf=" wb.payload.template_type == 'generic'" class="w-full justify-end items-center flex relative">
+              <div *ngIf="wb.type == 'template' && wb.payload" class="w-full overflow-x-hidden">
+                <div *ngIf=" wb.payload.template_type == 'generic'" class="w-full flex justify-end items-center relative">
                   <div id="scroll-product{{dataItem.Data.id}}" class="max-w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
                     <div *ngFor="let item of wb?.payload?.elements">
                       <div #itemProduct class="snap-start shrink-0">
@@ -50,7 +50,6 @@
                     </div>
                     <div class="w-full bg-white px-4 rounded-b-xl">
                       <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col w-full items-start">
-
                         <div class="flex flex-col gap-3 w-full">
                           <div class="flex w-full gap-x-2.5" *ngFor="let item of wb?.payload?.elements">
                             <img *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture" src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px]">
@@ -58,7 +57,7 @@
                               <img src="../assets/imagesv2/errorPic.svg" alt="" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] p-4">
                             </ng-template>
 
-                            <div class="flex flex-col flex-auto gap-y-1 items-start">
+                            <div class="flex flex-col flex-auto gap-y-1 items-start text-body-2">
                               <div class="font-semibold text-left w-full truncate" tooltipPlacement="topLeft" tds-tooltip="{{ item?.title }}">{{ item?.title || "---" }}</div>
                               <div class="flex gap-x-2">
                                 <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ item?.quantity || '___' }}</span></span>
@@ -68,20 +67,23 @@
                             </div>
                           </div>
                         </div>
-
-                        <span *ngIf="wb?.payload?.order_number != null && wb?.payload?.order_number != 'Unknown'" class="flex flex-col text-left">
-                          <span class="mt-4 text-neutral-1-600">Mã đơn hàng</span>
-                          <a *ngIf="wb?.payload?.url == null" class="mt-1 text-body-1">{{ wb?.payload?.order_number }}</a>
-                          <a *ngIf="wb?.payload?.url != null" class="mt-1 text-body-1 cursor-pointer font-semibold text-info-400" href="{{wb?.payload?.url}}">{{ wb?.payload?.order_number }}</a>
-                        </span>
-                        <span class="mt-4 text-neutral-1-600">Đã thanh toán bằng</span>
-                        <span class="mt-1 text-body-1">{{ wb?.payload?.payment_method || '---' }}</span>
-                        <span class="mt-2 text-neutral-1-600">Địa chỉ giao hàng</span>
-                        <span class="mt-1 text-body-1 text-left">{{ wb?.payload?.address?.street_1 || '---' }}</span>
+                        <div class="mt-4 flex w-full">
+                          <span *ngIf="wb?.payload?.order_number != null && wb?.payload?.order_number != 'Unknown'" class="flex flex-col w-1/2 text-left">
+                            <span class="text-caption-1">Mã đơn hàng</span>
+                            <a *ngIf="wb?.payload?.url == null" class="mt-1 text-body-2 text-primary-1 font-semibold">{{ wb?.payload?.order_number }}</a>
+                            <a *ngIf="wb?.payload?.url != null" class="mt-1 text-body-2 text-primary-1 font-semibold" href="{{wb?.payload?.url}}">{{ wb?.payload?.order_number }}</a>
+                          </span>
+                          <div class="flex flex-col w-1/2 text-left">
+                            <span class="text-neutral-1-600 text-caption-1">Đã thanh toán bằng</span>
+                            <span class="mt-1 text-body-2">{{ wb?.payload?.payment_method || '---' }}</span>
+                          </div>
+                        </div>
+                        <span class="mt-2 text-neutral-1-600 text-caption-1">Địa chỉ giao hàng</span>
+                        <span class="mt-1 text-body-2 text-left">{{ wb?.payload?.address?.street_1 || '---' }}</span>
                       </div>
                       <div class="py-2 flex justify-between items-center">
-                        <span class="text-neutral-1-600 font-semibold">Tổng tiền</span>
-                        <span class="text-title-2 font-semibold">{{ wb?.payload?.summary?.subtotal || 0 | numberCustom }}</span>
+                        <span class="text-neutral-1-600 text-body-2 font-semibold">Tổng tiền</span>
+                        <span class="text-title-1 font-semibold">{{ wb?.payload?.summary?.subtotal || 0 | numberCustom }}</span>
                       </div>
                     </div>
                   </div>
