@@ -498,7 +498,7 @@
                     <td>{{ 1 + i }}</td>
                     <td>
                       <div class="flex flex-col">
-                        <span class="mb-2">{{ data.NameTemplate || data.Name }}</span>
+                        <span class="mb-2">{{ data.NameGet || data.NameTemplate || data.Name }}</span>
                         <div class="flex flex-wrap items-center gap-1">
                           <tds-tag *ngFor="let item of data.AttributeValues" status='secondary' rounded="rounded-full">
                             {{item.NameGet || (item.AttributeName + ': ' + item.Name)}}
@@ -515,11 +515,11 @@
                       <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
                         [formatter]="numberWithCommas" [parser]="parserComas"
                         [min]="0" [step]="1000"
-                        class="text-neutral-1-900 text-body-2 font-regular">
+                        class="text-neutral-1-900 text-body-2 font-regular" [disabled]="lstVariants.length == 1">
                       </tds-input-number>
                     </td>
                     <td class="text-center">
-                      <tds-input-number *ngIf="!id" [(ngModel)]="data.QtyAvailable" [ngModelOptions]="{standalone: true}"
+                      <tds-input-number *ngIf="!id" [(ngModel)]="data.QtyAvailable" [ngModelOptions]="{standalone: true}" [disabled]="lstVariants.length == 1"
                         [min]="0" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">
                       </tds-input-number>
 
@@ -528,18 +528,18 @@
                       </div>
                     </td>
                     <td class="text-center">
-                      <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
+                      <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}" [disabled]="lstVariants.length == 1"></tds-switch>
                     </td>
                     <td>
                       <div class="flex flex-row items-center justify-center w-full gap-x-1">
                         <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2" *ngIf="id"
-                          (click)="showEditVariantsModal(data)">
+                          (click)="showEditVariantsModal(data)" [disabled]="lstVariants.length == 1">
                           <span class="flex items-center">
                             <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
                           </span>
                         </button>
                         <button tds-button-icon color="secondary" type="button" size="sm"
-                          (click)="removeVariants(data)">
+                          (click)="removeVariants(data)" [disabled]="lstVariants.length == 1">
                           <span class="flex items-center">
                             <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
                           </span>

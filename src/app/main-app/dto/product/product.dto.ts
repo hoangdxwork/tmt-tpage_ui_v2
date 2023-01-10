@@ -1,4 +1,3 @@
-import { ConfigProductVariant } from './../configs/product/config-product-default.dto';
 import { AccountTaxDTO } from '../account/account.dto';
 import { IRAttachmentDTO } from '../attachment/attachment.dto';
 import { POS_CategoryDTO } from '../category/category.dto';

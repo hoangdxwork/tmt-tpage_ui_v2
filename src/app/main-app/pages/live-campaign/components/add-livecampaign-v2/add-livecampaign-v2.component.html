@@ -217,7 +217,7 @@
                           <span class="flex justify-center items-center gap-x-2">
                             Giới hạn trên đơn
                             <span class="relative z-20 tdsi-edit-2-fill text-neutral-1-500 leading-none cursor-pointer" (click)="showEditLimitedQuantity()">
-                              <span tds-tooltip="Chỉnh sửa giới hạn trên đơn cho tất cả" class=" inset-0 absolute z-0"
+                              <span tds-tooltip="Chỉnh sửa giới hạn trên đơn cho tất cả sản phẩm" class=" inset-0 absolute z-0"
                               tds-popover  popoverTrigger="click" [(popoverVisible)]="isShowEditLimitedQuantity" (popoverVisibleChange)="onPopoverVisibleChange($event)"
                               [popoverAutoClose]="false" [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate"></span>
                             </span>
@@ -371,7 +371,7 @@
   <ng-template #contentTemplate>
     <div class="w-[304px]">
         <tds-form-field>
-          <tds-label>Áp dụng giới hạn trên đơn cho tất cả</tds-label>
+          <tds-label>Áp dụng giới hạn trên đơn cho tất cả sản phẩm</tds-label>
           <tds-input-number [min]="0" [step]="1" [(ngModel)]="limitedQuantityAll"
           [formatter]="numberWithCommas" [parser]="parserComas">
         </tds-input-number>

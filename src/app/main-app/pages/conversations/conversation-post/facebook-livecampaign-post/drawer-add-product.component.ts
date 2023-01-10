@@ -1,4 +1,4 @@
-import { ProductTemplateDto } from './../../../../dto/configs/product/config-product-default-v2.dto';
+import { ProductTemplateDto } from '../../../../dto/configs/product/config-product-default.dto';
 import { AttributeLineDto, ProductVariantDto } from './../../../../dto/configs/product/config-product-variant.dto';
 import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
@@ -14,7 +14,6 @@ import { ProductCategoryService } from '../../../../services/product-category.se
 import { ProductTemplateService } from '../../../../services/product-template.service';
 import { SharedService } from '../../../../services/shared.service';
 import { KeyCacheIndexDBDTO, SyncCreateProductTemplateDto, DataPouchDBDTO } from '../../../../dto/product-pouchDB/product-pouchDB.dto';
-import { ConfigAttributeLine, ConfigProductVariant, ConfigProductDefaultDTO } from '../../../../dto/configs/product/config-product-default.dto';
 import { ProductCategoryDTO } from '../../../../dto/product/product-category.dto';
 import { ProductTemplateDTO, ProductUOMDTO } from '../../../../dto/product/product.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -438,8 +437,8 @@ export class DrawerAddProductComponent implements OnInit {
         componentParams: {
           listType: this.productTypeList,
           lstAttributeLine: this.lstAttributeLine,//TODO: danh sách thuộc tính-giá trị đã được chọn
-          lstProductDefault: model, //TODO: model param dùng để gọi API tạo biến thể
-          lstProductVariant: data //TODO: model variants được chọn để chỉnh sửa
+          productTemplate: model, //TODO: model param dùng để gọi API tạo biến thể
+          productVariant: data //TODO: model variants được chọn để chỉnh sửa
         }
       });
 

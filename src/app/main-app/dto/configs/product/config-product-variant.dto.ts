@@ -1,3 +1,4 @@
+import { ProductCategoryDto, ProductUOMDto } from './config-product-default.dto';
 export interface AttributeLineDto {
     Id?: number;
     ProductTmplId?: number;
@@ -97,4 +98,9 @@ export interface ProductVariantDto {
     CreatedById?: any;
     Error?: any;
     AttributeValues: AttributeValueDto[];
+    UOM: ProductUOMDto;
+    Categ: ProductCategoryDto;
+    UOMPO: ProductUOMDto;
+    POSCateg?: any;
+    Images: any[];
 }
