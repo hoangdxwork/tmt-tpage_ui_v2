@@ -826,6 +826,8 @@ export class AddLiveCampaignV2Component implements OnInit {
   
       this.detailsForm.clear();
       this.initFormDetails(formDetails);
+      this.message.success('Áp dụng thành công');
+      this.onClosePopover();
     }
   }
 

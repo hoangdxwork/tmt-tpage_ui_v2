@@ -2,7 +2,6 @@ import { AttributeLineDto, AttributeValueDto, AttributeDto } from './../../../..
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { Message } from '../../../../../lib/consts/message.const';
-import { ConfigAttributeLine, ConfigAttributeValue, ConfigAttribute } from '../../../../dto/configs/product/config-product-default.dto';
 import { takeUntil } from 'rxjs/operators';
 import { ProductTemplateService } from '../../../../services/product-template.service';
 import { FormGroup, FormBuilder } from '@angular/forms';

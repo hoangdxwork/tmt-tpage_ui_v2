@@ -86,7 +86,7 @@ export class ProductIndexDBService extends BaseSevice {
               } else {
                   res.Datas?.map((x: DataPouchDBDTO) => {
                       let index = data.cacheDbStorage?.findIndex(y => y.Id == x.Id && y.UOMId == x.UOMId);
-                      if(index >= 0) {
+                      if(Number(index) >= 0) {
                           data.cacheDbStorage[index] = {...x};
                       } else {
                           data.cacheDbStorage = [...[x], ...data.cacheDbStorage];
@@ -95,7 +95,7 @@ export class ProductIndexDBService extends BaseSevice {
               }
 
               data.cacheDbStorage = [...data.cacheDbStorage];
-              data.cacheDbStorage = data.cacheDbStorage?.sort((a: any,b: any) => b.Version - a.Version);
+              data.cacheDbStorage = data.cacheDbStorage?.sort((a: any,b: any) => Number(b.Version) - Number(a.Version));
 
               //TODO: check số version
               let versions = data.cacheDbStorage?.map((x: DataPouchDBDTO) => x.Version);

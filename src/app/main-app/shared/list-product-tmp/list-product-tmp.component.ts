@@ -17,7 +17,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableComponent } from 'tds-ui/table';
 import { ProductService } from '@app/services/product.service';
-import { ConfigCateg } from '@app/dto/configs/product/config-product-default.dto';
+import { ProductCategoryDto } from '@app/dto/configs/product/config-product-default.dto';
 
 @Component({
   selector: 'list-product-tmp',
@@ -58,8 +58,8 @@ export class ListProductTmpComponent  implements OnInit, OnChanges {
   indClick: number =  -1;
 
   isShowFilterCategId: boolean = false;
-  categoryList: ConfigCateg[] = [];
-  categIdFilter!: ConfigCateg | TDSSafeAny;
+  categoryList: ProductCategoryDto[] = [];
+  categIdFilter!: ProductCategoryDto | TDSSafeAny;
 
   options: Array<TDSSafeAny> = [
     { text: 'Tất cả', value: 'all' },

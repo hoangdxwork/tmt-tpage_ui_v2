@@ -874,6 +874,8 @@ export class EditLiveCampaignComponent implements OnInit {
     this.liveCampaignService.applyLimitQuantity(this.liveCampaignId, { quantity: this.limitedQuantityAll}).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.refreshData();
+        this.message.success('Cập nhật thành công');
+        this.onClosePopover();
       },
       error: (err) => {
         this.isLoading = false;

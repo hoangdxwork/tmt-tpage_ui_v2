@@ -1,4 +1,4 @@
-import { ProductTemplateDto } from './../../../../dto/configs/product/config-product-default-v2.dto';
+import { ProductTemplateDto } from '../../../../dto/configs/product/config-product-default.dto';
 import { AttributeLineDto, ProductVariantDto, AttributeValueDto } from './../../../../dto/configs/product/config-product-variant.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
@@ -7,7 +7,6 @@ import { TDSModalRef } from 'tds-ui/modal';
 import { TDSSafeAny, TDSHelperString, TDSHelperArray } from 'tds-ui/shared/utility';
 import { ProductTemplateService } from './../../../../services/product-template.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { ConfigAttributeLine } from '../../../../dto/configs/product/config-product-default.dto';
 import { Component, Input, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
@@ -20,9 +19,8 @@ export class CreateVariantsModalComponent implements OnInit {
 
   @Input() listType!: TDSSafeAny[];
   @Input() lstAttributeLine!: AttributeLineDto[];
-  @Input() lstProductDefault!: TDSSafeAny;
-  @Input() suggestModel!: ProductTemplateDto;
-  @Input() lstProductVariant!: ProductVariantDto;
+  @Input() productTemplate!: ProductTemplateDto;
+  @Input() productVariant!: ProductVariantDto;
 
   _form!: FormGroup;
   attributeModel: AttributeLineDto[] = [];
@@ -56,18 +54,19 @@ export class CreateVariantsModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._form.controls["ImageUrl"].setValue(this.lstProductVariant?.ImageUrl);
+    this._form.controls["ImageUrl"].setValue(this.productVariant?.ImageUrl);
+    console.log(this.productVariant);
 
-    this.lstAttributeLine.forEach((item) => {
-      let editValues = this.lstProductVariant?.AttributeValues.filter(f => f.AttributeId == item.AttributeId);
+    this.lstAttributeLine.map((x: AttributeLineDto) => {
+      let editValues = this.productVariant?.AttributeValues.filter(f => f.AttributeId == x.AttributeId);
       this.attributeModel.push({
-        AttributeId: item.AttributeId,
-        Attribute: item.Attribute,
+        AttributeId: x.AttributeId,
+        Attribute: x.Attribute,
         Values: editValues || []
       })
     });
 
-    this._form.patchValue(this.lstProductVariant ? this.lstProductVariant : this.lstProductVariant);
+    this._form.patchValue(this.productVariant);
     this.getCondition();
     this.cdRef.markForCheck();
   }
@@ -90,8 +89,8 @@ export class CreateVariantsModalComponent implements OnInit {
   }
 
   getCondition(){
-    if(this.lstProductVariant){
-      if(TDSHelperArray.isArray(this.lstProductVariant.AttributeValues) && TDSHelperArray.hasListValue(this.lstProductVariant.AttributeValues)){
+    if(this.productVariant){
+      if(TDSHelperArray.isArray(this.productVariant.AttributeValues) && TDSHelperArray.hasListValue(this.productVariant.AttributeValues)){
         this.isRootVariant = false;
         this.isEdit = true;
       }else{
@@ -124,8 +123,8 @@ export class CreateVariantsModalComponent implements OnInit {
     let res = true;
 
     //TODO: check giá trị của thuộc tính có được điền đầy đủ hay chưa
-    this.attributeModel.forEach(attr => {
-      if (attr.Values.length == 0) {
+    this.attributeModel.map(x => {
+      if (x.Values.length == 0) {
         res = false;
       }
     });
@@ -134,23 +133,23 @@ export class CreateVariantsModalComponent implements OnInit {
 
   prepareModel(data: ProductVariantDto) {
     data = {...data, ...this._form.value};
-    data.AttributeValues = TDSHelperArray.hasListValue(data.AttributeValues) ? data.AttributeValues : this.lstProductVariant?.AttributeValues;
+    data.AttributeValues = TDSHelperArray.hasListValue(data.AttributeValues) ? data.AttributeValues : this.productVariant?.AttributeValues;
     return data;
   }
 
   save() {
     if (this.checkValidate()) {
-      if (this.suggestModel) {
-        this.suggestModel.AttributeLines = [...this.attributeModel];
+      if (this.productTemplate) {
+        this.productTemplate.AttributeLines = [...this.attributeModel];
       }
 
-      if (this.lstProductVariant) {
+      if (this.productVariant) {
         this.message.success('Chỉnh sửa biến thể thành công');
-        this.modal.destroy(this.prepareModel(this.lstProductVariant));
+        this.modal.destroy(this.prepareModel(this.productVariant));
       } else {
         this.isLoading = true;
 
-        this.productTemplateService.suggestVariants({ model: this.suggestModel }).pipe(takeUntil(this.destroy$)).subscribe({
+        this.productTemplateService.suggestVariants({ model: this.productTemplate }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res) => {
               if(res && TDSHelperArray.hasListValue(res.value)) {
                 this.modal.destroy(this.prepareModel(res.value[0]));

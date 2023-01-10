@@ -1060,6 +1060,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     this.liveCampaignService.applyLimitQuantity(this.liveCampaignId, { quantity: this.limitedQuantityAll}).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.refreshData();
+        this.message.success('Áp dụng thành công');
+        this.onClosePopover();
       },
       error: (err) => {
         this.isLoading = false;

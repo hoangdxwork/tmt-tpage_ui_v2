@@ -1,7 +1,5 @@
 import { SaleSettingConfigDto_V2 } from './../../../dto/setting/sale-setting-config.dto';
-import { UserInitDTO } from 'src/app/lib/dto';
-import { TAuthService } from 'src/app/lib';
-import { ProductTemplateDto, ProductCategoryDto, ProductUOMPODto, ProductUOMDto, ProductUOMLineDto } from './../../../dto/configs/product/config-product-default-v2.dto';
+import { ProductTemplateDto, ProductCategoryDto, ProductUOMDto, ProductUOMLineDto } from '../../../dto/configs/product/config-product-default.dto';
 import { ProductVariantDto, AttributeLineDto } from './../../../dto/configs/product/config-product-variant.dto';
 import { CompanyCurrentDTO } from './../../../dto/configs/company-current.dto';
 import { ProductService } from '@app/services/product.service';
@@ -26,7 +24,7 @@ import { ProductTemplateUOMLineService } from '../../../services/product-templat
 import { ProductTemplateService } from '../../../services/product-template.service';
 import { CreateCountryModalComponent } from '../components/create-country-modal/create-country-modal.component';
 import { CreateUOMModalComponent } from '../components/create-UOM-modal/create-UOM-modal.component';
-import { takeUntil, finalize } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -45,12 +43,13 @@ import { TDSConfigService } from 'tds-ui/core/config';
   },
   providers: [TDSDestroyService]
 })
+
 export class ConfigAddProductComponent implements OnInit {
   
   _form!: FormGroup;
   productTypeList: Array<TDSSafeAny> = [];
   categoryList: Array<ProductCategoryDto> = [];
-  UOMPOList: Array<ProductUOMPODto> = [];
+  UOMPOList: Array<ProductUOMDto> = [];
   UOMList: Array<ProductUOMDto> = [];
   POSCategoryList: Array<TDSSafeAny> = [];
   trackingList: Array<TDSSafeAny> = [];
@@ -147,7 +146,6 @@ export class ConfigAddProductComponent implements OnInit {
       maxStack: 3
     });
   }
-  //#endregion Initialization
 
   onEventEmitter() {
     this.productTemplateFacade.onStockChangeProductQty$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -171,6 +169,7 @@ export class ConfigAddProductComponent implements OnInit {
     this.sharedService.setSaleConfig();
     this.sharedService.getSaleConfig().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
+          if(!res) return;
           this.saleConfig = {...res} as SaleSettingConfigDto_V2;
       },
       error:(err) => {
@@ -201,6 +200,11 @@ export class ConfigAddProductComponent implements OnInit {
 
     this.productTemplateService.getProductTemplateById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
+        if(!res) {
+          this.isLoading = false;
+          return;
+        }
+
         delete res['@odata.context'];
         this.dataModel = { ...res };
 
@@ -209,10 +213,7 @@ export class ConfigAddProductComponent implements OnInit {
           this.lstVariants = this.dataModel.ProductVariants;
         }
 
-        if(this.dataModel.OrderTag) {
-          this.dataModel.OrderTag = this.dataModel.OrderTag.split(',');
-        }
-
+        this.dataModel.OrderTag = TDSHelperString.hasValueString(this.dataModel.OrderTag) && this.dataModel.OrderTag !== '' ? this.dataModel.OrderTag.split(',') : [];
         this.formatProperty(this.dataModel);
 
         // nếu type = 'product' thì lấy thông tin số lượng thực tế của sản phẩm
@@ -224,7 +225,7 @@ export class ConfigAddProductComponent implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
-        this.message.error(error?.error?.message || Message.CanNotLoadData);
+        this.message.error(error?.error?.message);
       }
     })
   }
@@ -232,16 +233,22 @@ export class ConfigAddProductComponent implements OnInit {
   loadDefault() {
     this.isLoading = true;
 
-    this.productTemplateService.getDefault().pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$)).subscribe(
+    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res: TDSSafeAny) => {
+          if(!res) {
+            this.isLoading = false;
+            return;
+          }
+
           delete res['@odata.context'];
           this.dataModel = { ...res };
-
           this.formatProperty(res);
+          this.isLoading = false;
         },
         error: error => {
-          this.message.error(error?.error?.message || Message.CanNotLoadData);
+          this.isLoading = false;
+          this.message.error(error?.error?.message);
         }
       })
   }
@@ -256,17 +263,17 @@ export class ConfigAddProductComponent implements OnInit {
     this.stockChangeProductQtyService.getStockChangeProductQty(data).pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res) => {
-          this.stockChangeProductList = [...res.value];
+          this.stockChangeProductList = [...(res.value || [])];
           this.initInventory = 0;
           // TODO: số lượng tồn thực tế
-          this.stockChangeProductList.forEach(item => {
-            this.initInventory += item.NewQuantity;
+          this.stockChangeProductList.forEach(x => {
+            this.initInventory += x.NewQuantity;
           });
           this.isLoading = false;
         },
         error: (err) => {
           this.isLoading = false;
-          this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+          this.message.error(err?.error?.message);
         }
       })
   }
@@ -277,16 +284,16 @@ export class ConfigAddProductComponent implements OnInit {
       {
         next: (res) => {
 
-          this.lstProductCombo = res.value.map((item) => {
+          this.lstProductCombo = res.value.map((x) => {
             return {
-              Product: item.Product,
-              ProductId: item.ProductId,
-              Quantity: item.Quantity
+              Product: x.Product,
+              ProductId: x.ProductId,
+              Quantity: x.Quantity
             }
           });
         },
         error: err => {
-          this.message.error(err?.error?.message || Message.ComboProduct.CanNotLoadData);
+          this.message.error(err?.error?.message);
         }
       })
   }
@@ -306,7 +313,7 @@ export class ConfigAddProductComponent implements OnInit {
           this.categoryList = [...res.value];
         },
         error: error => {
-          this.message.error(error?.error?.message || Message.CanNotLoadData);
+          this.message.error(error?.error?.message);
         }
       }
     );
@@ -599,9 +606,7 @@ export class ConfigAddProductComponent implements OnInit {
       this.addProduct();
     }
   }
-  //#endregion Handle
-
-  //#region Modal
+  
   showUpdateInitInventoryModal(){
     const modal = this.modalService.create({
       title: 'Cập nhật số lượng thực tế',
@@ -677,8 +682,8 @@ export class ConfigAddProductComponent implements OnInit {
         componentParams: {
           listType: this.productTypeList,
           lstAttributeLine: this.lstAttributeLine,//TODO: danh sách thuộc tính-giá trị đã được chọn
-          lstProductDefault: model, //TODO: model param dùng để gọi API tạo biến thể
-          lstProductVariant: data //TODO: model variants được chọn để chỉnh sửa
+          productTemplate: model, //TODO: model param dùng để gọi API tạo biến thể
+          productVariant: data //TODO: model variants được chọn để chỉnh sửa
         }
       });
 

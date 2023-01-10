@@ -1,6 +1,6 @@
 import { UserInitDTO } from 'src/app/lib/dto';
 import { TAuthService } from 'src/app/lib';
-import { ProductTemplateDto, ProductUOMLineDto } from './../../dto/configs/product/config-product-default-v2.dto';
+import { ProductTemplateDto, ProductUOMLineDto } from '../../dto/configs/product/config-product-default.dto';
 import { AttributeLineDto, ProductVariantDto } from './../../dto/configs/product/config-product-variant.dto';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { ProductComboDto } from './../../dto/product/product-combo.dto';

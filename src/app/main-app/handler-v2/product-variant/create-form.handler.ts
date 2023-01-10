@@ -85,7 +85,6 @@ export class CreateFormProductVariantHandler {
     _form = fb.group({
       Name: [null, Validators.required],
       PriceVariant: [0],
-      IsAvailableOnTPage: [null],
       ImageUrl: [null],
       Categ: [null, Validators.required],
       UOM: [null, Validators.required],

@@ -1,5 +1,4 @@
-import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { ProductDTO } from 'src/app/main-app/dto/product/product.dto';
+import { ProductVariantDto } from './../../dto/configs/product/config-product-variant.dto';
 import { Injectable } from "@angular/core";
 
 @Injectable({
@@ -7,7 +6,7 @@ import { Injectable } from "@angular/core";
 })
 export  class PrepareEditVariantHandler {
 
-    public prepareModel(dataModel:ProductDTO, formModel:TDSSafeAny, images?:TDSSafeAny[]) {
+    public prepareModel(dataModel: ProductVariantDto, formModel: any, images?: any[]) {
 
         dataModel.Name = formModel.Name;
         dataModel.PriceVariant = formModel.PriceVariant;
