@@ -3,10 +3,10 @@
     {{currentPost?.ObjectId == item.ObjectId ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}">
 
     <div class="flex flex-col desktop:gap-y-3 gap-y-1.5" *ngIf="(item.Data | facebookType)">
-        <div class="relative desktop:w-[120px] desktop:h-[88px] w-[100px] h-[67px]">
+        <div class="relative desktop:w-[120px] desktop:h-[88px] w-[93px] h-[60px]">
             <div *ngIf="((item.Data | facebookType)?.picture || (item.Data | facebookType)?.full_picture || item.Thumbnail?.Url) && !checkPostPictureError(item); else noPicture" class="relative">
                 <img [src]="(item.Data | facebookType)?.picture || (item.Data | facebookType)?.full_picture || item.Thumbnail?.Url" alt="" (error)="errorPostPicture(item)"
-                    class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[100px] max-h-[67px] w-[100px] h-[67px] rounded-md object-cover">
+                    class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md object-cover">
 
                 <span class="absolute inset-0 flex items-center justify-center text-heading-4 text-white font-semibold bg-black bg-opacity-40 rounded-md"
                     *ngIf="extrasChilds && extrasChilds.length > 0">
@@ -16,11 +16,11 @@
             <ng-template #noPicture>
                 <div *ngIf="!((item.Data | facebookType)?.picture || (item.Data | facebookType)?.full_picture || item.Thumbnail?.Url); else errorPicture" class="relative">
                     <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
-                        class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[100px] max-h-[67px] w-[100px] h-[67px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                        class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                 </div>
                 <ng-template #errorPicture>
                     <img src="../../../assets/imagesv2/errorPic.svg" alt=""  class="relative"
-                        class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[100px] max-h-[67px] w-[100px] h-[67px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                        class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
 
                     <span class="absolute inset-0 flex items-center justify-center text-heading-4 text-white font-semibold bg-black bg-opacity-40 rounded-md"
                         *ngIf="extrasChilds && extrasChilds.length > 0">
@@ -117,19 +117,19 @@
                 (click)="selectPost(child)">
 
                 <div class="flex flex-col  desktop:gap-y-3 gap-y-1.5">
-                    <div class="relative desktop:w-[120px] desktop:h-[88px] w-[100px] h-[67px]">
+                    <div class="relative desktop:w-[120px] desktop:h-[88px] w-[93px] h-[60px]">
                         <div *ngIf="child.Data?.picture && !checkPostPictureError(child); else noPicture" class="relative">
                             <img [src]="child.Data?.picture" alt="" (error)="errorPostPicture(child)"
-                                class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[100px] max-h-[67px] w-[100px] h-[67px] rounded-md object-cover">
+                                class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md object-cover">
                         </div>
                         <ng-template #noPicture>
                             <div *ngIf="!child.Data?.picture; else errorPicture">
                                 <img src="assets/imagesv2/conversation-post-img.svg" alt=""
-                                    class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[100px] max-h-[67px] w-[100px] h-[67px] rounded-md p-4 {{currentPost?.ObjectId == child.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                                    class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md p-4 {{currentPost?.ObjectId == child.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                             </div>
                             <ng-template #errorPicture>
                                 <img src="assets/imagesv2/errorPic.svg" alt=""
-                                    class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[100px] max-h-[67px] w-[100px] h-[67px] rounded-md p-4 {{currentPost?.ObjectId == child.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                                    class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md p-4 {{currentPost?.ObjectId == child.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                             </ng-template>
                         </ng-template>
                     </div>
