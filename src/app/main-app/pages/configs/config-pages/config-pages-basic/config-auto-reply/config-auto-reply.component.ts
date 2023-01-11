@@ -1,8 +1,8 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { Component, Input, OnInit, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Subject } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
 import { AutoReplyConfigDTO } from 'src/app/main-app/dto/configs/page-config.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -12,20 +12,18 @@ import { TDSMessageService } from 'tds-ui/message';
 @Component({
   selector: 'config-auto-reply',
   templateUrl: './config-auto-reply.component.html',
-
+  providers: [TDSDestroyService]
 })
-export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
+export class ConfigAutoReplyComponent implements OnInit, OnChanges {
 
   @Input() eventOnSave: boolean = false;
   @Output() onSaveSuccess = new EventEmitter();
 
-  formConfigAutoReply!: FormGroup;
+  _form!: FormGroup;
 
   currentTab: number = 0;
   currentTeam!: CRMTeamDTO | null;
   isLoading: boolean = false;
-
-  private destroy$ = new Subject<void>();
 
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
@@ -43,7 +41,7 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
 
   tagHelpers = [
     { id: "Tên Facebook khách hàng", value: "{facebook.name}" },
-    { id: "Bình luận Facebook của khách hàng", value: "{facebook.comment}" },
+    { id: "Bình luận Facebook của khách hàng", value: "{facebook.comment}" }
   ];
 
   quillTagHelpers = {
@@ -77,49 +75,17 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
     } as any
   } as any;
 
-  constructor(
-    private formBuilder: FormBuilder,
+  team!: CRMTeamDTO | any;
+
+  constructor(private fb: FormBuilder,
     private crmTeamService: CRMTeamService,
-    private message: TDSMessageService,
-  ) { }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if(changes?.eventOnSave?.currentValue) {
-      let currentPageId = this.currentTeam?.ChannelId;
-
-      if(!currentPageId) {
-        this.message.error(Message.PageNotExist);
-        return;
-      }
-
-      this.onSave(currentPageId);
-    }
-  }
-
-  ngOnInit(): void {
+    private destroy$: TDSDestroyService,
+    private message: TDSMessageService) {
     this.createForm();
-
-    this.loadConfigs();
-  }
-
-  loadConfigs() {
-    this.isLoading = true;
-    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.currentTeam = res;
-
-      if(res && res.Facebook_PageId || res?.ChannelId) {
-        let pageId = res.Facebook_PageId || res?.ChannelId;
-        this.updateAutoReplyConfig(pageId);
-      }
-
-      this.isLoading = false;
-
-    }, error => this.isLoading = false);
   }
 
   createForm() {
-    // Bật auto phản hồi
-    this.formConfigAutoReply = this.formBuilder.group({
+    this._form = this.fb.group({
       IsEnableAutoReplyComment: [false],
       IsEnableAutoReplyMultiple: [false],
       MaxForAutoReplyMultiple: [1],
@@ -138,49 +104,97 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  updateAutoReplyConfig(pageId: string) {
-    let formControls = this.formConfigAutoReply.controls;
+  ngOnInit(): void {
+    this.team = {};
+    this.isLoading = true;
 
-    this.crmTeamService.getChannelAutoReplyConfig(pageId).subscribe(res => {
-      formControls["IsEnableAutoReplyComment"].setValue(res.IsEnableAutoReplyComment);
-      formControls["IsEnableAutoReplyMultiple"].setValue(res.IsEnableAutoReplyMultiple);
-      formControls["MaxForAutoReplyMultiple"].setValue(res.MaxForAutoReplyMultiple);
-      formControls["IsEnableAutoReplyAllComment"].setValue(res.IsEnableAutoReplyAllComment);
-      formControls["IsEnableAutoReplyCommentWithPhone"].setValue(res.IsEnableAutoReplyCommentWithPhone);
-      formControls["IsEnableAutoNotReplyCommentWithPhone"].setValue(res.IsEnableAutoNotReplyCommentWithPhone);
-      formControls["IsEnableAutoReplyCommentWithEmail"].setValue(res.IsEnableAutoReplyCommentWithEmail);
-      formControls["ContentOfCommentForAutoReply"].setValue(res.ContentOfCommentForAutoReply);
-      formControls["IsEnableAutoReplyCommentInMessage"].setValue(res.IsEnableAutoReplyCommentInMessage);
-      formControls["ContentForAutoReplyWithComment"].setValue(res.ContentForAutoReplyWithComment);
-      formControls["ContentForAutoReplyWithMessage"].setValue(res.ContentForAutoReplyWithMessage);
-
-      if (res.ContentOfCommentForAutoReply) {
-        formControls['selectedWord2s'].setValue(res.ContentOfCommentForAutoReply.split(','));
+    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.team = res;
+          let channelId = this.team.ChannelId;
+          if(channelId) {
+              this.loadAutoReplyConfig(channelId);
+          }
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
       }
-
-      if (res.ContentOfCommentForNotAutoReply) {
-        formControls['selectedWord3s'].setValue(res.ContentOfCommentForNotAutoReply.split(','));
-      }
-    });
+    })
   }
 
-  onSave(pageId: string) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['eventOnSave'] && !changes['eventOnSave'].firstChange) {
+        let exist = changes['eventOnSave'].currentValue == true;
+        if(exist) {
+            let currentTeam = this.crmTeamService.getCurrentTeam();
+            if(currentTeam?.ChannelId != this.team?.ChannelId) {
+                this.message.error('Vui lòng F5 để cập nhật TeamId');
+            } else {
+                this.onSave(this.team.ChannelId);
+            }
+        }
+    }
+  }
+
+  loadAutoReplyConfig(channelId: string) {
+    this.isLoading = true;
+    this.crmTeamService.getChannelAutoReplyConfig(channelId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.updateForm(res);
+          this.isLoading = false;
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(error?.error?.message);
+      }
+    })
+  }
+
+  updateForm(data: any) {
+    const formControls = this._form.controls;
+
+    formControls["IsEnableAutoReplyComment"].setValue(data.IsEnableAutoReplyComment);
+    formControls["IsEnableAutoReplyMultiple"].setValue(data.IsEnableAutoReplyMultiple);
+    formControls["MaxForAutoReplyMultiple"].setValue(data.MaxForAutoReplyMultiple);
+    formControls["IsEnableAutoReplyAllComment"].setValue(data.IsEnableAutoReplyAllComment);
+    formControls["IsEnableAutoReplyCommentWithPhone"].setValue(data.IsEnableAutoReplyCommentWithPhone);
+    formControls["IsEnableAutoNotReplyCommentWithPhone"].setValue(data.IsEnableAutoNotReplyCommentWithPhone);
+    formControls["IsEnableAutoReplyCommentWithEmail"].setValue(data.IsEnableAutoReplyCommentWithEmail);
+    formControls["ContentOfCommentForAutoReply"].setValue(data.ContentOfCommentForAutoReply);
+    formControls["IsEnableAutoReplyCommentInMessage"].setValue(data.IsEnableAutoReplyCommentInMessage);
+    formControls["ContentForAutoReplyWithComment"].setValue(data.ContentForAutoReplyWithComment);
+    formControls["ContentForAutoReplyWithMessage"].setValue(data.ContentForAutoReplyWithMessage);
+
+    if (data.ContentOfCommentForAutoReply) {
+      formControls['selectedWord2s'].setValue(data.ContentOfCommentForAutoReply.split(','));
+    }
+
+    if (data.ContentOfCommentForNotAutoReply) {
+      formControls['selectedWord3s'].setValue(data.ContentOfCommentForNotAutoReply.split(','));
+    }
+  }
+
+  onSave(channelId: string) {
     let model = this.prepareModelAutoReply();
     this.isLoading = true;
-    this.crmTeamService.insertOrUpdateChannelAutoReplyConfig(pageId, model).subscribe(res => {
-      this.message.success(Message.UpdatedSuccess);
-      this.isLoading = false;
-      this.onSaveSuccess.emit(true);
-    }, error => {
-      this.isLoading = false;
-      this.onSaveSuccess.emit(false);
-      if(error?.error?.message) this.message.error(error?.error?.message);
-      else this.message.error(Message.ErrorOccurred);
-    });
+
+    this.crmTeamService.insertOrUpdateChannelAutoReplyConfig(channelId, model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        this.onSaveSuccess.emit(true);
+        this.message.success('Cập nhật cấu hình thành công');
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        this.onSaveSuccess.emit(false);
+        this.message.error(error?.error?.message);
+      }
+    })
   }
 
   prepareModelAutoReply(): AutoReplyConfigDTO {
-    let formValue = this.formConfigAutoReply.value;
+    let formValue = this._form.value;
 
     let model: AutoReplyConfigDTO = {
       IsEnableAutoReplyComment: formValue["IsEnableAutoReplyComment"],
@@ -206,11 +220,6 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return model;
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
 }
