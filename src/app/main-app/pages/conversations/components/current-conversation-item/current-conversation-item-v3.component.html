@@ -1,7 +1,7 @@
 <div *ngIf="item" class="text-neutral-1-900 w-full h-full" [ngClass]="reponsiveDesktop ? 'text-body-2' : 'text-caption-2'">
     <div class="w-full overflow-hidden bg-white h-full break-words whitespace-pre-line">
         <div [ngClass]="conversationItem && (conversationItem.Id == item.Id) ? 'bg-secondary-3 border-blue-500':'bg-white border-transparent'"
-            class="flex w-full h-full min-h-[109px] hover:bg-neutral-3-50 border-l-4">
+            class="flex w-full h-full min-h-[100px] hover:bg-neutral-3-50 border-l-4">
             <div class="desktop:p-3.5 p-2 flex flex-col w-full h-full">
                 <div class="flex gap-3">
                     <div class="relative">
@@ -181,7 +181,7 @@
                         </div>
 
                         <div class="flex gap-1.5 items-center">
-                            <span [ngClass]="{ 'flex':(countHiddenTag > 0), 'hidden':!(countHiddenTag > 0), 'text-[11px]':reponsiveDesktop, 'text-[10px]':!reponsiveDesktop }" 
+                            <span [ngClass]="{ 'flex':(countHiddenTag > 0), 'hidden':!(countHiddenTag > 0), 'text-[11px]':reponsiveDesktop, 'text-[10px]':!reponsiveDesktop }"
                                 class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] rounded truncate"
                                 tds-popover [popoverContent]="popoverContentTag"
                                 popoverPlacement="topRight">
@@ -200,11 +200,11 @@
                                     </span>
                                 </span>
                             </ng-template>
-                            <span *ngIf="item.HasPhone" 
+                            <span *ngIf="item.HasPhone"
                                 class="tdsi-call-fill leading-none text-white bg-base-green-400 p-0.5 rounded-md"
                                 [ngClass]="{ 'text-body-2':reponsiveDesktop, 'text-caption-2':!reponsiveDesktop }">
                             </span>
-                            <span *ngIf="item.HasAddress" 
+                            <span *ngIf="item.HasAddress"
                                 class="tdsi-pin-fill leading-none text-white bg-base-orange-500 p-0.5 rounded-md"
                                 [ngClass]="{ 'text-body-2':reponsiveDesktop, 'text-caption-2':!reponsiveDesktop }">
                             </span>
