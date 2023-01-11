@@ -60,12 +60,12 @@
         </div>
     </div>
     <div class="flex-auto flex flex-col overflow-hidden desktop:gap-y-2 gap-y-1.5">
-        <span class="w-full font-semibold truncate text-caption-1 desktop:text-body-2" *ngIf="item.Title || (item.Data | facebookType)?.attachments && (item.Data | facebookType)?.attachments!.data
+        <span class="w-full font-semibold truncate text-caption-2 desktop:text-body-2" *ngIf="item.Title || (item.Data | facebookType)?.attachments && (item.Data | facebookType)?.attachments!.data
         && (item.Data | facebookType)?.attachments!.data[0].title; else noTitle">
             {{item.Title || (item.Data | facebookType)?.attachments!.data[0].title}}
         </span>
         <ng-template #noTitle>
-            <span class="font-semibold text-caption-1 desktop:text-body-2" *ngIf="!item.Title">(Chưa có tiêu đề)</span>
+            <span class="font-semibold text-caption-2 desktop:text-body-2" *ngIf="!item.Title">(Chưa có tiêu đề)</span>
         </ng-template>
 
         <span *ngIf="(item.Data | facebookType)?.message" class=" text-neutral-1-400 line-clamp text-caption-1 desktop:text-body-2">
@@ -146,7 +146,7 @@
                     </div>
                 </div>
                 <div class="flex-auto flex flex-col overflow-hidden desktop:gap-y-2 gap-y-1">
-                    <span class="w-full font-semibold truncate text-caption-1 desktop:text-body-2" *ngIf="child.description">
+                    <span class="w-full font-semibold truncate text-caption-2 desktop:text-body-2" *ngIf="child.description">
                         {{child.description}}
                     </span>
 
