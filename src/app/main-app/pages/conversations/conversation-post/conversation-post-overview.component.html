@@ -95,12 +95,12 @@
                     <button tds-button-outline [color]="defaultProductPost? 'primary': 'secondary'" tds-tooltip tooltipTitle="Sản phẩm mặc định" tooltipPlacement="bottom"
                         (click)="showModalSelectProduct(defaultProductPost)" class="max-w-[152px]">
                         <span class="flex items-center overflow-hidden">
-                            <i class="tdsi-product-fill text-lg leading-none mr-2"></i>
-                            <span *ngIf="defaultProductPost; else noDataProduct" class="truncate">
+                            <i class="tdsi-product-fill text-lg leading-none desktop:mr-2 laptop:m-0 m-0"></i>
+                            <span *ngIf="defaultProductPost; else noDataProduct" class="truncate" class="laptop:hidden desktop:block hidden">
                                 {{ defaultProductPost.ProductNameGet }}
                             </span>
                             <ng-template #noDataProduct>
-                                <span>Chọn sản phẩm</span>
+                                <span class="laptop:hidden desktop:block hidden">Chọn sản phẩm</span>
                             </ng-template>
                         </span>
                     </button>
@@ -194,7 +194,7 @@
                         </div>
                     </div>
                     <div class="post-picture w-1/4 flex justify-end" *ngIf="(data.Data | facebookType).picture">
-                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="(data.Data | facebookType).picture || ''" class="rounded-xl h-[122px] object-cover" />
+                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="(data.Data | facebookType).picture || ''" class="rounded-xl desktop:h-[122px] laptop:h-[100px] object-cover" />
                     </div>
                 </div>
 
@@ -232,7 +232,7 @@
                     </div>
 
                     <div class="post-picture" *ngIf="(data.Data | tshopType).MediaLive?.ThumbnailUrl">
-                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="(data.Data | tshopType).MediaLive?.ThumbnailUrl || ''" class="rounded-xl h-[122px] object-cover" />
+                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="(data.Data | tshopType).MediaLive?.ThumbnailUrl || ''" class="rounded-xl desktop:h-[122px] laptop:h-[100px] object-cover" />
                     </div>
                 </div>
                 <!-- tiktok -->
@@ -269,11 +269,11 @@
                     </div>
 
                     <div class="post-picture" class="h-[122px]">
-                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="data.Thumbnail?.Url || '' " class="rounded-xl h-[122px] object-cover" />
+                        <img tds-image [fallback]="fallbackImg" [tdsSrc]="data.Thumbnail?.Url || '' " class="rounded-xl desktop:h-[122px] h-[95px] object-cover" />
                     </div>
                 </div>
 
-                <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4 gap-x-2">
+                <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 desktop:px-4 laptop:px-2 gap-x-2">
                     <container-element [ngSwitch]="indClickFilter" class="w-full">
 
                         <!-- lọc tất cả bình luận -->
@@ -294,8 +294,10 @@
                                         <input tdsInput placeholder="Tìm kiếm bình luận" autocomplete="off" #innerText/>
                                     </tds-form-field>
 
-                                    <span class="comment-count"> {{data.CountComment || 0}} bình luận </span>
-                                    <span class="share-count  mr-3"> {{(data.Data | facebookType).count_shares || 0}} lượt chia sẻ </span>
+                                    <div class="flex-auto flex gap-x-2">
+                                        <span class="flex-auto"> {{data.CountComment || 0}} bình luận </span>
+                                        <span class="flex-auto mr-3"> {{(data.Data | facebookType).count_shares || 0}} lượt chia sẻ </span>
+                                    </div>
                                 </div>
                             </div>
                         </ng-container>
