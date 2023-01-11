@@ -24,7 +24,7 @@
                       <div class="bg-white rounded-2xl desktop:px-4 desktop:py-3 px-3 py-2" [ngClass]="dictActiveComment[item.Id]? 'bg-primary-3': ''" (click)="onDictActiveComment(item)">
                           <div class="flex items-center justify-between desktop:gap-x-2 gap-x-1 desktop:text-body-2 laptop:text-caption-1">
                               <div class="flex gap-x-2 items-center">
-                                  <div *ngIf="(item.Data | facebookDataCs) && (item.Data | facebookDataCs)?.from" class="min-w-[50px] desktop:max-w-[220px] max-w-[105px] truncate">
+                                  <div *ngIf="(item.Data | facebookDataCs) && (item.Data | facebookDataCs)?.from" class="min-w-[50px] desktop:max-w-[220px] max-w-[120px] truncate">
                                       <span class="font-semibold cursor-pointer" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip="{{item.Data.from.name}}">{{ item.Data.from.name }}</span>
                                   </div>
 
@@ -145,7 +145,7 @@
                           </div>
 
                           <!-- nội dung bình luận -->
-                          <div class="flex flex-row gap-x-3" style="white-space: pre-line; word-break: break-word;">
+                          <div class="flex flex-row gap-x-3 desktop:text-body-2 text-caption-1" style="white-space: pre-line; word-break: break-word;">
                               <div #contentMessage showMore [length]="100" [text]="((item.MessageFormatted || item.Message) | formatIconLike | bbcodeConvert )"></div>
                           </div>
 
@@ -446,7 +446,7 @@
                                   </div>
 
                                   <!-- nội dung bình luận -->
-                                  <div class="flex flex-row gap-x-3" style="white-space: pre-line; word-break: break-word;">
+                                  <div class="flex flex-row gap-x-3 desktop:text-body-2 text-caption-1" style="white-space: pre-line; word-break: break-word;">
                                       <div #contentMessage showMore [length]="100" [text]="((child.MessageFormatted || child.Message) | formatIconLike | bbcodeConvert )"></div>
                                   </div>
 
