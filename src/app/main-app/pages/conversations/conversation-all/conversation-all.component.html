@@ -1,6 +1,6 @@
 <div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900 relative">
     <!-- conversation list -->
-    <div class="desktop:w-[20%] laptop:w-[25%] w-[25%] h-full">
+    <div class="desktop:w-[20%] laptop:w-[22%] w-[25%] h-full">
         <div class="w-full flex flex-col gap-0.5 pl-1 h-full">
             <div class="bg-white  flex flex-col desktop:gap-y-4 gap-y-2 desktop:p-2.5 p-1.5 z-10">
                 <div class="block items-center">
@@ -85,7 +85,7 @@
                   #scroll [items]="lstConversation" class="tds-custom-scroll w-full h-full"
                   (vsEnd)="vsEnd($event)"
                   (vsStart)="vsStart($event)"
-                  [childHeight]="100"
+                  [childHeight]="80"
                   [enableUnequalChildrenSizes]="true"
                   [scrollAnimationTime]="500"
                   [scrollThrottlingTime]="350">
@@ -95,10 +95,10 @@
                   </div>
 
                   <div *ngFor="let item of scroll.viewPortItems; let i=index; trackBy: trackByIndex" class="border-b-4 border-neutral-3-200">
-                      <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full bg-white" style="min-height: 100px">
+                      <div *ngIf="item && conversationItem && currentTeam" class="w-full h-full bg-white" style="min-height: 0px">
                           <a (click)="changeCurrentConversationItem(item)" class="w-full h-full"
                               [ngClass]="(conversationItem && conversationItem.ConversationId == item.ConversationId) ? 'cursor-no-drop' : 'cursor-pointer'">
-                              <current-conversation-item-v3 class="min-h-[100px] h-full"
+                              <current-conversation-item-v3 class="min-h-[8px] h-full"
                                   [item]="item" [csid]="item.ConversationId" [type]="type"
                                   [conversationItem]="conversationItem"
                                   [state]="item.State"
@@ -149,7 +149,7 @@
     </div>
 
     <!--Nội dung cuộc hội thoại-->
-    <div class="flex desktop:w-[48%] laptop:w-[40%] w-[40%]" *ngIf="conversationItem && !isLoadingUpdate">
+    <div class="flex desktop:w-[44%] laptop:w-[40%] w-[40%]" *ngIf="conversationItem && !isLoadingUpdate">
       <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
           <div *ngIf="conversationItem && currentTeam" class="flex w-full flex-col h-full">
               <shared-tds-conversations
@@ -165,7 +165,7 @@
     </div>
 
     <!--Xử lí thông tin khách hàng & Đơn hàng-->
-    <div class="flex h-full desktop:w-[32%] laptop:w-[35%] w-[35%]" *ngIf="conversationItem && !isLoadingUpdate">
+    <div class="flex h-full desktop:w-[36%] laptop:w-[38%] w-[35%]" *ngIf="conversationItem && !isLoadingUpdate">
         <div class="w-full h-full flex flex-col">
             <tds-tabset class="bg-white border border-neutral-2-200 w-full h-full" [clsTab]="'flex-1'" [tabBarStyle]="{ 'padding-right':'0px', 'padding-left':'0px' }" [(selectedIndex)]="selectedIndex">
                 <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
