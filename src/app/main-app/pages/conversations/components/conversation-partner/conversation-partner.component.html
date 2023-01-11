@@ -49,25 +49,25 @@
                               <div class="w-full max-h-[300px] overflow-y-auto tds-panel-scroll">
                                   <div tds-dropdown-item *ngFor="let x of lstPartnerStatus" (click)="selectStatus(x)" class="flex items-center gap-x-2">
                                       <a [ngStyle]="{'background-color': x.value }" class="w-2 h-2 rounded-full"></a>
-                                      <span class="text-neutral-1-900 text-body-2">{{ x.text }} </span>
+                                      <span class="text-neutral-1-900 desktop:text-body-2 laptop:text-caption-1">{{ x.text }} </span>
                                   </div>
                               </div>
                           </tds-dropdown-menu>
                         </tds-button-group>
 
-                        <div class="text-body-2 font-regular font-sans text-neutral-1-400">
+                        <div class="desktop:text-body-2 laptop:text-caption-1 font-regular font-sans text-neutral-1-400">
                             ID: <span class="font-semibold">{{partner.Id}}</span>
                         </div>
                     </div>
                 </div>
               </div>
 
-              <div class="pt-6 flex flex-col gap-3" *ngIf="!isEditPartner">
+              <div class="pt-6 flex flex-col desktop:gap-3 laptop:gap-2" *ngIf="!isEditPartner">
                   <div class="flex gap-2 items-center">
                       <div class="tdsi-call-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
 
                       <div class="flex items-center gap-1">
-                            <div class="text-neutral-1-900 text-body-2 font-regular font-sans">{{partner.Phone || 'Chưa có SĐT'}} </div>
+                            <div class="text-neutral-1-900 desktop:text-body-2 laptop:text-caption-1 font-regular font-sans">{{partner.Phone || 'Chưa có SĐT'}} </div>
                             <!-- <div class="tdsi-success-fill text-sm text-primary-1 cursor-pointer" *ngIf="!partner.PhoneReport && partner.Phone" (click)="onlListPhoneBlock()"></div>
                             <div class="tdsi-success-fill text-sm text-accent-3  cursor-pointer" *ngIf="partner.PhoneReport && partner.Phone" (click)="onBlockPhone()"></div> -->
                       </div>
@@ -75,12 +75,12 @@
 
                   <div class="flex gap-2 items-center">
                       <div class="tdsi-email-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
-                      <div class="text-neutral-1-900 text-body-2 font-regular font-sans">{{partner.Email  || 'Chưa có Email'}}</div>
+                      <div class="text-neutral-1-900 desktop:text-body-2 laptop:text-caption-1 font-regular font-sans">{{partner.Email  || 'Chưa có Email'}}</div>
                   </div>
 
                   <div class="flex gap-2 items-center">
                       <div class="tdsi-pin-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"> </div>
-                      <div class="text-neutral-1-900 text-body-2 font-regular font-sans">{{partner.Street || 'Chưa có địa chỉ'}} </div>
+                      <div class="text-neutral-1-900 desktop:text-body-2 laptop:text-caption-1 font-regular font-sans">{{partner.Street || 'Chưa có địa chỉ'}} </div>
                   </div>
               </div>
 
@@ -88,7 +88,7 @@
                   <tds-button-group>
                       <button type="button" tds-dropdown color="secondary" trigger="click" [tdsDropdownMenu]="menuRevenue"
                           class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 2xl:px-4 px-2">
-                          <span class="flex items-center text-body-2 font-semibold text-neutral-1-500 cursor-pointer whitespace-nowrap">
+                          <span class="flex items-center desktop:text-body-2 laptop:text-caption-1 font-semibold text-neutral-1-500 cursor-pointer whitespace-nowrap">
                               Tổng doanh số: <span class="pl-2 text-primary-1">{{revenue.RevenueTotal || 0 | numberCustom }} đ</span>
                               <i class="tdsi-arrow-down-line text-lg leading-none ml-2"></i>
                           </span>
@@ -104,7 +104,7 @@
                   </tds-button-group>
 
                   <button type="button" class="border border-neutral-2-100 border-solid 2xl:px-4 px-2 rounded-full" (click)="onBlockPhone()">
-                      <span class="flex items-center text-body-2 font-semibold font-sans text-neutral-1-900 whitespace-nowrap">
+                      <span class="flex items-center desktop:text-body-2 laptop:text-caption-1 font-semibold font-sans text-neutral-1-900 whitespace-nowrap">
                           <i class="tdsi-block-fill text-lg mr-2 text-neutral-1-400"></i> Chặn SĐT
                       </span>
                   </button>
@@ -114,7 +114,7 @@
           <!-- Xử lý ghi chú -->
           <div class="bg-white" *ngIf="!isEditPartner">
 
-              <div class="flex items-center gap-2 p-4">
+              <div class="flex items-center gap-2 desktop:p-4 laptop:pb-4 laptop:px-4">
                   <tds-form-field class="w-full">
                       <input class="placeholder-neutral-1-400 bg-neutral-3-50" placeholder="Nhập ghi chú" tdsInput (keyup.enter)="addNote()"
                       [(ngModel)]="innerNote" [ngModelOptions]="{standalone: true}" />
@@ -131,9 +131,9 @@
                 <div class="py-3 px-4 flex flex-col gap-3">
                   <div class="border-l-3 border-primary-1 border-solid pl-2 flex w-full items-center justify-between" *ngFor="let item of noteData.items; let i=index">
                     <div class="flex flex-col flex-auto overflow-hidden">
-                        <div class="text-neutral-1-400 text-body-2 font-regular font-sans">{{item.DateCreated | date:'HH:mm dd/MM/yyyy'}}</div>
+                        <div class="text-neutral-1-400 desktop:text-body-2 laptop:text-caption-1 font-regular font-sans">{{item.DateCreated | date:'HH:mm dd/MM/yyyy'}}</div>
                         <div class="w-full flex gap-2 overflow-hidden">
-                          <div class="max-w-[100px] text-body-2 font-semibold font-sans text-neutral-1-900 relative">{{item.CreatedBy.Name}} ({{item.CreatedBy.UserName}})</div>
+                          <div class="max-w-[100px] desktop:text-body-2 laptop:text-caption-1 font-semibold font-sans text-neutral-1-900 relative">{{item.CreatedBy.Name}} ({{item.CreatedBy.UserName}})</div>
                           <div class="flex flex-auto overflow-hidden">
                             <div class="w-full flex overflow-hidden">
                               <span class="w-full truncate" [innerHTML]="item.message | safeHtml"></span>
@@ -158,7 +158,7 @@
                     <div class="flex items-center gap-4">
                         <tds-avatar size="lg" tdsSrc="../../../assets/imagesv2/conversation/avatar-salesslip.svg"></tds-avatar>
                         <div class="flex flex-col gap-1">
-                            <div class="text-neutral-1-400 font-regular text-body-2 font-sans">Phiếu bán hàng gần nhất</div>
+                            <div class="text-neutral-1-400 font-regular desktop:text-body-2 laptop:text-caption-1 font-sans">Phiếu bán hàng gần nhất</div>
 
                             <div class="flex gap-2 items-center" *ngIf="lastInvoice">
 
@@ -174,32 +174,32 @@
                 </ng-template>
 
                 <div class="w-full h-full flex flex-col gap-3" *ngIf="lastInvoice && lastInvoice.Id">
-                    <div class="flex gap-3 items-center">
-                        <div *ngIf="lastInvoice.CarrierName" class="text-body-2 font-semibold font-sans text-neutral-1-900">
+                    <div class="flex desktop:gap-3 laptop:gap-2 items-center">
+                        <div *ngIf="lastInvoice.CarrierName" class="desktop:text-body-2 laptop:text-caption-1 font-semibold font-sans text-neutral-1-900">
                           <img [src]="lastInvoice.Type | getAvatarCarrier" alt="">
                           <span>
                             {{ lastInvoice.CarrierName || 'Chưa có đối tác'}}
                           </span>
                         </div>
 
-                        <div *ngIf="!lastInvoice.CarrierName" class="text-body-2 italic font-regular font-sans text-neutral-1-900">
+                        <div *ngIf="!lastInvoice.CarrierName" class="desktop:text-body-2 laptop:text-caption-1 italic font-regular font-sans text-neutral-1-900">
                           (Chưa có đối tác)</div>
 
-                        <div class="text-body-2 font-regular font-sans text-neutral-1-900">
+                        <div class="desktop:text-body-2 laptop:text-caption-1 font-regular font-sans text-neutral-1-900">
                           [{{ lastInvoice.ShowState }}<span class="text-info-500 pl-0.5" *ngIf="lastInvoice.TrackingRef" (click)="onOpenTrackingUrl(lastInvoice)"> - {{ lastInvoice.TrackingRef }}</span>]
                         </div>
 
                     </div>
 
-                    <div class="text-body-2 font-regular font-sans text-neutral-1-400">
+                    <div class="desktop:text-body-2 laptop:text-caption-1 font-regular font-sans text-neutral-1-400">
                         Tổng tiền: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastInvoice.AmountTotal | numberCustom }} đ ({{ lastInvoice.PaymentJournalName }})</span>
                     </div>
 
-                    <div class="text-body-2 font-regular font-sans text-neutral-1-400">
+                    <div class="desktop:text-body-2 laptop:text-caption-1 font-regular font-sans text-neutral-1-400">
                         Ngày tạo: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastInvoice.DateCreated | date: "HH:mm, dd/MM/yyyy" }}</span>
                     </div>
 
-                    <div class="text-body-2 font-regular font-sans text-neutral-1-400">
+                    <div class="desktop:text-body-2 laptop:text-caption-1 font-regular font-sans text-neutral-1-400">
                         {{ lastInvoice.Phone }} - {{ lastInvoice.Address }} </div>
 
                     <div class="text-caption-1 font-semibold font-sans text-accent-3" [innerHtml]="lastInvoice.DeliveryNote | bbcodeConvert"></div>
@@ -229,7 +229,7 @@
 
                                 <div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full"
                                     [ngClass]="{' border-primary-1':active,'border-neutral-2-100 group-hover:border-primary-1':!active}">
-                                    <div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 group-hover:text-primary-1':!active}">
+                                    <div class="desktop:text-body-2 laptop:text-caption-1 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 group-hover:text-primary-1':!active}">
                                         {{name}}&nbsp; {{count}}
                                     </div>
                                 </div>
@@ -251,7 +251,7 @@
                                       </div>
 
                                       <div class="w-[24%]">
-                                          <span class="text-neutral-1-900 text-body-2 font-semibold text-center">{{item.AmountTotal | numberCustom }} đ</span>
+                                          <span class="text-neutral-1-900 desktop:text-body-2 laptop:text-caption-1 font-semibold text-center">{{item.AmountTotal | numberCustom }} đ</span>
                                       </div>
 
                                       <div class="w-[36%] text-center">
@@ -260,7 +260,7 @@
                                   </div>
                               </ng-template>
 
-                              <div class="grid grid-cols-3 desktop:gap-x-6 laptop:gap-x-2 gap-y-4" *ngIf="item">
+                              <div class="grid grid-cols-3 desktop:gap-x-6 desktop:gap-y-4 laptop:gap-x-2 laptop:gap-y-3 desktop:text-body-2 laptop:text-caption-1 text-caption-1" *ngIf="item">
                                 <span>Đối tác GH:</span>
                                 <div class="col-span-2 flex gap-1">
                                   <!-- <img width="40px" height="20px" [src]="item?.Type| getAvatarCarrier" alt=""> -->
