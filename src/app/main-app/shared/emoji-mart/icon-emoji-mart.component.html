@@ -3,11 +3,14 @@
     [isNative]="native"
     [showPreview]="true"
     [set]="set"
-    title="Chọn biểu tượng…"
-    [useButton]="true"
+    [darkMode]="darkMode"
+    [perLine]="perLine"
+    [emojiSize]="emojiSize"
+    [sheetSize]="sheetSize"
+    [emojiTooltip]="emojiTooltip"
+    title="Chọn emoji…"
     [i18n]="i18n"
     (emojiSelect)="handleClick($event)"
-    title="Chọn emoji…"
     emoji="point_up"
     [exclude] = "excludeIcon">
 </emoji-mart>

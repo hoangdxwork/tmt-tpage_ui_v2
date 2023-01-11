@@ -4,13 +4,13 @@
             <!-- Thông tin khách hàng -->
             <tds-collapse [expandIconPosition]="'right'" class="bg-white collapse-content-bg-white">
                 <tds-collapse-panel header="Thông tin khách hàng" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
-                    <div class="flex flex-col gap-3 p-2">
+                    <div class="flex flex-col gap-3 desktop:p-2">
                         <!-- partner name -->
                         <div class="flex gap-2 items-center">
                             <div class="tdsi-user-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
 
                             <div class="flex flex-auto items-center justify-between">
-                                <div class="flex gap-4 items-center w-[70%] justify-between">
+                                <div class="flex gap-4 items-center desktop:w-[70%] laptop:w-[90%] desktop:justify-between">
                                     <span *ngIf="!isEditPartner" class="max-w-[50%] truncate"
                                         tds-tooltip="{{quickOrderModel.PartnerName}}">{{ quickOrderModel.PartnerName }}</span>
                                     <tds-form-field *ngIf="isEditPartner">
@@ -63,6 +63,7 @@
                                 <input tdsInput autocomplete="off" placeholder="Email" [(ngModel)]="quickOrderModel.Email" [ngModelOptions]="{ standalone: true }"/>
                             </tds-form-field>
                         </div>
+
                         <!-- địa chỉ -->
                         <div class="flex gap-2 items-center">
                             <div class="tdsi-pin-fill p-1 bg-neutral-3-50 text-neutral-1-400 text-xl leading-none rounded-[10px]"></div>
@@ -82,14 +83,14 @@
                     </div>
 
                     <div class="w-full pt-4 flex items-stretch bg-white">
-                        <textarea tdsInput placeholder="Ghi chú" class="resize-none no-scrollbar 2xl:w-3/4 xl:w-3/5 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400"
+                        <textarea tdsInput placeholder="Ghi chú" class="resize-none no-scrollbar desktop:w-3/4 laptop:w-3/5 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400"
                             [(ngModel)]="quickOrderModel.Note" (change)="changeNote($event)"></textarea>
 
                         <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [autoClose]="true" [backdrop]="true" [tdsDropdownMenu]="menuUser"
-                            class="2xl:w-1/4 xl:w-2/5 !h-full flex items-center mx-2 my-1.5 px-3 py-2 rounded-xl !bg-neutral-3-50">
+                            class="desktop:w-1/4 laptop:w-2/5 !h-full flex items-center mx-2 my-1.5 px-3 py-2 rounded-xl !bg-neutral-3-50">
                             <div class="flex flex-col flex-auto items-start">
-                                <label class="text-neutral-1-400 font-regular 2xl:text-body-2 xl:text-caption-1">Nhân viên</label>
-                                <span class="text-info-500 font-semibold text-body-2 max-w-[80px] truncate">{{ quickOrderModel?.User?.Name || 'N/A' }}</span>
+                                <label class="text-neutral-1-400 font-regular desktop:text-body-2 laptop:text-caption-1">Nhân viên</label>
+                                <span class="text-info-500 font-semibold text-body-2 desktop:max-w-[80px] laptop:max-w-[100px] truncate">{{ quickOrderModel?.User?.Name || 'N/A' }}</span>
                             </div>
 
                             <i class="tdsi-arrow-down-line w-1/5"></i>
@@ -138,7 +139,7 @@
                         <tds-badge *ngIf="quickOrderModel.Details" [standalone]="true" [count]="quickOrderModel.Details.length" [tdsClass]="'bg-success-400 text-white'"></tds-badge>
                     </ng-template>
 
-                    <div class="flex gap-1.5 px-4 pt-6 pb-3">
+                    <div class="flex gap-1.5 px-4 desktop:pt-6 laptop:pt-4 pb-3">
                         <div class="w-full">
                             <div class="relative flex-auto">
                                 <tds-form-field class="w-full">
@@ -213,7 +214,7 @@
                         </button>
                     </div>
 
-                    <div class="max-h-[270px] overflow-y-auto tds-panel-scroll w-full px-3">
+                    <div class="max-h-[270px] overflow-y-auto tds-panel-scroll w-full desktop:px-3">
                         <tds-table #basicTable class="w-full h-full" [listData]="quickOrderModel.Details" [noResult]="emptyData" [frontPagination]="false">
                             <tbody>
                                 <tr class="bg-white editable-row py-3" *ngFor="let item of quickOrderModel.Details; let index =index">
@@ -224,7 +225,7 @@
                                             </tds-avatar>
 
                                             <div class="flex flex-col gap-y-0.5 w-2/3">
-                                                <p class="font-semibold xl:text-caption-1">{{ item.ProductNameGet }}</p>
+                                                <p class="font-semibold laptop:text-caption-1">{{ item.ProductNameGet }}</p>
 
                                                 <!-- giá bán -->
                                                 <div class="text-neutral-1-400 flex items-center gap-x-2">
@@ -335,7 +336,7 @@
 
                     <!-- Tổng số lượng và tổng tiền -->
                     <div class="w-ful h-full p-3 pb-4" *ngIf="isEnableCreateOrder && saleModel">
-                        <div class="bg-neutral-2-50 rounded-xl grid 2xl:grid-cols-6 xl:grid-cols-3 gap-y-4 gap-x-3 p-4 items-center">
+                        <div class="bg-neutral-2-50 rounded-xl grid desktop:grid-cols-6 laptop:grid-cols-3 gap-y-4 gap-x-3 p-4 items-center">
 
                             <label>Tổng</label>
                             <span class="col-span-2 text-right">{{ quickOrderModel.TotalAmount || 0 | numberCustom }}</span>
@@ -621,7 +622,7 @@
                       </div>
                   </div>
               </tds-collapse-panel>
-          </tds-collapse>
+            </tds-collapse>
 
           <!-- Button Footer conversation all, message, inbox-->
           <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type != 'post'">
@@ -630,7 +631,7 @@
 
               <button *ngIf="!isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen', 'print', '_click_print')">Lưu và in</button>
 
-              <div class="gap-x-2 xl:flex 2xl:hidden">
+              <div class="gap-x-2 laptop:flex desktop:hidden">
                 <button *ngIf="isEnableCreateOrder" tds-button-icon color="primary" type="button" color="secondary" (click)="onSave('SaveAndPrint', 'print')" tds-tooltip="In hóa đơn">
                   <i class="tdsi-paper-fill text-neutral-1-500 text-lg leading-none"></i>
                 </button>
@@ -641,7 +642,7 @@
                 </button>
               </div>
 
-              <div class="gap-x-2 xl:hidden 2xl:flex">
+              <div class="gap-x-2 laptop:hidden desktop:flex">
                 <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onSave('SaveAndPrint', 'print')">
                   <span class="flex items-center">
                       <i class="tdsi-paper-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In hóa đơn

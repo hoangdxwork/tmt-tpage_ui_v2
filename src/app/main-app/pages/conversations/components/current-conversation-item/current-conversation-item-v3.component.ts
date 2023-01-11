@@ -11,6 +11,7 @@ import { takeUntil } from 'rxjs';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 
 @Component({
     selector: 'current-conversation-item-v3',
@@ -34,6 +35,7 @@ export class CurrentConversationItemV3Component  implements OnInit, OnChanges, A
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
   @Input() state!: any;
+  @Input() reponsiveDesktop: boolean = true;
 
   @Output() checkedChange = new EventEmitter<boolean>();
 

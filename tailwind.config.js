@@ -487,7 +487,6 @@ const COLORS = {
     },
 };
 
-
 function genarateColorTDS() {
     var colors = [];
     for (const colorName in COLORS) {
@@ -642,11 +641,20 @@ module.exports = {
             },
             borderWidth: {
                 3: "3px"
+            },
+            screens: {
+              'desktop':'1620px',
+              'laptop': [
+                {'min':'1280px', 'max':'1619px'}
+              ],
+              'tablet': [
+                {'min':'640px', 'max':'1279px'}
+              ],
             }
         },
     },
-     plugins: [
-      require('@tailwindcss/forms'), 
+    plugins: [
+      require('@tailwindcss/forms'),
       require('@tailwindcss/typography'),
       require('@tailwindcss/line-clamp')
     ],

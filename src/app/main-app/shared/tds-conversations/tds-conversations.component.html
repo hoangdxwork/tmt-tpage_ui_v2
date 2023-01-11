@@ -1,121 +1,171 @@
-<section *ngIf="data && team" class="chat-block text-body-2 text-neutral-1-900 w-full h-full flex flex-col relative">
-    <div #chatHeader class="chat-header flex items-center p-2">
-        <div *ngIf="!isOpenSearch; else templateSearch" class="flex flex-row justify-between items-center bg-white w-full rounded-xl p-3">
+<section *ngIf="data && team" class="chat-block text-neutral-1-900 w-full h-full flex flex-col relative"
+    [ngClass]="{ 'text-body-2':reponsiveDesktop, 'text-caption-2':!reponsiveDesktop }">
+    <div #chatHeader class="chat-header flex items-center desktop:p-2 p-1.5">
+        <div *ngIf="!isOpenSearch; else templateSearch"
+            class="flex flex-row justify-between items-center bg-white w-full rounded-xl p-3">
             <div class="flex flex-row items-center">
                 <div class="avatar mr-2 relative">
                     <!-- Facebook -->
-                        <tpage-avatar-facebook [size]="48" *ngIf="team.Type == 'Facebook'"
-                            [statusColor]="data.StatusStyle"
-                            [shape]="'circle'" [psid]="data.ConversationId"
-                            [token]="team.ChannelToken">
-                        </tpage-avatar-facebook>
+                    <tpage-avatar-facebook [size]="48" *ngIf="team.Type == 'Facebook' && reponsiveDesktop"
+                        [statusColor]="data.StatusStyle" [shape]="'circle'" [psid]="data.ConversationId"
+                        [token]="team.ChannelToken">
+                    </tpage-avatar-facebook>
 
-                        <span *ngIf="data.LatestMessage && data.LatestMessage?.MessageType == 12" class="absolute" style="top: 31px;left: 31px;">
-                            <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.6665 13.0152C1.6665 16.3866 3.04389 19.3288 5.30367 21.373L5.36031 23.2061C5.36031 23.2061 5.36031 23.2061 5.36031 23.2061C5.4008 24.5175 6.75463 25.3774 7.96053 24.845C7.96056 24.8449 7.96059 24.8449 7.96062 24.8449C7.96097 24.8448 7.96132 24.8446 7.96168 24.8444L10.0314 23.9321C11.076 24.2135 12.1824 24.3646 13.3332 24.3646C19.857 24.3646 24.9998 19.55 24.9998 13.0179C24.9998 6.4862 19.8573 1.66858 13.3332 1.66858C6.80934 1.66858 1.6665 6.4832 1.6665 13.0152Z" fill="url(#paint0_linear_11437_27281)" stroke="white" stroke-width="2"/>
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M16.4272 6.33233V8.49995L15.1407 8.5033C14.1322 8.5033 13.9379 8.98238 13.9379 9.68259V11.2338H16.3401L16.0285 13.6593H13.9379V19.9712H11.4323V13.6593H9.33466V11.2338H11.4323V9.44472C11.4323 7.36756 12.6983 6.23517 14.5544 6.23517C15.4392 6.23517 16.2027 6.30217 16.4272 6.33233Z" fill="white"/>
-                                <defs>
-                                <linearGradient id="paint0_linear_11437_27281" x1="8.04667" y1="4.43833" x2="18.8263" y2="22.09" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#005BE6"/>
-                                <stop offset="1" stop-color="#63A0FF"/>
+                    <tpage-avatar-facebook [size]="36" *ngIf="team.Type == 'Facebook' && !reponsiveDesktop"
+                        [statusColor]="data.StatusStyle" [shape]="'circle'" [psid]="data.ConversationId"
+                        [token]="team.ChannelToken">
+                    </tpage-avatar-facebook>
+
+                    <span *ngIf="data.LatestMessage && data.LatestMessage?.MessageType == 12"
+                        class="absolute desktop:top-[31px] top-[23px] desktop:left-[31px] left-[23px]">
+                        <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M1.6665 13.0152C1.6665 16.3866 3.04389 19.3288 5.30367 21.373L5.36031 23.2061C5.36031 23.2061 5.36031 23.2061 5.36031 23.2061C5.4008 24.5175 6.75463 25.3774 7.96053 24.845C7.96056 24.8449 7.96059 24.8449 7.96062 24.8449C7.96097 24.8448 7.96132 24.8446 7.96168 24.8444L10.0314 23.9321C11.076 24.2135 12.1824 24.3646 13.3332 24.3646C19.857 24.3646 24.9998 19.55 24.9998 13.0179C24.9998 6.4862 19.8573 1.66858 13.3332 1.66858C6.80934 1.66858 1.6665 6.4832 1.6665 13.0152Z"
+                                fill="url(#paint0_linear_11437_27281)" stroke="white" stroke-width="2" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M16.4272 6.33233V8.49995L15.1407 8.5033C14.1322 8.5033 13.9379 8.98238 13.9379 9.68259V11.2338H16.3401L16.0285 13.6593H13.9379V19.9712H11.4323V13.6593H9.33466V11.2338H11.4323V9.44472C11.4323 7.36756 12.6983 6.23517 14.5544 6.23517C15.4392 6.23517 16.2027 6.30217 16.4272 6.33233Z"
+                                fill="white" />
+                            <defs>
+                                <linearGradient id="paint0_linear_11437_27281" x1="8.04667" y1="4.43833" x2="18.8263"
+                                    y2="22.09" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#005BE6" />
+                                    <stop offset="1" stop-color="#63A0FF" />
                                 </linearGradient>
-                                </defs>
-                            </svg>
-                        </span>
+                            </defs>
+                        </svg>
+                    </span>
 
-                        <!-- icon message -->
-                        <span *ngIf="data.LatestMessage && data.LatestMessage?.MessageType == 11"  class="absolute" style="top: 31px;left: 31px;">
-                            <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.6665 13.0134C1.6665 16.3847 3.04389 19.327 5.30367 21.3711L5.36031 23.2042C5.36031 23.2042 5.36031 23.2042 5.36031 23.2042C5.4008 24.5156 6.75463 25.3755 7.96053 24.8431C7.96056 24.8431 7.96059 24.843 7.96062 24.843C7.96097 24.8429 7.96132 24.8427 7.96168 24.8426L10.0314 23.9302C11.076 24.2116 12.1824 24.3627 13.3332 24.3627C19.857 24.3627 24.9998 19.5481 24.9998 13.016C24.9998 6.48431 19.8573 1.66669 13.3332 1.66669C6.80934 1.66669 1.6665 6.48131 1.6665 13.0134Z" fill="url(#paint0_radial_11437_25390)" stroke="white" stroke-width="2" />
-                                <path d="M6.92785 16.04L10.0612 11.0694C10.5598 10.2774 11.6265 10.0827 12.3758 10.6427L14.8692 12.512C15.0985 12.6827 15.4132 12.6827 15.6398 12.5094L19.0051 9.9547C19.4531 9.61336 20.0398 10.152 19.7411 10.6294L16.6052 15.5974C16.1065 16.3894 15.0398 16.584 14.2905 16.024L11.7972 14.1547C11.5678 13.984 11.2532 13.984 11.0265 14.1574L7.66118 16.712C7.21318 17.0534 6.62651 16.5174 6.92785 16.04Z" fill="white" />
-                                <defs>
-                                <radialGradient id="paint0_radial_11437_25390" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(6.77317 23.8838) scale(23.2448)">
+                    <!-- icon message -->
+                    <span *ngIf="data.LatestMessage && data.LatestMessage?.MessageType == 11"
+                        class="absolute desktop:top-[31px] top-[23px] desktop:left-[31px] left-[23px]">
+                        <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.6665 13.0134C1.6665 16.3847 3.04389 19.327 5.30367 21.3711L5.36031 23.2042C5.36031 23.2042 5.36031 23.2042 5.36031 23.2042C5.4008 24.5156 6.75463 25.3755 7.96053 24.8431C7.96056 24.8431 7.96059 24.843 7.96062 24.843C7.96097 24.8429 7.96132 24.8427 7.96168 24.8426L10.0314 23.9302C11.076 24.2116 12.1824 24.3627 13.3332 24.3627C19.857 24.3627 24.9998 19.5481 24.9998 13.016C24.9998 6.48431 19.8573 1.66669 13.3332 1.66669C6.80934 1.66669 1.6665 6.48131 1.6665 13.0134Z"
+                                fill="url(#paint0_radial_11437_25390)" stroke="white" stroke-width="2" />
+                            <path d="M6.92785 16.04L10.0612 11.0694C10.5598 10.2774 11.6265 10.0827 12.3758 10.6427L14.8692 12.512C15.0985 12.6827 15.4132 12.6827 15.6398 12.5094L19.0051 9.9547C19.4531 9.61336 20.0398 10.152 19.7411 10.6294L16.6052 15.5974C16.1065 16.3894 15.0398 16.584 14.2905 16.024L11.7972 14.1547C11.5678 13.984 11.2532 13.984 11.0265 14.1574L7.66118 16.712C7.21318 17.0534 6.62651 16.5174 6.92785 16.04Z"
+                                fill="white" />
+                            <defs>
+                                <radialGradient id="paint0_radial_11437_25390" cx="0" cy="0" r="1"
+                                    gradientUnits="userSpaceOnUse"
+                                    gradientTransform="translate(6.77317 23.8838) scale(23.2448)">
                                     <stop stop-color="#0099FF" />
                                     <stop offset="0.317708" stop-color="#5364FF" />
                                     <stop offset="0.6098" stop-color="#A033FF" />
                                     <stop offset="0.9348" stop-color="#FF91AE" />
                                     <stop offset="1" stop-color="#FFA399" />
                                 </radialGradient>
-                                </defs>
+                            </defs>
                         </svg>
-                        </span>
+                    </span>
 
                     <!-- TShop -->
-                        <tds-avatar *ngIf="team.Type == 'TShop'"
-                            [ngClass]="data.AssignedTo?.UserName? 'border-2 border-white ring-2 ring-primary-1':''"
-                            [tdsSrc]="data.Avatar?.Url"
-                            [shape]="'circle'" [size]="'lg'">
-                        </tds-avatar>
+                    <tds-avatar *ngIf="team.Type == 'TShop' && reponsiveDesktop"
+                        [ngClass]="data.AssignedTo?.UserName? 'border-2 border-white ring-2 ring-primary-1':''"
+                        [tdsSrc]="data.Avatar?.Url" [shape]="'circle'" [size]="'lg'">
+                    </tds-avatar>
 
-                        <!-- icon comment -->
-                        <span *ngIf="data.LatestMessage && data.LatestMessage?.MessageType == 91 && (type == 'all' || type == 'comment')" class="absolute border-2 border-white bg-info-400 rounded-full" style="top: 30px;left: 30px;">
-                            <span class="font-extrabold text-transparent bg-clip-text bg-white w-4 h-4 flex items-center justify-center">
-                                <i class="tdsi-message-fill text-caption-1 leading-none"></i>
-                            </span>
-                        </span>
+                    <tds-avatar *ngIf="team.Type == 'TShop' && !reponsiveDesktop"
+                        [ngClass]="data.AssignedTo?.UserName? 'border-2 border-white ring-2 ring-primary-1':''"
+                        [tdsSrc]="data.Avatar?.Url" [shape]="'circle'" [size]="'md'">
+                    </tds-avatar>
 
-                        <!-- icon message -->
-                        <span *ngIf="data.LatestMessage && data.LatestMessage?.MessageType == 92 && (type == 'all' || type == 'message')"  class="absolute border-2 border-white bg-gradient-to-b from-d-base-pink-600 to-base-blue-500 rounded-full" style="top: 30px;left: 30px;">
-                            <span class="font-extrabold text-transparent bg-clip-text bg-white w-4 h-4 flex items-center justify-center">
-                                <i class="tdsi-email-fill text-caption-1 leading-none"></i>
-                            </span>
+                    <!-- icon comment -->
+                    <span
+                        *ngIf="data.LatestMessage && data.LatestMessage?.MessageType == 91 && (type == 'all' || type == 'comment')"
+                        class="absolute border-2 border-white bg-info-400 rounded-full desktop:top-[31px] top-[23px] desktop:left-[31px] left-[23px]">
+                        <span
+                            class="font-extrabold text-transparent bg-clip-text bg-white w-4 h-4 flex items-center justify-center">
+                            <i class="tdsi-message-fill desktop:text-caption-1 text-[11px] leading-none"></i>
                         </span>
+                    </span>
+
+                    <!-- icon message -->
+                    <span
+                        *ngIf="data.LatestMessage && data.LatestMessage?.MessageType == 92 && (type == 'all' || type == 'message')"
+                        class="absolute border-2 border-white bg-gradient-to-b from-d-base-pink-600 to-base-blue-500 rounded-full desktop:top-[31px] top-[23px] desktop:left-[31px] left-[23px]">
+                        <span
+                            class="font-extrabold text-transparent bg-clip-text bg-white w-4 h-4 flex items-center justify-center">
+                            <i class="tdsi-email-fill desktop:text-caption-1 text-[11px] leading-none"></i>
+                        </span>
+                    </span>
 
                     <!-- Tiktok -->
-                        <tds-avatar *ngIf="team.Type == 'UnofficialTikTok'"
-                            [ngClass]="data.AssignedTo?.UserName? 'border-2 border-white ring-2 ring-primary-1':''"
-                            [tdsSrc]="data.Avatar?.Url"
-                            [shape]="'circle'" [size]="'lg'">
-                        </tds-avatar>
+                    <tds-avatar *ngIf="team.Type == 'UnofficialTikTok' && reponsiveDesktop"
+                        [ngClass]="data.AssignedTo?.UserName? 'border-2 border-white ring-2 ring-primary-1':''"
+                        [tdsSrc]="data.Avatar?.Url" [shape]="'circle'" [size]="'lg'">
+                    </tds-avatar>
 
-                        <span *ngIf="data.LatestMessage && data.LatestMessage?.MessageType == 1001" class="absolute border-2 border-white bg-black rounded-full" style="top: 30px;left: 30px;">
-                            <span class="font-extrabold text-transparent bg-clip-text bg-white w-4 h-4 flex items-center justify-center">
-                                <i class="tdsi-tiktok-fill text-caption-1 leading-none"></i>
-                            </span>
+                    <tds-avatar *ngIf="team.Type == 'UnofficialTikTok' && !reponsiveDesktop"
+                        [ngClass]="data.AssignedTo?.UserName? 'border-2 border-white ring-2 ring-primary-1':''"
+                        [tdsSrc]="data.Avatar?.Url" [shape]="'circle'" [size]="'md'">
+                    </tds-avatar>
+
+                    <span *ngIf="data.LatestMessage && data.LatestMessage?.MessageType == 1001"
+                        class="absolute border-2 border-white bg-black rounded-full desktop:top-[31px] top-[23px] desktop:left-[31px] left-[23px]">
+                        <span
+                            class="font-extrabold text-transparent bg-clip-text bg-white w-4 h-4 flex items-center justify-center">
+                            <i class="tdsi-tiktok-fill desktop:text-caption-1 text-[11px] leading-none"></i>
                         </span>
+                    </span>
 
                 </div>
 
                 <div class="user">
-                    <label class="text-black text-title-1 font-semibold">{{data.Name}}</label>
+                    <label class="text-black desktop:text-title-1 text-caption-1 font-semibold">{{data.Name}}</label>
                     <div class="flex flex-row">
-                        <button class="flex items-center"
-                            color="primary"  trigger="click" tds-dropdown
+                        <button class="flex items-center" color="primary" trigger="click" tds-dropdown
                             [tdsDropdownMenu]="menu2" [placement]="'bottomRight'">
-                            <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.AssignedTo ? 'Đã gán cho' : 'Gán nhân viên' }}</span>
-                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.AssignedTo ? data.AssignedTo?.Name:''}}</span>
+                            <span class="text-neutral-1-400 desktop:text-caption-1 text-[11px] font-regular pr-1">
+                                {{ data.AssignedTo ? 'Đã gán cho' : 'Gán nhân viên' }}</span>
+                            <span class="text-primary-1 desktop:text-caption-1 text-[11px] font-semibold pr-1">
+                                {{data.AssignedTo ? data.AssignedTo?.Name:''}}</span>
                             <i class="tdsi-arrow-down-line"></i>
                         </button>
                         <tds-dropdown-menu #menu2="tdsDropdownMenu">
-                        <div class="w-72 max-h-80 overflow-hidden py-2 gap-y-2 flex flex-col">
-                            <div class="px-4">
-                                <tds-form-field class="w-full">
-                                    <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [(ngModel)]="keyFilterUser" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchUser()"/>
-                                    <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                                </tds-form-field>
-                            </div>
-                            <div class="gap-y-2 flex flex-col overflow-y-auto tds-panel-scroll">
-                                <div *ngFor="let item of lstUser" (click)="assignUser(item)" [ngClass]="isLoadingSelectUser? 'cursor-wait': ''"
-                                    class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
-                                    <div class="flex gap-x-2">
-                                        <span *ngIf="item.Avatar">
-                                            <tds-avatar [shape]="'circle'" [size]="22" [tdsSrc]="item.Avatar"></tds-avatar>
-                                        </span>
-                                        <span *ngIf="!item.Avatar">
-                                            <tds-avatar [text]="item.Name | avatarRandom" [shape]="'circle'" [size]="22"
-                                              [style.background-color]="item.Id | randomColor" style="color: '#fff'; font-size: 14px;"></tds-avatar>
-                                        </span>
-                                        <span>{{item.Name}}</span>
-                                    </div>
-                                    <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == data.AssignedTo?.Id"></span>
+                            <div
+                                class="desktop:w-72 w-60 max-h-80 overflow-hidden desktop:py-2 py-1 desktop:gap-y-2 gap-y-1 flex flex-col">
+                                <div class="desktop:px-4 px-2">
+                                    <tds-form-field class="w-full">
+                                        <input tdsInput placeholder="Tìm kiếm" autocomplete="off"
+                                            [(ngModel)]="keyFilterUser" [ngModelOptions]="{standalone: true}"
+                                            [tdsInputDebounce]="750" (inputKeyup)="searchUser()"
+                                            class="desktop:text-body-2 text-caption-2" />
+                                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill desktop:text-title-1 text-caption-1"></i></span>
+                                    </tds-form-field>
                                 </div>
-                            </div>
-                            <!-- <div class="flex justify-center items-center text-caption-1 text-error-400 border-t border-neutral-2-100">
+                                <div class="desktop:gap-y-2 gap-y-1 flex flex-col overflow-y-auto tds-panel-scroll">
+                                    <div *ngFor="let item of lstUser" (click)="assignUser(item)"
+                                        [ngClass]="isLoadingSelectUser? 'cursor-wait': ''"
+                                        class="desktop:py-2 py-1 desktop:px-4 px-2 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center">
+                                        <div class="flex desktop:gap-x-2 gap-x-1">
+                                            <span *ngIf="item.Avatar">
+                                                <tds-avatar [shape]="'circle'" [size]="22" [tdsSrc]="item.Avatar"
+                                                    *ngIf="reponsiveDesktop"></tds-avatar>
+                                                <tds-avatar [shape]="'circle'" [size]="18" [tdsSrc]="item.Avatar"
+                                                    *ngIf="!reponsiveDesktop"></tds-avatar>
+                                            </span>
+                                            <span *ngIf="!item.Avatar">
+                                                <tds-avatar [text]="item.Name | avatarRandom" [shape]="'circle'"
+                                                    [size]="22" [style.background-color]="item.Id | randomColor"
+                                                    style="color: '#fff'; font-size: 14px;"
+                                                    *ngIf="reponsiveDesktop"></tds-avatar>
+                                                <tds-avatar [text]="item.Name | avatarRandom" [shape]="'circle'"
+                                                    [size]="18" [style.background-color]="item.Id | randomColor"
+                                                    style="color: '#fff'; font-size: 12px;"
+                                                    *ngIf="!reponsiveDesktop"></tds-avatar>
+                                            </span>
+                                            <span class="desktop:text-body-2 text-caption-2 self-center">{{item.Name}}</span>
+                                        </div>
+                                        <span class="tdsi-success-fill text-success-500"
+                                            [ngClass]="reponsiveDesktop ? 'text-title-1' : 'text-caption-1'"
+                                            *ngIf="item.Id == data.AssignedTo?.Id"></span>
+                                    </div>
+                                </div>
+                                <!-- <div class="flex justify-center items-center text-caption-1 text-error-400 border-t border-neutral-2-100">
                                 <span class="cursor-pointer pt-2 flex items-center" (click)="assignUser('')">
                                     <i class="tdsi-error-line leading-none mr-2"></i>Bỏ gán nhân viên
                                 </span>
                             </div> -->
-                        </div>
+                            </div>
                         </tds-dropdown-menu>
                     </div>
                 </div>
@@ -124,22 +174,26 @@
                 <!-- Chatbot đang gặp vấn đề -->
                 <div class="flex">
                     <!-- chatbot lỗi -->
-                    <span *ngIf="data.State == 2" class="mr-3 cursor-pointer" tds-tooltip tooltipTitle="Hệ thống chatbot đang gặp vấn đề" (click)="onAlertChatBot()">
+                    <span *ngIf="data.State == 2" class="mr-3 cursor-pointer" tds-tooltip
+                        tooltipTitle="Hệ thống chatbot đang gặp vấn đề" (click)="onAlertChatBot()">
                         <img src="../../../assets/imagesv2/chatbot-error.svg" width="38px" height="38px">
                     </span>
                     <!-- bật chatbot thành công sau 5s thì đóng -->
-                    <span *ngIf="data.State == 0 && isEnableChatbot" class="mr-3 cursor-pointer" tds-tooltip tooltipTitle="Bật chatbot thành công">
+                    <span *ngIf="data.State == 0 && isEnableChatbot" class="mr-3 cursor-pointer" tds-tooltip
+                        tooltipTitle="Bật chatbot thành công">
                         <img src="../../../assets/imagesv2/chatbot-enable.svg" width="38px" height="38px">
                     </span>
                 </div>
 
                 <div *ngIf="miniChat != true">
-                    <button type="button" tds-button-flat-icon tds-tooltip="Danh sách sản phẩm" color="secondary" rounded="!rounded-full" class="mr-3" (click)="onProductLast()">
+                    <button type="button" tds-button-flat-icon tds-tooltip="Danh sách sản phẩm" color="secondary"
+                        rounded="!rounded-full" class="mr-3" (click)="onProductLast()">
                         <img src="../../../assets/imagesv2/conversation/box-add.svg" width="21px" height="21px">
                     </button>
                 </div>
 
-                <button *ngIf="!isOpenSearch" type="button" tds-tooltip="Tìm kiếm" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="onOpenSearch()">
+                <button *ngIf="!isOpenSearch" type="button" tds-tooltip="Tìm kiếm" tds-button-flat-icon
+                    color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="onOpenSearch()">
                     <i class="tdsi-search-fill"></i>
                 </button>
 
@@ -155,13 +209,17 @@
         </div>
 
         <ng-template #templateSearch>
-            <div class="flex flex-row justify-between items-center bg-white w-full rounded-xl px-3 py-[15px]">
+            <div
+                class="flex flex-row justify-between items-center bg-white w-full rounded-xl desktop:px-3 px-2 py-[15px]">
                 <div class="flex-auto flex gap-x-2 items-center ">
                     <span class="tdsi-search-fill text-xl leading-none text-neutral-1-500"></span>
-                    <input tdsInput autocomplete="off" #viewchildSearchMess [(ngModel)]="searchText" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" [ngModelOptions]="{standalone: true}"
-                         placeholder="Tìm kiếm tin nhắn" class="resize-none no-scrollbar rounded-xl !text-neutral-1-400 w-full"/>
+                    <input tdsInput autocomplete="off" #viewchildSearchMess [(ngModel)]="searchText"
+                        [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" [ngModelOptions]="{standalone: true}"
+                        placeholder="Tìm kiếm tin nhắn"
+                        class="resize-none no-scrollbar rounded-xl !text-neutral-1-400 w-full" />
                 </div>
-                <button type="button" tds-button-flat-icon color="secondary" size="xl" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="onCloseSearch()">
+                <button type="button" tds-button-flat-icon color="secondary" size="xl" rounded="!rounded-full"
+                    class="mr-3 text-neutral-1-400" (click)="onCloseSearch()">
                     <i class="tdsi-close-fill"></i>
                 </button>
             </div>
@@ -169,158 +227,160 @@
     </div>
 
     <!-- main -->
-    <tds-spin [spinning]="isLoadingSpin"class="flex-auto h-full w-full flex overflow-hidden" >
+    <tds-spin [spinning]="isLoadingSpin" class="flex-auto h-full w-full flex overflow-hidden">
 
-        <div class="h-full w-full overflow-y-auto tds-custom-scroll flex flex-col relative delay-100"
-            #scrollToIndex  (onScrollToTop)="nextData()" id="dataSourceScroll" yiAutoScroll observe-attributes is-lock="true" lock-y-offset="40">
+        <div class="h-full w-full overflow-y-auto tds-custom-scroll flex flex-col relative delay-100" #scrollToIndex
+            (onScrollToTop)="nextData()" id="dataSourceScroll" yiAutoScroll observe-attributes is-lock="true"
+            lock-y-offset="40">
 
             <div class="absolute w-full flex justify-center z-10" *ngIf="isProcessing">
                 <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
             </div>
 
-            <div *ngIf="dataSource && dataSource?.Items?.length == 0" class="h-full w-full flex items-center justify-center">
+            <div *ngIf="dataSource && dataSource?.Items?.length == 0"
+                class="h-full w-full flex items-center justify-center">
                 <tds-empty notFoundContent="Không có nội dung"></tds-empty>
             </div>
 
-            <div *ngIf="dataSource && dataSource?.Items" >
-                <div *ngFor="let item of dataSource!.Items | sortDataSourceMessage | scrollConversation: scrollToIndex; let i = index; trackBy: trackByIndex" >
-                  <div *ngIf="item">
+            <div *ngIf="dataSource && dataSource?.Items">
+                <div
+                    *ngFor="let item of dataSource!.Items | sortDataSourceMessage | scrollConversation: scrollToIndex; let i = index; trackBy: trackByIndex">
+                    <div *ngIf="item">
 
-                    <!-- TODO: user đã đọc -->
-                    <div class="w-full block" *ngIf="item.Type == 0 && item.Message">
-                        <div class="date-v3 block">
-                            <p class="text-neutral-1-500 text-[11px] inline-block mb-0" tds-tooltip tooltipTitle="{{item.ChannelCreatedTime | date: 'dd/MM/yyyy HH:mm:ss'}}">
-                                {{item.Message}}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
-                        <div class="w-full relative">
-                            <div class="date-v3">
-                                <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.ChannelCreatedTime | yiDateTimeV3 | safeHtml"></span>
-                                <span class="hr"></span>
+                        <!-- TODO: user đã đọc -->
+                        <div class="w-full block" *ngIf="item.Type == 0 && item.Message">
+                            <div class="date-v3 block">
+                                <p class="text-neutral-1-500 text-[11px] inline-block mb-0" tds-tooltip
+                                    tooltipTitle="{{item.ChannelCreatedTime | date: 'dd/MM/yyyy HH:mm:ss'}}">
+                                    {{item.Message}}
+                                </p>
                             </div>
                         </div>
 
-                        <!-- Thông tin bài post -->
-                        <div *ngIf="item.ObjectId && dataSource?.Extras && dataSource?.Extras!.Objects && dataSource?.Extras!.Objects[item.ObjectId]
+                        <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
+                            <div class="w-full relative">
+                                <div class="date-v3">
+                                    <span class="text-neutral-1-400 desktop:text-caption-1 text-[11px]"
+                                        [innerHTML]="item.ChannelCreatedTime | yiDateTimeV3 | safeHtml"></span>
+                                    <span class="hr"></span>
+                                </div>
+                            </div>
+
+                            <!-- Thông tin bài post -->
+                            <div *ngIf="item.ObjectId && dataSource?.Extras && dataSource?.Extras!.Objects && dataSource?.Extras!.Objects[item.ObjectId]
                             && dataSource.Extras!.Objects[item?.ObjectId].Data" class="px-2">
-                            <extras-conversation-item
-                                [team]="team" [typeNumber]="item.Type" [item]="item"
-                                [data]="dataSource.Extras!.Objects[item.ObjectId]">
-                            </extras-conversation-item>
+                                <extras-conversation-item [team]="team" [typeNumber]="item.Type" [item]="item"
+                                    [data]="dataSource.Extras!.Objects[item.ObjectId]">
+                                </extras-conversation-item>
+                            </div>
                         </div>
+
+                        <!-- Facebook -->
+                        <ng-container *ngIf="item && data.ConversationId && type && team && team.Type === 'Facebook'">
+                            <tds-conversation-item [team]="team" [csid]="data.ConversationId" [name]="data.Name"
+                                [dataItem]="item" [type]="type" [partner]="partner" [dataSource]="dataSource"
+                                [index]="i" [companyCurrents]="companyCurrents" [searchText]="searchText"
+                                [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[(item?.Data?.id || item?.Data?.Id)]: []">
+                            </tds-conversation-item>
+                        </ng-container>
+
+                        <!-- TShop -->
+                        <ng-container *ngIf="item && data.ConversationId && type && team && team.Type == 'TShop'">
+                            <tshop-conversation-item [team]="team" [csid]="data.ConversationId" [name]="data.Name"
+                                [dataItem]="item" [type]="type" [partner]="partner" [dataSource]="dataSource"
+                                [index]="i" [companyCurrents]="companyCurrents" [searchText]="searchText"
+                                [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[(item?.Data?.id || item?.Data?.Id)]: []">
+                            </tshop-conversation-item>
+                        </ng-container>
+
+                        <!-- Tiktok -->
+                        <ng-container
+                            *ngIf="item && data.ConversationId && type && team && team.Type == 'UnofficialTikTok'">
+                            <tiktok-conversation-item [team]="team" [csid]="data.ConversationId" [name]="data.Name"
+                                [dataItem]="item" [type]="type" [partner]="partner" [dataSource]="dataSource"
+                                [index]="i" [companyCurrents]="companyCurrents" [searchText]="searchText"
+                                [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[(item?.Data?.id || item?.Data?.Id)]: []">
+                            </tiktok-conversation-item>
+                        </ng-container>
                     </div>
-
-                    <!-- Facebook -->
-                    <ng-container *ngIf="item && data.ConversationId && type && team && team.Type === 'Facebook'">
-                        <tds-conversation-item
-                            [team]="team" [csid]="data.ConversationId"
-                            [name]="data.Name" [dataItem]="item"
-                            [type]="type" [partner]="partner"
-                            [dataSource]="dataSource" [index]="i"
-                            [companyCurrents]="companyCurrents"
-                            [searchText]="searchText"
-                            [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[(item?.Data?.id || item?.Data?.Id)]: []">
-                        </tds-conversation-item>
-                    </ng-container>
-
-                    <!-- TShop -->
-                    <ng-container *ngIf="item && data.ConversationId && type && team && team.Type == 'TShop'">
-                        <tshop-conversation-item
-                            [team]="team" [csid]="data.ConversationId"
-                            [name]="data.Name" [dataItem]="item"
-                            [type]="type" [partner]="partner"
-                            [dataSource]="dataSource" [index]="i"
-                            [companyCurrents]="companyCurrents"
-                            [searchText]="searchText"
-                            [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[(item?.Data?.id || item?.Data?.Id)]: []">
-                        </tshop-conversation-item>
-                    </ng-container>
-
-                    <!-- Tiktok -->
-                    <ng-container *ngIf="item && data.ConversationId && type && team && team.Type == 'UnofficialTikTok'">
-                        <tiktok-conversation-item
-                            [team]="team" [csid]="data.ConversationId"
-                            [name]="data.Name" [dataItem]="item"
-                            [type]="type" [partner]="partner"
-                            [dataSource]="dataSource" [index]="i"
-                            [companyCurrents]="companyCurrents"
-                            [searchText]="searchText"
-                            [children]="dataSource.Extras!.Childs ? dataSource.Extras!.Childs[(item?.Data?.id || item?.Data?.Id)]: []">
-                        </tiktok-conversation-item>
-                    </ng-container>
-                  </div>
                 </div>
             </div>
         </div>
     </tds-spin>
 
     <!-- Thông báo Chatbot -->
-    <div *ngIf="data && data.State == 2" class="absolute top-[88px] left-[8px] right-[8px]" >
-        <tds-alert *ngIf="isAlertChatbot" type="info" [message]="contentMessage" [closeable]="true" showIcon (close)="onCloseAlertChatbot($event) "></tds-alert>
+    <div *ngIf="data && data.State == 2" class="absolute top-[88px] left-[8px] right-[8px]">
+        <tds-alert *ngIf="isAlertChatbot" type="info" [message]="contentMessage" [closeable]="true" showIcon
+            (close)="onCloseAlertChatbot($event) "></tds-alert>
     </div>
     <ng-template #contentMessage>
-        <div class="text-body-2 font-regular">Hệ thống chatbot chưa xử lý được kịch bản hội thoại này và chuyển cho admin xử lý. Hãy bật lại chatbot để xử lý tự động tin nhắn.
+        <div class="text-body-2 font-regular">Hệ thống chatbot chưa xử lý được kịch bản hội thoại này và chuyển cho
+            admin xử lý. Hãy bật lại chatbot để xử lý tự động tin nhắn.
             <span class="ml-3 text-info-500 font-semibold cursor-pointer" (click)="onStartChatbot()">Bật Chatbot</span>
         </div>
     </ng-template>
 
     <!-- footer  -->
     <div #chatFooter class="chat-footer w-full flex flex-col px-2 pb-2">
-        <div class="w-full pt-2 pb-3 flex items-center gap-x-2">
-            <div class="flex gap-x-2.5">
-                <tds-avatar tds-popover
-                    [popoverContent]="popoverContentOptionSendMessages"
-                    popoverTrigger="click"
-                    [popoverPlacement]="['topLeft', 'leftTop']"
-                    tds-tooltip="Tùy chọn"
+        <div class="w-full desktop:pt-2 pt-1.5 desktop:pb-3 pb-1.5 flex items-center desktop:gap-x-2 gap-x-1">
+            <div class="flex desktop:gap-x-2.5 gap-x-1.5">
+                <tds-avatar tds-popover [popoverContent]="popoverContentOptionSendMessages" popoverTrigger="click" *ngIf="reponsiveDesktop"
+                    [popoverPlacement]="['topLeft', 'leftTop']" tds-tooltip="Tùy chọn" [size]="32"
+                    class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-three-dots-horizon-fill">
+                </tds-avatar>
+
+                <tds-avatar tds-popover [popoverContent]="popoverContentOptionSendMessages" popoverTrigger="click" *ngIf="!reponsiveDesktop"
+                    [popoverPlacement]="['topLeft', 'leftTop']" tds-tooltip="Tùy chọn" [size]="24"
                     class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-three-dots-horizon-fill">
                 </tds-avatar>
 
                 <ng-template #popoverContentOptionSendMessages>
                     <div class="w-[336px] flex flex-col gap-y-3">
-                        <span class="font-semibold text-title-1">Tuỳ chọn gửi tin nhắn</span>
+                        <span class="font-semibold desktop:text-title-1 text-caption-1">Tuỳ chọn gửi tin nhắn</span>
                         <div class="w-full flex justify-between">
-                        <span class="text-neutral-1-400">Nhấn [Enter] để gửi</span>
-                        <tds-switch size="md" (change)="changeEnterSend($event)" [checked]="isEnterSend"></tds-switch>
+                            <span class="text-neutral-1-400 desktop:text-body-2 text-caption-2">Nhấn [Enter] để gửi</span>
+                            <tds-switch [size]="reponsiveDesktop ? 'md' : 'sm'" (change)="changeEnterSend($event)"
+                                [checked]="isEnterSend"></tds-switch>
                         </div>
                     </div>
                 </ng-template>
 
-                <tds-avatar tds-popover
-                    [popoverContent]="popoverContentTagConversat"
-                    popoverTrigger="click"
-                    [popoverVisible]="isVisbleTag"
-                    (popoverVisibleChange)="callbackTag($event)"
-                    [popoverPlacement]="['topLeft', 'leftTop']"
-                    tds-tooltip="Gắn nhãn"
+                <tds-avatar tds-popover [popoverContent]="popoverContentTagConversat" popoverTrigger="click" *ngIf="reponsiveDesktop"
+                    [popoverVisible]="isVisbleTag" (popoverVisibleChange)="callbackTag($event)"
+                    [popoverPlacement]="['topLeft', 'leftTop']" tds-tooltip="Gắn nhãn" [size]="32"
+                    class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-tag-fill">
+                </tds-avatar>
+
+                <tds-avatar tds-popover [popoverContent]="popoverContentTagConversat" popoverTrigger="click" *ngIf="!reponsiveDesktop"
+                    [popoverVisible]="isVisbleTag" (popoverVisibleChange)="callbackTag($event)"
+                    [popoverPlacement]="['topLeft', 'leftTop']" tds-tooltip="Gắn nhãn" [size]="24"
                     class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-tag-fill">
                 </tds-avatar>
 
                 <ng-template #popoverContentTagConversat>
-                    <div class="w-[336px] max-h-[500px] flex flex-col gap-y-3">
+                    <div class="w-[336px] desktop:max-h-[500px] max-h-[200px] flex flex-col desktop:gap-y-3 gap-y-1.5">
                         <div class="flex justify-between">
-                            <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
-                            <button tds-button-icon color="secondary" class="!rounded-full"
-                                (click)="showModalAddTag()" tds-tooltip tooltipTitle="Thêm nhãn mới">
-                                <span class="flex items-center">
-                                    <i class="tdsi-plus-fill"></i>
+                            <span class="font-semibold desktop:text-title-1 text-caption-1">Gắn nhãn hội thoại</span>
+                            <button tds-button-icon color="secondary" class="!rounded-full" [ngClass]="reponsiveDesktop ? '!w-8 !h-8' : '!w-6 !h-6'" (click)="showModalAddTag()"
+                                tds-tooltip tooltipTitle="Thêm nhãn mới">
+                                <span class="flex items-center justify-center">
+                                    <i class="tdsi-plus-fill desktop:text-body-2 text-caption-2 leading-none"></i>
                                 </span>
                             </button>
                         </div>
 
                         <tds-form-field class="w-full">
-                            <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" [(ngModel)]="keyFilterTag" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchTag()"/>
-                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                            <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" [(ngModel)]="keyFilterTag"
+                                [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750"
+                                (inputKeyup)="searchTag()" class="desktop:text-body-2 text-caption-2"/>
+                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill desktop:text-title-1 text-caption-1"></i></span>
                         </tds-form-field>
 
-                        <div class="flex-auto flex flex-wrap gap-2.5 overflow-hidden overflow-y-auto tds-custom-scroll">
+                        <div class="flex-auto flex flex-wrap desktop:gap-2.5 gap-1.5 overflow-hidden overflow-y-auto tds-custom-scroll">
                             <span *ngFor="let item of lstOfTag" (click)="onSelectTag(item)"
-                                class="cursor-pointer px-2 py-0.5 rounded text-white text-caption-2 font-semibold flex items-center gap-x-2 hover:opacity-100"
+                                class="cursor-pointer px-2 py-0.5 rounded text-white desktop:text-caption-2 text-[10px] font-semibold flex items-center gap-x-2 hover:opacity-100"
                                 [ngClass]="data.Tags && (item.Id | checkTagSelected : data.Tags)?'tdsi-tick-fill opacity-100':'opacity-40'"
-                                [ngStyle]="{'background-color': [item.ColorClassName]}" >
+                                [ngStyle]="{'background-color': [item.ColorClassName]}">
                                 <span class="font-sans">{{item.Name}}</span>
                             </span>
                         </div>
@@ -328,30 +388,32 @@
                 </ng-template>
             </div>
 
-            <div class="flex-auto flex gap-2.5 ">
-                <div *ngFor="let item of data.Tags | slice:0:4" class="relative group text-caption-2 flex items-center max-w-[156px] truncate">
-                    <div *ngIf="item" class="cursor-pointer w-full min-w-[70px] px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
+            <div class="flex-auto flex desktop:gap-2.5 gap-1.5">
+                <div *ngFor="let item of data.Tags | slice:0:4"
+                    class="relative group desktop:text-caption-2 text-[10px] flex items-center max-w-[156px] truncate">
+                    <div *ngIf="item" class="cursor-pointer w-full min-w-[70px] desktop:px-3 px-1.5 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
                         [ngStyle]="{'background-color': [item.ColorClass]}">
                         {{item.Name}}
                     </div>
 
-                    <button (click)="onRemoveTag(item)"
-                        class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
+                    <button (click)="onRemoveTag(item)" class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
                         Gỡ nhãn
                     </button>
                 </div>
 
-                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="data.Tags && data.Tags.length - 4 > 0" tds-popover
-                    [popoverContent]="popoverContentTag" popoverPlacement="topRight">
+                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] desktop:text-caption-2 text-[10px] rounded cursor-pointer"
+                    *ngIf="data.Tags && data.Tags.length - 4 > 0" tds-popover [popoverContent]="popoverContentTag"
+                    popoverPlacement="topRight">
                     +{{data.Tags.length - 4}}
                 </div>
 
                 <ng-template #popoverContentTag>
                     <div class="flex gap-1 flex-wrap items-center max-w-[336px]" *ngIf="data && data.Tags">
-                        <div *ngFor="let tag of data.Tags | slice:4:data.Tags!.length" (click)="onRemoveTag(tag)" class="relative group flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate">
-                            <div *ngIf="tag"  class="cursor-pointer w-full min-w-[70px] px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
-                                  [ngStyle]="{'background-color': [tag.ColorClass]}">
-                                  {{tag.Name}}
+                        <div *ngFor="let tag of data.Tags | slice:4:data.Tags!.length" (click)="onRemoveTag(tag)"
+                            class="relative group flex items-center desktop:text-caption-2 text-[10px] font-regular text-neutral-1-900 rounded truncate">
+                            <div *ngIf="tag" class="cursor-pointer w-full min-w-[70px] px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
+                                [ngStyle]="{'background-color': [tag.ColorClass]}">
+                                {{tag.Name}}
                             </div>
                             <button class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
                                 Gỡ nhãn
@@ -364,127 +426,137 @@
         <!-- editer+toolbars -->
 
         <tds-spin [spinning]="isLoadingImage" class="relative">
-            <div [ngClass]="team && team.Type == 'UnofficialTikTok' ? 'z-60' :'hidden'" class="absolute bg-neutral-3-50 bg-opacity-50 rounded-xl inset-0 h-full">
+            <div [ngClass]="team && team.Type == 'UnofficialTikTok' ? 'z-60' :'hidden'"
+                class="absolute bg-neutral-3-50 bg-opacity-50 rounded-xl inset-0 h-full">
             </div>
 
             <div class="h-0 overflow-hidden flex">
                 <tds-form-field class="w-full">
-                    <input aria-colspan="" class="placeholder-neutral-1-400 !h-0"  [tdsInputDebounce]="350" (inputKeyup)="onChangeMessage($event)"
-                        placeholder="input here" tdsInput [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}" #viewChildQuickRepply [tdsAutocomplete]="auto" />
+                    <input class="placeholder-neutral-1-400 !h-0" [tdsInputDebounce]="350"
+                        (inputKeyup)="onChangeMessage($event)" placeholder="input here" tdsInput
+                        [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}" #viewChildQuickRepply
+                        [tdsAutocomplete]="auto" />
                 </tds-form-field>
             </div>
 
-            <tds-autocomplete #auto [width]="350" [autoClose]="false" [overlayClassName]="'h-[400px] cs-quick-repply flex'"  (selectionChange)="onSelectionChange($event)">
+            <tds-autocomplete #auto [width]="350" [autoClose]="false"
+                [overlayClassName]="'h-[400px] cs-quick-repply flex'" (selectionChange)="onSelectionChange($event)">
                 <tds-auto-option *ngFor="let option of (quickReplies | simpleSearchQuickRepply: messageModel)"
-                [value]="option.BodyPlain" [label]="option.Name">
-                <div class="w-full flex flex-col text-neutral-1-900 text-body-2 font-regular">
-                    <div (click)="setTextquickReply(option)" class="py-2 px-1 flex flex-col w-full cursor-pointer hover:bg-neutral-3-50 text-body-2">
-                        <span class="font-semibold">{{option.Name}}</span>
-                        <div showMore [length]="50" [text]="option.BodyPlain | replacePartner: partner"></div>
+                    [value]="option.BodyPlain" [label]="option.Name">
+                    <div class="w-full flex flex-col text-neutral-1-900 text-body-2 font-regular">
+                        <div (click)="setTextquickReply(option)"
+                            class="py-2 px-1 flex flex-col w-full cursor-pointer hover:bg-neutral-3-50 text-body-2">
+                            <span class="font-semibold">{{option.Name}}</span>
+                            <div showMore [length]="50" [text]="option.BodyPlain | replacePartner: partner"></div>
+                        </div>
                     </div>
-                </div>
-            </tds-auto-option>
+                </tds-auto-option>
             </tds-autocomplete>
 
-          <div class="flex flex-col w-full px-4  bg-white rounded-xl relative">
-              <div [ngClass]="isLoadingSendMsg ? '!cursor-wait' : 'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
+            <div class="flex flex-col w-full px-4  bg-white rounded-xl relative">
+                <div [ngClass]="isLoadingSendMsg ? '!cursor-wait' : 'hidden'"
+                    class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
 
-              <!-- upload-wall -->
-              <div [ngClass]="uploadedImages.length > 0 ? 'translate-y-0 py-4 border-b':'translate-y-full h-0'"
-                  class="border-neutral-2-300 ease-in-out duration-300 max-h-40 overflow-hidden flex">
-                  <div class="overflow-hidden overflow-y-auto tds-panel-scroll flex justify-between w-full h-full">
-                      <upload-pictures-wall
-                        [isArray]="true"
-                        [data]="uploadedImages"
-                        (onLoadImage)="onLoadImage($event)">
-                      </upload-pictures-wall>
+                <!-- upload-wall -->
+                <div [ngClass]="uploadedImages.length > 0 ? 'translate-y-0 py-4 border-b':'translate-y-full h-0'"
+                    class="border-neutral-2-300 ease-in-out duration-300 max-h-40 overflow-hidden flex">
+                    <div class="overflow-hidden overflow-y-auto tds-panel-scroll flex justify-between w-full h-full">
+                        <upload-pictures-wall [isArray]="true" [data]="uploadedImages"
+                            (onLoadImage)="onLoadImage($event)">
+                        </upload-pictures-wall>
 
-                      <div class="p-1">
-                          <button tds-button-icon color="secondary" size="sm" class="!rounded-full" (click)="closeImages()">
-                              <span class="flex items-center">
-                                  <i class="tdsi-close-fill"></i>
-                              </span>
-                          </button>
-                      </div>
-                  </div>
-              </div>
+                        <div class="p-1">
+                            <button tds-button-icon color="secondary" size="sm" class="!rounded-full"
+                                (click)="closeImages()">
+                                <span class="flex items-center">
+                                    <i class="tdsi-close-fill"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-              <div class="w-full pt-4 flex flex-row">
-                  <textarea #viewChildInputMessage tdsInput [placeholder]="isEnterSend ? 'Nhập nội dung tin nhắn, nhấn [Enter] để gửi' : 'Nhập nội dung tin nhắn'"
-                      [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-                      (paste)="onPaste($event)" [tdsInputDebounce]="0" (inputKeyup)="onChangeMessage($event)"
-                      (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0 no-scrollbar">
+                <div class="w-full pt-4 flex flex-row">
+                    <textarea #viewChildInputMessage tdsInput
+                        [placeholder]="isEnterSend ? 'Nhập nội dung tin nhắn, nhấn [Enter] để gửi' : 'Nhập nội dung tin nhắn'"
+                        [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}" (paste)="onPaste($event)"
+                        [tdsInputDebounce]="0" (inputKeyup)="onChangeMessage($event)" (keydown.enter)="onEnter($event)"
+                        class="h-16 resize-none !p-0 !m-0 no-scrollbar desktop:text-body-2 text-caption-2">
                   </textarea>
 
-                  <div>
-                      <button tds-button type="button" color="primary" class="!rounded-full ml-2 min-w-[115px]" [size]="'lg'" (click)="onClickSender()">
-                          <span class="flex items-center">
-                              <i class="tdsi-send-fill text-lg leading-none mr-2"></i>Gửi
-                          </span>
-                      </button>
-                  </div>
-              </div>
-
-              <!-- toolbar -->
-              <div class="flex w-full" [ngClass]="miniChat == true ? 'justify-end' : ''">
-                <div class="flex items-center gap-x-1 pb-2">
-                  <a class="p-2 hover:bg-neutral-3-50 rounded-md" type="button" (click)="sendIconLike()" tds-tooltip tooltipTitle="Like">
-                      <div class="tdsi-like-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
-                  </a>
-
-                  <a class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none cursor-pointer p-2 hover:bg-neutral-3-50 rounded-md"
-                      type="button" tds-tooltip tooltipTitle="Cảm xúc"
-                      tds-popover popoverTrigger="click"
-                      [popoverContent]="infoEmojiMart"
-                      [popoverAutoClose]="true"
-                      [popoverBackdrop]="true"
-                      popoverPlacement="top">
-                      <ng-template #infoEmojiMart>
-                          <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
-                      </ng-template>
-                  </a>
-
-                  <tds-upload
-                      (uploadChange)="handleChange($event)"
-                      listType="picture"
-                      [customRequest]="handleUpload"
-                      [showUploadList]="false">
-
-                      <a type="button" tds-tooltip tooltipTitle="Gửi ảnh"
-                        [ngClass]="displayDropZone?'absolute w-full h-full inset-0 bg-white border-dashed border-2 border-primary-1 rounded-xl z-50 flex justify-center items-center':''"
-                        class="p-2 hover:bg-neutral-3-50 rounded-md" title="Hình ảnh">
-
-                        <div *ngIf="!displayDropZone; else dropZone" class="tdsi-image-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
-                        <ng-template #dropZone>
-                            <div class="flex flex-col gap-y-2.5 items-center">
-                                <span class="text-header-1 text-primary-1 font-semibold">Xem trước khi gửi</span>
-                                <span class="text-body-1 text-neutral-1-500">Thả ảnh vào đây để xem trước khi gửi</span>
-                            </div>
-                        </ng-template>
-                    </a>
-                  </tds-upload>
-
-                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" (click)="onProductsbypageFb()"  tds-tooltip tooltipTitle="Sản phẩm">
-                      <div class="tdsi-product-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
-                  </div>
-
-                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Tin nhắn nhanh">
-                      <quick-reply-button [partner]="partner" (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
-                  </div>
-
-                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Hóa đơn" (click)="showModalListBill(data)">
-                      <div class="tdsi-file-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
-                  </div>
-
-                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Thư viện ảnh" (click)="showImageStore()">
-                      <div class="tdsi-images-2-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
-                  </div>
+                    <div>
+                        <button tds-button type="button" color="primary" class="!rounded-full !py-1 desktop:min-w-[115px] min-w-[95px]"
+                            [size]="'lg'" (click)="onClickSender()">
+                            <span class="flex items-center justify-center gap-x-1.5">
+                                <i class="tdsi-send-fill desktop:text-lg text-sm leading-none"></i>Gửi
+                            </span>
+                        </button>
+                    </div>
                 </div>
-              </div>
-          </div>
+
+                <!-- toolbar -->
+                <div class="flex w-full" [ngClass]="miniChat == true ? 'justify-end' : ''">
+                    <div class="flex items-center gap-x-1 pb-2">
+                        <a class="desktop:p-2 p-1 hover:bg-neutral-3-50 rounded-md" type="button" (click)="sendIconLike()"
+                            tds-tooltip tooltipTitle="Like">
+                            <div class="tdsi-like-line text-neutral-1-400 desktop:text-xl text-base leading-none cursor-pointer"></div>
+                        </a>
+
+                        <a class="desktop:p-2 p-1 tdsi-emotion-line text-neutral-1-400 desktop:text-xl text-base leading-none cursor-pointer hover:bg-neutral-3-50 rounded-md"
+                            type="button" tds-tooltip tooltipTitle="Cảm xúc" tds-popover popoverTrigger="click"
+                            [popoverContent]="infoEmojiMart" [popoverAutoClose]="true" [popoverBackdrop]="true"
+                            popoverPlacement="top">
+                            <ng-template #infoEmojiMart>
+                                <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart [emojiSize]="reponsiveDesktop ? 24 : 18"></div>
+                            </ng-template>
+                        </a>
+
+                        <tds-upload (uploadChange)="handleChange($event)" listType="picture"
+                            [customRequest]="handleUpload" [showUploadList]="false">
+
+                            <a type="button" tds-tooltip tooltipTitle="Gửi ảnh"
+                                [ngClass]="displayDropZone?'absolute w-full h-full inset-0 bg-white border-dashed border-2 border-primary-1 rounded-xl z-50 flex justify-center items-center':''"
+                                class="desktop:p-2 p-1 hover:bg-neutral-3-50 rounded-md" title="Hình ảnh">
+
+                                <div *ngIf="!displayDropZone; else dropZone"
+                                    class="tdsi-image-line text-neutral-1-400 desktop:text-xl text-base leading-none cursor-pointer">
+                                </div>
+                                <ng-template #dropZone>
+                                    <div class="flex flex-col gap-y-2.5 items-center">
+                                        <span class="text-header-1 text-primary-1 font-semibold">Xem trước khi gửi</span>
+                                        <span class="text-body-1 text-neutral-1-500">Thả ảnh vào đây để xem trước khi gửi</span>
+                                    </div>
+                                </ng-template>
+                            </a>
+                        </tds-upload>
+
+                        <div class="desktop:p-2 p-1 hover:bg-neutral-3-50 rounded-md" (click)="onProductsbypageFb()" tds-tooltip
+                            tooltipTitle="Sản phẩm">
+                            <div class="tdsi-product-line text-neutral-1-400 desktop:text-xl text-base leading-none cursor-pointer"></div>
+                        </div>
+
+                        <div class="desktop:p-1 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Tin nhắn nhanh">
+                            <quick-reply-button [partner]="partner"
+                                (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+                        </div>
+
+                        <div class="desktop:p-2 p-1 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Hóa đơn"
+                            (click)="showModalListBill(data)">
+                            <div class="tdsi-file-line text-neutral-1-400 desktop:text-xl text-base leading-none cursor-pointer"></div>
+                        </div>
+
+                        <div class="desktop:p-2 p-1 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Thư viện ảnh"
+                            (click)="showImageStore()">
+                            <div class="tdsi-images-2-line text-neutral-1-400 desktop:text-xl text-base leading-none cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </tds-spin>
     </div>
 
     <!-- drawer khi click vào mã đơn hàng -->
-    <drawer-detail-bill [isMessage]="true" [visibleDrawerBillDetail]="visibleDrawerBillDetail" [bill]="order" (onVisibleDrawer)="onVisibleDrawer($event)"></drawer-detail-bill>
+    <drawer-detail-bill [isMessage]="true" [visibleDrawerBillDetail]="visibleDrawerBillDetail" [bill]="order"
+        (onVisibleDrawer)="onVisibleDrawer($event)"></drawer-detail-bill>
 </section>

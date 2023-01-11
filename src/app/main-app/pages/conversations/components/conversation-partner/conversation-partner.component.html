@@ -112,9 +112,9 @@
           </div>
 
           <!-- Xử lý ghi chú -->
-          <div class="bg-white pt-0 p-4" *ngIf="!isEditPartner">
+          <div class="bg-white" *ngIf="!isEditPartner">
 
-              <div class="flex items-center gap-2 pb-3">
+              <div class="flex items-center gap-2 p-4">
                   <tds-form-field class="w-full">
                       <input class="placeholder-neutral-1-400 bg-neutral-3-50" placeholder="Nhập ghi chú" tdsInput (keyup.enter)="addNote()"
                       [(ngModel)]="innerNote" [ngModelOptions]="{standalone: true}" />
@@ -127,20 +127,25 @@
                   </button>
               </div>
 
-              <div class="pl-2 flex flex-col gap-3 overflow-auto overflow-y-auto tds-custom-scroll max-h-[200px]" *ngIf="noteData.items.length > 0">
-                  <div class="border-l-3 border-primary-1 border-solid pl-2 flex items-center justify-between" *ngFor="let item of noteData.items; let i=index">
-                      <div>
-                          <div class="text-neutral-1-400 text-body-2 font-regular font-sans">{{item.DateCreated | date:'HH:mm dd/MM/yyyy'}}</div>
-
-                          <div class="flex gap-2 pt-1">
-                              <div class="text-body-2 font-semibold font-sans text-neutral-1-900">{{item.CreatedBy.Name}} ({{item.CreatedBy.UserName}})</div>
-                              <div [innerHTML]="item.message | safeHtml"></div>
+              <div class="overflow-x-hidden overflow-y-auto tds-panel-scroll max-h-[200px]" *ngIf="noteData.items.length > 0">
+                <div class="py-3 px-4 flex flex-col gap-3">
+                  <div class="border-l-3 border-primary-1 border-solid pl-2 flex w-full items-center justify-between" *ngFor="let item of noteData.items; let i=index">
+                    <div class="flex flex-col flex-auto overflow-hidden">
+                        <div class="text-neutral-1-400 text-body-2 font-regular font-sans">{{item.DateCreated | date:'HH:mm dd/MM/yyyy'}}</div>
+                        <div class="w-full flex gap-2 overflow-hidden">
+                          <div class="max-w-[100px] text-body-2 font-semibold font-sans text-neutral-1-900 relative">{{item.CreatedBy.Name}} ({{item.CreatedBy.UserName}})</div>
+                          <div class="flex flex-auto overflow-hidden">
+                            <div class="w-full flex overflow-hidden">
+                              <span class="w-full truncate" [innerHTML]="item.message | safeHtml"></span>
+                            </div>
                           </div>
-                      </div>
-                      <div class="flex" tds-tooltip="Xóa ghi chú">
-                          <i class="tdsi-trash-line text-error-500 text-xl cursor-pointer" (click)="removeNote(item.id, i)"></i>
-                      </div>
+                        </div>
+                    </div>
+                    <div class="flex w-[28px] px-1" tds-tooltip="Xóa ghi chú">
+                        <i class="tdsi-trash-line text-error-500 text-xl cursor-pointer" (click)="removeNote(item.id, i)"></i>
+                    </div>
                   </div>
+                </div>
               </div>
           </div>
 
@@ -238,56 +243,56 @@
                       <tds-collapse *ngFor="let item of lstInvoice; let index = index" class="!rounded-xl">
                           <tds-collapse-panel [header]="headerBill" [active]="false" [disabled]="false" class="!rounded-xl">
                               <ng-template #headerBill>
-                                  <div class="grid grid-cols-3 gap-x-6 w-full" *ngIf="item">
+                                  <div class="flex w-full" *ngIf="item">
 
-                                      <div class="w-[125px] flex flex-col gap-y-0.5">
-                                            <drawer-detail-bill [bill]="item"></drawer-detail-bill>
+                                      <div class="w-[40%] flex flex-col gap-x-0.5">
+                                          <drawer-detail-bill [bill]="item"></drawer-detail-bill>
                                           <div class="text-neutral-1-400 text-caption-2 font-regular"> {{item.DateCreated | date: "HH:mm, dd/MM/yyyy"}} </div>
                                       </div>
 
-                                      <div class="w-[125px]">
+                                      <div class="w-[24%]">
                                           <span class="text-neutral-1-900 text-body-2 font-semibold text-center">{{item.AmountTotal | numberCustom }} đ</span>
                                       </div>
 
-                                      <div class="w-[125px] text-center">
+                                      <div class="w-[36%] text-center">
                                           <tds-badge [status]="item.ShowState | getColorStatusShowState" [text]="item.ShowState"></tds-badge>
                                       </div>
                                   </div>
                               </ng-template>
 
-                              <div class="grid grid-cols-4 gap-x-6 gap-y-4" *ngIf="item">
-                                  <label>Đối tác GH:</label>
-                                  <div class="w-full col-span-3 flex gap-1">
-                                      <!-- <img width="40px" height="20px" [src]=" item?.Type| getAvatarCarrier" alt=""> -->
-                                      <div class="font-semibold">{{item.CarrierName}} - <span class="text-info-500 cursor-pointer" (click)="onOpenTrackingUrl(item)">{{item.TrackingRef || '#N/A'}}</span> </div>
-                                  </div>
+                              <div class="grid grid-cols-3 desktop:gap-x-6 laptop:gap-x-2 gap-y-4" *ngIf="item">
+                                <span>Đối tác GH:</span>
+                                <div class="col-span-2 flex gap-1">
+                                  <!-- <img width="40px" height="20px" [src]="item?.Type| getAvatarCarrier" alt=""> -->
+                                  <div class="font-semibold">{{item.CarrierName || '---'}} <span *ngIf="item.CarrierName" class="text-info-500 cursor-pointer" (click)="onOpenTrackingUrl(item)">- {{item.TrackingRef || '#N/A'}}</span></div>
+                                </div>
 
-                                  <label>Phương thức TT:</label>
-                                  <div class="w-full col-span-3 flex gap-1">
-                                      <div class="font-semibold">{{item.PaymentJournalName}}</div>
-                                  </div>
+                                <span>Phương thức TT:</span>
+                                <div class="col-span-2 flex gap-1">
+                                    <div class="font-semibold">{{item.PaymentJournalName}}</div>
+                                </div>
 
-                                  <label>Điện thoại:</label>
-                                  <div class="w-full col-span-3 flex gap-1">
-                                      <div class="font-semibold">{{item.Phone}}</div>
-                                  </div>
+                                <span>Điện thoại:</span>
+                                <div class="w-full col-span-2 flex gap-1">
+                                    <div class="font-semibold">{{item.Phone}}</div>
+                                </div>
 
-                                  <label>Địa chỉ:</label>
-                                  <div class="w-full col-span-3 flex gap-1">
-                                      <div class="font-semibold">{{item.Address}}</div>
-                                  </div>
+                                <span>Địa chỉ:</span>
+                                <div class="w-full col-span-2 flex gap-1">
+                                    <div class="font-semibold">{{item.Address}}</div>
+                                </div>
 
-                                  <label>Trạng thái GH:</label>
-                                  <div class="w-full col-span-3 flex gap-1">
-                                    <span class="text-info-400 cursor-pointer border-b border-info-400 border-dashed">
-                                      {{item.ShipPaymentStatus}}
-                                    </span>
-                                  </div>
+                                <span>Trạng thái GH:</span>
+                                <div class="w-full col-span-2 flex gap-1">
+                                  <span class="text-info-400 cursor-pointer border-b border-info-400 border-dashed">
+                                    {{item.ShipPaymentStatus}}
+                                  </span>
+                                </div>
 
-                                  <div class="flex flex-row items-center justify-end w-full col-span-4">
-                                      <button tds-button color="primary" class="mr-2" (click)="editBill(item)">Sửa</button>
-                                      <button *ngIf="item.State === 'open'" tds-button color="primary" (click)="showPaymentModal(item)">Thanh toán</button>
-                                  </div>
+                                <div class="flex flex-row items-center justify-end w-full col-span-3">
+                                    <button tds-button color="primary" class="mr-2" (click)="editBill(item)">Sửa</button>
+                                    <button *ngIf="item.State === 'open'" tds-button color="primary" (click)="showPaymentModal(item)">Thanh toán</button>
+                                </div>
                               </div>
                           </tds-collapse-panel>
                       </tds-collapse>
