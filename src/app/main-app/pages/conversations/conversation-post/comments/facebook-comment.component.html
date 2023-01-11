@@ -24,7 +24,7 @@
                       <div class="bg-white rounded-2xl desktop:px-4 desktop:py-3 px-3 py-2" [ngClass]="dictActiveComment[item.Id]? 'bg-primary-3': ''" (click)="onDictActiveComment(item)">
                           <div class="flex items-center justify-between desktop:gap-x-2 gap-x-1 desktop:text-body-2 laptop:text-caption-1">
                               <div class="flex gap-x-2 items-center">
-                                  <div *ngIf="(item.Data | facebookDataCs) && (item.Data | facebookDataCs)?.from" class="min-w-[50px] desktop:max-w-[220px] max-w-[105px] truncate text-body-2">
+                                  <div *ngIf="(item.Data | facebookDataCs) && (item.Data | facebookDataCs)?.from" class="min-w-[50px] desktop:max-w-[220px] max-w-[105px] truncate">
                                       <span class="font-semibold cursor-pointer" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id]: '')" tds-tooltip="{{item.Data.from.name}}">{{ item.Data.from.name }}</span>
                                   </div>
 
@@ -78,9 +78,10 @@
                                                 +{{invoiceDict[partnerDict[item.UserId].i].length - 1}}
                                             </span>
     
-                                            <button *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1" tds-button-icon color="primary" class="!h-[26px] !w-[26px] desktop:hidden block" (click)="onPopoverVisible(item.Id)">
-                                                <i class="tdsi-order-fill text-body-2 leading-none"></i>
-                                            </button>
+                                            <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1" class="text-primary-1 desktop:hidden flex items-center justify-center gap-x-1 text-caption-2 leading-none font-semibold" (click)="onPopoverVisible(item.Id)">
+                                                <i class="tdsi-order-fill text-body-2"></i> 
+                                                <span class="pb-0.5">({{invoiceDict[partnerDict[item.UserId].i].length}})</span>
+                                            </span>
                                         </div>
 
                                         <ng-template #invContent>
