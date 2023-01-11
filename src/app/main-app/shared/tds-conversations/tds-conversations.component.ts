@@ -1,3 +1,4 @@
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { EnumSendMessageType } from './../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
@@ -118,6 +119,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   quickReplies: Array<QuickReplyDTO> = [];
   objQuickReply: TDSSafeAny = {};
 
+  reponsiveDesktop: boolean = true;
 
   constructor(private modalService: TDSModalService,
     private partnerService: PartnerService,
@@ -140,7 +142,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private socketOnEventService: SocketOnEventService,
     private chatomniConversationFacade: ChatomniConversationFacade,
     private quickReplyService: QuickReplyService,
-    private chatomniCommentService: ChatomniCommentService) {
+    private chatomniCommentService: ChatomniCommentService,
+    public breakpointObserver: BreakpointObserver) {
   }
 
   ngOnInit() {
@@ -162,6 +165,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     // TODO: has_admin_required nhận từ tds-conversation-item để gửi lại tn
     this.onRetryMessage();
 
+    this.breakpointObserver
+      .observe(['(min-width: 1620px)'])
+      .subscribe((state: BreakpointState) => {
+        if (state.matches) {
+          this.reponsiveDesktop = true;
+        } else {
+          this.reponsiveDesktop = false;
+        }
+    });
+    
     this.eventEmitter();
     this.onEventSocket();
     this.yiAutoScroll?.forceScrollDown();

@@ -1,3 +1,4 @@
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { SessionParamsService } from './../../../services/session-params.service';
 import { CRMTeamType } from './../../../dto/team/chatomni-channel.dto';
 import { PartnerChangeStatusDTO } from './../../../dto/partner/partner-status.dto';
@@ -100,6 +101,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   nextDataTimer: TDSSafeAny;
   preDataTimer: TDSSafeAny;
 
+  reponsiveDesktop: boolean = true;
+
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
     private partnerService: PartnerService,
@@ -122,7 +125,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private chatomniConversationFacade: ChatomniConversationFacade,
     private chatomniEventEmiterService: ChatomniEventEmiterService,
     private socketOnEventService: SocketOnEventService,
-    private sessionParamsService: SessionParamsService) {
+    private sessionParamsService: SessionParamsService,
+    public breakpointObserver: BreakpointObserver) {
       super(crmService, activatedRoute, router);
   }
 
@@ -175,6 +179,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           }
       }
     })
+
+    this.breakpointObserver
+      .observe(['(min-width: 1620px)'])
+      .subscribe((state: BreakpointState) => {
+        if (state.matches) {
+          this.reponsiveDesktop = true;
+        } else {
+          this.reponsiveDesktop = false;
+        }
+    });
 
     this.hubEvents();
     this.eventEmitter();
