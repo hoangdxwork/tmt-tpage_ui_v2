@@ -1,6 +1,6 @@
 <div class="w-full h-full flex items-stretch bg-neutral-3-200 overflow-hidden text-body-2 text-neutral-1-900 relative">
     <!-- conversation post object -->
-    <div class="2xl:w-1/5 w-1/4 px-1 h-full flex flex-col text-body-2 text-neutral-1-900 overflow-hidden">
+    <div class="w-1/5 px-1 h-full flex flex-col text-body-2 text-neutral-1-900 overflow-hidden">
         <div #viewChildConvesationPost class="w-full flex flex-col gap-1">
             <div class="bg-white p-2.5 flex flex-col gap-y-4">
 
@@ -139,12 +139,12 @@
     <!-- Thông tin bài viết -->
     <div *ngIf="currentObject && currentTeam && !isLoadingUpdate" class="w-[80%] h-full flex">
         <!--Chọn bài viết để hiển thị chi tiết-->
-        <div class="w-[62.5%] flex flex-col h-full overflow-hidden">
+        <div class="desktop:w-[62.5%] laptop:w-[55%] w-[55%] flex flex-col h-full overflow-hidden">
             <conversation-post-overview class="w-full h-full" [data]="currentObject" [team]="currentTeam" [widthConversation]="widthConversation"></conversation-post-overview>
         </div>
 
         <!-- Danh sách khách hàng, đơn hàng -->
-        <div class="w-[37.5%] h-full flex flex-col" >
+        <div class="desktop:w-[37.5%] laptop:w-[45%] w-[45%] h-full flex flex-col" >
             <tds-tabset class="w-full h-full flex" [clsTab]="'flex-1'" [(selectedIndex)]="selectedIndex" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
 
                 <!-- tab Danh sách -->
