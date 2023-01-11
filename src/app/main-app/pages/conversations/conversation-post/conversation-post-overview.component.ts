@@ -89,6 +89,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   linkFacebook = 'https://www.facebook.com/';
 
   isChanged: boolean = false;
+  isdisabledAutoOrder: boolean = false;
+  rescanAutoOrderTimer: TDSSafeAny;
 
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
@@ -475,13 +477,30 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   }
 
   onRescanAutoOrder() {
+    this.destroyTimer();
+    this.isdisabledAutoOrder = true;
     this.facebookPostService.rescanAutoOrder(this.data?.ObjectId, this.team?.Id).pipe(takeUntil(this.destroy$)).subscribe({
       next: res => {
         this.message.success('Áp dụng thành công');
+        this.rescanAutoOrderTimer = setTimeout(() => {
+          this.isdisabledAutoOrder = false;
+          this.cdRef.detectChanges();
+        }, 10 * 1000);
       },
       error: error => {
+        this.isdisabledAutoOrder = false;
         this.message.error(error?.error?.message);
       }
     })
+  }
+
+  destroyTimer() {
+    if (this.rescanAutoOrderTimer) {
+      clearTimeout(this.rescanAutoOrderTimer);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyTimer();
   }
 }
