@@ -192,7 +192,7 @@ export class OverviewLiveCampaignComponent implements OnInit {
       },
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        id: id
+        liveCampaignId: id
       }
     });
 

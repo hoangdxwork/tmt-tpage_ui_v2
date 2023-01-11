@@ -1,32 +1,30 @@
 <div class="flex flex-col ">
-    <div *ngIf="item" (click)="selectPost(item)"  class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4
+    <div *ngIf="item" (click)="selectPost(item)"  class="desktop:pl-2.5 desktop:pr-[14px] desktop:py-[14px] pl-1.5 py-2 pr-2 flex desktop:gap-x-4 gap-x-2
     {{currentPost?.ObjectId == item.ObjectId ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}">
 
-    <div class="flex flex-col gap-y-3" *ngIf="(item.Data | facebookType)">
-        <div class="relative w-[120px] h-[88px]">
+    <div class="flex flex-col desktop:gap-y-3 gap-y-1.5" *ngIf="(item.Data | facebookType)">
+        <div class="relative desktop:w-[120px] desktop:h-[88px] w-[93px] h-[60px]">
             <div *ngIf="((item.Data | facebookType)?.picture || (item.Data | facebookType)?.full_picture || item.Thumbnail?.Url) && !checkPostPictureError(item); else noPicture" class="relative">
                 <img [src]="(item.Data | facebookType)?.picture || (item.Data | facebookType)?.full_picture || item.Thumbnail?.Url" alt="" (error)="errorPostPicture(item)"
-                    class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
+                    class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md object-cover">
 
                 <span class="absolute inset-0 flex items-center justify-center text-heading-4 text-white font-semibold bg-black bg-opacity-40 rounded-md"
-                    *ngIf="(item.Data | facebookType)?.attachments && (item.Data | facebookType)?.attachments!.data && (item.Data | facebookType)?.attachments!.data[0].subattachments
-                    && (item.Data | facebookType)?.attachments!.data[0].subattachments.data">
-                    {{'+' + (item.Data | facebookType)?.attachments!.data[0].subattachments.data.length}}
+                    *ngIf="extrasChilds && extrasChilds.length > 0">
+                    {{'+' + extrasChilds.length}}
                 </span>
             </div>
             <ng-template #noPicture>
                 <div *ngIf="!((item.Data | facebookType)?.picture || (item.Data | facebookType)?.full_picture || item.Thumbnail?.Url); else errorPicture" class="relative">
                     <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
-                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                        class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                 </div>
                 <ng-template #errorPicture>
                     <img src="../../../assets/imagesv2/errorPic.svg" alt=""  class="relative"
-                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
+                        class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
 
                     <span class="absolute inset-0 flex items-center justify-center text-heading-4 text-white font-semibold bg-black bg-opacity-40 rounded-md"
-                        *ngIf="(item.Data | facebookType)?.attachments && (item.Data | facebookType)?.attachments!.data && (item.Data | facebookType)?.attachments!.data[0].subattachments
-                        && (item.Data | facebookType)?.attachments!.data[0].subattachments.data">
-                        {{'+' + (item.Data | facebookType)?.attachments!.data[0].subattachments.data.length}}
+                        *ngIf="extrasChilds && extrasChilds.length > 0">
+                        {{'+' + extrasChilds.length}}
                     </span>
                 </ng-template>
             </ng-template>
@@ -50,7 +48,7 @@
             </div>
         </div>
 
-        <div class="flex items-center w-full">
+        <div class="flex items-center w-full text-caption-1 desktop:text-body-2">
             <div class="flex items-center gap-x-2 text-neutral-1-400">
                 <i class="tdsi-like-line"></i>
                 <div>{{item.CountReaction || 0}}</div>
@@ -61,20 +59,20 @@
             </div>
         </div>
     </div>
-    <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
-        <span class="w-full font-semibold truncate" *ngIf="item.Title || (item.Data | facebookType)?.attachments && (item.Data | facebookType)?.attachments!.data
+    <div class="flex-auto flex flex-col overflow-hidden desktop:gap-y-2 gap-y-1.5">
+        <span class="w-full font-semibold truncate text-caption-2 desktop:text-body-2" *ngIf="item.Title || (item.Data | facebookType)?.attachments && (item.Data | facebookType)?.attachments!.data
         && (item.Data | facebookType)?.attachments!.data[0].title; else noTitle">
             {{item.Title || (item.Data | facebookType)?.attachments!.data[0].title}}
         </span>
         <ng-template #noTitle>
-            <span *ngIf="!item.Title">(Chưa có tiêu đề)</span>
+            <span class="font-semibold text-caption-2 desktop:text-body-2" *ngIf="!item.Title">(Chưa có tiêu đề)</span>
         </ng-template>
 
-        <span *ngIf="(item.Data | facebookType)?.message" class=" text-neutral-1-400 line-clamp">
+        <span *ngIf="(item.Data | facebookType)?.message" class=" text-neutral-1-400 line-clamp text-caption-1 desktop:text-body-2">
             {{(item.Data | facebookType)?.message}}
         </span>
 
-        <div class="flex gap-x-2 items-center">
+        <div class="flex gap-x-2 items-center text-caption-2 desktop:text-body-2">
             <span *ngIf="item.ChannelCreatedTime" class="text-neutral-1-400" >
                 {{item.ChannelCreatedTime | date:'dd/MM/yyyy HH:mm'}}
             </span>
@@ -83,14 +81,14 @@
             </span>
         </div>
 
-        <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
-            <div *ngIf="item.LiveCampaign" class="item-object-live">
-                <tds-tag size="sm" class="!bg-base-orange-50 !text-base-orange-500"
+        <div class="w-full flex justify-between items-center flex-wrap gap-y-2 overflow-hidden">
+            <div *ngIf="item.LiveCampaign" class="item-object-live flex overflow-hidden">
+                <tds-tag size="sm" class="!bg-base-orange-50 !text-base-orange-500 flex w-full overflow-hidden"
                     (click)="showModalLiveCampaign(item)">
-                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
+                    <span class="flex items-center py-0.5 cursor-pointer text-caption-2 desktop:text-body-2 w-full overflow-hidden" tds-tooltip
                         [tooltipTitle]="item.LiveCampaign.Name">
-                        <span class="flex-auto truncate">{{item.LiveCampaign.Name}}</span>
-                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                        <span class="flex-auto overflow-hidden desktop:w-auto truncate">{{item.LiveCampaign.Name}}</span>
+                        <i class="tdsi-arrow-right-line desktop:text-lg text-sm leading-none ml-1"></i>
                     </span>
                 </tds-tag>
             </div>
@@ -102,9 +100,9 @@
                     [popoverAutoClose]="false" [popoverBackdrop]="true"
                     popoverPlacement="left" [popoverAutoClose]="false"
                     class="{{ currentPost?.ObjectId == item.ObjectId ? '!bg-neutral-3-100 !text-neutral-1-600': '!bg-neutral-3-50 !text-neutral-1-600'}}">
-                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
+                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px] text-caption-2 desktop:text-body-2">
                         <span class="flex-auto truncate">Chọn chiến dịch</span>
-                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                        <i class="tdsi-arrow-right-line desktop:text-lg text-sm leading-none ml-1"></i>
                     </span>
                 </tds-tag>
             </div>
@@ -115,28 +113,28 @@
 <div *ngIf="item && extrasChilds && extrasChilds.length > 0 && clickCurrentChild && clickCurrentChild == item.ObjectId" class="pl-7 flex flex-col tds-panel-scroll"  style="max-height: 460px; overflow-y: auto;" >
     <div *ngFor="let child  of extrasChilds">
         <ng-container *ngIf="child.Data?.parent_id && child.Data?.parent_id == item!.ObjectId">
-            <div class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4 mt-1 {{ currentPost?.ObjectId == child.ObjectId ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}"
+            <div class="desktop:pl-2.5 desktop:pr-[14px] desktop:py-[14px] pl-1.5 py-2 pr-2 flex desktop:gap-x-4 gap-x-2 mt-1 {{ currentPost?.ObjectId == child.ObjectId ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}"
                 (click)="selectPost(child)">
 
-                <div class="flex flex-col gap-y-3">
-                    <div class="relative w-[120px] h-[88px]">
-                        <div *ngIf="child.Data?.picture && !checkPostPictureError(item); else noPicture" class="relative">
+                <div class="flex flex-col  desktop:gap-y-3 gap-y-1.5">
+                    <div class="relative desktop:w-[120px] desktop:h-[88px] w-[93px] h-[60px]">
+                        <div *ngIf="child.Data?.picture && !checkPostPictureError(child); else noPicture" class="relative">
                             <img [src]="child.Data?.picture" alt="" (error)="errorPostPicture(child)"
-                                class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
+                                class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md object-cover">
                         </div>
                         <ng-template #noPicture>
                             <div *ngIf="!child.Data?.picture; else errorPicture">
                                 <img src="assets/imagesv2/conversation-post-img.svg" alt=""
-                                    class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == child.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                                    class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md p-4 {{currentPost?.ObjectId == child.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                             </div>
                             <ng-template #errorPicture>
                                 <img src="assets/imagesv2/errorPic.svg" alt=""
-                                    class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
+                                    class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md p-4 {{currentPost?.ObjectId == child.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                             </ng-template>
                         </ng-template>
                     </div>
 
-                    <div class="flex items-center w-full">
+                    <div class="flex items-center w-full text-caption-1 desktop:text-body-2">
                         <div class="flex items-center gap-x-2 text-neutral-1-400">
                             <i class="tdsi-like-line"></i>
                             <div>{{child.CountReaction || 0}}</div>
@@ -147,19 +145,19 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
-                    <span class="w-full font-semibold truncate" *ngIf="child.description">
+                <div class="flex-auto flex flex-col overflow-hidden desktop:gap-y-2 gap-y-1">
+                    <span class="w-full font-semibold truncate text-caption-2 desktop:text-body-2" *ngIf="child.description">
                         {{child.description}}
                     </span>
 
-                    <span *ngIf="child.Data && child.Data.message; else noMessChild" class="font-semibold line-clamp">
+                    <span *ngIf="child.Data && child.Data.message; else noMessChild" class="font-semibold line-clamp text-caption-1 desktop:text-body-2">
                         {{child.Data.message}}
                     </span>
                     <ng-template #noMessChild>
-                        <span>(Chưa có mô tả)</span>
+                        <span class="font-semibold line-clamp text-caption-1 desktop:text-body-2">(Chưa có mô tả)</span>
                     </ng-template>
 
-                    <span *ngIf="child.ChannelCreatedTime" class="text-neutral-1-400 flex gap-x-2 items-center">
+                    <span *ngIf="child.ChannelCreatedTime" class="text-neutral-1-400 flex gap-x-2 items-center text-caption-2 desktop:text-body-2">
                         {{child.ChannelCreatedTime | date:'dd/MM/yyyy HH:mm'}}
 
                         <span *ngIf="item.ChannelUpdatedTime" class="text-neutral-1-400 tdsi-time-line" tds-tooltip tooltipTitle="Cập nhật lần cuối lúc {{child.ChannelUpdatedTime | date:'dd/MM/yyyy HH:mm'}}">

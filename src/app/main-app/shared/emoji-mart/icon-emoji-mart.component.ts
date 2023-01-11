@@ -1,5 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, Inject, ViewChild, ElementRef } from '@angular/core';
-import { EmojiSearch } from '@ctrl/ngx-emoji-mart';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 
 @Component({
@@ -7,20 +6,24 @@ import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
   templateUrl: 'icon-emoji-mart.component.html',
   styles: [
     `
-      .emoji-mart-scroll {
-        border-bottom: 0;
-        margin-bottom: 6px;
-      }
+    .emoji-mart-scroll {
+      border-bottom: 0;
+      margin-bottom: 6px;
+    }
 
-      .emoji-mart-scroll + .emoji-mart-bar {
-        display: none;
-      }
-      `
+    .emoji-mart-scroll + .emoji-mart-bar {
+      display: none;
+    }
+    `
   ]
 })
 
 export class IconEmojiMartComponent implements OnInit {
-
+  @Input() darkMode: boolean = false;
+  @Input() perLine: number = 9;
+  @Input() emojiSize: number = 24;
+  @Input() sheetSize: 16|20|32|64 = 64;
+  @Input() emojiTooltip:boolean = false;
   @Output() loadEmojiMart = new EventEmitter<any>();
 
   i18n={

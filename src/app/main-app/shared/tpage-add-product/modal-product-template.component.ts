@@ -1,4 +1,4 @@
-import { ProductTemplateDto } from './../../dto/configs/product/config-product-default-v2.dto';
+import { ProductTemplateDto } from '../../dto/configs/product/config-product-default.dto';
 import { AttributeLineDto, ProductVariantDto } from './../../dto/configs/product/config-product-variant.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { TDSNotificationService } from 'tds-ui/notification';
@@ -392,11 +392,10 @@ export class ModalProductTemplateComponent implements OnInit {
       });
 
       modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((result: Array<AttributeLineDto>) => {
-        if (TDSHelperObject.hasValue(result)) {
+        if (result) {
           this.isLoading = true;
           this.lstAttributeLine = [...result];
           let model = this.prepareModel() as ProductTemplateDto;
-          // let suggestModel = AddProductHandler.prepareSuggestModel(model);
           model.AttributeLines = [...result];
 
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
@@ -421,7 +420,6 @@ export class ModalProductTemplateComponent implements OnInit {
 
   //   if (name) {
   //     let model = this.prepareModel() as ProductTemplateDto;
-  //     // let suggestModel = AddProductHandler.prepareSuggestModel(model);
 
   //     const modal = this.modal.create({
   //       title: 'Sửa biến thể sản phẩm',
@@ -431,7 +429,7 @@ export class ModalProductTemplateComponent implements OnInit {
   //       componentParams: {
   //         listType: this.productTypeList,
   //         lstAttributeLine: this.lstAttributeLine,//TODO: danh sách thuộc tính-giá trị đã được chọn
-  //         lstProductDefault: model, //TODO: model param dùng để gọi API tạo biến thể
+  //         productTemplate: model, //TODO: model param dùng để gọi API tạo biến thể
   //         lstProductVariant: data //TODO: model variants được chọn để chỉnh sửa
   //       }
   //     });

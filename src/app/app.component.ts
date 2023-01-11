@@ -125,6 +125,16 @@ export class AppComponent {
               if(!localSocket[ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy]) return;
           break;
 
+          // Thông báo bài viết mới
+          case ChatmoniSocketEventName.chatomniCreatePost:
+              if(!localSocket[ChatmoniSocketEventName.chatomniCreatePost]) return;
+              let paramsPost = this.router.url.startsWith('/conversation/post') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
+              let existPost = res && paramsPost;
+
+              if(existPost == true) break;
+              this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+          break;
+
           default:
           break;
         }

@@ -33,7 +33,7 @@ export class ModalListBillComponent implements OnInit {
   public getOrderImageUrl = new EventEmitter<string>();
 
   paymentMethodOptions!: paymentMethodDTO[];
-  lstPaymentJournals!: Observable<AccountJournalPaymentDTO[]>;
+  lstPaymentJournals: AccountJournalPaymentDTO[] = [];
   lstBillofPartner!: BillofPartnerDTO[];
   lstBillDeafault!: BillofPartnerDTO[];
   pageCurrent = 1;
@@ -70,11 +70,19 @@ export class ModalListBillComponent implements OnInit {
       this.paymentMethodOptions = res;
     });
     this.createModal();
-    this.lstPaymentJournals = this.loadPaymentJournals();
+    this.loadPaymentJournals();
   }
 
   loadPaymentJournals() {
-    return this.registerPaymentService.getWithCompanyPayment().pipe(map(res => res.value));
+    this.registerPaymentService.getWithCompanyPayment().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        if(res && res.value) {
+          this.lstPaymentJournals = [...res.value];
+        }
+      }, error: error => {
+        this.message.error(error?.error?.message);
+      }
+    });
   }
 
   createModal() {
@@ -106,7 +114,7 @@ export class ModalListBillComponent implements OnInit {
       }
     });
     // Return a result when closed
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
         this.outputLoadMessage(result);
       }
@@ -168,8 +176,12 @@ export class ModalListBillComponent implements OnInit {
     return data
   }
 
-  selectPayment(index: number, value: string){
-    this.lstBillofPartner[index].PaymentMethod = value;
+  selectPayment(data: BillofPartnerDTO, value: string){
+    let index = this.lstBillofPartner.findIndex(x=> x.Id == data.Id);
+
+    if(Number(index) >= 0) {
+        this.lstBillofPartner[Number(index)].PaymentMethod = value;
+    }
   }
 
   outputLoadMessage(data: any) {
@@ -277,6 +289,13 @@ export class ModalListBillComponent implements OnInit {
   }
   }
 
+  onDeletePayment(data: BillofPartnerDTO) {
+    let index = this.lstBillofPartner.findIndex(x=> x.Id == data.Id);
+
+    if(Number(index) >= 0) {
+        delete this.lstBillofPartner[Number(index)].PaymentMethod;
+    }
+  }
 
   trackByIndex(_: number, data: any): number {
     return data.Id;

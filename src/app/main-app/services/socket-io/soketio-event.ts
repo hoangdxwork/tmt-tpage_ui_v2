@@ -1,3 +1,4 @@
+import { Product } from './../../dto/order/so-orderlines.dto';
 
 export enum SocketIoEvent {
   onEvents = "on-events",
@@ -14,5 +15,8 @@ export enum ChatmoniSocketEventName {
   livecampaign_Quantity_AvailableToBuy = "livecampaign.quantity-available-to-buy",
   livecampaign_CartCheckout = "livecampaign.cart-checkout",
   chatomniPostLiveEnd = "chatomni.post-live-end",
-  inventory_updated = "inventory_updated"
+  inventory_updated = "inventory_updated",
+  chatomniCreatePost = "chatomni.create-post",
+  producttemplate_create = "created",
+
 }

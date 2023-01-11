@@ -268,7 +268,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.conversationOrderFacade.onAddProductOrder$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.selectProduct(res);
-          let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == res.Id && x.UOMId == res.UOMId) as number;
+          let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId == res.Id && x.UOMId == res.UOMId) as number;
 
           if(Number(index) > -1){
               if(res.DiscountSale > 0) {
@@ -1098,10 +1098,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: StoragePriceListItemsDto) => {
-          let exist = res && Object.keys(res.Value || {}).length > 0;
-          if(exist) {
             this.productIndexDB();
-          }
         }
     })
   }
@@ -1119,7 +1116,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   selectProduct(item: DataPouchDBDTO) {
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId && item.Active) as number;
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId === item.Id && x.UOMId == item.UOMId && item.Active) as number;
     if(Number(index) < 0) {
         let data = {...item} as ProductDTOV2;
         let x = this.mappingDetailQuickSaleOnlineOrder(data) ;
@@ -1144,7 +1141,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       }
     });
 
-    modal.afterClose.subscribe(res => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(res => {
       if(res) {
           //Trường hợp tax = 0 thì không gán tax lại
           if(res.Id === 0) {
@@ -1241,10 +1238,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   onRemoveProduct(item: Detail_QuickSaleOnlineOrder) {
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
 
     if(index >= 0) {
-        this.quickOrderModel.Details.splice(index,1);
+        this.quickOrderModel.Details?.splice(index,1);
         this.calcTotal();
         this.coDAmount();
     }
@@ -1330,7 +1327,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   plus(item: Detail_QuickSaleOnlineOrder) {
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
 
     if(index >= 0) {
         this.quickOrderModel.Details[index].Quantity++;
@@ -1340,7 +1337,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   minus(item: Detail_QuickSaleOnlineOrder) {
-    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
+    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
 
     if(index >= 0) {
         this.quickOrderModel.Details[index].Quantity--;
@@ -1588,6 +1585,38 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             if(!res) return;
             this.indexDbStorage = [...res?.cacheDbStorage || []];
 
+            let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
+            if(priceListItems && priceListItems.Value) {
+                this.indexDbStorage?.map((x: DataPouchDBDTO) => {
+                    if(x.SaleOK && ! x.IsDiscount) {
+                        let price = priceListItems.Value[`${x.ProductTmplId}_${x.UOMId}`];
+                        if (price) {
+                          if (!x.OldPrice) {
+                              x.OldPrice = x.Price;
+                          }
+                          x.Price = price;
+                        } else {
+                          if (x.OldPrice >= 0) {
+                              x.Price = x.OldPrice;
+                          }
+                        }
+                    }
+                  }) 
+            }
+
+            if(this.quickOrderModel?.Details && this.quickOrderModel?.Details.length > 0) {
+              this.quickOrderModel?.Details.map((x: Detail_QuickSaleOnlineOrder) => {
+                  let index = this.indexDbStorage.findIndex(y => y.Id == x.ProductId && y.UOMId == x.UOMId);
+
+                  if(Number(index) >= 0) {
+                    x.Price = this.indexDbStorage[Number(index)].Price;
+                  }
+              })
+
+              this.calcTotal();
+              this.coDAmount();
+            }
+
             this.isLoadingProduct = false;
             this.cdRef.detectChanges();
         },
@@ -1606,13 +1635,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   onChangeQuantity(event: any, item: any){
     let index = this.quickOrderModel?.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
 
-    if(event && index >= 0) {
-        this.quickOrderModel.Details[index].Quantity = Number(event);
+    if(event && Number(index) >= 0) {
+        this.quickOrderModel.Details[Number(index)].Quantity = Number(event);
     }
 
-    if(!event && index >= 0) {
-      this.quickOrderModel.Details[index].Quantity = 1;
-      this.quickOrderModel.Details[index] = {...this.quickOrderModel.Details[index]};
+    if(!event && Number(index) >= 0) {
+      this.quickOrderModel.Details[Number(index)].Quantity = 1;
+      this.quickOrderModel.Details[Number(index)] = {...this.quickOrderModel.Details[Number(index)]};
     }
 
     this.calcTotal();

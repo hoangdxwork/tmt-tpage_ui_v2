@@ -37,7 +37,10 @@ export class GetSocketNamePipe implements PipeTransform {
         return 'Tạo hóa đơn';
 
       case ChatmoniSocketEventName.chatomniPostLiveEnd:
-        return 'Kết thúc live';
+        return 'TShop: Kết thúc live';
+
+      case ChatmoniSocketEventName.chatomniCreatePost:
+        return 'TShop: Thông báo bài viết mới';
     }
     return '---';
   }

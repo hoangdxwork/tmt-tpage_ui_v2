@@ -1,6 +1,6 @@
 import { OnDestroy } from '@angular/core';
 import { ProductCategoryService } from './../../services/product-category.service';
-import { ConfigCateg } from './../../dto/configs/product/config-product-default.dto';
+import { ProductCategoryDto } from './../../dto/configs/product/config-product-default.dto';
 import { ProductTemplateService } from './../../services/product-template.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
@@ -83,8 +83,8 @@ export class ListProductTmpV2Component implements OnInit, OnChanges {
   keyFilter: string = '';
 
   isShowFilterCategId: boolean = false;
-  categoryList: ConfigCateg[] = [];
-  categIdFilter!: ConfigCateg | TDSSafeAny;
+  categoryList: ProductCategoryDto[] = [];
+  categIdFilter!: ProductCategoryDto | TDSSafeAny;
   response: any;
 
   constructor(private productIndexDBService: ProductIndexDBService,

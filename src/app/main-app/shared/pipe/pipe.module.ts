@@ -50,8 +50,9 @@ import { SortDateClassPipe, SortDateNamePipe } from './sort-date.pipe';
 import { FirebaseSubscribedPipe } from './firebase-subscribed.pipe';
 import { GetSocketNamePipe, CheckSocketTeamTypePipe } from './get-socket-name.pipe';
 import { ImageLazyLoadPipe } from './image-lazy-load.pipe';
+import { GetImageLiveCampaignPipe } from './get-image-livecampaign.pipe';
 
-const cmp =[
+const cmp = [
   PrettyjsonPipe,
   PartnerColorPipe,
   FieldChannelPipe,
@@ -122,6 +123,7 @@ const cmp =[
   GetChannelAvatarPipe,
   SimpleSearchProductPostConfiglPipe,
   DateDeleteOrderPipe,
+  GetImageLiveCampaignPipe,
   IndexTextContentOrderPipe,
   SizeAvatarPipe
 ]
@@ -136,7 +138,7 @@ const cmp =[
 
     ],
     exports:[
-    ...cmp
+    ...cmp,
     ]
 })
 

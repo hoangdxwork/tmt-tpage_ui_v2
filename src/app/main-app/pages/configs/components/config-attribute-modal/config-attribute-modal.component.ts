@@ -2,7 +2,6 @@ import { AttributeLineDto, AttributeValueDto, AttributeDto } from './../../../..
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { Message } from '../../../../../lib/consts/message.const';
-import { ConfigAttributeLine, ConfigAttributeValue, ConfigAttribute } from '../../../../dto/configs/product/config-product-default.dto';
 import { takeUntil } from 'rxjs/operators';
 import { ProductTemplateService } from '../../../../services/product-template.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
@@ -17,7 +16,7 @@ import { TDSModalRef } from 'tds-ui/modal';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [TDSDestroyService]
 })
-export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestroy {
+export class ConfigAddAttributeProductModalComponent implements OnInit {
   @Input() lstAttributeLine: Array<AttributeLineDto> = []; //TODO: model thuộc tính- giá trị
 
   _form!: FormGroup;
@@ -89,6 +88,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
       error:(err) => {
         this.isLoading = false;
         this.message.error(err?.error?.message || Message.CanNotLoadData);
+        this.cdr.markForCheck();
       }
     })
   }
@@ -155,34 +155,35 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   checkValidate() {
     let result = '';
 
-    this.dataModel.forEach(model => {
-      if (model.Values.length == 0) {
+    if (this.dataModel && this.dataModel.length == 0) {
+      result = 'Vui lòng chọn thuộc tính';
+    }
+
+    this.dataModel.map(x => {
+      if (x?.Values?.length == 0) {
         result = 'Vui lòng chọn đầy đủ giá trị thuộc tính';
       }
     });
 
-    return result
-  }
-
-  onSubmit() {
-    this.modal.destroy(this.dataModel);
-    this._form.reset();
+    return result;
   }
 
   onCancel() {
-    this.modal.destroy(this.lstAttributeLine);
+    this.modal.destroy(null);
   }
 
   onSave() {
-    if (!TDSHelperString.hasValueString(this.checkValidate())) {
-      this.onSubmit();
-    } else {
-      this.message.error(this.checkValidate());
+    if(this.isLoading) {
+      return;
     }
-  }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    let validate = this.checkValidate();
+
+    if (!TDSHelperString.hasValueString(validate)) {
+      this.modal.destroy(this.dataModel);
+      this._form.reset();
+    } else {
+      this.message.error(validate);
+    }
   }
 }

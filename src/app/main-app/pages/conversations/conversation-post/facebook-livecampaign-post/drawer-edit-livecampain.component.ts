@@ -86,6 +86,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   lstOrderTags!: string[];
   lstSimpleDetail: LiveCampaignSimpleDetail[] = [];
 
+  isShowEditLimitedQuantity!: boolean;
+  limitedQuantityAll: number = 0;
+
   numberWithCommas =(value: TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -284,7 +287,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   loadOverviewReport () {
     this.isLoading = true;
     this.liveCampaignService.overviewReport(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
-        next:(res) => {
+        next:(res: any) => {
           this.dataOverviewReport = {...res};
 
           this.isLoading = false;
@@ -301,7 +304,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   loadFacebookPost() {
     this.isLoading = true;
     this.liveCampaignService.getAllFacebookPost(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
+      next: (res: any) => {
         this.facebookPosts = [...(res || [])];
         this.isLoading = false;
       },
@@ -315,7 +318,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   loadDataDetail() {
     this.isLoading = true;
     this.liveCampaignService.getById(this.liveCampaignId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
+      next: (res: any) => {
           this.isLoading = false;
           this.lstSimpleDetail = [...(res.Details || [])];
           this.cdRef.detectChanges();
@@ -323,6 +326,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
       error:(err) => {
           this.isLoading = false;
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+          this.cdRef.detectChanges();
       }
     });
   }
@@ -1033,6 +1037,42 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
         this.lstDetail = [...[this.changedItems[key]],...this.lstDetail];
       }
     }
+  }
+
+  showEditLimitedQuantity() {
+    if(this.lstDetail && this.lstDetail.length > 0) {
+        this.isShowEditLimitedQuantity = true;
+    } 
+    else {
+        this.message.error('Chưa có sản phẩm nào trong danh sách');
+        this.isShowEditLimitedQuantity = false;
+    }
+  }
+
+  onPopoverApplyLimitQuantityChange(event: boolean) {
+    if(!event) {
+        this.limitedQuantityAll = 0;
+    }
+  }
+
+  onSavePopover() {
+    this.isLoading = true;
+    this.liveCampaignService.applyLimitQuantity(this.liveCampaignId, { quantity: this.limitedQuantityAll}).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.refreshData();
+        this.message.success('Áp dụng thành công');
+        this.onClosePopover();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err.error?.message);
+      }
+    });
+    
+  }
+
+  onClosePopover() {
+    this.isShowEditLimitedQuantity = false;
   }
 
   prepareDetailModel(data: LiveCampaignSimpleDetail) {

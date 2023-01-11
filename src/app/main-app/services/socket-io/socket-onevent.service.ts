@@ -1,3 +1,4 @@
+import { SocketioChatomniCreatePostDto } from './../../dto/socket-io/chatomni-create-post.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Injectable } from "@angular/core";
 import { ChatomniFacebookDataDto, ChatomniMessageType, ChatomniTShopDataDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
@@ -80,6 +81,10 @@ export class SocketOnEventService {
             }
             break;
 
+          case ChatmoniSocketEventName.chatomniCreatePost:
+            channelId = socketData?.Data?.Data?.ShopId;
+            break;
+
           default:
             channelId = socketData.Conversation?.ChannelId;
             break;
@@ -92,8 +97,17 @@ export class SocketOnEventService {
       }))
       .subscribe({
         next: ([socketData, team]: any) => {
-
           if(!socketData) return;
+
+          if(socketData.action == ChatmoniSocketEventName.inventory_updated && socketData.type == "Product") {
+            this.publishSocketAction(socketData);
+            return;
+          }
+
+          if(socketData.action == ChatmoniSocketEventName.producttemplate_create && socketData.type == "ProductTemplate") {
+            this.publishSocketAction(socketData);
+            return;
+          }
 
           let existTeam = team && team?.Id;
           let existLive = socketData.EventName == ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy
@@ -103,15 +117,9 @@ export class SocketOnEventService {
               || socketData.EventName == ChatmoniSocketEventName.onUpdateSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout
-              || socketData.action == ChatmoniSocketEventName.inventory_updated;
 
           if(existLive) existTeam = true;
           if (!existTeam) return;
-
-          if(socketData.action == ChatmoniSocketEventName.inventory_updated) {
-              this.publishSocketAction(socketData);
-              return;
-          }
 
           switch (socketData.EventName) {
             // TODO: thông báo tin nhắn, comment
@@ -171,6 +179,12 @@ export class SocketOnEventService {
             // Thông báo kết thúc live TShop
             case ChatmoniSocketEventName.chatomniPostLiveEnd:
                 this.publishSocketEvent(null, socketData, team); //SocketioChatomniPostLiveEndDto
+              break;
+
+            // Thông báo bài viết mới TShop
+            case ChatmoniSocketEventName.chatomniCreatePost:
+                let notificationCreatePost = this.prepareCreatePost(socketData, team);
+                this.publishSocketEvent(notificationCreatePost, socketData, team); //SocketioChatomniCreatePostDto
               break;
           }
         },
@@ -306,6 +320,18 @@ export class SocketOnEventService {
         Message: `Đơn hàng <span class="font-semibold">${model.Data?.Code}</span> vừa được xóa`,
         Attachments: null,
         Url: ''
+    } as SocketEventNotificationDto;
+
+    return {...notification};
+  }
+
+  prepareCreatePost(socketData: any, team: CRMTeamDTO) {
+    let createPost = {...socketData} as SocketioChatomniCreatePostDto;
+    let notification = {
+        Title: `TShop: <span class="font-semibold">${team?.Name || 'Kênh TShop'}</span> vừa tạo bài viết mới` ,
+        Message: `${createPost.Data.Description || ''}`,
+        Attachments: null,
+        Url: `/conversation/post?teamId=${team.Id}&type=post&post_id=${socketData.Data?.ObjectId}`
     } as SocketEventNotificationDto;
 
     return {...notification};

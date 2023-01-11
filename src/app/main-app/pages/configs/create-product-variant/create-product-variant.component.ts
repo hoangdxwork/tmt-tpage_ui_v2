@@ -1,9 +1,9 @@
+import { AttributeLineDto } from './../../../dto/configs/product/config-product-variant.dto';
 import { CreateFormProductVariantHandler } from './../../../handler-v2/product-variant/create-form.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { IRAttachmentDTO } from './../../../dto/attachment/attachment.dto';
 import { ProductTemplateService } from './../../../services/product-template.service';
-import { ConfigAttributeLine } from './../../../dto/configs/product/config-product-default.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { TDSHelperArray, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
@@ -39,8 +39,8 @@ export class CreateProductVariantComponent implements OnInit {
   lstUOM: Array<ProductUOMDTO> = [];
   lstUOMPO: Array<ProductUOMDTO> = [];
   lstPOSCateg: Array<POS_CategoryDTO> = [];
-  lstAttributeLine: ConfigAttributeLine[] = [];
-  lstShowAttribute: ConfigAttributeLine[] = [];
+  lstAttributeLine: AttributeLineDto[] = [];
+  lstShowAttribute: AttributeLineDto[] = [];
 
   listCateg = [
     { value: "product", text: "Có thể lưu trữ" },
@@ -230,7 +230,7 @@ export class CreateProductVariantComponent implements OnInit {
     this._form.controls["Image"].setValue(base64);
   }
 
-  onChangeAttribute(lines:ConfigAttributeLine[]){
+  onChangeAttribute(lines: AttributeLineDto[]){
     let attrIds = lines.map(f=> { return f.AttributeId });
     this.lstShowAttribute = this.lstAttributeLine.filter(f=> !attrIds.includes(f.AttributeId));
   }

@@ -108,4 +108,3 @@ export interface LiveCampaignSimpleDto {
   Preliminary_Template: PreliminaryTemplate;
   ConfirmedOrder_Template: ConfirmedOrderTemplate;
 }
-

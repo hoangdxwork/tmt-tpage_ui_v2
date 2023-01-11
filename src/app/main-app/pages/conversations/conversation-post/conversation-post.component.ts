@@ -272,6 +272,14 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               }
             break;
 
+            case ChatmoniSocketEventName.chatomniCreatePost:
+                let existItemPost = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop && res.Data && res.Data.Data && res.Data.Data.Data && res.Data.Data.Data.ShopId && this.currentTeam?.ChannelId == res.Data.Data.Data.ShopId;
+                      
+                if(existItemPost) {
+                    this.message.info(`${this.currentTeam?.Name} vừa tạo bài viết mới, ấn nút Refresh để xem`);
+                }
+            break;
+
             default: break;
         }
       }

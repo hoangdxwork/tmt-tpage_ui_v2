@@ -1,13 +1,14 @@
+import { ProductUOMDto } from './../../../dto/configs/product/config-product-default.dto';
+import { ProductCategoryDto } from './../../../dto/configs/product/config-product-default.dto';
+import { ProductVariantDto } from './../../../dto/configs/product/config-product-variant.dto';
 import { CreateFormProductVariantHandler } from './../../../handler-v2/product-variant/create-form.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ProductUOMDTO, ProductDTO } from 'src/app/main-app/dto/product/product.dto';
-import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-category.dto';
 import { ProductUOMService } from 'src/app/main-app/services/product-uom.service';
 import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexdb.service';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
@@ -25,15 +26,15 @@ export class EditProductVariantComponent implements OnInit {
   @Input() id!: number;
 
   _form!: FormGroup;
-  dataModel!: ProductDTO;
+  dataModel!: ProductVariantDto;
 
-  lstProductCategory!: ProductCategoryDTO[];
-  lstProductUOM!: ProductUOMDTO[];
+  lstProductCategory!: ProductCategoryDto[];
+  lstProductUOM!: ProductUOMDto[];
   imageList: Array<TDSSafeAny> = [];
   imageModel: Array<TDSSafeAny> = [];
   isLoading: boolean = false;
 
-  numberWithCommas =(value:TDSSafeAny) =>{
+  numberWithCommas =(value: TDSSafeAny) =>{
     if(value != null)
     {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -79,16 +80,19 @@ export class EditProductVariantComponent implements OnInit {
     this.isLoading = true;
     this.productService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
+            if(!res) {
+              this.isLoading = false;
+              return;
+            }
 
             delete res['@odata.context'];
             this.dataModel = {...res};
             this.updateForm(res);
-
             this.isLoading = false;
           },
-          error: error => {
+          error: (error) => {
             this.isLoading = false;
-            this.message.error(error.error.message || 'Load dữ liệu thất bại');
+            this.message.error(error.error?.message);
             this.cdRef.detectChanges();
           }
         })
@@ -97,10 +101,10 @@ export class EditProductVariantComponent implements OnInit {
   loadProductCategory() {
     this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-          this.lstProductCategory = [...res.value];
+          this.lstProductCategory = [...(res?.value || [])];
         },
-        error: error => {
-          this.message.error(error.error.message || 'load dữ liệu nhóm sản phẩm thất bại');
+        error: (error) => {
+          this.message.error(error.error?.message);
         }
       })
   }
@@ -110,18 +114,15 @@ export class EditProductVariantComponent implements OnInit {
         next: (res: any) => {
           this.lstProductUOM = [...res.value];
         },
-        error: error => {
+        error: (error) => {
           this.message.error(error?.error?.message || 'Load dữ liệu thất bại');
         }
       })
   }
 
-  updateForm(data: TDSSafeAny) {
-
-    this._form.controls['Categ'].setValue(data.Categ);
-    this._form.controls['UOM'].setValue(data.UOM);
-    this._form.controls['UOMPO'].setValue(data.UOMPO);
+  updateForm(data: ProductVariantDto) {
     this._form.patchValue(data);
+    this._form.controls["Name"].setValue(data.Name || data.NameTemplate);
     this._form.controls['OrderTag'].setValue(this.stringToStringArray(data.OrderTag) || null);
 
 
@@ -214,7 +215,7 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   prepareModel() {
-    let model = this.prepareEditVariantHandler.prepareModel(this.dataModel, this._form.value, this._form.controls['Images'].value) as ProductDTO;
+    let model = this.prepareEditVariantHandler.prepareModel(this.dataModel, this._form.value, this._form.controls['Images'].value);
     return model;
   }
 
@@ -236,7 +237,7 @@ export class EditProductVariantComponent implements OnInit {
     return !model.Name || !model.Categ || (!model.UOM && !model.UOMPO);
   }
 
-  onSave(): any {
+  onSave() {
     let model = this.prepareModel();
     if(this.checkError()) return;
 

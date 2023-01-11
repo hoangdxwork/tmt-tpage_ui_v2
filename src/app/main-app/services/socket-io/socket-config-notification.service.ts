@@ -27,6 +27,7 @@ export class SocketStorageNotificationService {
     this.socketData[ChatmoniSocketEventName.onDeleteSaleOnline_Order] = true;
     this.socketData[ChatmoniSocketEventName.livecampaign_CartCheckout] = true;
     this.socketData[ChatmoniSocketEventName.chatomniPostLiveEnd] = true;
+    this.socketData[ChatmoniSocketEventName.chatomniCreatePost] = true;
 
     return this.socketData;
   }

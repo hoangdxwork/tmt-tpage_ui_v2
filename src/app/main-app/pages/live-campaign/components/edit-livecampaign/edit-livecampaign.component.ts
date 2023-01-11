@@ -65,6 +65,10 @@ export class EditLiveCampaignComponent implements OnInit {
   companyCurrents!: CompanyCurrentDTO;
 
   lstOrderTags!: string[];
+  lstImage: {[key: string]: string} = {};
+
+  isShowEditLimitedQuantity!: boolean;
+  limitedQuantityAll: number = 0;
 
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
@@ -135,6 +139,7 @@ export class EditLiveCampaignComponent implements OnInit {
     this.loadUser();
     this.loadQuickReply();
     this.loadCurrentCompany();
+    this.loadImageDetails();
     this.eventEmitter();
   }
 
@@ -176,6 +181,18 @@ export class EditLiveCampaignComponent implements OnInit {
       error:(error) => {
           this.isLoading = false;
           this.message.error(error?.error?.message);
+      }
+    })
+  }
+
+  loadImageDetails() {
+    let id = this.liveCampaignId;
+    this.liveCampaignService.getImageDetails(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.lstImage = res;
+        this.cdRef.markForCheck();
+      }, error: (err) => {
+        this.message.error(err?.error?.message);
       }
     })
   }
@@ -275,6 +292,8 @@ export class EditLiveCampaignComponent implements OnInit {
     this.datePicker = [data.StartDate, data.EndDate];
     this.livecampaignSimpleDetail = [...this.detailsForm.value];
   }
+
+
 
   initFormDetails(details: any[]) {
     details = details?.sort((a, b) => Date.parse(b.DateCreated) - Date.parse(a.DateCreated));
@@ -830,5 +849,43 @@ export class EditLiveCampaignComponent implements OnInit {
             this.lstOrderTags = tags.split(',');
         }
       }
+  }
+
+  showEditLimitedQuantity() {
+    let formDetails = this.detailsForm.value as any[];
+
+    if(formDetails && formDetails.length > 0) {
+        this.isShowEditLimitedQuantity = true;
     }
+    else {
+        this.message.error('Chưa có sản phẩm nào trong danh sách');
+        this.isShowEditLimitedQuantity = false;
+    }
+  }
+
+  onPopoverVisibleChange(event: boolean) {
+    if(!event) {
+        this.limitedQuantityAll = 0;
+    }
+  }
+
+  onSavePopover() {
+    this.isLoading = true;
+    this.liveCampaignService.applyLimitQuantity(this.liveCampaignId, { quantity: this.limitedQuantityAll}).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.refreshData();
+        this.message.success('Cập nhật thành công');
+        this.onClosePopover();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err.error?.message);
+      }
+    });
+
+  }
+
+  onClosePopover() {
+    this.isShowEditLimitedQuantity = false;
+  }
 }
