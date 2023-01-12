@@ -38,9 +38,9 @@
                                     </div>
                                 </div>
 
-                                <button type="button" tds-button-icon color="secondary" (click)="onEditPartner()" tds-tooltip tooltipPlacement="topRight" [tooltipTitle]="isEditPartner ? 'Đóng' : 'Chỉnh sửa'" >
+                                <button type="button" tds-button-icon color="secondary" [size]="reponsiveDesktop ? 'md' : 'sm'" (click)="onEditPartner()" tds-tooltip tooltipPlacement="topRight" [tooltipTitle]="isEditPartner ? 'Đóng' : 'Chỉnh sửa'" >
                                     <span class="flex items-center">
-                                        <i [ngClass]="isEditPartner? 'tdsi-close-fill': 'tdsi-edit-fill'" class="text-xl leading-none text-neutral-1-400"></i>
+                                        <i [ngClass]="isEditPartner? 'tdsi-close-fill': 'tdsi-edit-fill'" class="desktop:text-xl laptop:text-lg text-lg desktop:leading-none laptop:leading-3 leading-3 text-neutral-1-400"></i>
                                     </span>
                                 </button>
                             </div>
@@ -253,7 +253,9 @@
                                             </tds-avatar>
 
                                             <div class="flex flex-col gap-y-0.5 w-2/3">
-                                                <p class="font-semibold laptop:text-caption-1">{{ item.ProductNameGet }}</p>
+                                                <p tds-tooltip="{{ item.ProductNameGet }}"
+                                                    class="font-semibold desktop:text-body-2 laptop:text-caption-1 text-caption-1 truncate desktop:max-w-[200px] laptop:max-w-[150px] max-w-[100px]">
+                                                    {{ item.ProductNameGet }}</p>
 
                                                 <!-- giá bán -->
                                                 <div class="text-neutral-1-400 flex items-center gap-x-2">
@@ -374,12 +376,12 @@
 
                     <!-- Tổng số lượng và tổng tiền -->
                     <div class="w-ful h-full desktop:p-4 laptop:p-3 p-3 desktop:text-body-2 laptop:text-caption-1 text-caption-1" *ngIf="isEnableCreateOrder && saleModel">
-                        <div class="bg-neutral-2-50 rounded-xl grid desktop:grid-cols-6 laptop:grid-cols-3 desktop:gap-y-4 laptop:gap-y-2 gap-x-6 p-4 items-center">
+                        <div class="bg-neutral-2-50 rounded-xl grid desktop:grid-cols-6 laptop:grid-cols-3 grid-cols-3 desktop:gap-y-4 laptop:gap-y-2 gap-y-2 gap-x-6 p-4 items-center">
 
                             <label>Tổng</label>
                             <span class="col-span-2 text-right">{{ quickOrderModel.TotalAmount || 0 | numberCustom }}</span>
 
-                            <label class="font-semibold ">Tổng tiền</label>
+                            <label class="font-semibold">Tổng tiền</label>
                             <span class="desktop:text-header-1 laptop:text-title-1 text-title-1 font-semibold col-span-2 text-right">{{ saleModel.AmountTotal | numberCustom }}</span>
 
                             <label *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal">Giảm giá</label>
@@ -700,7 +702,7 @@
 
               <button *ngIf="!isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen', 'print', '_click_print')">Lưu và in</button>
 
-              <div class="gap-x-2 laptop:flex desktop:hidden">
+              <div class="desktop:gap-x-2 laptop:gap-x-1.5 gap-x-1.5 laptop:flex desktop:hidden flex">
                 <button *ngIf="isEnableCreateOrder" tds-button-icon color="primary" type="button" color="secondary" (click)="onSave('SaveAndPrint', 'print')" tds-tooltip="In hóa đơn">
                   <i class="tdsi-paper-fill text-neutral-1-500 text-lg leading-none"></i>
                 </button>
@@ -711,7 +713,7 @@
                 </button>
               </div>
 
-              <div class="desktop:gap-x-3 laptop:gap-x-1.5 gap-x-1.5 laptop:hidden desktop:flex">
+              <div class="desktop:gap-x-3 laptop:gap-x-1.5 gap-x-1.5 laptop:hidden desktop:flex hidden">
                 <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onSave('SaveAndPrint', 'print')">
                   <span class="flex items-center">
                       <i class="tdsi-paper-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In hóa đơn

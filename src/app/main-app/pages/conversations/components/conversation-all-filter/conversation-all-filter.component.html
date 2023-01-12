@@ -1,9 +1,10 @@
-<button [ngClass]="isFilter ? 'bg-primary-3' : ''" tds-tooltip="Lọc" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center" (click)="openDrawerFillter()">
+<button [ngClass]="isFilter ? 'bg-primary-3' : ''" tds-tooltip="Lọc" 
+    class="desktop:w-[34px] laptop:w-[24px] w-[24px] desktop:h-[34px] laptop:h-[24px] h-[24px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center" (click)="openDrawerFillter()">
     <span class="flex items-center text-neutral-1-500 relative">
-        <i class="tdsi-filter-2-line  text-xl leading-5"></i>
+        <i class="tdsi-filter-2-line desktop:text-xl laptop:text-lg text-lg desktop:leading-5 laptop:leading-none leading-none"></i>
         <div *ngIf="isFilter" class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-0 right-0 flex justify-center items-center"
             style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
-            <span class="text-[7px] leading-[5px] tdsi-tick-fill ">
+            <span class="desktop:text-[7px] laptop:text-[5px] text-[5px] desktop:leading-[5px] laptop:leading-none leading-none tdsi-tick-fill">
             </span>
         </div>
     </span>
