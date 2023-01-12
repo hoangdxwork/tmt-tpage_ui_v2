@@ -1,10 +1,12 @@
-<tds-spin [spinning]="isLoading" class="w-full h-[calc(100vh-109px)] flex z-50">
+<tds-spin [spinning]="isLoading" class="w-full h-[calc(100vh-109px)] flex z-50 desktop:text-body-2 laptop:text-caption-1 text-caption-1">
     <div *ngIf="quickOrderModel">
         <div class="w-full h-[calc(100vh-109px)] flex flex-col bg-neutral-3-100 overflow-y-auto tds-custom-scroll desktop:text-body-2 laptop:text-caption-1 text-caption-1">
             <!-- Thông tin khách hàng -->
             <tds-collapse [expandIconPosition]="'right'" class="bg-white collapse-content-bg-white">
-                <tds-collapse-panel header="Thông tin khách hàng" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
-                    <div class="flex flex-col desktop:gap-3 laptop:gap-2 desktop:p-2 desktop:text-body-2 laptop:text-caption-1 text-caption-1">
+                <tds-collapse-panel [header]="headerOrder" [tdsHeaderClass]="'desktop:px-4 laptop:px-3 px-3 desktop:py-3 laptop:py-2 py-2'" 
+                    [tdsClass]="'desktop:px-4 laptop:px-3 px-3 desktop:py-4 laptop:py-2 py-2'" 
+                    [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
+                    <div class="flex flex-col desktop:gap-3 laptop:gap-1 gap-1 desktop:p-2 desktop:text-body-2 laptop:text-caption-1 text-caption-1">
                         <!-- partner name -->
                         <div class="flex gap-2 items-center">
                             <div class="tdsi-user-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
@@ -14,8 +16,10 @@
                                     <span *ngIf="!isEditPartner" class="max-w-[50%] truncate"
                                         tds-tooltip="{{quickOrderModel.PartnerName}}">{{ quickOrderModel.PartnerName }}</span>
                                     <tds-form-field *ngIf="isEditPartner">
-                                        <input tdsInput autocomplete="off" placeholder="Tên khách hàng" [required]='true'
-                                            [(ngModel)]="quickOrderModel.PartnerName" [ngModelOptions]="{ standalone: true }"/>
+                                        <input tdsInput autocomplete="off" placeholder="Tên khách hàng" [required]='true' 
+                                            [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                            [(ngModel)]="quickOrderModel.PartnerName" [ngModelOptions]="{ standalone: true }"
+                                            class="desktop:text-body-2 laptop:text-caption-1 text-caption-1"/>
                                     </tds-form-field>
 
                                     <div *ngIf="team?.Type === 'Facebook'" class="max-w-[50%] truncate">
@@ -45,33 +49,42 @@
                         <!-- telephone -->
                         <div class="flex gap-2 items-center">
                             <div class="tdsi-call-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
-                            <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans">
+                            <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans desktop:text-body-2 laptop:text-caption-1 text-caption-1">
                                 {{ quickOrderModel.Telephone || 'Không có số điện thoại' }}
                             </span>
 
                             <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
-                                <input tdsInput placeholder="Số điện thoại" [(ngModel)]="quickOrderModel.Telephone" [ngModelOptions]="{ standalone: true }" [required]='true'/>
+                                <input tdsInput placeholder="Số điện thoại" 
+                                    class="desktop:text-body-2 laptop:text-caption-1 text-caption-1"
+                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                    [(ngModel)]="quickOrderModel.Telephone" [ngModelOptions]="{ standalone: true }" [required]='true'/>
                             </tds-form-field>
                         </div>
 
                         <!-- email -->
                         <div class="flex gap-2 items-center">
                             <div class="tdsi-email-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
-                            <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans">{{ quickOrderModel.Email || 'Chưa có Email' }}</span>
+                            <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans desktop:text-body-2 laptop:text-caption-1 text-caption-1">{{ quickOrderModel.Email || 'Chưa có Email' }}</span>
 
                             <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
-                                <input tdsInput autocomplete="off" placeholder="Email" [(ngModel)]="quickOrderModel.Email" [ngModelOptions]="{ standalone: true }"/>
+                                <input tdsInput autocomplete="off" placeholder="Email" 
+                                    class="desktop:text-body-2 laptop:text-caption-1 text-caption-1" 
+                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                    [(ngModel)]="quickOrderModel.Email" [ngModelOptions]="{ standalone: true }"/>
                             </tds-form-field>
                         </div>
 
                         <!-- địa chỉ -->
                         <div class="flex gap-2 items-center">
                             <div class="tdsi-pin-fill p-1 bg-neutral-3-50 text-neutral-1-400 text-xl leading-none rounded-[10px]"></div>
-                            <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans">{{ quickOrderModel.Address || 'Chưa có địa chỉ' }}</span>
+                            <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans desktop:text-body-2 laptop:text-caption-1 text-caption-1">{{ quickOrderModel.Address || 'Chưa có địa chỉ' }}</span>
 
                             <div *ngIf="isEditPartner" class="w-full flex gap-x-2">
                                 <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
-                                    <input tdsInput autocomplete="off" placeholder="Địa chỉ" [(ngModel)]="quickOrderModel.Address" [ngModelOptions]="{ standalone: true }"/>
+                                    <input tdsInput autocomplete="off" placeholder="Địa chỉ" 
+                                        class="desktop:text-body-2 laptop:text-caption-1 text-caption-1"
+                                        [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                        [(ngModel)]="quickOrderModel.Address" [ngModelOptions]="{ standalone: true }"/>
                                 </tds-form-field>
                                 <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip tooltipPlacement="topRight" [tooltipTitle]="quickOrderModel.Address ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'">
                                     <span class="flex items-center">
@@ -82,8 +95,9 @@
                         </div>
                     </div>
 
-                    <div class="w-full desktop:pt-4 laptop:pt-2 flex items-stretch bg-white">
-                        <textarea tdsInput placeholder="Ghi chú" class="resize-none no-scrollbar desktop:w-3/4 laptop:w-2/3 desktop:mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400"
+                    <div class="w-full desktop:pt-4 laptop:pt-1 pt-1 flex items-stretch bg-white">
+                        <textarea tdsInput placeholder="Ghi chú" 
+                            class="resize-none no-scrollbar desktop:w-3/4 laptop:w-2/3 desktop:mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400 desktop:text-body-2 laptop:text-caption-1 text-caption-1"
                             [(ngModel)]="quickOrderModel.Note" (change)="changeNote($event)"></textarea>
 
                         <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [autoClose]="true" [backdrop]="true" [tdsDropdownMenu]="menuUser"
@@ -96,27 +110,34 @@
                             <i class="tdsi-arrow-down-line desktop:w-1/5 laptop:w-1/6"></i>
 
                             <tds-dropdown-menu #menuUser="tdsDropdownMenu">
-                                <div class="w-72 max-h-80 overflow-hidden overflow-y-auto tds-panel-scroll ">
-                                    <div class="px-4 py-2">
+                                <div class="desktop:w-72 laptop:w-60 w-60 max-h-80 overflow-hidden overflow-y-auto tds-panel-scroll ">
+                                    <div class="desktop:px-4 laptop:px-2 px-2 desktop:py-2 laptop:py-1 py-1">
                                         <tds-form-field class="w-full">
-                                            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [(ngModel)]="keyFilterUser" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchUser()"/>
-                                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                                            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                                class="desktop:text-body-2 laptop:text-caption-1 text-caption-1"
+                                                [(ngModel)]="keyFilterUser" [ngModelOptions]="{standalone: true}" 
+                                                [tdsInputDebounce]="750" (inputKeyup)="searchUser()"/>
+                                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill desktop:text-body-2 laptop:text-caption-1 text-caption-1"></i></span>
                                         </tds-form-field>
                                     </div>
-                                    <div class="gap-y-2 flex flex-col overflow-y-auto tds-panel-scroll">
+                                    <div class="desktop:gap-y-2 laptop:gap-y-1 gap-y-1 flex flex-col overflow-y-auto tds-panel-scroll">
                                         <div *ngFor="let item of lstUser" (click)="changeUser(item)"
-                                        class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
+                                        class="desktop:py-2 laptop:py-1 py-1 desktop:px-3 laptop:px-2 px-2 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
                                         <div class="flex gap-x-2">
                                             <span *ngIf="item?.Avatar">
-                                              <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
+                                              <tds-avatar [size]="24" [tdsSrc]="item.Avatar" *ngIf="reponsiveDesktop"></tds-avatar>
+                                              <tds-avatar [size]="20" [tdsSrc]="item.Avatar" *ngIf="!reponsiveDesktop"></tds-avatar>
                                             </span>
                                             <span *ngIf="!item?.Avatar">
-                                                <tds-avatar [text]="item.Name | avatarRandom" class="text-white" size="sm"
-                                                    [style.background-color]="item.Id | randomColor"></tds-avatar>
+                                                <tds-avatar [text]="item.Name | avatarRandom" class="text-white" [size]="24"
+                                                    [style.background-color]="item.Id | randomColor" *ngIf="reponsiveDesktop"></tds-avatar>
+                                                <tds-avatar [text]="item.Name | avatarRandom" class="text-white" [size]="20"
+                                                    [style.background-color]="item.Id | randomColor" *ngIf="!reponsiveDesktop"></tds-avatar>
                                             </span>
-                                            <span>{{item.Name}}</span>
+                                            <span class="desktop:text-body-2 laptop:text-caption-1 text-caption-1 self-center">{{item.Name}}</span>
                                         </div>
-                                        <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == quickOrderModel?.User?.Id"></span>
+                                        <span class="tdsi-success-fill text-success-500 desktop:text-body-2 laptop:text-caption-1 text-caption-1" 
+                                            *ngIf="item.Id == quickOrderModel?.User?.Id"></span>
                                         </div>
                                     </div>
                                     <!-- <div class="flex justify-center items-center text-caption-1 text-error-400 border-t border-neutral-2-100">
@@ -129,26 +150,33 @@
                         </button>
                     </div>
                 </tds-collapse-panel>
+
+                <ng-template #headerOrder>
+                    <div class="desktop:!text-header-1 laptop:!text-title-1 !text-title-1 font-semibold">
+                        Thông tin khách hàng
+                    </div>
+                </ng-template>
             </tds-collapse>
 
             <!-- Sản phẩm -->
-            <tds-collapse [expandIconPosition]="'right'" class="bg-white collapse-content-bg-white mt-1">
-                <tds-collapse-panel [header]="headerProduct" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'" tdsClass="p-0">
-                    <ng-template #headerProduct>
-                        <span class="text-header-1 font-semibold text-neutral-1-900 font-sans mr-2">Sản phẩm</span>
-                        <tds-badge *ngIf="quickOrderModel.Details" [standalone]="true" [count]="quickOrderModel.Details.length" [tdsClass]="'bg-success-400 text-white'"></tds-badge>
-                    </ng-template>
+            <tds-collapse [expandIconPosition]="'right'" class="bg-white collapse-content-bg-white desktop:mt-1 laptop:mt-0.5 mt-0.5">
+                <tds-collapse-panel [header]="headerProduct" [tdsHeaderClass]="'desktop:px-4 laptop:px-3 px-3 desktop:py-3 laptop:py-2 py-2'" 
+                    [tdsClass]="'p-0'"
+                    [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
 
-                    <div class="flex gap-1.5 px-4 desktop:pt-6 laptop:pt-4 pb-3">
+                    <div class="flex desktop:gap-1.5 laptop:gap-1 gap-1 desktop:px-4 laptop:px-3 px-3 desktop:pt-6 laptop:pt-3 pt-3 desktop:pb-3 laptop:pb-1.5 pb-1.5">
                         <div class="w-full">
                             <div class="relative flex-auto">
                                 <tds-form-field class="w-full">
-                                    <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" [(ngModel)]="textSearchProduct"
-                                        [ngModelOptions]="{standalone: true}" (inputKeyup)="onSearchProduct($event)">
+                                    <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" 
+                                        class="desktop:text-body-2 laptop:text-caption-1 text-caption-1"
+                                        [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                        [(ngModel)]="textSearchProduct" [ngModelOptions]="{standalone: true}" (inputKeyup)="onSearchProduct($event)">
 
-                                    <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                                    <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill desktop:text-body-2 laptop:text-caption-1 text-caption-1"></i></span>
+
                                     <span *ngIf="textSearchProduct" tdsSuffix>
-                                        <i (click)="closeSearchProduct()" class="text-neutral-1-500 tdsi-close-fill mr-2"></i>
+                                        <i class="text-neutral-1-500 tdsi-close-fill desktop:text-body-2 laptop:text-caption-1 text-caption-1 mr-2" (click)="closeSearchProduct()" ></i>
                                     </span>
 
                                     <span tdsSuffix class="cursor-pointer" title="Chọn sản phẩm" (click)="showModalListProduct()">
@@ -214,13 +242,13 @@
                         </button>
                     </div>
 
-                    <div class="max-h-[270px] overflow-y-auto tds-panel-scroll w-full desktop:px-3">
-                        <tds-table #basicTable class="w-full h-full" [listData]="quickOrderModel.Details" [noResult]="emptyData" [frontPagination]="false">
+                    <div class="max-h-[270px] overflow-y-auto tds-panel-scroll w-full desktop:px-3 laptop:px-2 px-2">
+                        <tds-table #basicTable class="w-full h-full" [listData]="quickOrderModel.Details" [showPagination]="false" [noResult]="emptyData" [frontPagination]="false">
                             <tbody>
-                                <tr class="bg-white editable-row py-3" *ngFor="let item of quickOrderModel.Details; let index =index">
+                                <tr class="bg-white editable-row" *ngFor="let item of quickOrderModel.Details; let index = index">
                                     <!-- Sản phẩm -->
                                     <td width="60%">
-                                        <div class="flex gap-3.5">
+                                        <div class="flex desktop:gap-3.5 laptop:gap-1.5 gap-1.5 desktop:px-4 laptop:px-3 px-3 desktop:py-4 laptop:py-1.5 py-1.5">
                                             <tds-avatar size="xl" [isAvatar]="false" [shape]="'square'" class="bg-white h-[58px] w-[58px]" [tdsSrc]="item.ImageUrl">
                                             </tds-avatar>
 
@@ -244,12 +272,15 @@
                                                     </span> -->
 
                                                     <ng-template #tmpEditPrice>
-                                                        <div class="w-[336px] flex flex-col gap-y-4" *ngIf="item">
+                                                        <div class="w-[336px] flex flex-col desktop:gap-y-4 laptop:gap-y-2 gap-y-2" *ngIf="item">
                                                             <div class="flex gap-x-4 items-center">
-                                                                <tds-label class="w-1/3">Đơn giá</tds-label>
+                                                                <span class="w-1/3 desktop:!text-body-2 laptop:!text-caption-1 !text-caption-1 font-semibold">Đơn giá</span>
 
                                                                 <tds-form-field class="w-2/3">
-                                                                    <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000"
+                                                                    <tds-input-number autocomplete="off" placeholder="0" 
+                                                                        class="desktop:!text-body-2 laptop:!text-caption-1 !text-caption-1"
+                                                                        [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                                                        [min]="0" [step]="1000"
                                                                         [formatter]="numberWithCommas" [parser]="parserComas"
                                                                         [(ngModel)]="priceValue" [ngModelOptions]="{standalone: true}">
                                                                     </tds-input-number>
@@ -260,7 +291,7 @@
                                                                 <tds-label class="w-1/3">Giảm giá</tds-label>
 
                                                                 <tds-form-field class="w-2/3">
-                                                                    <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1" [max]="100"
+                                                                    <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1" [max]="100" 
                                                                         [formatter]="numberWithCommas" [parser]="parserComas" [disabled]="true">
                                                                     </tds-input-number>
                                                                     <span tdsSuffix>
@@ -270,7 +301,7 @@
                                                                 </tds-form-field>
                                                             </div> -->
 
-                                                            <div class="flex gap-x-2 mt-4 justify-end">
+                                                            <div class="flex gap-x-2 mt-4 justify-end desktop:!text-body-2 laptop:!text-caption-1 !text-caption-1">
                                                                 <button class="min-w-[89px]" type="button" tds-button color="secondary" size="sm" (click)="closePriceDetail()">Hủy bỏ</button>
                                                                 <button class="min-w-[89px]" type="button" tds-button color="primary" size="sm" (click)="approvePrice(item, index)">Áp dụng</button>
                                                             </div>
@@ -279,14 +310,18 @@
                                                 </div>
 
                                                 <!-- ghi chú -->
-                                                <span class="cursor-pointer" [ngClass]="item.Note? 'text-neutral-1-600 rounded-full bg-neutral-3-50 px-2' : 'text-info-500'" tds-popover popoverTrigger="click" [popoverContent]="popoverAddNote"
+                                                <span class="cursor-pointer desktop:text-body-2 laptop:text-caption-1 text-caption-1" 
+                                                    [ngClass]="item.Note? 'text-neutral-1-600 rounded-full bg-neutral-3-50 px-2' : 'text-info-500'" tds-popover popoverTrigger="click" [popoverContent]="popoverAddNote"
                                                     [popoverAutoClose]="true" [popoverBackdrop]="true" popoverPlacement="left" showMore [length]="15" [text]="item.Note || 'Ghi chú'">
                                                 </span>
 
                                                 <ng-template #popoverAddNote>
                                                     <div class="mb-2">
                                                         <tds-form-field>
-                                                            <input tdsInput autocomplete="off" placeholder="Ghi chú" [(ngModel)]="item.Note" [ngModelOptions]="{standalone: true}"/>
+                                                            <input tdsInput autocomplete="off" placeholder="Ghi chú" 
+                                                                class="desktop:text-body-2 laptop:text-caption-1 text-caption-1"
+                                                                [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                                                [(ngModel)]="item.Note" [ngModelOptions]="{standalone: true}"/>
                                                         </tds-form-field>
                                                     </div>
                                                 </ng-template>
@@ -296,11 +331,13 @@
 
                                     <!-- Số lượng -->
                                     <td width="30%">
-                                        <div class="flex gap-x-2 items-center">
+                                        <div class="flex items-center desktop:gap-2 laptop:gap-1.5 gap-1.5 desktop:px-4 laptop:px-3 px-3 desktop:py-4 laptop:py-1.5 py-1.5">
                                             <button type="button" class="tdsi-minus-fill text-white p-0.5 bg-neutral-1-200 rounded-full cursor-pointer hover:bg-primary-1"
                                                 [disabled]="item.Quantity == 1" (click)="minus(item)" [tds-tooltip]="'Giảm sản phẩm'"></button>
                                             <tds-form-field class="w-[50px] hover:bg-primary-1 bg-opacity-10 rounded">
-                                                <input tdsInput type="number" [min]="1" [step]="1" autocomplete="off" size="sm" class="cart-checkout text-center font-semibold text-neutral-1-900"
+                                                <input tdsInput type="number" [min]="1" [step]="1" autocomplete="off" size="sm" 
+                                                    class="cart-checkout text-center font-semibold text-neutral-1-900"
+                                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
                                                     placeholder="1" [ngModel]="item.Quantity" [ngModelOptions]="{standalone: true}"
                                                     (ngModelChange)="onChangeQuantity($event, item)"/>
                                             </tds-form-field>
@@ -319,7 +356,7 @@
                             </tbody>
                         </tds-table>
                         <ng-template #emptyData>
-                            <div class="py-3 px-6 flex-auto">
+                            <div class="py-3 px-6 flex-auto desktop:text-body-2 laptop:text-caption-1 text-caption-1">
                                 <div class="flex flex-col gap-4 p-4 items-center bg-white h-full">
                                     <img src="../../../assets/imagesv2/shop-empty.svg" alt="" class="w-[110px] h-[82px]">
                                     <span class="text-neutral-1-400 font-normal">Chưa có sản phẩm nào</span>
@@ -327,22 +364,23 @@
                             </div>
                         </ng-template>
                     </div>
-                    <div class="w-ful h-full p-3 pb-4" *ngIf="!isEnableCreateOrder && quickOrderModel.Details && quickOrderModel.Details.length > 0">
-                        <div class="bg-neutral-2-50 flex justify-between rounded-xl gap-x-4 p-4">
+
+                    <div class="w-ful h-full desktop:px-4 laptop:px-3 px-3 desktop:py-4 laptop:py-1.5 py-1.5 desktop:text-body-2 laptop:text-caption-1 text-caption-1" *ngIf="!isEnableCreateOrder && quickOrderModel.Details && quickOrderModel.Details.length > 0">
+                        <div class="bg-neutral-2-50 flex justify-between rounded-xl desktop:p-4 laptop:p-3 p-3">
                             <label>Tổng</label>
                             <span class="col-span-2 text-right">{{ quickOrderModel.TotalAmount || 0 | numberCustom }}</span>
                         </div>
                     </div>
 
                     <!-- Tổng số lượng và tổng tiền -->
-                    <div class="w-ful h-full p-3 pb-4" *ngIf="isEnableCreateOrder && saleModel">
-                        <div class="bg-neutral-2-50 rounded-xl grid desktop:grid-cols-6 laptop:grid-cols-3 desktop:gap-y-4 laptop:gap-y-2 gap-x-3 p-4 items-center">
+                    <div class="w-ful h-full desktop:p-4 laptop:p-3 p-3 desktop:text-body-2 laptop:text-caption-1 text-caption-1" *ngIf="isEnableCreateOrder && saleModel">
+                        <div class="bg-neutral-2-50 rounded-xl grid desktop:grid-cols-6 laptop:grid-cols-3 desktop:gap-y-4 laptop:gap-y-2 gap-x-6 p-4 items-center">
 
                             <label>Tổng</label>
                             <span class="col-span-2 text-right">{{ quickOrderModel.TotalAmount || 0 | numberCustom }}</span>
 
-                            <label class="font-semibold">Tổng tiền</label>
-                            <span class="text-header-1 font-semibold col-span-2 text-right">{{ saleModel.AmountTotal | numberCustom }}</span>
+                            <label class="font-semibold ">Tổng tiền</label>
+                            <span class="desktop:text-header-1 laptop:text-title-1 text-title-1 font-semibold col-span-2 text-right">{{ saleModel.AmountTotal | numberCustom }}</span>
 
                             <label *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal">Giảm giá</label>
                             <div *ngIf="saleConfig?.SaleSetting?.GroupDiscountTotal" class="bg-white col-span-2 inline-flex rounded border border-neutral-2-200 pl-3">
@@ -350,35 +388,39 @@
 
                                 <span class="flex items-center justify-center h-8 w-8"
                                     tds-popover popoverTrigger="click" [popoverContent]="tmpDiscount" [popoverAutoClose]="true" [popoverBackdrop]="true">
-                                    <i class="tdsi-discount-fill text-primary-1 hover:opacity-70 text-xl cursor-pointer"></i>
+                                    <i class="tdsi-discount-fill text-primary-1 hover:opacity-70 desktop:text-xl laptop:text-lg text-lg cursor-pointer"></i>
                                 </span>
 
                                 <ng-template #tmpDiscount>
                                     <div class="flex flex-col gap-y-2">
                                         <div class="flex items-center">
-                                            <tds-label class="w-[35%] font-normal text-sm">Chiếc khấu (%) </tds-label>
+                                            <span class="w-[35%] desktop:text-body-2 laptop:text-caption-1 text-caption-1 font-semibold">Chiếc khấu (%) </span>
 
                                             <tds-form-field class="w-[35%]">
-                                                <tds-input-number autocomplete="off"  [min]="0" [max]="100" [step]="1"
+                                                <tds-input-number autocomplete="off"  [min]="0" [max]="100" [step]="1" 
+                                                    class="desktop:text-body-2 laptop:text-caption-1 text-caption-1"
+                                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
                                                     (ngModelChange)="changeDiscount($event)" [(ngModel)]="saleModel.Discount" [ngModelOptions]="{standalone: true}">
                                                 </tds-input-number>
-                                                <span tdsSuffix><span class="font-semibold font-sans text-primary-1">%</span></span>
+                                                <span tdsSuffix><span class="font-semibold font-sans text-primary-1 desktop:text-body-2 laptop:text-caption-1 text-caption-1">%</span></span>
                                             </tds-form-field>
 
-                                            <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
+                                            <div class="w-[30%] flex justify-end text-primary-1 font-semibold desktop:text-body-2 laptop:text-caption-1 text-caption-1">
                                                 <span> -{{ saleModel.DiscountAmount | numberCustom }}đ </span>
                                             </div>
                                         </div>
 
                                         <div class="flex items-center">
-                                            <tds-label class="w-[35%] font-normal text-sm">Giảm tiền</tds-label>
+                                            <span class="w-[35%] desktop:text-body-2 laptop:text-caption-1 text-caption-1 font-semibold">Giảm tiền</span>
                                             <tds-form-field class="w-[35%]">
-                                                <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000"
+                                                <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000" 
+                                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                                    class="desktop:text-body-2 laptop:text-caption-1 text-caption-1"
                                                     (ngModelChange)="changeDecreaseAmount($event)" [(ngModel)]="saleModel.DecreaseAmount" [ngModelOptions]="{standalone: true}">
                                                 </tds-input-number>
                                             </tds-form-field>
 
-                                            <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
+                                            <div class="w-[30%] flex justify-end text-primary-1 font-semibold desktop:text-body-2 laptop:text-caption-1 text-caption-1">
                                                 <span> -{{ saleModel.DecreaseAmount | numberCustom }}đ </span>
                                             </div>
                                         </div>
@@ -389,6 +431,8 @@
                             <label>Tiền cọc</label>
                             <tds-form-field class="col-span-2">
                                 <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0" [formatter]="numberWithCommas" [parser]="parserComas"
+                                    [classList]="'desktop:!text-body-2 laptop:!text-caption-1 !text-caption-1'"    
+                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
                                     (ngModelChange)="changeAmountDeposit($event)" [(ngModel)]="saleModel.AmountDeposit" [ngModelOptions]="{standalone: true}">
                                 </tds-input-number>
                             </tds-form-field>
@@ -398,45 +442,57 @@
                                 <span class="flex flex-auto items-center h-8">{{ saleModel.Tax?.Amount || 0 | numberCustom }}</span>
 
                                 <span  class="flex items-center justify-center h-8 w-8">
-                                    <i class="tdsi-revenue-fill text-primary-1 hover:opacity-70 text-xl cursor-pointer" (click)="showModalTax()"></i>
+                                    <i class="tdsi-revenue-fill text-primary-1 hover:opacity-70 desktop:text-xl laptop:text-lg text-lg cursor-pointer" (click)="showModalTax()"></i>
                                 </span>
                             </div>
 
                             <label>Thanh toán</label>
                             <tds-form-field class="col-span-2">
                                 <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0" [required]='true' [formatter]="numberWithCommas" [parser]="parserComas"
+                                    [classList]="'desktop:!text-body-2 laptop:!text-caption-1 !text-caption-1'"
+                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
                                     [(ngModel)]="saleModel.PaymentAmount" [ngModelOptions]="{standalone: true}" [max]="saleModel.AmountTotal">
                                 </tds-input-number>
                             </tds-form-field>
                         </div>
                     </div>
                 </tds-collapse-panel>
+
+                <ng-template #headerProduct>
+                    <div class="desktop:!text-header-1 laptop:!text-title-1 !text-title-1 font-semibold mr-2">
+                        Sản phẩm
+                    </div>
+                    <tds-badge *ngIf="quickOrderModel.Details" [standalone]="true" [count]="quickOrderModel.Details.length" [tdsClass]="'bg-success-400 text-white'"></tds-badge>
+                </ng-template>
             </tds-collapse>
 
             <!-- Checkbox tạo hóa đơn bán hàng -->
-            <div class="py-4 bg-primary-3 px-6 mt-1">
-                <tds-checkbox [(ngModel)]="isEnableCreateOrder" [ngModelOptions]="{standalone: true}" (change)="onEnableCreateOrder($event)">
-                    <span class="font-semibold">Tạo hóa đơn bán hàng</span>
+            <div class="desktop:py-4 laptop:py-3 py-3 bg-primary-3 desktop:px-6 laptop:px-4 px-4 desktop:mt-1 laptop:mt-0.5 mt-0.5">
+                <tds-checkbox [(ngModel)]="isEnableCreateOrder" [ngModelOptions]="{standalone: true}" [size]="reponsiveDesktop ? 'md' : 'sm'" 
+                    (change)="onEnableCreateOrder($event)">
+                    <span class="font-semibold desktop:text-body-2 laptop:text-caption-1 text-caption-1">Tạo hóa đơn bán hàng</span>
                 </tds-checkbox>
             </div>
 
             <!-- Giao hàng -->
-            <tds-collapse *ngIf="isEnableCreateOrder && saleModel" [expandIconPosition]="'right'" class="bg-white collapse-content-bg-white mt-1">
-              <tds-collapse-panel [header]="headerShip" tdsClass="w-full rounded-b-xl bg-white p-4" [active]="true" [expandedIcon]="'tdsi-arrow-right-line'">
+            <tds-collapse *ngIf="isEnableCreateOrder && saleModel" [expandIconPosition]="'right'" class="bg-white collapse-content-bg-white desktop:mt-1 laptop:mt-0.5 mt-0.5">
+              <tds-collapse-panel [header]="headerShip" tdsClass="w-full rounded-b-xl bg-white desktop:px-4 laptop:px-3 px-3 destop:py-4 laptop:py-2 py-2" [tdsHeaderClass]="'desktop:px-4 laptop:px-3 px-3 desktop:py-3 laptop:py-2 py-2'"
+                [active]="true" [expandedIcon]="'tdsi-arrow-right-line'">
                   <ng-template #headerShip>
-                    <span class="text-header-1 font-semibold text-neutral-1-900 font-sans mr-2">Giao hàng</span>
+                    <span class="desktop:text-header-1 laptop:text-title-1 text-title-1 font-semibold text-neutral-1-900 font-sans mr-2">Giao hàng</span>
                   </ng-template>
-                  <div class="grid gap-2 items-start w-full" *ngIf="saleModel">
 
-                      <div class="w-full flex flex-col gap-y-2">
+                  <div class="grid desktop:gap-y-2 laptop:gap-y-1.5 gap-y-1.5 items-start w-full" *ngIf="saleModel">
+                      <div class="w-full flex flex-col desktop:gap-y-2 laptop:gap-y-1.5 gap-y-1.5">
                           <div class="flex items-center">
-                            <tds-label>Đối tác giao hàng</tds-label>
+                            <span class="desktop:text-body-2 laptop:text-caption-1 text-caption-1 font-semibold">Đối tác giao hàng</span>
                           </div>
 
                           <div class="col-span-2" *ngIf="lstCarrier">
-                              <tds-form-field>
+                              <tds-form-field class="w-full">
                                   <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
-                                      [valuePrimitive]="false" [allowClear]="true" disabledField="isActive"
+                                      [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                      [valuePrimitive]="false" [allowClear]="true"
                                       [data]="lstCarrier" [ngModel]="saleModel.Carrier"
                                       [ngModelOptions]="{standalone: true}" [allowClear]="true"
                                       (ngModelChange)="onChangeCarrierV2($event)">
@@ -446,7 +502,7 @@
                       </div>
 
                       <!-- thông tin dịch vụ -->
-                      <div class="grid gap-y-4" *ngIf="saleModel.Carrier">
+                      <div class="grid desktop:gap-y-4 laptop:gap-y-2 gap-y-2" *ngIf="saleModel.Carrier">
 
                         <!-- không có dịch vụ -->
                         <div class="w-full" *ngIf="shipServices && shipServices.length == 0 && shipExtraServices && shipExtraServices.length == 0">
@@ -455,12 +511,13 @@
 
                         <!-- danh sách dịch vụ -->
                         <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
-                            <tds-label class="w-1/4">Dịch vụ<span class="text-error-400">*</span></tds-label>
+                            <span class="w-1/4 font-semibold">Dịch vụ<span class="text-error-400">*</span></span>
 
                             <tds-form-field class="w-3/4">
                                 <tds-select valueField="ServiceId" textField="ServiceName"
                                     (selectChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ'
                                     disabledField="isActive" [valuePrimitive]="false"
+                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
                                     [ngModel]="saleModel.Ship_ServiceId" [ngModelOptions]="{standalone: true}"
                                     [data]="shipServices" [allowClear]="true">
 
@@ -473,17 +530,20 @@
                         </div>
 
                         <div class="col-span-3 flex flex-row items-center" *ngIf="insuranceInfo">
-                            <tds-label class="w-1/4">Giá trị hàng hóa</tds-label>
+                            <span class="w-1/4 font-semibold">Giá trị hàng hóa</span>
 
                             <div class="flex flex-row items-center gap-x-2 w-3/4">
                               <tds-form-field class="flex flex-auto">
                                   <tds-input-number [min]='0' [step]="1000" placeholder="Nhập phí" [formatter]="numberWithCommas" [parser]="parserComas"
+                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                    [classList]="'desktop:text-body-2 laptop:text-caption-1 text-caption-1'"
                                     (ngModelChange)="changeShip_InsuranceFee($event)"
                                     [ngModel]="saleModel.Ship_InsuranceFee" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
                               </tds-form-field>
 
                               <button tds-button-icon tds-tooltip tooltipTitle="Gán bằng tổng giá trị hoá đơn" color="primary"
+                                  [size]="reponsiveDesktop ? 'md' : 'sm'"
                                   class="flex items-center justify-center" (click)="signAmountTotalToInsuranceFee()">
                                   <i class="tdsi-in-out-fill text-xl"></i>
                               </button>
@@ -492,9 +552,9 @@
 
                         <ng-container *ngFor="let item of configsProviderDataSource">
                             <div class="col-span-3 flex flex-row items-center" *ngIf="!item.IsHidden">
-                                <tds-label class="w-1/4">{{item.DisplayName}}<span class="text-error-400">*</span></tds-label>
+                                <span class="w-1/4 font-semibold">{{ item.DisplayName }}<span class="text-error-400">*</span></span>
                                 <tds-form-field class="w-3/4">
-                                    <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
+                                    <tds-select valueField="Id" textField="Name" placeholder='Chọn option' [size]="reponsiveDesktop ? 'md' : 'sm'"
                                         [data]="item.ConfigsValue" [ngModel]="item.ConfigValue" (selectChange)="onChangeConfigValue($event, item.ConfigName)" [allowClear]="true"
                                         [ngModelOptions]="{standalone: true}" [allowClear]="item.InputType == 'combo_box'">
                                     </tds-select>
@@ -503,18 +563,19 @@
                         </ng-container>
                       </div>
 
-                      <div class="grid grid-cols-3 desktop:gap-y-4 desktop:gap-x-6 laptop:gap-x-4 mt-2">
+                      <div class="grid grid-cols-3 desktop:gap-y-4 laptop:gap-y-1.5 gap-y-1.5 desktop:gap-x-6 laptop:gap-x-4 desktop:mt-2 laptop:mt-1 mt-1">
                         <!-- phí ship đối tác -->
                         <div class="col-span-3 w-full flex flex-row items-center" >
-                            <tds-label class="pr-4">Phí ship (đối tác)</tds-label>
+                            <span class="desktop:pr-4 laptop:pr-2 pr-2 font-semibold">Phí ship (đối tác)</span>
 
                             <div class="col-span-2 flex-auto flex items-center">
-                              <div class="px-4">
-                                  <span class="border rounded-md py-1 px-2 text-primary-1">{{saleModel.CustomerDeliveryPrice || 0 | numberCustom }}đ</span>
+                              <div class="desktop:px-4 laptop:px-2 px-2">
+                                  <span class="border rounded-md py-1 px-2 text-primary-1">
+                                    {{saleModel.CustomerDeliveryPrice || 0 | numberCustom }}đ</span>
                               </div>
 
-                              <div class="px-4 border-l">
-                                  <button *ngIf="!saleModel.TrackingRef && isEnableCalcFee" tds-button-icon color="info" size="sm"  (click)="calcFee()" tds-tooltip="Tính lại tiền ship" type="button">
+                              <div class="desktop:px-4 laptop:px-2 px-2 border-l">
+                                  <button *ngIf="!saleModel.TrackingRef && isEnableCalcFee" tds-button-icon color="info" [size]="reponsiveDesktop ? 'md' : 'sm'"  (click)="calcFee()" tds-tooltip="Tính lại tiền ship" type="button">
                                       <span class="flex items-center justify-center">
                                           <i class=" tdsi-reload-fill"></i>
                                       </span>
@@ -526,8 +587,10 @@
                         <div class="col-span-3 w-full flex flex-col">
                             <div class="flex flex-row items-center gap-x-2 w-full">
                               <tds-form-field class="flex flex-auto">
-                                <tds-label class="pr-3">Khối lượng ship(g)</tds-label>
-                                <tds-input-number [min]="0" [step]="1" [(ngModel)]="saleModel.ShipWeight" [formatter]="numberWithCommas" [parser]="parserComas"
+                                <tds-label class="desktop:!text-body-2 laptop:!text-caption-1 !text-caption-1">Khối lượng ship(g)</tds-label>
+                                <tds-input-number [min]="0" [step]="1" [(ngModel)]="saleModel.ShipWeight" [formatter]="numberWithCommas" [parser]="parserComas" 
+                                    [classList]="'desktop:text-body-2 laptop:text-caption-1 text-caption-1'"
+                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
                                     (tdsBlur)="changeShipWeight()" [ngModelOptions]="{standalone: true}">
                                 </tds-input-number>
                               </tds-form-field>
@@ -537,8 +600,10 @@
                         <div class="col-span-3 w-full flex flex-col">
                             <div class="flex flex-row items-center gap-x-2 w-full">
                               <tds-form-field class="flex flex-auto">
-                                <tds-label class="pr-3">Phí giao hàng</tds-label>
-                                <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.DeliveryPrice" [formatter]="numberWithCommas" [parser]="parserComas"
+                                <tds-label class="desktop:!text-body-2 laptop:!text-caption-1 !text-caption-1">Phí giao hàng</tds-label>
+                                <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.DeliveryPrice" [formatter]="numberWithCommas" [parser]="parserComas" 
+                                    [classList]="'desktop:text-body-2 laptop:text-caption-1 text-caption-1'"
+                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
                                     (ngModelChange)="changeDeliveryPrice($event)"[ngModelOptions]="{standalone: true}">
                                 </tds-input-number>
                               </tds-form-field>
@@ -548,8 +613,10 @@
                         <div class="col-span-3 w-full flex flex-col">
                             <div class="flex flex-row items-center gap-x-2 w-full">
                               <tds-form-field class="flex flex-auto">
-                                <tds-label class="pr-3">Giao hàng thu tiền</tds-label>
-                                <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery" [formatter]="numberWithCommas" [parser]="parserComas"
+                                <tds-label class="desktop:!text-body-2 laptop:!text-caption-1 !text-caption-1">Giao hàng thu tiền</tds-label>
+                                <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery" [formatter]="numberWithCommas" [parser]="parserComas" 
+                                    [classList]="'desktop:text-body-2 laptop:text-caption-1 text-caption-1'"
+                                    [size]="reponsiveDesktop ? 'md' : 'sm'"
                                     (ngModelChange)="changeCashOnDelivery($event)" [ngModelOptions]="{standalone: true}">
                                 </tds-input-number>
                               </tds-form-field>
@@ -559,9 +626,9 @@
                         <div class="col-span-3 w-full flex flex-col">
                             <div class="flex flex-row items-center gap-x-2 w-full">
                               <tds-form-field class="flex flex-auto">
-                                <tds-label class="pr-3">Ghi chú giao hàng</tds-label>
-                                <textarea class="resize-none no-scrollbar" rows="2" tdsInput autocomplete="off" [(ngModel)]="saleModel.DeliveryNote" [ngModelOptions]="{standalone: true}" placeholder="Nhập ghi chú" >
-                                </textarea>
+                                <tds-label class="desktop:!text-body-2 laptop:!text-caption-1 !text-caption-1">Ghi chú giao hàng</tds-label>
+                                <textarea class="resize-none no-scrollbar desktop:text-body-2 laptop:text-caption-1 text-caption-1" rows="2" tdsInput autocomplete="off" 
+                                    [(ngModel)]="saleModel.DeliveryNote" [ngModelOptions]="{standalone: true}" placeholder="Nhập ghi chú"></textarea>
                               </tds-form-field>
                             </div>
                         </div>
@@ -588,7 +655,9 @@
                                                 <ng-template #popoverContentShip_ExtraMoney>
                                                     <div class="flex gap-x-2">
                                                         <tds-form-field>
-                                                            <tds-input-number [min]='0' [step]="1000" [(ngModel)]="extraMoney"
+                                                            <tds-input-number [min]='0' [step]="1000" [(ngModel)]="extraMoney" 
+                                                                [classList]="'desktop:text-body-2 laptop:text-caption-1 text-caption-1'"
+                                                                [size]="reponsiveDesktop ? 'md' : 'sm'"
                                                                 [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                                                             </tds-input-number>
                                                         </tds-form-field>
@@ -625,7 +694,7 @@
             </tds-collapse>
 
           <!-- Button Footer conversation all, message, inbox-->
-          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type != 'post'">
+          <div class="flex desktop:gap-x-3 laptop:gap-x-1.5 gap-x-1.5 desktop:py-3 laptop:py-1.5 py-1.5 desktop:px-6 laptop:px-3 px-3 bg-white desktop:mt-1 laptop:mt-0.5 mt-0.5" *ngIf="type != 'post'">
               <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSave()">Lưu nháp</button>
               <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="info" (click)="onSave('SaveAndOpen')">Xác nhận</button>
 
@@ -642,7 +711,7 @@
                 </button>
               </div>
 
-              <div class="gap-x-2 laptop:hidden desktop:flex">
+              <div class="desktop:gap-x-3 laptop:gap-x-1.5 gap-x-1.5 laptop:hidden desktop:flex">
                 <button *ngIf="isEnableCreateOrder" tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onSave('SaveAndPrint', 'print')">
                   <span class="flex items-center">
                       <i class="tdsi-paper-fill text-neutral-1-500 text-lg leading-none mr-2"></i>In hóa đơn
