@@ -1,6 +1,5 @@
 import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
-import { SocketStorageNotificationService } from './main-app/services/socket-io/socket-config-notification.service';
 import { TDSConfigService } from 'tds-ui/core/config';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, NgZone, TemplateRef, ViewChild } from '@angular/core';
@@ -12,6 +11,7 @@ import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from
 import { PageLoadingService } from './shared/services/page-loading.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { SocketStorageNotificationService } from '@app/services/socket-io/socket-config-notification.service';
 
 @Component({
   selector: 'app-root',
