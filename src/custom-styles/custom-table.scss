@@ -39,8 +39,32 @@ tds-table.table-vertical-line {
                 @apply border-t;
             }
         }
+        tr:not(:last-child) {
+            @apply border-b;
+        }
     }
     .tds-table-tbody > tr.tds-table-row:not(.tds-row-selected):hover > td {
         @apply bg-neutral-3-50 dark:bg-d-neutral-3-300;
+    }
+}
+
+tds-table.table-variant-detail {
+    .tds-table-tbody {
+        tr{
+            td{
+                @apply border-b ;
+            }
+        }
+        tr:last-child{
+            td{
+                @apply border-b-0;
+            }
+            td:first-child:hover{
+                @apply rounded-bl-xl;
+            }
+            td:last-child:hover{
+                @apply rounded-br-xl;
+            }
+        }
     }
 }
