@@ -1,3 +1,5 @@
+import { PriorityStatus } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
+import { LiveCampaign } from './../live-campaign/livecampain-detail-attributes.dto';
 import { NumericDictionaryIteratee } from 'lodash';
 import { ApplicationUserDTO } from '../account/application-user.dto';
 import { CompanyDTO } from '../company/company.dto';
@@ -11,6 +13,10 @@ export interface SaleOnlineStatusModelDto {
   TagIds: string;
   SearchText: string;
   PostId?: string;
+  TeamId?: number;
+  HasTelephone?: boolean;
+  LiveCampaignId?: string;
+  PriorityStatus?: any;
 }
 
 export interface SaleOnlineStatusValueDto {

@@ -40,8 +40,8 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
-import { ModalOrderDeletedComponent } from '../components/modal-order-deleted/modal-order-deleted.component';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { ModalOrderDeletedComponent } from '../components/modal-order-deleted/modal-order-deleted.component';
 
 @Component({
   selector: 'app-order',
@@ -231,13 +231,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.lstOfData = [];
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
-    // let params = `top=${pageSize}&%24orderby=DateCreated+desc&%24filter=${filters}`;
-
 
     this.getViewData(params).subscribe({
       next: (res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
-          this.lstOfData = [...res.value];
+          this.lstOfData = [...(res?.value || [])];
 
           let lstId = this.lstOfData.map((x) => x.PartnerId);
           this.loadParnerStatus(lstId);
@@ -251,13 +249,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
   loadParnerStatus(params: Array<number>) {
     this.commonService.getPartnersById(params).subscribe({
       next: (res: TIDictionary<String>) => {
-        if(res) {
           this.lstOfData.map( x => {
             if(res[x.PartnerId]) {
-              x.PartnerStatus = res[x.PartnerId];
+                x.PartnerStatus = res[x.PartnerId];
             }
           })
-        }
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
@@ -287,12 +283,15 @@ export class OrderComponent implements OnInit, AfterViewInit {
       DateStart: startDate,
       DateEnd: endDate,
       SearchText: this.filterObj.searchText,
-      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x).join(","),
+      LiveCampaignId: this.filterObj.liveCampaignId,
+      HasTelephone: this.filterObj.Telephone,
+      PriorityStatus: this.filterObj.PriorityStatus,
+      TeamId: this.filterObj.teamId
     }
 
     this.isTabNavs = true;
-    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
-      finalize(() => this.isTabNavs = false)).subscribe({
+    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: Array<SaleOnlineStatusValueDto>) => {
             let tabs: TabNavsDTO[] = [];
             let total = 0;
@@ -300,7 +299,6 @@ export class OrderComponent implements OnInit, AfterViewInit {
             res?.map((x: SaleOnlineStatusValueDto, index: number) => {
                 total += x.Total;
                 index = index + 2;
-
                 tabs.push({ Name: `${x.StatusText}`, Index: index, Total: x.Total });
             });
 
@@ -309,8 +307,13 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
             this.tabNavs = [...tabs];
             this.lstOftabNavs = this.tabNavs.filter(x => Number(x.Index) > 1);
+            this.isTabNavs = false;
+        },
+        error: (error: any) => {
+            this.isTabNavs = false;
+            this.message.error(error?.error?.message);
         }
-      });
+    });
   }
 
   loadGridConfig() {
@@ -330,9 +333,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   loadAllTeam() {
     this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-        if(res && TDSHelperArray.hasListValue(res)) {
           this.lstOfTeam = [...res];
-        }
       },
       error: (err) => {
         this.message.error(err?.error?.message);
@@ -343,7 +344,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   loadTags() {
     let type = "saleonline";
     this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
-      this.lstDataTag = [...res.value];
+      this.lstDataTag = [...(res?.value || [])];
     });
   }
 
@@ -380,7 +381,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
                 }
             });
 
-            this.modal.afterAllClose.subscribe({
+            this.modal.afterAllClose.pipe(takeUntil(this.destroy$)).subscribe({
               next:(x: any) =>{
                 if(x) {
                   this.loadData(this.pageSize,this.pageIndex);
@@ -418,7 +419,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
             }
           });
 
-          this.modal.afterAllClose.subscribe({
+          this.modal.afterAllClose.pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
               if(res) {
                 this.loadData(this.pageSize, this.pageIndex);
@@ -596,6 +597,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     }
 
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   // Refresh nhưng không refresh lại Tab, Index
