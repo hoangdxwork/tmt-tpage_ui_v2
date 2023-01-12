@@ -1,4 +1,4 @@
-<tds-spin [spinning]="isLoading" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full" style="padding: 8px 0 8px 8px">
+<tds-spin [spinning]="isLoading" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full py-2 pl-2">
     <virtual-scroller *ngIf="dataSource && dataSource.Items && dataSource.Items.length > 0"
           #scroll [items]="(dataSource.Items | sortDataSourcePost)" class="tds-custom-scroll w-full h-full"
           (vsEnd)="vsEnd($event)"
@@ -13,7 +13,7 @@
           </div>
 
            <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2">
-              <div *ngIf="item && item.Type == 91" class="flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
+              <div *ngIf="item && item.Type == 91" class="flex flex-auto w-full h-full pb-3">
 
                   <div>
                       <tds-avatar  class="cursor-pointer" [size]="'lg'"
@@ -21,11 +21,11 @@
                   </div>
 
                   <div class="ml-2 w-full h-full">
-                      <div class="bg-white rounded-2xl px-4 py-3" [ngClass]="dictActiveComment[item.Id]? 'bg-primary-3': ''" (click)="onDictActiveComment(item)">
-                          <div class="flex items-center justify-between">
+                      <div class="bg-white rounded-2xl desktop:px-4 desktop:py-3 px-3 py-2" [ngClass]="dictActiveComment[item.Id]? 'bg-primary-3': ''" (click)="onDictActiveComment(item)">
+                          <div class="flex items-center justify-between desktop:gap-x-2 gap-x-1 desktop:text-body-2 laptop:text-caption-1">
                               <div class="flex gap-x-2 items-center">
 
-                                  <div class="min-w-[50px] max-w-[220px] truncate">
+                                  <div class="min-w-[50px] desktop:max-w-[220px] max-w-[100px] truncate">
                                       <label class="font-semibold cursor-pointer" *ngIf="item.Data"
                                         (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.UserId] : '')">{{(item.Data | tshopDataCs).Actor?.Name}} </label>
                                   </div>
@@ -67,25 +67,36 @@
                                   <!-- Mã hóa đơn -->
                                   <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i && !item.IsOwner" class="flex flex-auto flex-row items-center">
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
-                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold cursor-pointer" (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][0])">
+                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold cursor-pointer hidden desktop:block" (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][0])">
                                             {{ invoiceDict[partnerDict[item.UserId].i][0].Number }}
                                         </span>
 
-                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1" (click)="onPopoverVisible(item.Id)"
-                                            class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer"
-                                            tds-popover
+                                        <div tds-popover
                                             [popoverVisible]="idPopoverVisible == item.Id"
                                             [popoverContent]="invContent"
                                             popoverTrigger="click"
                                             [popoverBackdrop]="true">
-                                            +{{invoiceDict[partnerDict[item.UserId].i].length - 1}}
-                                        </span>
+                                            <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 1" (click)="onPopoverVisible(item.Id)"
+                                                class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer hidden desktop:block">
+                                                +{{invoiceDict[partnerDict[item.UserId].i].length - 1}}
+                                            </span>
+
+                                            <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 0" class="text-primary-1 desktop:hidden flex items-center justify-center gap-x-1 text-caption-2 leading-none font-semibold cursor-pointer" (click)="onPopoverVisible(item.Id)">
+                                                <i class="tdsi-order-fill text-body-2"></i> 
+                                                <span class="pb-0.5">({{invoiceDict[partnerDict[item.UserId].i].length}})</span>
+                                            </span>
+                                        </div>
 
                                         <ng-template #invContent>
                                             <div class="flex flex-wrap min-w-[200px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
                                                 <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]; let i = index">
-                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)" (click)="onOpenDrawerBillDetail(inv)">
-                                                        <span class="text-primary-1 font-semibold cursor-pointer" style="font-size: 14px">{{ inv.Number || 'N/A' }}</span>
+                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)" 
+                                                        class="hover:underline decoration-primary-1 hidden desktop:block" (click)="onOpenDrawerBillDetail(inv)">
+                                                        <span class="text-primary-1 font-semibold cursor-pointer text-[14px]" style="font-size: 14px">{{ inv.Number || 'N/A' }}</span>
+                                                        <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
+                                                    </span>
+                                                    <span *ngIf="(i <= 10 || isShowAllNumber)" class="hover:underline decoration-primary-1 desktop:hidden block" (click)="onOpenDrawerBillDetail(inv)">
+                                                        <span class="text-primary-1 font-semibold cursor-pointer text-[14px]" style="font-size: 14px">{{ inv.Number || 'N/A' }}</span>
                                                         <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
                                                     </span>
                                                 </div>
@@ -103,14 +114,14 @@
                                   </div>
                                 </div>
 
-                                <div class="flex gap-x-2 items-center">
+                                <div class="flex desktop:gap-x-2 gap-x-1 items-center">
                                     <button *ngIf="item?.Order" (click)="openPopover(item.Id)" tds-button-flat tds-popover tds-tooltip="Danh sách đơn hàng"
                                         popoverTrigger="click" [popoverTitle]="titlePopover" [popoverVisible]="isVisible == item.Id"
                                         [popoverAutoClose]="true" [popoverContent]="contentLstOrder" [popoverBackdrop]="true"
-                                        popoverPlacement="right" color="custom" size="sm" class="bg-neutral-3-50 border-0 focus:ring-transparent">
+                                        popoverPlacement="right" color="custom" size="sm" class="bg-neutral-3-50 border-0 focus:ring-transparent !h-[26px] desktop:h-auto">
                                         <span class="flex gap-1 items-center">
-                                            <i class="tdsi-bag-fill text-[16px] text-primary-1"></i>
-                                            <span class="text-body-2 text-primary-1">({{ item?.Order?.Count }})</span>
+                                            <i class="tdsi-bag-fill desktop:text-[16px] text-[13px] text-primary-1"></i>
+                                            <span class="desktop:text-body-2 text-caption-1 text-primary-1">({{ item?.Order?.Count }})</span>
                                         </span>
                                     </button>
 
@@ -133,12 +144,13 @@
                                             </div>
                                         </div>
                                     </ng-template>
-                                    <span class="text-neutral-1-400 text-right text-caption-1">{{ item.CreatedTime | date:'dd/MM/yyyy HH:mm aa' }}</span>
+                                    <span class="text-neutral-1-400 text-right text-caption-1 desktop:block hidden">{{ item.CreatedTime | date:'dd/MM/yyyy HH:mm aa' }}</span>
+                                    <span class="text-neutral-1-400 text-right text-caption-2 desktop:hidden block">{{ item.CreatedTime | date:'dd/MM/yyyy HH:mm' }}</span>
                                 </div>
                           </div>
 
                           <!-- nội dung bình luận -->
-                          <div class="flex flex-row gap-x-3" style="white-space: pre-line; word-break: break-word;">
+                          <div class="flex flex-row gap-x-3 desktop:text-body-2 text-caption-1" style="white-space: pre-line; word-break: break-word;">
                               <div #contentMessage showMore [length]="100" [text]="(item.MessageFormatted || item.Message | formatIconLike | bbcodeConvert )"></div>
                           </div>
 
@@ -215,7 +227,7 @@
                                       </div>
                                   </div>
 
-                                  <div *ngIf="partnerDict[item.UserId].t" class="justify-end flex-col gap-2 tag-status flex-auto xl:hidden 2xl:flex">
+                                  <div *ngIf="partnerDict[item.UserId].t" class="justify-end flex-col gap-2 tag-status flex-auto hidden desktop:flex">
                                       <div class="flex gap-2">
                                           <div class="flex-auto flex flex-nowrap gap-1 justify-end items-center overflow-hidden" #currentWidthTag>
                                               <div class="flex gap-x-1">
@@ -264,7 +276,7 @@
                       </div>
 
                     <!-- Input trả lời bình luận -->
-                    <div class="bg-white rounded-2xl border-b-2 border-primary-1 p-4 mt-3 relative min-h-[118px]" *ngIf="item.Data?.is_reply">
+                    <div class="bg-white rounded-2xl border-b-2 border-primary-1 desktop:p-4 p-2 mt-3 relative min-h-[118px]" *ngIf="item.Data?.is_reply">
                         <div [ngClass]="isReplyingComment ? '!cursor-wait' : 'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100"></div>
                         <div class="flex justify-between gap-2 pb-2">
 

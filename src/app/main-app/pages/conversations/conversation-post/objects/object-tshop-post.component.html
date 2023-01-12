@@ -1,26 +1,26 @@
-<div *ngIf="item" (click)="selectPost(item)"  class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4
+<div *ngIf="item" (click)="selectPost(item)"  class="desktop:pl-2.5 desktop:pr-[14px] desktop:py-[14px] pl-1.5 py-2 pr-2 flex desktop:gap-x-4 gap-x-2
     {{ currentPost?.ObjectId == item.ObjectId ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}">
 
-    <div class="flex flex-col gap-y-3" *ngIf="(item.Data | tshopType)">
-        <div class="relative w-[120px] h-[88px]">
+    <div class="flex flex-col desktop:gap-y-3 gap-y-1.5" *ngIf="(item.Data | tshopType)">
+        <div class="relative desktop:w-[120px] desktop:h-[88px] w-[93px] h-[60px]">
             <!-- Hình ảnh -->
             <div class="post-picture" *ngIf="((item.Data | tshopType)?.MediaLive?.ThumbnailUrl || item?.Thumbnail?.Url) && !checkPostPictureError(item); else noPicture">
                 <div *ngIf="item.Thumbnail; else noPicture" class="rounded-lg">
                     <img  [src]="item.Thumbnail.Url || (item.Data | tshopType)?.MediaLive?.ThumbnailUrl"
                         [width]="120" [height]="88" (error)="errorPostPicture(item)"
-                        class="max-w-[120px] max-h-[88px] w-[120px] h-[88px] rounded-md  object-cover">
+                        class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md  object-cover">
                 </div>
             </div>
 
             <ng-template #noPicture>
                 <div *ngIf="!(item?.Thumbnail?.Url || (item.Data | tshopType)?.MediaLive?.ThumbnailUrl) && item.StatusLive != 1 && (item.Data | tshopType).KindValue != 1; else noPictureLive">
                     <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
-                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                        class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                 </div>
                 <ng-template #noPictureLive>
                     <div  *ngIf="checkPostPictureError(item)">
                         <img src="../../../assets/imagesv2/errorPic.svg" alt=""
-                            class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                            class="desktop:max-w-[120px] desktop:w-[120px] desktop:max-h-[88px] desktop:h-[88px] max-w-[93px] max-h-[60px] w-[93px] h-[60px] rounded-md p-4 {{currentPost?.ObjectId == item.ObjectId ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                     </div>
                 </ng-template>
             </ng-template>
@@ -41,33 +41,44 @@
                 <div class="tdsi-template-web-fill text-white leading-none"></div>
             </div>
         </div>
+
+        <div class="flex items-center w-full text-caption-1 desktop:text-body-2">
+            <div class="flex items-center gap-x-2 text-neutral-1-400">
+                <i class="tdsi-like-line"></i>
+                <div>{{item.CountReaction || 0}}</div>
+            </div>
+            <div class="ml-4 flex items-center gap-x-2 text-neutral-1-400">
+                <i class="tdsi-message-line"></i>
+                <div>{{item.CountComment || 0}}</div>
+            </div>
+        </div>
     </div>
-    <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
+    <div class="flex-auto flex flex-col overflow-hidden desktop:gap-y-2 gap-y-1.5 text-caption-2 desktop:text-body-2">
         <span *ngIf="item.StatusLive == 1" class="w-full font-semibold truncate text-base-red-600">Đang phát trực tiếp</span>
         <span *ngIf="item.StatusLive != 1 && (item.Data | tshopType).KindValue == 1" class="w-full font-semibold truncate">Đã phát trực tiếp</span>
         <span *ngIf="item.StatusLive != 1 && (item.Data | tshopType).KindValue != 1" class="w-full font-semibold truncate text-base-blue-600">Đã đăng một bài viết</span>
 
-        <span *ngIf="item.Description" class=" text-neutral-1-400 line-clamp">
+        <span *ngIf="item.Description" class=" text-neutral-1-400 line-clamp text-caption-1 desktop:text-body-2">
             <span>{{item.Description}}</span>
         </span>
 
         <div class="flex justify-between items-center">
             <span *ngIf="item.ChannelCreatedTime" class="text-neutral-1-400" >
-                {{item.ChannelCreatedTime | date:'dd/MM/yyyy'}}
+                {{item.ChannelCreatedTime | date:'dd/MM/yyyy HH:mm'}}
             </span>
 
             <span *ngIf="item.ChannelUpdatedTime" class="text-neutral-1-400 tdsi-time-line" tds-tooltip tooltipTitle="Cập nhật lần cuối lúc {{item.ChannelUpdatedTime | date:'dd/MM/yyyy HH:mm'}}">
             </span>
         </div>
 
-        <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
-            <div *ngIf="item.LiveCampaign" class="item-object-live">
-                <tds-tag size="sm" class="!bg-base-orange-50 !text-base-orange-500"
+        <div class="w-full flex justify-between items-center flex-wrap gap-y-2 overflow-hidden">
+            <div *ngIf="item.LiveCampaign" class="item-object-live flex overflow-hidden">
+                <tds-tag size="sm" class="!bg-base-orange-50 !text-base-orange-500 flex w-full overflow-hidden"
                     (click)="showModalLiveCampaign(item)">
-                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
+                    <span class="flex items-center py-0.5 cursor-pointer w-full overflow-hidden" tds-tooltip
                         [tooltipTitle]="item.LiveCampaign.Name">
-                        <span class="flex-auto truncate">{{item.LiveCampaign.Name}}</span>
-                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                        <span class="flex-auto overflow-hidden truncate">{{item.LiveCampaign.Name}}</span>
+                        <i class="tdsi-arrow-right-line desktop:text-lg text-sm leading-none ml-1"></i>
                     </span>
                 </tds-tag>
             </div>
@@ -81,7 +92,7 @@
                     class="{{ currentPost?.ObjectId == item.ObjectId ? '!bg-neutral-3-100 !text-neutral-1-600': '!bg-neutral-3-50 !text-neutral-1-600'}}">
                     <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
                         <span class="flex-auto truncate">Chọn chiến dịch</span>
-                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                        <i class="tdsi-arrow-right-line desktop:text-lg text-sm leading-none ml-1"></i>
                     </span>
                 </tds-tag>
             </div>
