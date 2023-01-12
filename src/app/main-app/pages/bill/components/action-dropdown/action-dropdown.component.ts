@@ -1,3 +1,4 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ModalManualUpdateDeliveryComponent } from './../modal-manual-update-delivery/modal-manual-update-delivery.component';
@@ -28,9 +29,10 @@ import { ModalBatchRefundComponent } from '../modal-batch-refund/modal-batch-ref
 @Component({
   selector: 'action-dropdown',
   templateUrl: './action-dropdown.component.html',
+  providers: [TDSDestroyService]
 })
 
-export class ActionDropdownComponent implements OnInit, OnDestroy {
+export class ActionDropdownComponent implements OnInit {
 
   @Input() filterObj: any;
   @Input() setOfCheckedId: any = [];
@@ -44,8 +46,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   params!: TDSSafeAny;
   modalReference: any;
 
-  private destroy$ = new Subject<void>();
-
   constructor(private router: Router,
     private modal: TDSModalService,
     private fastSaleOrderService: FastSaleOrderService,
@@ -54,36 +54,49 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private excelExportService: ExcelExportService,
     private printerService: PrinterService,
+    private destroy$: TDSDestroyService,
     private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.activatedRoute.queryParams.subscribe(res => {
-      this.params = res;
+    this.activatedRoute.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          this.params = res;
+      }
     })
   }
 
   exportExcel(type: string): any {
-    this.fastSaleOrderService.checkPrermissionBill().pipe(takeUntil(this.destroy$)).subscribe(
-      {
-        next: res => {
-          if (this.isProcessing) {
-            return
-          }
+    if (this.isProcessing) return;
+
+    this.fastSaleOrderService.checkPrermissionBill().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+          let ids: any[] = [...this.setOfCheckedId][0];
+          this.idsModel = [...ids];
 
           let dateStart = this.filterObj.dateRange.startDate;
           let dateEnd = this.filterObj.dateRange.endDate;
-
+          let liveCampaignId = this.filterObj.liveCampaignId;
           this.tagIds = this.filterObj.tags;
 
           let data = {
-            filter: {
+            Filter: {
+              logic: "and",
               filters: [
                 { field: "Type", operator: OperatorEnum.eq, value: "invoice" },
                 { field: "DateInvoice", operator: "gte", value: dateStart },
-                { field: "DateInvoice", operator: "lte", value: dateEnd }
+                { field: "DateInvoice", operator: "lte", value: dateEnd },
+                {
+                  logic:"or",
+                  filters:[
+                     {
+                        field: "LiveCampaignId",
+                        operator: "eq",
+                        value: liveCampaignId
+                     }
+                  ]
+               }
               ],
-              logic: "and",
             },
           };
 
@@ -91,47 +104,47 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
             case "excels":
               this.isProcessing = true;
               this.excelExportService.exportPost(`/fastsaleorder/ExportFile?TagIds=${this.tagIds}`,
-                { data: JSON.stringify(data), ids: this.idsModel }, `ban-hang`)
-                .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
-                .subscribe();
+                  { data: JSON.stringify(data), ids: this.idsModel }, 'ban-hang')
+                  .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+                  .subscribe();
               break;
 
             case "invoice":
-              if (this.checkValueEmpty() == 1) {
                 this.isProcessing = true;
-                this.excelExportService.exportPost(`/fastsaleorder/ExportFileDetail?TagIds=${this.tagIds}&type=${type}`,
-                  { data: JSON.stringify(data), ids: this.idsModel }, "ban-hang-chi-tiet")
-                  .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
-                  .subscribe();
-              }
+                this.excelExportService.exportPost(`/fastsaleorder/ExportFileDetail?TagIds=${this.tagIds}&type=invoice`,
+                    { data: JSON.stringify(data), ids: this.idsModel }, "ban-hang-chi-tiet")
+                    .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+                    .subscribe();
+              break;
+
+            case "lineproducts":
+                this.isProcessing = true;
+                this.excelExportService.exportPost(`/fastsaleorder/ExportDetailLineByLine?TagIds=${this.tagIds}&type=invoice`,
+                    { data: JSON.stringify(data), ids: this.idsModel }, "ban-hang-chi-tiet-tung-dong")
+                    .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+                    .subscribe();
               break;
 
             case "products":
-              if (this.checkValueEmpty() == 1) {
                 this.isProcessing = true;
                 this.excelExportService.exportPost(`/fastsaleorder/ExportFileOrderDetailByStatus?TagIds=${this.tagIds}`,
-                  { data: JSON.stringify(data), ids: this.idsModel }, "danh-sach-san-pham-don-hang")
-                  .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
-                  .subscribe();
-              }
+                    { data: JSON.stringify(data), ids: this.idsModel }, "danh-sach-san-pham-don-hang")
+                    .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+                    .subscribe();
               break;
 
             default:
               break;
           }
-        }, error: error => {
+      }, error: (error: any) => {
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
-        }
       }
-    )
-
+    })
   }
 
   print(type: string) {
     let that = this;
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if (this.checkValueEmpty() == 1) {
       let obs: TDSSafeAny;
@@ -146,10 +159,18 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
           obs = this.printerService.printUrl(`/fastsaleorder/PrintDelivery?ids=${this.idsModel}`);
           break;
       }
+
       if (TDSHelperObject.hasValue(obs)) {
         this.isProcessing = true;
-        obs.pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-          that.printerService.printHtml(res);
+        obs.pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+              that.printerService.printHtml(res);
+              this.isProcessing = false;
+          },
+          error: (error: any) => {
+              this.isProcessing = false;
+              this.message.error(error?.error?.message);
+          }
         })
       }
     }
@@ -291,9 +312,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
 
   cancelDelivery() {
     let that = this;
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if (this.checkValueEmpty() == 1) {
       that.isProcessing = true;
@@ -301,25 +320,27 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Hủy vận đơn',
         content: 'Bạn có muốn hủy vận đơn',
         onOk: () => {
-          that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-            that.message.success('Hủy vận đơn thành công!');
-            that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
-          }, error => {
-            that.message.error(`${error?.error?.message}`);
+          that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                this.isProcessing = false;
+                that.message.success('Hủy vận đơn thành công!');
+                that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+            },
+            error: (error: any) => {
+                this.isProcessing = false;
+                that.message.error(`${error?.error?.message}`);
+            }
           })
         },
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        // confirmViewType:"compact"
       });
     }
   }
 
   cancelInvoice() {
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if (this.checkValueEmpty() == 1) {
       let that = this;
@@ -327,25 +348,27 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Hủy hóa đơn',
         content: 'Bạn có muốn hủy hóa đơn',
         onOk: () => {
-          that.fastSaleOrderService.cancelInvoice({ ids: that.idsModel }).pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-            that.message.success('Hủy hóa đơn thành công!');
-            that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
-          }, error => {
-            that.message.error(`${error?.error?.message}`);
+          that.fastSaleOrderService.cancelInvoice({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                this.isProcessing = false;
+                that.message.success('Hủy hóa đơn thành công!');
+                that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+            },
+            error: (error: any) => {
+                this.isProcessing = false;
+                that.message.error(`${error?.error?.message}`);
+            }
           })
         },
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        // confirmViewType:"compact"
       });
     }
   }
 
   unLink() {
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if (this.checkValueEmpty() == 1) {
       let that = this;
@@ -354,11 +377,16 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Xóa hóa đơn',
         content: 'Bạn có muốn xóa hóa đơn',
         onOk: () => {
-          that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-            that.message.success('Xóa hóa đơn thành công!');
-            that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
-          }, error => {
-            that.message.error(`${error?.error?.message}`);
+          that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (res: any) => {
+                this.isProcessing = false;
+                that.message.success('Xóa hóa đơn thành công!');
+                that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
+            },
+            error: (error: any) => {
+                this.isProcessing = false;
+                that.message.error(`${error?.error?.message}`);
+            }
           })
         },
         onCancel: () => { that.isProcessing = false; },
@@ -366,13 +394,10 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         cancelText: "Đóng",
       });
     }
-
   }
 
   sendDelivery() {
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if (this.checkValueEmpty() == 1) {
       this.modal.create({
@@ -391,9 +416,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   }
 
   approveOrder() {
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if (this.checkValueEmpty() == 1) {
       let that = this;
@@ -405,22 +428,21 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onOk: () => {
           that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: TDSSafeAny) => {
-              if (res && TDSHelperString.hasValueString(res.Error) && res.Errors && !TDSHelperArray.hasListValue(res.Errors)) {
-                that.notification.error('Thông báo', res.Error);
-              } else {
-                // danh sách lỗi
-              }
+                that.isProcessing = false;
 
-              if (res.Success) {
-                that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
-              }
+                if (res && TDSHelperString.hasValueString(res.Error) && res.Errors && !TDSHelperArray.hasListValue(res.Errors)) {
+                  that.notification.error('Thông báo', res.Error);
+                }
 
-              that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
-              that.isProcessing = false;
+                if (res.Success) {
+                  that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
+                }
+
+                that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
             },
-            error: err => {
-              that.isProcessing = false;
-              that.message.error(`${err?.error?.message}` || 'Xác nhận bán hàng thất bại');
+            error: (err: any) => {
+                that.isProcessing = false;
+                that.message.error(`${err?.error?.message}` || 'Xác nhận bán hàng thất bại');
             }
           })
         },
@@ -432,62 +454,58 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   }
 
   registerPaymentMulti(): any {
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if (this.checkValueEmpty() == 1) {
-      this.fastSaleOrderService.getRegisterPaymentMulti({ ids: this.idsModel }).subscribe((res: any) => {
-        if (res && TDSHelperArray.isArray(res.value)) {
-          this.modal.create({
-            title: 'Xác nhận thanh toán',
-            content: PaymentMultipComponent,
-            size: 'lg',
-            viewContainerRef: this.viewContainerRef,
-            componentParams: {
-              lstCustomer: res.value
+      this.fastSaleOrderService.getRegisterPaymentMulti({ ids: this.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            if (res && TDSHelperArray.isArray(res.value)) {
+              this.modal.create({
+                title: 'Xác nhận thanh toán',
+                content: PaymentMultipComponent,
+                size: 'lg',
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                    lstCustomer: res.value
+                }
+              });
             }
-          });
+        },
+        error: (error: any) => {
+          this.message.error(`${error.error.message}`);
         }
-      }, error => {
-        this.message.error(`${error.error.message}`);
       })
     }
   }
 
   registerPayment(): any {
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if (this.checkValueEmpty() == 1) {
-      this.fastSaleOrderService.getRegisterPayment({ ids: this.idsModel }).pipe(takeUntil(this.destroy$)).subscribe(
-        (res) => {
-          delete res['@odata.context'];
-          const modal = this.modal.create({
-            title: 'Đăng ký thanh toán',
-            size: 'lg',
-            content: ModalPaymentComponent,
-            viewContainerRef: this.viewContainerRef,
-            componentParams: {
-              dataModel: res
-            }
-          });
+      this.fastSaleOrderService.getRegisterPayment({ ids: this.idsModel }).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            if(!res) return;
+            delete res['@odata.context'];
 
-          modal.afterClose.subscribe((result) => {
-
-          });
-        }, err => {
-          this.message.error(err?.error?.message || 'Không tải được dữ liệu');
+            this.modal.create({
+                title: 'Đăng ký thanh toán',
+                size: 'lg',
+                content: ModalPaymentComponent,
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                  dataModel: res
+                }
+            });
+        },
+        error: (error: any) => {
+          this.message.error(error?.error?.message);
         }
-      )
+      })
     }
   }
 
   actionBatchRefund(): any {
-    if (this.isProcessing) {
-      return
-    }
+    if (this.isProcessing) return;
 
     if (this.checkValueEmpty() == 1) {
       let idsSelect: any = [];
@@ -515,8 +533,4 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 }
