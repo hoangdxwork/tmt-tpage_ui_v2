@@ -8,7 +8,7 @@
                     <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)" (isRefresh)="onRefresh($event)" [isRefreshing]="isRefreshing"></tpage-team-dropdown>
                 </div>
 
-                <div class="flex gap-x-1">
+                <div class="flex desktop:gap-x-1">
                     <tds-form-field class="w-full">
                         <input tdsInput placeholder="Tìm kiếm theo họ tên, SĐT" autocomplete="off" #innerText />
                         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
@@ -139,12 +139,12 @@
     <!-- Thông tin bài viết -->
     <div *ngIf="currentObject && currentTeam && !isLoadingUpdate" class="w-[80%] h-full flex">
         <!--Chọn bài viết để hiển thị chi tiết-->
-        <div class="desktop:w-[57.5%] laptop:w-[55%] w-[48%] flex flex-col h-full overflow-hidden">
+        <div class="desktop:w-[57.5%] laptop:w-[52%] w-[52%] flex flex-col h-full overflow-hidden">
             <conversation-post-overview class="w-full h-full" [data]="currentObject" [team]="currentTeam" [widthConversation]="widthConversation"></conversation-post-overview>
         </div>
 
         <!-- Danh sách khách hàng, đơn hàng -->
-        <div class="desktop:w-[42.5%] laptop:w-[45%] w-[52%] h-full flex flex-col" >
+        <div class="desktop:w-[42.5%] laptop:w-[48%] w-[48%] h-full flex flex-col" >
             <tds-tabset class="w-full h-full flex" [clsTab]="'flex-1'" [(selectedIndex)]="selectedIndex" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
 
                 <!-- tab Danh sách -->
