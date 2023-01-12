@@ -104,6 +104,7 @@ import { SO_ComputeCaclHandler } from '@app/handler-v2/order-handler/compute-cac
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { TDSEmptyModule } from 'tds-ui/empty';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -222,7 +223,8 @@ const SERVICES = [
     UploadImageModule,
     TDSInputNumberModule,
     TDSTimelineModule,
-    DirectivesModule
+    DirectivesModule,
+    TDSEmptyModule,
   ],
   providers: [
    ...SERVICES,

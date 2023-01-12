@@ -538,5 +538,6 @@ export interface BillDetailDTO {
   OrderLines: OrderLine[];
   Ship_ServiceExtras: any[];
   Team: Team;
+  IRAttachmentUrl: any;
   IRAttachmentUrls: any[];
 }
