@@ -383,9 +383,9 @@
                                                         +{{invoiceDict[partnerDict[child.UserId].i].length - 1}}
                                                     </span>
             
-                                                    <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 0" class="text-primary-1 desktop:hidden flex items-center justify-center gap-x-1 text-caption-2 leading-none font-semibold cursor-pointer" (click)="onPopoverVisible(item.Id)">
+                                                    <span *ngIf="invoiceDict[partnerDict[child.UserId].i].length > 0" class="text-primary-1 desktop:hidden flex items-center justify-center gap-x-1 text-caption-2 leading-none font-semibold cursor-pointer" (click)="onPopoverVisible(child.Id)">
                                                         <i class="tdsi-order-fill text-body-2"></i> 
-                                                        <span class="pb-0.5">({{invoiceDict[partnerDict[item.UserId].i].length}})</span>
+                                                        <span class="pb-0.5">({{invoiceDict[partnerDict[child.UserId].i].length}})</span>
                                                     </span>
                                                 </div>
 
