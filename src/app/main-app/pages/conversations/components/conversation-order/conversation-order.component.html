@@ -726,7 +726,7 @@
           </div>
 
           <!-- Button Footer conversation post-->
-          <div class="flex gap-x-3 py-3 px-6 bg-white mt-1" *ngIf="type == 'post' ">
+          <div class="flex desktop:gap-x-3 laptop:gap-x-1.5 gap-x-1.5 desktop:py-3 laptop:py-1.5 py-1.5 desktop:px-6 laptop:px-3 px-3 bg-white desktop:mt-1 laptop:mt-0.5 mt-0.5" *ngIf="type == 'post' ">
             <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost()">Lưu</button>
 
             <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSavePost('SaveAndPrint', 'print', '_click_print')">
@@ -741,7 +741,7 @@
           </div>
 
           <!-- Khoản trắng ở cuối giao diện -->
-          <div class="flex-auto bg-white mt-1"></div>
+          <div class="flex-auto bg-white desktop:mt-1 laptop:mt-0.5 mt-0.5"></div>
         </div>
     </div>
 </tds-spin>
