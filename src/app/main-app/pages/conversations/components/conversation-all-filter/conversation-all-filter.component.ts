@@ -1,3 +1,4 @@
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { SessionParamsService } from './../../../../services/session-params.service';
 import { ApplicationUserDTO } from './../../../../dto/account/application-user.dto';
 import { TDSMessageService } from 'tds-ui/message';
@@ -37,6 +38,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   keyFilterTag: string = '';
   keyFilterUser: string = '';
   isFilter!: boolean;
+  reponsiveDesktop: boolean = true;
 
   dateRanges = {
     'Hôm nay': [new Date(), new Date()],
@@ -52,7 +54,8 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     private destroy$: TDSDestroyService,
     private i18n: TDSI18nService,
     private message: TDSMessageService,
-    private sessionParamsService: SessionParamsService) {
+    private sessionParamsService: SessionParamsService,
+    public breakpointObserver: BreakpointObserver) {
       this.i18n.setLocale(vi_VN);
   }
 
@@ -66,7 +69,17 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
           this.lstOfTag = this.lstOfTag.sort((a, b) => (a.Name?.length || 0) - (b.Name?.length || 0));
           this.lstOfTagSearch = this.lstOfTag;
       }
-    })
+    });
+
+    this.breakpointObserver
+      .observe(['(min-width: 1620px)'])
+      .subscribe((state: BreakpointState) => {
+        if (state.matches) {
+          this.reponsiveDesktop = true;
+        } else {
+          this.reponsiveDesktop = false;
+        }
+    });
   }
 
   loadUserActive() {

@@ -1,16 +1,16 @@
-<div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900 relative">
+<div class="w-full h-full flex items-stretch bg-neutral-3-200 desktop:text-body-2 laptop:text-caption-1 text-caption-1 text-neutral-1-900 relative">
     <!-- conversation list -->
     <div class="desktop:w-[20%] laptop:w-[22%] w-[25%] h-full">
         <div class="w-full flex flex-col gap-0.5 pl-1 h-full">
-            <div class="bg-white  flex flex-col desktop:gap-y-4 gap-y-2 desktop:p-2.5 p-1.5 z-10">
+            <div class="bg-white flex flex-col desktop:gap-y-4 gap-y-1.5 desktop:p-2.5 p-1.5 z-10">
                 <div class="block items-center">
                       <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)" (isRefresh)="onRefresh($event)" [isRefreshing]="isProcessing"></tpage-team-dropdown>
                 </div>
 
                 <div class="flex items-center gap-x-1">
                     <tds-form-field class="w-full mr-1 !bg-neutral-3-50">
-                        <input class="placeholder-neutral-1-400 desktop:!text-body-2 !text-caption-2 truncate" autocomplete="off" #conversationSearchInput placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput/>
-                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+                        <input class="placeholder-neutral-1-400 desktop:!text-body-2 !text-caption-2 truncate" [size]="reponsiveDesktop ? 'md' : 'sm'" autocomplete="off" #conversationSearchInput placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput/>
+                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill desktop:text-base laptop:text-sm text-sm"></i></span>
                     </tds-form-field>
 
                     <div class="flex gap-0.5">
@@ -18,16 +18,17 @@
                         </conversation-all-filter>
 
                         <button (click)="setSort()" tds-tooltip [tooltipTitle]="isSort ? 'Hội thoại cũ nhất' : 'Hội thoại mới nhất'"
-                            class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center"  [ngClass]="isSort ? 'bg-primary-3' : ''">
-                            <span>
-                                <i [ngClass]="isSort ? 'tdsi-sort-arrow-up-fill text-primary-1' : 'tdsi-sort-up-down-fill text-neutral-1-500'" class="text-xl leading-5"></i>
+                            class="desktop:w-[34px] laptop:w-[24px] w-[24px] desktop:h-[34px] laptop:h-[24px] h-[24px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center"  [ngClass]="isSort ? 'bg-primary-3' : ''">
+                            <span class="flex items-center">
+                                <i [ngClass]="isSort ? 'tdsi-sort-arrow-up-fill text-primary-1' : 'tdsi-sort-up-down-fill text-neutral-1-500'" 
+                                    class="desktop:text-xl laptop:text-lg text-lg desktop:leading-5 laptop:leading-none leading-none"></i>
                             </span>
                         </button>
 
-                        <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
+                        <button tds-tooltip="Check" class="desktop:w-[34px] laptop:w-[24px] w-[24px] desktop:h-[34px] laptop:h-[24px] h-[24px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
                             [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'">
                             <span class="flex items-center">
-                                <i class="tdsi-success-line text-xl leading-5"></i>
+                                <i class="tdsi-success-line desktop:text-xl laptop:text-lg text-lg desktop:leading-5 laptop:leading-none leading-none"></i>
                             </span>
                         </button>
                     </div>
@@ -36,46 +37,52 @@
 
             <!-- Xử lý click button checkbox -->
             <div [@openCollapse]="!isOpenCollapCheck" [ngClass]="isOpenCollapCheck?'border-y-2 border-neutral-3-200':''" class="w-ful flex bg-white">
-                <div class="w-full flex justify-between items-center py-2 desktop:px-3 px-1.5">
+                <div class="w-full flex justify-between items-center desktop:py-2 laptop:py-1.5 py-1.5 desktop:px-3 laptop:px-1.5 px-1.5">
 
-                    <div class="hidden desktop:flex justify-between items-center flex-auto gap-x-1">
-                        <button tds-button color="primary" (click)="showModalSendMessage()">
-                            <span class="flex items-center">
-                                <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
-                            </span>
-                        </button>
-
-                        <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-                            <button (click)="printData()" tds-button color="custom"
-                              class="text-white bg-secondary-1 border border-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:ring focus:ring-secondary-1/20">
-                              <span class="flex items-center">
-                                <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
-                              </span>
+                    <div class="desktop:flex laptop:flex hidden justify-between items-center flex-auto">
+                        <div class="flex flex-auto items-center desktop:gap-x-2 laptop:gap-x-1 gap-x-1">
+                            <button tds-button color="primary" [size]="reponsiveDesktop ? 'md' : 'sm'" (click)="showModalSendMessage()">
+                                <span class="flex items-center justify-center desktop:text-body-2 laptop:text-caption-1 text-caption-1">
+                                    <i class="tdsi-messenger-fill desktop:text-lg laptop:text-sm text-sm desktop:leading-3 laptop:leading-none leading-none mr-2"></i>Gửi tin nhắn
+                                </span>
                             </button>
-                        </tds-spin>
+    
+                            <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+                                <button (click)="printData()" tds-button color="custom" [size]="reponsiveDesktop ? 'md' : 'sm'"
+                                  class="text-white bg-secondary-1 border border-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:ring focus:ring-secondary-1/20">
+                                  <span class="flex items-center justify-center desktop:text-body-2 laptop:text-caption-1 text-caption-1">
+                                    <i class="tdsi-print-fill desktop:text-lg laptop:text-sm text-sm desktop:leading-3 laptop:leading-none leading-none mr-2"></i>In thông tin
+                                  </span>
+                                </button>
+                            </tds-spin>
+    
+                            <ng-template #indicatorTemplate>
+                                <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+                            </ng-template>
+                        </div>
 
-                        <ng-template #indicatorTemplate>
-                            <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-                        </ng-template>
+                        <tds-checkbox [size]="reponsiveDesktop ? 'md' : 'sm'" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
                     </div>
 
-                    <div class="flex desktop:hidden items-center gap-x-2">
-                      <button tds-button-icon color="primary" (click)="showModalSendMessage()" tds-tooltip="Gửi tin nhắn">
-                          <i class="tdsi-messenger-fill text-lg leading-none"></i>
-                      </button>
+                    <div class="flex desktop:hidden laptop:hidden items-center flex-auto">
+                        <div class="flex flex-auto items-center gap-x-1">
+                            <button tds-button-icon color="primary" size="sm" (click)="showModalSendMessage()" tds-tooltip="Gửi tin nhắn">
+                                <i class="tdsi-messenger-fill text-base leading-none mx-0.5"></i>
+                            </button>
+      
+                            <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+                                <button tds-button-icon color="info" size="sm" (click)="printData()" tds-tooltip="In thông tin">
+                                    <i class="tdsi-print-fill text-base leading-none mx-0.5"></i>
+                                </button>
+                            </tds-spin>
+      
+                            <ng-template #indicatorTemplate>
+                                <tds-spinner [color]="'primary'" class="w-2 h-2"></tds-spinner>
+                            </ng-template>
+                        </div>
 
-                      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-                          <button tds-button-icon color="info" (click)="printData()" tds-tooltip="In thông tin">
-                              <i class="tdsi-print-fill text-lg leading-none"></i>
-                          </button>
-                      </tds-spin>
-
-                      <ng-template #indicatorTemplate>
-                          <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-                      </ng-template>
+                        <tds-checkbox size="sm" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
                     </div>
-
-                    <tds-checkbox class="ml-1" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
                 </div>
             </div>
 
@@ -90,7 +97,7 @@
                   [scrollAnimationTime]="500"
                   [scrollThrottlingTime]="350">
 
-                  <div *ngIf="isLoadingNextdata" class="p-4 bg-white">
+                  <div *ngIf="isLoadingNextdata" class="desktop:p-4 laptop:p-2 p-2 bg-white">
                       <tds-skeleton [tdsActive]="true" [tdsAvatar]="true" [tdsParagraph]="{ rows: 1 }"></tds-skeleton>
                   </div>
 
