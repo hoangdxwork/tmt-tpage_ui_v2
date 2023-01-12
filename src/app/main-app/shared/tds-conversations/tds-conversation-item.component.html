@@ -175,7 +175,7 @@
               <!-- Gửi lại tin nhắn lỗi -->
               <a class="flex items-center cursor-pointer" *ngIf="checkErrorMessage(dataItem.Error? dataItem.Error.Message: '')" tds-tooltip
                 tooltipContentCss="rounded-md p-2 bg-warning-300 text-neutral-1-900  bg-opacity-90" tooltipArrowCss="border-4 border-warning-300"
-                tooltipTitle="Cảnh báo: Nguy cơ bị facebook đánh giá spam tài khoản nếu sử dụng chức năng này nhiều lần" (click)="retryMessage()">
+                tooltipTitle="Cảnh báo: Nguy cơ bị facebook đánh spam tài khoản nếu sử dụng chức năng này nhiều lần" (click)="retryMessage()">
                   <span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
               </a>
 
