@@ -83,6 +83,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   @Input() conversationInfo!: ChatomniConversationInfoDto | null;
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
+  @Input() reponsiveDesktop: boolean = true;
 
   isLoading: boolean = false;
   isEditPartner: boolean = false;

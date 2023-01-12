@@ -30,7 +30,7 @@
     </div>
 
     <div class="w-full max-h-[500px] h-[500px] border border-neutral-1-50 rounded-md mt-4" *ngIf="lstData" formArrayName="datas">
-        <div class="text-title-1 font-semibold px-4 py-2.5">Danh sách đơn hàng</div>
+        <div class="text-title-1 font-semibold px-4 py-2.5">Danh sách sản phẩm</div>
         <tds-table #rowSelectionTable class="w-full h-full" [scroll]="{ y:'auto', x: 'auto' }" [listData]="lstData" [frontPagination]="false" [showPagination]="false">
             <thead>
                 <tr class="bg-neutral-3-50">
