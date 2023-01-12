@@ -115,9 +115,8 @@ export class ConfigPromotionsComponent implements OnInit {
   }
 
   refreshCheckedStatus(): void {
-      const listOfEnabledData = this.listOfCurrentPageData.filter(({ disabled }) => !disabled);
-      this.checked = listOfEnabledData.every(({ id }) => this.setOfCheckedId.has(id));
-      this.indeterminate = listOfEnabledData.some(({ id }) => this.setOfCheckedId.has(id)) && !this.checked;
+      this.checked = this.lstData.every(item => this.setOfCheckedId.has(item.Id));
+      this.indeterminate = this.lstData.some(item => this.setOfCheckedId.has(item.Id)) && !this.checked;
   }
 
   onItemChecked(id: number, checked: boolean): void {
@@ -126,9 +125,7 @@ export class ConfigPromotionsComponent implements OnInit {
   }
 
   onAllChecked(checked: boolean): void {
-      this.listOfCurrentPageData
-          .filter(({ disabled }) => !disabled)
-          .forEach(({ id }) => this.updateCheckedSet(id, checked));
+      this.lstData.forEach(item => this.updateCheckedSet(item.Id, checked));
       this.refreshCheckedStatus();
   }
 
