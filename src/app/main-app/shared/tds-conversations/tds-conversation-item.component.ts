@@ -72,6 +72,9 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
   imageClick!: number;
   postPictureError: any[] = [];
 
+  isLoadingRetryMessage: boolean = false;
+  retryMessageTimer: TDSSafeAny;
+
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
   @ViewChildren('contentMessageChild') contentMessageChild: any;
@@ -290,10 +293,14 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
 
   //TODO: load lại tin nhắn lỗi
   retryMessage() {
+    if(this.isLoadingRetryMessage) return;
+    this.destroyTimer();
+
     let model = {
       MessageType: EnumSendMessageType._RETRY,
       RecipientId: this.dataItem.Id
     }
+    this.isLoadingRetryMessage = true;
 
       this.chatomniSendMessageService.sendMessage(this.team.Id, this.dataItem.UserId, model)
       .pipe(takeUntil(this.destroy$)).subscribe(
@@ -303,14 +310,21 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
               res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
                   x["Status"] = ChatomniStatus.Pending;
                   let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-                  this.dataItem  = {...data}
+                  this.dataItem  = {...data};
               });
             }
+            this.retryMessageTimer = setTimeout(() => {
+                this.isLoadingRetryMessage = false;
+                this.cdRef.detectChanges;
+            }, 10 * 1000);
 
             this.cdRef.detectChanges();
           },
           error: error => {
+            this.isLoadingRetryMessage = false;
             this.tdsMessage.error(`${error?.message}` || 'Không thành công');
+
+            this.cdRef.detectChanges();
         }
       }
     )
@@ -727,4 +741,13 @@ export class TDSConversationItemComponent implements OnInit, OnChanges  {
     return this.postPictureError.find(f => f == item?.image_url);
   }
 
+  destroyTimer() {
+    if (this.retryMessageTimer) {
+      clearTimeout(this.retryMessageTimer);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyTimer();
+  }
 }
