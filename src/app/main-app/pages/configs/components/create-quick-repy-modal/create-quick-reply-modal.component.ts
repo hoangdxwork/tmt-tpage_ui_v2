@@ -218,6 +218,7 @@ export class CreateQuickReplyModalComponent implements OnInit {
     this.formQuickReply.controls.subjectHtml.setValue(getNormalisedString(data.SubjectHtml) || data.Subject);
     this.formQuickReply.controls.bodyHtml.setValue(getNormalisedString(data.BodyHtml) || data.BodyPlain);
     this.formQuickReply.controls.active.setValue(data.Active);
+    this.formQuickReply.controls.command.setValue(data.Command);
 
     try {
         let templateAd = JSON.parse(data.AdvancedTemplate);
