@@ -20,14 +20,14 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
 
   public filterObj: FilterObjSOOrderModel = {
     Tags: [],
-    Status: [],
+    StatusTexts: [],
     SearchText: '',
     DateRange: {
       StartDate: addDays(new Date(), -30),
       EndDate: new Date(),
     },
     LiveCampaignId: null,
-    Telephone: null,
+    HasTelephone: null,
     PriorityStatus: null
   }
 

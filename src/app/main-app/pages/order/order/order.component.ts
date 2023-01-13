@@ -74,7 +74,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   public filterObj: FilterObjSOOrderModel = {
     Tags: [],
-    Status: [],
+    StatusTexts: [],
     SearchText: '',
     DateRange: {
       StartDate: addDays(new Date(), -30),
@@ -82,7 +82,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     },
     TeamId: '',
     LiveCampaignId: '',
-    Telephone: null,
+    HasTelephone: null,
     PriorityStatus: null
   }
 
@@ -289,10 +289,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
       SearchText: this.filterObj?.SearchText,
       TagIds: tagIds,
       LiveCampaignId: this.filterObj?.LiveCampaignId,
-      HasTelephone: this.filterObj?.Telephone,
+      HasTelephone: this.filterObj?.HasTelephone,
       PriorityStatus: this.filterObj?.PriorityStatus,
       TeamId: this.filterObj?.TeamId,
-      State: this.filterObj?.Status?.join(",")
+      StatusTexts: this.filterObj?.StatusTexts
     }
 
     this.isTabNavs = true;
@@ -466,7 +466,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
                 pageIndex: this.pageIndex, 
                 pageSize: this.pageSize 
               };
-              
+
               this.cacheApi.setItem(key, model);
 
               this.router.navigateByUrl(`bill/create?isorder=true`);
@@ -487,13 +487,13 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   onSelectChange(index: TDSSafeAny) {
-    this.filterObj.Status = [];
+    this.filterObj.StatusTexts = [];
     let item = this.tabNavs.filter(f => f.Index == index)[0];
 
     if (item?.Name == 'Tất cả') {
-      this.filterObj.Status = [];
+      this.filterObj.StatusTexts = [];
     } else {
-      this.filterObj.Status.push(item.Name);
+      this.filterObj.StatusTexts.push(item.Name);
     }
 
     this.pageIndex = 1;
@@ -596,14 +596,14 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
     this.filterObj = {
       Tags: [],
-      Status: [],
+      StatusTexts: [],
       SearchText: '',
       DateRange: {
         StartDate: addDays(new Date(), -30),
         EndDate: new Date(),
       },
       LiveCampaignId: null,
-      Telephone: null,
+      HasTelephone: null,
       PriorityStatus: null
     }
 
@@ -628,7 +628,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
     this.filterObj = {
       Tags: [...(event?.Tags || [])],
-      Status: [...(event?.Status || [])],
+      StatusTexts: [...(event?.StatusTexts || [])],
       SearchText: event?.SearchText,
       DateRange: {
         StartDate: event?.DateRange?.StartDate || null,
@@ -636,12 +636,12 @@ export class OrderComponent implements OnInit, AfterViewInit {
       },
       TeamId: event?.TeamId || null,
       LiveCampaignId: event?.LiveCampaignId || null,
-      Telephone: event?.Telephone || null,
+      HasTelephone: event?.HasTelephone || null,
       PriorityStatus: event?.PriorityStatus || null
     }
 
-    if (TDSHelperArray.hasListValue(event?.Status)) {
-      this.tabNavs = this.lstOftabNavs.filter(f => event.Status.includes(f.Name));
+    if (TDSHelperArray.hasListValue(event?.StatusTexts)) {
+      this.tabNavs = this.lstOftabNavs.filter(f => event.StatusTexts.includes(f.Name));
     } else {
       this.tabNavs = this.lstOftabNavs;
     }

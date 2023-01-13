@@ -78,7 +78,7 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
         Name: f.Name,
         Index: f.Index,
         Total: f.Total,
-        IsSelected: this.filterObj ? (this.filterObj.Status?.includes(f.Name) ? true: false ) : false
+        IsSelected: this.filterObj ? (this.filterObj.StatusTexts?.includes(f.Name) ? true: false ) : false
       }
     });
 
@@ -144,25 +144,25 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
   }
 
   selectState(event: any): void {
-    if(this.filterObj && this.filterObj?.Status && this.filterObj?.Status.includes(event.Name)) {
-        this.filterObj!.Status = this.filterObj?.Status.filter((x: any) => !(x == event.Name));
+    if(this.filterObj && this.filterObj?.StatusTexts && this.filterObj?.StatusTexts.includes(event.Name)) {
+        this.filterObj!.StatusTexts = this.filterObj?.StatusTexts.filter((x: any) => !(x == event.Name));
     } else {
-        this.filterObj!.Status = [...(this.filterObj?.Status || []), ...[event.Name]];
+        this.filterObj!.StatusTexts = [...(this.filterObj?.StatusTexts || []), ...[event.Name]];
     }
     this.checkActiveStatus();
   }
 
   checkActiveStatus(){
     this.listStatus.map(x => {
-      x.IsSelected = this.filterObj?.Status?.some(f => f == x.Name);
+      x.IsSelected = this.filterObj?.StatusTexts?.some(f => f == x.Name);
     })
   }
 
   selectTelephone(checked: boolean, status: boolean) {
     if(checked) {
-      this.filterObj.Telephone = status;
+      this.filterObj.HasTelephone = status;
     } else {
-      this.filterObj.Telephone = null;
+      this.filterObj.HasTelephone = null;
     }
   }
 
@@ -180,7 +180,7 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
   }
 
   checkActive(): boolean {
-    let exist = TDSHelperArray.hasListValue(this.filterObj?.Tags) || TDSHelperArray.hasListValue(this.filterObj?.Status);
+    let exist = TDSHelperArray.hasListValue(this.filterObj?.Tags) || TDSHelperArray.hasListValue(this.filterObj?.StatusTexts);
     if(exist) {
       return true;
     } else {
@@ -197,14 +197,14 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
 
     this.filterObj = {
       Tags: [],
-      Status: [],
+      StatusTexts: [],
       SearchText: '',
       DateRange:  {
         StartDate: addDays(new Date(), -30),
         EndDate: new Date(),
       },
       LiveCampaignId: null,
-      Telephone: null,
+      HasTelephone: null,
       PriorityStatus: null
     };
 
