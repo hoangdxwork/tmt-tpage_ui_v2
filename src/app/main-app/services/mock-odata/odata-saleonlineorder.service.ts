@@ -50,7 +50,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
   getView(params: string, filterObj: FilterObjSOOrderModel): Observable<ODataSaleOnline_OrderDTOV2> {
 
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.Tags}&${params}&$count=true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.Tags || ''}&${params}&$count=true`,
       method: CoreApiMethodType.get,
     }
 
@@ -59,7 +59,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
 
   getViewByPost(postId: string, params: string, filterObj: FilterObjSOOrderModel): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPostId?PostId=${postId}&TagIds=${filterObj.Tags}&${params}&$count=true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPostId?PostId=${postId}&TagIds=${filterObj.Tags || ''}&${params}&$count=true`,
       method: CoreApiMethodType.get,
     }
 
@@ -68,7 +68,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
 
   getOrdersChannelByPostId(teamId: number, postId: string, params: string, filterObj: FilterObjSOOrderModel): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersChannelByPostId?PostId=${postId}&CRMTeamId=${teamId}&TagIds=${filterObj.Tags}&${params}&$count=true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersChannelByPostId?PostId=${postId}&CRMTeamId=${teamId}&TagIds=${filterObj.Tags ||''}&${params}&$count=true`,
       method: CoreApiMethodType.get,
     }
 
