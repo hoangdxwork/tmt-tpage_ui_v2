@@ -708,3 +708,16 @@ export interface UpdateDepositDTO {
   AmountDeposit: number;
   IsConfirmed: boolean;
 }
+
+export interface FastSaleOrderSummaryStatusModelDTO {
+  DateStart?: Date,
+  DateEnd?: Date,
+  TrackingRef: string,
+  TagIds: string,
+  DeliveryType: string,
+  SearchText: string,
+  States: string[],
+  ShipPaymentStatus: string,
+  LiveCampaignId: any,
+  CarrierId?: number,
+}

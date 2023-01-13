@@ -257,7 +257,7 @@
                             </div>
                         </div>
 
-                        <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
+                        <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId && item.Type != 0">
                             <div class="w-full relative">
                                 <div class="date-v3">
                                     <span class="text-neutral-1-400 desktop:text-caption-1 text-[11px]"
