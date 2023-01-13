@@ -10,15 +10,15 @@ import { ODataSaleOnline_OrderDTOV2 } from '../../dto/saleonlineorder/odata-sale
 import { Guid } from 'guid-typescript';
 
 export interface FilterObjSOOrderModel {
-  tags: string[],
-  status: string[],
-  searchText: string,
-  dateRange: {
-    startDate: Date,
-    endDate: Date
-  } | any,
-  liveCampaignId: string | any,
-  teamId?: string | any,
+  Tags: string[],
+  Status: string[],
+  SearchText: string,
+  DateRange: {
+    StartDate: Date,
+    EndDate: Date
+  },
+  LiveCampaignId: string | any,
+  TeamId?: string | any,
   Telephone: boolean | any,
   PriorityStatus: string | any
 }
@@ -50,7 +50,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
   getView(params: string, filterObj: FilterObjSOOrderModel): Observable<ODataSaleOnline_OrderDTOV2> {
 
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&${params}&$count=true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.Tags}&${params}&$count=true`,
       method: CoreApiMethodType.get,
     }
 
@@ -59,7 +59,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
 
   getViewByPost(postId: string, params: string, filterObj: FilterObjSOOrderModel): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPostId?PostId=${postId}&TagIds=${filterObj.tags}&${params}&$count=true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPostId?PostId=${postId}&TagIds=${filterObj.Tags}&${params}&$count=true`,
       method: CoreApiMethodType.get,
     }
 
@@ -68,7 +68,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
 
   getOrdersChannelByPostId(teamId: number, postId: string, params: string, filterObj: FilterObjSOOrderModel): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersChannelByPostId?PostId=${postId}&CRMTeamId=${teamId}&TagIds=${filterObj.tags}&${params}&$count=true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersChannelByPostId?PostId=${postId}&CRMTeamId=${teamId}&TagIds=${filterObj.Tags}&${params}&$count=true`,
       method: CoreApiMethodType.get,
     }
 
@@ -91,15 +91,15 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       filters: [],
     }
 
-    if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
+    if (filterObj?.DateRange && filterObj?.DateRange?.StartDate && filterObj?.DateRange?.EndDate) {
 
-      let startDate = new Date(filterObj?.dateRange.startDate.setHours(0, 0, 0, 0)).toISOString();
-      let endDate = new Date(filterObj?.dateRange.endDate).toISOString();
+      let startDate = new Date(filterObj?.DateRange?.StartDate.setHours(0, 0, 0, 0)).toISOString();
+      let endDate = new Date(filterObj?.DateRange?.EndDate).toISOString();
 
       let date1 = formatDate(new Date(), 'dd-MM-yyyy', 'en-US');
-      let date2 = formatDate(filterObj?.dateRange.endDate, 'dd-MM-yyyy', 'en-US');
+      let date2 = formatDate(filterObj?.DateRange?.EndDate, 'dd-MM-yyyy', 'en-US');
       if (date1 != date2) {
-        endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 0)).toISOString();
+        endDate = new Date(filterObj?.DateRange?.EndDate.setHours(23, 59, 59, 0)).toISOString();
       }
 
       dataFilter.filters.push({
@@ -120,19 +120,19 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       })
     }
 
-    if (filterObj && Number(filterObj?.teamId)) {
+    if (filterObj && Number(filterObj?.TeamId)) {
       dataFilter.filters.push({
           filters: [
-            { field: "CRMTeamId", operator: OperatorEnum.eq, value: filterObj?.teamId },
+            { field: "CRMTeamId", operator: OperatorEnum.eq, value: filterObj?.TeamId },
           ],
           logic: 'and'
       })
     }
 
-    if (filterObj && filterObj?.liveCampaignId) {
+    if (filterObj && filterObj?.LiveCampaignId) {
       dataFilter.filters.push({
           filters: [
-            { field: "LiveCampaignId", operator: OperatorEnum.eq, value: Guid.parse(filterObj.liveCampaignId) },
+            { field: "LiveCampaignId", operator: OperatorEnum.eq, value: Guid.parse(filterObj?.LiveCampaignId) },
           ],
           logic: 'and'
       })
@@ -148,8 +148,8 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     }
 
 
-    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
-      let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
+    if (TDSHelperString.hasValueString(filterObj?.SearchText)) {
+      let value = TDSHelperString.stripSpecialChars(filterObj.SearchText.toLowerCase().trim())
       dataFilter.filters.push({
         filters: [
           { field: "Code", operator: OperatorEnum.contains, value: value },
@@ -165,9 +165,9 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       })
     }
 
-    if (TDSHelperArray.hasListValue(filterObj.status)) {
+    if (TDSHelperArray.hasListValue(filterObj.Status)) {
       dataFilter.filters.push({
-        filters: filterObj.status?.map((x) => ({
+        filters: filterObj.Status?.map((x) => ({
           field: "StatusText",
           operator: "eq",
           value: x,
@@ -196,14 +196,14 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       })
     }
 
-    if (filterObj.dateRange && filterObj.dateRange.startDate && filterObj.dateRange.endDate) {
-      let startDate = new Date(filterObj?.dateRange.startDate.setHours(0, 0, 0, 0)).toISOString();
-      let endDate = new Date(filterObj?.dateRange.endDate).toISOString();
+    if (filterObj?.DateRange && filterObj.DateRange.StartDate && filterObj.DateRange.EndDate) {
+      let startDate = new Date(filterObj?.DateRange.StartDate.setHours(0, 0, 0, 0)).toISOString();
+      let endDate = new Date(filterObj?.DateRange.EndDate).toISOString();
 
       let date1 = formatDate(new Date(), 'dd-MM-yyyy', 'en-US');
-      let date2 = formatDate(filterObj?.dateRange.endDate, 'dd-MM-yyyy', 'en-US');
+      let date2 = formatDate(filterObj?.DateRange.EndDate, 'dd-MM-yyyy', 'en-US');
       if (date1 != date2) {
-        endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 0)).toISOString();
+        endDate = new Date(filterObj?.DateRange.EndDate.setHours(23, 59, 59, 0)).toISOString();
       }
 
       dataFilter.filters.push({
@@ -215,25 +215,25 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       })
     }
 
-    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.SearchText)) {
       dataFilter.filters.push({
         filters: [
-          { field: "Code", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "Address", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "StatusText", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "CRMTeamName", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "UserName", operator: OperatorEnum.contains, value: filterObj.searchText }
+          { field: "Code", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "Name", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "Address", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "StatusText", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "CRMTeamName", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "UserName", operator: OperatorEnum.contains, value: filterObj.SearchText }
         ],
         logic: 'or'
       })
     }
 
-    if (TDSHelperString.hasValueString(filterObj.status)) {
-      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.status })
+    if (TDSHelperString.hasValueString(filterObj?.Status)) {
+      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.Status })
       dataFilter.logic = "and";
     }
 
@@ -247,36 +247,36 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       filters: [],
     }
 
-    if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
+    if (filterObj?.DateRange && filterObj.DateRange?.StartDate && filterObj.DateRange?.EndDate) {
       dataFilter.filters.push({
         filters: [
-          { field: "DateCreated", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
-          { field: "DateCreated", operator: OperatorEnum.lte, value: new Date(filterObj.dateRange.endDate) }
+          { field: "DateCreated", operator: OperatorEnum.gte, value: new Date(filterObj.DateRange.StartDate) },
+          { field: "DateCreated", operator: OperatorEnum.lte, value: new Date(filterObj.DateRange.EndDate) }
         ],
         logic: 'and'
       })
     }
 
-    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.SearchText)) {
       dataFilter.filters.push({
         filters: [
-          { field: "Code", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "Address", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.searchText },
-          { field: "StatusText", operator: OperatorEnum.contains, value: filterObj.searchText },
+          { field: "Code", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "Name", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "Address", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.SearchText },
+          { field: "StatusText", operator: OperatorEnum.contains, value: filterObj.SearchText },
           // Tạm comment chờ backend update api
           // { field: "CRMTeamName", operator: OperatorEnum.contains, value: filterObj.searchText},
-          { field: "UserName", operator: OperatorEnum.contains, value: filterObj.searchText }
+          { field: "UserName", operator: OperatorEnum.contains, value: filterObj.SearchText }
         ],
         logic: 'or'
       })
     }
 
-    if (TDSHelperString.hasValueString(filterObj.status)) {
-      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.status })
+    if (TDSHelperString.hasValueString(filterObj?.Status)) {
+      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.Status })
       dataFilter.logic = "and";
     }
 

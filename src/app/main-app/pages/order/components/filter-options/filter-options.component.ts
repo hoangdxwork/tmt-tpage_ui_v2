@@ -57,7 +57,10 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if(changes["filterObj"] && !changes["filterObj"].firstChange) {
       this.filterObj = {...changes["filterObj"].currentValue};
-      this.cdr.detectChanges();
+      this.selectTags = this.filterObj?.Tags || [];
+      this.selectTeams = this.filterObj?.TeamId;
+      this.selectPriorityStatus = this.filterObj?.PriorityStatus;
+      this.selectCampaign = this.filterObj?.LiveCampaignId;
     }
   }
 
@@ -75,7 +78,7 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
         Name: f.Name,
         Index: f.Index,
         Total: f.Total,
-        IsSelected: this.filterObj ? (this.filterObj.status?.includes(f.Name) ? true: false ) : false
+        IsSelected: this.filterObj ? (this.filterObj.Status?.includes(f.Name) ? true: false ) : false
       }
     });
 
@@ -105,11 +108,11 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
   }
 
   onChangeTeams(event: any) {
-    this.filterObj.teamId = event;
+    this.filterObj!.TeamId = event;
   }
 
   onChangeCampaign(event: any) {
-    this.filterObj.liveCampaignId = event;
+    this.filterObj!.LiveCampaignId = event;
   }
 
   onSearchLiveCampaign(event: any) {
@@ -137,21 +140,21 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
           this.selectTags.push(x);
       })
     }
-    this.filterObj.tags = this.selectTags;
+    this.filterObj!.Tags = this.selectTags;
   }
 
   selectState(event: any): void {
-    if(this.filterObj && this.filterObj.status && this.filterObj.status.includes(event.Name)) {
-        this.filterObj.status = this.filterObj.status.filter((x: any) => !(x == event.Name));
+    if(this.filterObj && this.filterObj?.Status && this.filterObj?.Status.includes(event.Name)) {
+        this.filterObj!.Status = this.filterObj?.Status.filter((x: any) => !(x == event.Name));
     } else {
-        this.filterObj.status = [...(this.filterObj.status || []), ...[event.Name]];
+        this.filterObj!.Status = [...(this.filterObj?.Status || []), ...[event.Name]];
     }
     this.checkActiveStatus();
   }
 
   checkActiveStatus(){
-    this.listStatus.map(stt=>{
-      stt.IsSelected = this.filterObj.status?.some(f=>f == stt.Name);
+    this.listStatus.map(x => {
+      x.IsSelected = this.filterObj?.Status?.some(f => f == x.Name);
     })
   }
 
@@ -165,9 +168,9 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
 
   onApply() {
     if(this.datePicker){
-      this.filterObj.dateRange = {
-        startDate: this.datePicker[0],
-        endDate: this.datePicker[1]
+      this.filterObj!.DateRange = {
+        StartDate: this.datePicker[0],
+        EndDate: this.datePicker[1]
       }
     }
 
@@ -177,7 +180,7 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
   }
 
   checkActive(): boolean {
-    let exist = TDSHelperArray.hasListValue(this.filterObj.tags) || TDSHelperArray.hasListValue(this.filterObj.status);
+    let exist = TDSHelperArray.hasListValue(this.filterObj?.Tags) || TDSHelperArray.hasListValue(this.filterObj?.Status);
     if(exist) {
       return true;
     } else {
@@ -193,14 +196,14 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
     this.selectPriorityStatus = null;
 
     this.filterObj = {
-      tags: [],
-      status: [],
-      searchText: '',
-      dateRange:  {
-        startDate: addDays(new Date(), -30),
-        endDate: new Date(),
+      Tags: [],
+      Status: [],
+      SearchText: '',
+      DateRange:  {
+        StartDate: addDays(new Date(), -30),
+        EndDate: new Date(),
       },
-      liveCampaignId: null,
+      LiveCampaignId: null,
       Telephone: null,
       PriorityStatus: null
     };

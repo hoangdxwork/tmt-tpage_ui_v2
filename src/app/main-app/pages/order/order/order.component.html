@@ -78,7 +78,7 @@
         <div class="flex items-center gap-x-2 pr-4">
           <tds-form-field class="w-full">
               <input tdsInput placeholder="Mã, Tên khách hàng, SĐT" autocomplete="off"
-                [(ngModel)]="filterObj.searchText"
+                [(ngModel)]="filterObj!.SearchText"
                 [tdsInputDebounce]="750"
                 (inputKeyup)="onSearch($event)"/>
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>

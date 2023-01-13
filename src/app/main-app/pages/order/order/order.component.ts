@@ -73,15 +73,15 @@ export class OrderComponent implements OnInit, AfterViewInit {
   orderMessage: TDSSafeAny;
 
   public filterObj: FilterObjSOOrderModel = {
-    tags: [],
-    status: [],
-    searchText: '',
-    dateRange: {
-      startDate: addDays(new Date(), -30),
-      endDate: new Date()
+    Tags: [],
+    Status: [],
+    SearchText: '',
+    DateRange: {
+      StartDate: addDays(new Date(), -30),
+      EndDate: new Date()
     },
-    teamId: '',
-    liveCampaignId: '',
+    TeamId: '',
+    LiveCampaignId: '',
     Telephone: null,
     PriorityStatus: null
   }
@@ -188,7 +188,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.indClickTag = "";
-    this.filterObj.searchText = data.value;
+    this.filterObj.SearchText = data.value;
 
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
@@ -268,31 +268,31 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   loadSummaryStatus() {
-    let startDate = this.filterObj?.dateRange.startDate as any;
+    let startDate = this.filterObj?.DateRange?.StartDate as any;
     if(startDate) {
         startDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-ddT00:00:00+00:00');
     }
 
-    let endDate = this.filterObj?.dateRange.endDate as any;
+    let endDate = this.filterObj?.DateRange?.EndDate as any;
     if(endDate) {
         endDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-ddTHH:mm:ss+00:00');
     }
 
     let tagIds;
-    if(this.filterObj?.tags && this.filterObj?.tags?.length > 0) {
-      tagIds = this.filterObj.tags.map((x: TDSSafeAny) => x).join(",") as any;
+    if(this.filterObj?.Tags && this.filterObj?.Tags?.length > 0) {
+      tagIds = this.filterObj.Tags.map((x: TDSSafeAny) => x).join(",") as any;
     }
 
     let model: SaleOnlineStatusModelDto = {
       DateStart: startDate,
       DateEnd: endDate,
-      SearchText: this.filterObj?.searchText,
+      SearchText: this.filterObj?.SearchText,
       TagIds: tagIds,
-      LiveCampaignId: this.filterObj?.liveCampaignId,
+      LiveCampaignId: this.filterObj?.LiveCampaignId,
       HasTelephone: this.filterObj?.Telephone,
       PriorityStatus: this.filterObj?.PriorityStatus,
-      TeamId: this.filterObj?.teamId,
-      State: this.filterObj?.status?.join(",")
+      TeamId: this.filterObj?.TeamId,
+      State: this.filterObj?.Status?.join(",")
     }
 
     this.isTabNavs = true;
@@ -461,7 +461,13 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
               // TODO: lưu filter cache trước khi load trang add bill
               const key =  this.saleOnline_OrderService._keyCacheFilter;
-              this.cacheApi.setItem(key,{ filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
+              let model = { 
+                filterObj: this.filterObj, 
+                pageIndex: this.pageIndex, 
+                pageSize: this.pageSize 
+              };
+              
+              this.cacheApi.setItem(key, model);
 
               this.router.navigateByUrl(`bill/create?isorder=true`);
               this.isProcessing = false
@@ -481,18 +487,18 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   onSelectChange(index: TDSSafeAny) {
-    this.filterObj.status = [];
+    this.filterObj.Status = [];
     let item = this.tabNavs.filter(f => f.Index == index)[0];
 
     if (item?.Name == 'Tất cả') {
-      this.filterObj.status = [];
+      this.filterObj.Status = [];
     } else {
-      this.filterObj.status.push(item.Name);
+      this.filterObj.Status.push(item.Name);
     }
 
     this.pageIndex = 1;
     this.indClickTag = "";
-    this.filterObj.tags = [];
+    this.filterObj.Tags = [];
 
     this.indeterminate = false;
     this.loadData(this.pageSize, this.pageIndex);
@@ -566,8 +572,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
             let dataObj = JSON.parse(res.value)?.value;
             if(dataObj){
                 this.filterObj = dataObj.filterObj;
-                this.filterObj.dateRange.startDate = new Date(dataObj.filterObj.dateRange.startDate);
-                this.filterObj.dateRange.endDate = new Date(dataObj.filterObj.dateRange.endDate);
+                this.filterObj!.DateRange!.StartDate = new Date(dataObj.filterObj.DateRange.StartDate);
+                this.filterObj!.DateRange!.EndDate = new Date(dataObj.filterObj.DateRange.EndDate);
                 this.pageIndex = dataObj.pageIndex;
                 this.pageSize = dataObj.pageSize;
             }
@@ -589,14 +595,14 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.setOfCheckedId = new Set<string>();
 
     this.filterObj = {
-      tags: [],
-      status: [],
-      searchText: '',
-      dateRange: {
-        startDate: addDays(new Date(), -30),
-        endDate: new Date(),
+      Tags: [],
+      Status: [],
+      SearchText: '',
+      DateRange: {
+        StartDate: addDays(new Date(), -30),
+        EndDate: new Date(),
       },
-      liveCampaignId: null,
+      LiveCampaignId: null,
       Telephone: null,
       PriorityStatus: null
     }
@@ -621,21 +627,21 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.pageIndex = 1;
 
     this.filterObj = {
-      tags: [...(event?.tags || [])],
-      status: [...(event?.status || [])],
-      searchText: event?.searchText,
-      dateRange: {
-        startDate: event?.dateRange?.startDate || null,
-        endDate: event?.dateRange?.endDate || null
+      Tags: [...(event?.Tags || [])],
+      Status: [...(event?.Status || [])],
+      SearchText: event?.SearchText,
+      DateRange: {
+        StartDate: event?.DateRange?.StartDate || null,
+        EndDate: event?.DateRange?.EndDate || null
       },
-      teamId: event?.teamId || null,
-      liveCampaignId: event?.liveCampaignId || null,
+      TeamId: event?.TeamId || null,
+      LiveCampaignId: event?.LiveCampaignId || null,
       Telephone: event?.Telephone || null,
       PriorityStatus: event?.PriorityStatus || null
     }
 
-    if (TDSHelperArray.hasListValue(event?.status)) {
-      this.tabNavs = this.lstOftabNavs.filter(f => event.status.includes(f.Name));
+    if (TDSHelperArray.hasListValue(event?.Status)) {
+      this.tabNavs = this.lstOftabNavs.filter(f => event.Status.includes(f.Name));
     } else {
       this.tabNavs = this.lstOftabNavs;
     }
