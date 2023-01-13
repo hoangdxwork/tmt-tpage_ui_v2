@@ -59,14 +59,14 @@ export class TableAllOrderComponent implements OnInit {
 
   public filterObj: FilterObjSOOrderModel = {
     Tags: [],
-    Status: [],
+    StatusTexts: [],
     SearchText: '',
     DateRange: {
       StartDate: addDays(new Date(), -30),
       EndDate: new Date(),
     },
     LiveCampaignId: null,
-    Telephone: null,
+    HasTelephone: null,
     PriorityStatus: null
   }
 
@@ -210,18 +210,18 @@ export class TableAllOrderComponent implements OnInit {
     this.pageIndex = 1;
     this.pageSize = 20;
 
-    let lstStatus = event?.Status?.filter(x => x != 'Tất cả');
+    let lstStatus = event?.StatusTexts?.filter(x => x != 'Tất cả');
 
     this.filterObj = {
       Tags: event?.Tags,
-      Status: lstStatus ? lstStatus : [],
+      StatusTexts: lstStatus ? lstStatus : [],
       SearchText: event?.SearchText,
       DateRange: {
         StartDate: event?.DateRange?.StartDate,
         EndDate: event?.DateRange?.EndDate,
       },
       LiveCampaignId: null,
-      Telephone: event.Telephone,
+      HasTelephone: event.HasTelephone,
       PriorityStatus: event.PriorityStatus
     }
 
@@ -233,11 +233,11 @@ export class TableAllOrderComponent implements OnInit {
 
     this.filterObj = {
       Tags: [],
-      Status: [],
+      StatusTexts: [],
       SearchText: '',
       DateRange: {} as any,
       LiveCampaignId: null,
-      Telephone: null,
+      HasTelephone: null,
       PriorityStatus: null
     }
 

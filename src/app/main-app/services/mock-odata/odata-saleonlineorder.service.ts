@@ -11,7 +11,7 @@ import { Guid } from 'guid-typescript';
 
 export interface FilterObjSOOrderModel {
   Tags: string[],
-  Status: string[],
+  StatusTexts: string[],
   SearchText: string,
   DateRange: {
     StartDate: Date,
@@ -19,7 +19,7 @@ export interface FilterObjSOOrderModel {
   },
   LiveCampaignId: string | any,
   TeamId?: string | any,
-  Telephone: boolean | any,
+  HasTelephone: boolean | any,
   PriorityStatus: string | any
 }
 
@@ -111,10 +111,10 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       })
     }
 
-    if(filterObj.Telephone != null) {
+    if(filterObj.HasTelephone != null) {
       dataFilter.filters.push({
         filters: [
-        { field: "Telephone", operator: (filterObj.Telephone ?  OperatorEnum.gt :  OperatorEnum.eq), value: (filterObj.Telephone ? "" : null) }
+        { field: "Telephone", operator: (filterObj.HasTelephone ?  OperatorEnum.gt :  OperatorEnum.eq), value: (filterObj.HasTelephone ? "" : null) }
       ],
       logic: 'and'
       })
@@ -165,9 +165,9 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       })
     }
 
-    if (TDSHelperArray.hasListValue(filterObj.Status)) {
+    if (TDSHelperArray.hasListValue(filterObj.StatusTexts)) {
       dataFilter.filters.push({
-        filters: filterObj.Status?.map((x) => ({
+        filters: filterObj.StatusTexts?.map((x) => ({
           field: "StatusText",
           operator: "eq",
           value: x,
@@ -232,8 +232,8 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       })
     }
 
-    if (TDSHelperString.hasValueString(filterObj?.Status)) {
-      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.Status })
+    if (TDSHelperString.hasValueString(filterObj?.StatusTexts)) {
+      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.StatusTexts })
       dataFilter.logic = "and";
     }
 
@@ -275,8 +275,8 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
       })
     }
 
-    if (TDSHelperString.hasValueString(filterObj?.Status)) {
-      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.Status })
+    if (TDSHelperString.hasValueString(filterObj?.StatusTexts)) {
+      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.StatusTexts })
       dataFilter.logic = "and";
     }
 

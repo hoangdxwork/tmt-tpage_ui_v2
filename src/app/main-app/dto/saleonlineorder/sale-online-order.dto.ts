@@ -17,7 +17,7 @@ export interface SaleOnlineStatusModelDto {
   HasTelephone?: boolean;
   LiveCampaignId?: string;
   PriorityStatus?: any;
-  State?: string;
+  StatusTexts?: string[];
 }
 
 export interface SaleOnlineStatusValueDto {
