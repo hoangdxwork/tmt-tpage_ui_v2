@@ -1,6 +1,6 @@
 import { addDays } from 'date-fns';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FilterObjSOOrderModel, PriorityStatus, TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
@@ -17,7 +17,7 @@ import { LiveCampaignService } from '@app/services/live-campaign.service';
   providers: [TDSDestroyService]
 })
 
-export class FilterOptionsComponent implements OnInit {
+export class FilterOptionsComponent implements OnInit, OnChanges {
 
   @Output() onLoadOption = new EventEmitter<FilterObjSOOrderModel>();
   @Input() tabNavs!: TabNavsDTO[];
@@ -54,6 +54,13 @@ export class FilterOptionsComponent implements OnInit {
     this.loadPriorityStatus();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes["filterObj"] && !changes["filterObj"].firstChange) {
+      this.filterObj = {...changes["filterObj"].currentValue};
+      this.cdr.detectChanges();
+    }
+  }
+
   loadPriorityStatus() {
     this.lstPriorityStatus = [
       {value: PriorityStatus.PriorityAll, text: 'Ưu tiên'},
@@ -68,7 +75,7 @@ export class FilterOptionsComponent implements OnInit {
         Name: f.Name,
         Index: f.Index,
         Total: f.Total,
-        IsSelected: this.filterObj? (this.filterObj.status?.includes(f.Name)? true: false ) : false
+        IsSelected: this.filterObj ? (this.filterObj.status?.includes(f.Name) ? true: false ) : false
       }
     });
 

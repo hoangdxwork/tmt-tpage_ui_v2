@@ -196,10 +196,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.getViewData(params).subscribe({
         next: (res: any) => {
             this.count = res['@odata.count'] as number;
-            this.lstOfData = [...res.value];
+            this.lstOfData = [...(res?.value || [])];
         },
         error: (error: any) => {
-            this.message.error(error?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
+            this.message.error(error.error?.message);
         }
     });
   }
@@ -247,7 +247,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   loadParnerStatus(params: Array<number>) {
-    this.commonService.getPartnersById(params).subscribe({
+    this.commonService.getPartnersById(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TIDictionary<String>) => {
           this.lstOfData.map( x => {
             if(res[x.PartnerId]) {
@@ -264,8 +264,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   getViewData(params: string): Observable<ODataSaleOnline_OrderDTOV2> {
     this.isLoading = true;
     return this.odataSaleOnline_OrderService
-      .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => this.isLoading = false));
+      .getView(params, this.filterObj).pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false));
   }
 
   loadSummaryStatus() {
@@ -279,15 +278,20 @@ export class OrderComponent implements OnInit, AfterViewInit {
         endDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-ddTHH:mm:ss+00:00');
     }
 
+    let tagIds;
+    if(this.filterObj?.tags && this.filterObj?.tags?.length > 0) {
+      tagIds = this.filterObj.tags.map((x: TDSSafeAny) => x).join(",") as any;
+    }
+
     let model: SaleOnlineStatusModelDto = {
       DateStart: startDate,
       DateEnd: endDate,
-      SearchText: this.filterObj.searchText,
-      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x).join(","),
-      LiveCampaignId: this.filterObj.liveCampaignId,
-      HasTelephone: this.filterObj.Telephone,
-      PriorityStatus: this.filterObj.PriorityStatus,
-      TeamId: this.filterObj.teamId
+      SearchText: this.filterObj?.searchText,
+      TagIds: tagIds,
+      LiveCampaignId: this.filterObj?.liveCampaignId,
+      HasTelephone: this.filterObj?.Telephone,
+      PriorityStatus: this.filterObj?.PriorityStatus,
+      TeamId: this.filterObj?.teamId
     }
 
     this.isTabNavs = true;
@@ -311,7 +315,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
         },
         error: (error: any) => {
             this.isTabNavs = false;
-            this.message.error(error?.error?.message);
+            this.message.error(error.error?.message);
         }
     });
   }
@@ -333,7 +337,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   loadAllTeam() {
     this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-          this.lstOfTeam = [...res];
+          this.lstOfTeam = [...(res || [])];
       },
       error: (err) => {
         this.message.error(err?.error?.message);
@@ -360,9 +364,9 @@ export class OrderComponent implements OnInit, AfterViewInit {
   onCreateQuicklyFS() {
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
-      this.isProcessing = true
+      this.isProcessing = true;
       let ids = [...this.setOfCheckedId];
-      this.showModalCreateBillFast(ids)
+      this.showModalCreateBillFast(ids);
     }
   }
 
@@ -396,7 +400,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
         error: (error: any) => {
           this.isLoading = false;
           this.isProcessing = false
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+          this.message.error(error.error?.message);
         }
       });
   }
@@ -404,7 +408,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   onCreateBillDefault() {
     if (this.checkValueEmpty() == 1) {
       this.isProcessing = true
-      this.fastSaleOrderService.checkPermissionCreateFSO().subscribe({
+      this.fastSaleOrderService.checkPermissionCreateFSO().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
           let ids = [...this.setOfCheckedId];
 
@@ -429,7 +433,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
           this.isProcessing = false
         },
         error: (err) => {
-          this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
+          this.message.error(err.error?.message);
           this.isProcessing = false
         }
       })
@@ -439,7 +443,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
       this.isProcessing = true
-      this.fastSaleOrderService.checkPermissionCreateFSO().subscribe({
+      this.fastSaleOrderService.checkPermissionCreateFSO().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           let model = {
             ids: [...this.setOfCheckedId]
@@ -462,13 +466,13 @@ export class OrderComponent implements OnInit, AfterViewInit {
               this.isProcessing = false
             },
             error: (err) => {
-              this.message.error(err?.error?.message || 'Không thể tạo hóa đơn');
+              this.message.error(err.error?.message);
               this.isProcessing = false
             }
           })
         },
         error:(err) => {
-          this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
+          this.message.error(err.error?.message);
           this.isProcessing = false
         }
       });
@@ -615,27 +619,25 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.tabIndex = 1;
     this.pageIndex = 1;
 
-    this.filterObj.tags = event.tags;
-    this.filterObj.status = event.status;
-
-    this.filterObj.dateRange = {
-      startDate: event.dateRange ? event.dateRange?.startDate: null,
-      endDate: event.dateRange?  event.dateRange?.endDate: null
+    this.filterObj = {
+      tags: [...(event?.tags || [])],
+      status: [...(event?.status || [])],
+      searchText: event?.searchText,
+      dateRange: {
+        startDate: event?.dateRange?.startDate || null,
+        endDate: event?.dateRange?.endDate || null
+      },
+      teamId: event?.teamId || null,
+      liveCampaignId: event?.liveCampaignId || null,
+      Telephone: event?.Telephone || null,
+      PriorityStatus: event?.PriorityStatus || null
     }
 
-    if (TDSHelperArray.hasListValue(event.status)) {
+    if (TDSHelperArray.hasListValue(event?.status)) {
       this.tabNavs = this.lstOftabNavs.filter(f => event.status.includes(f.Name));
     } else {
       this.tabNavs = this.lstOftabNavs;
     }
-
-    this.filterObj.liveCampaignId = event.liveCampaignId ? event.liveCampaignId : null;
-
-    this.filterObj.teamId = event.teamId ? event.teamId : null;
-
-    this.filterObj.PriorityStatus = event.PriorityStatus ? event.PriorityStatus : null;
-
-    this.filterObj.Telephone = event.Telephone;
 
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
@@ -680,7 +682,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
                     }
                 })
 
-                modal.afterClose?.subscribe((obs: string) => {
+                modal.afterClose?.pipe(takeUntil(this.destroy$)).subscribe((obs: string) => {
                     if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
                         this.loadData(this.pageSize, this.pageIndex);
                     }
@@ -717,7 +719,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
       },
       error: (error: any) => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
+        this.message.error(error.error?.message);
       }
     });
   }
@@ -732,7 +734,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   onExportExcel() {
-    if (this.isProcessing) { return }
+    if (this.isProcessing) { 
+      return 
+    }
+
     let filter = {
       logic: 'and',
       filters: [
@@ -790,9 +795,15 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   // Nhãn
   loadStatusTypeExt() {
-    this.commonService.getStatusTypeExt().subscribe(res => {
-      this.lstStatusTypeExt = [...res];
-      this.cdRef.markForCheck();
+    this.commonService.getStatusTypeExt().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        this.lstStatusTypeExt = [...res];
+        this.cdRef.markForCheck();
+      },
+      error: (err) => {
+        this.message.error(err.error?.message);
+        this.cdRef.markForCheck();
+      }
     });
   }
 
@@ -808,7 +819,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
           this.cdRef.markForCheck();
       },
       error: (error: any) => {
-          this.message.error(error.error.message || 'Cập nhật thất bại');
+          this.message.error(error.error?.message);
       }
     });
   }
@@ -824,7 +835,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
               }
             },
             error: (error: any) => {
-              this.message.error( `${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
+              this.message.error( `${error?.error?.message}` || 'Tải thông tin đơn hàng đã xảy ra lỗi');
             }
         })
       })
@@ -896,7 +907,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
       error: (error: any) => {
         this.isOpenChat = false;
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` || 'Thao tác không thành công');
+        this.message.error(error.error?.message);
       }
     })
   }
@@ -924,7 +935,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+          this.message.error(error.error?.message);
       }
     })
   }
