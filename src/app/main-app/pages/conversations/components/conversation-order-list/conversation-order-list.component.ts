@@ -43,9 +43,9 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
   isCheckedAll: boolean = false;
 
   public filterObj: TDSSafeAny = {
-    tags: [],
-    status: '',
-    searchText: '',
+    Tags: [],
+    Status: '',
+    SearchText: '',
   }
 
   sort: Array<SortDataRequestDTO>= [{
@@ -135,8 +135,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
 
     if(changes['data'] && !changes['data'].firstChange) {
         this.currentPost = changes['data'].currentValue;
-        this.loadData(this.pageSize, this.pageIndex);
-        this.loadSummaryStatus();
+        this.refreshData();
         
     }
   }
@@ -193,9 +192,9 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     this.countOrderNew = 0;
     this.countOrderDelete = 0;
     this.filterObj = {
-      tags: [],
-      status: '',
-      searchText: ''
+      Tags: [],
+      StatusTexts: [],
+      SearchText: ''
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -216,15 +215,15 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     this.tabIndex = 1;
     this.pageIndex = 1;
 
-    this.filterObj.searchText = event.value;
+    this.filterObj.SearchText = event.value;
     this.loadData(this.pageSize, this.pageIndex);
     this.loadSummaryStatus();
   }
 
   loadSummaryStatus() {
     let model : SaleOnlineStatusModelDto = {
-      SearchText: this.filterObj.searchText,
-      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+      SearchText: this.filterObj?.SearchText,
+      TagIds: this.filterObj?.Tags?.map((x: TDSSafeAny) => x.Id).join(","),
       PostId: this.currentPost?.ObjectId
     }
 
@@ -254,9 +253,9 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     this.pageIndex = 1;
 
     this.filterObj = {
-      tags: [],
-      status: dataItem?.Name != 'Tất cả' ? dataItem?.Name : null,
-      searchText: '',
+      Tags: [],
+      StatusTexts: dataItem?.Name != 'Tất cả' ? [dataItem?.Name] : [],
+      SearchText: '',
     };
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -392,7 +391,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
                 }
             });
 
-            this.modalService.afterAllClose.subscribe({
+            this.modalService.afterAllClose.pipe(takeUntil(this.destroy$)).subscribe({
               next:(x: any) =>{
                   this.loadData(this.pageSize,this.pageIndex);
                   this.loadSummaryStatus();
@@ -478,7 +477,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
                     }
                 })
 
-                modal.afterClose?.subscribe({
+                modal.afterClose?.pipe(takeUntil(this.destroy$)).subscribe({
                   next: (obs: any) => {
                       // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
                       this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);
@@ -502,7 +501,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     this.tabIndex = 1;
     this.pageIndex = 1;
 
-    this.filterObj.searchText = '';
+    this.filterObj.SearchText = '';
     this.loadData(this.pageSize, this.pageIndex);
     this.loadSummaryStatus();
   }
