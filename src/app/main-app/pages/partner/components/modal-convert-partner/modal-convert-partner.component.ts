@@ -1,6 +1,6 @@
 import { PartnerDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { takeUntil } from 'rxjs/operators';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
@@ -16,6 +16,7 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 export class ModalConvertPartnerComponent implements OnInit {
 
   @Input() lstOfData!: PartnerDTO[];
+  @Output() onCloseModel: EventEmitter<any> = new EventEmitter<any>();
 
   fromPartner: { Id: number, Name: string } = { Id: 0, Name: '' };
   toPartner: { Id: number, Name: string } = { Id: 0, Name: '' };;
@@ -38,7 +39,7 @@ export class ModalConvertPartnerComponent implements OnInit {
       FromPartnerId: this.fromPartner.Id,
       ToPartnerId: this.toPartner.Id
     }
-    
+
     this.partnerService.transferPartner({model: model}).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if(res) {
@@ -48,11 +49,13 @@ export class ModalConvertPartnerComponent implements OnInit {
                 content: 'Bạn có muốn xóa dữ liệu khách hàng đích?',
                 onOk: () => {
                     this.partnerService.delete(this.fromPartner.Id).subscribe({
-                      next: (res: TDSSafeAny) => {
+                      next: (resDel: TDSSafeAny) => {
                         this.message.success('Xóa thành công!');
-                      }, 
+                        this.onCloseModel.emit("onLoadPage");
+                      },
                       error: (error) => {
                         this.message.error(`Xóa khách hàng đích đã xảy ra lỗi!`);
+                        this.onCloseModel.emit(null);
                       }
                     })
                 },
@@ -63,9 +66,7 @@ export class ModalConvertPartnerComponent implements OnInit {
             });
             this.modal.destroy(res);
         }
-
-        this.modal.destroy(null);
-      }, 
+      },
       error: (error) => {
         this.message.error('Chuyển đổi khách hàng thất bại!');
         this.modal.destroy(null);

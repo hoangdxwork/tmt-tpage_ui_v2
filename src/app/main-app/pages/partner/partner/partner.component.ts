@@ -548,7 +548,16 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
         lstOfData: this.lstOfData
       }
     });
-    modal.afterClose.subscribe({
+
+    modal.componentInstance?.onCloseModel.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) =>{
+        if (res == "onLoadPage") {
+          this.loadData(this.pageSize, this.pageIndex);
+        }
+      }
+    })
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: result => {
         if (TDSHelperObject.hasValue(result)) {
           this.loadData(this.pageSize, this.pageIndex);
