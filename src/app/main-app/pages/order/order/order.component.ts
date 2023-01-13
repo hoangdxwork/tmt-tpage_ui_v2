@@ -291,7 +291,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
       LiveCampaignId: this.filterObj?.liveCampaignId,
       HasTelephone: this.filterObj?.Telephone,
       PriorityStatus: this.filterObj?.PriorityStatus,
-      TeamId: this.filterObj?.teamId
+      TeamId: this.filterObj?.teamId,
+      State: this.filterObj?.status?.join(",")
     }
 
     this.isTabNavs = true;
