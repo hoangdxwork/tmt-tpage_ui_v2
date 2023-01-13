@@ -591,6 +591,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   onClickTeam(data: CRMTeamDTO): any {
     let exist = this.paramsUrl && TDSHelperString.hasValueString(this.paramsUrl?.teamId) && data;
     if (exist) {
+      this.innerText.nativeElement.value = '';
       this.disableNextUrl = false;
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
