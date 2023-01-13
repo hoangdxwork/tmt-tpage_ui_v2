@@ -19,14 +19,14 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
   @Input() liveCampaignId!: string;
 
   public filterObj: FilterObjSOOrderModel = {
-    tags: [],
-    status: [],
-    searchText: '',
-    dateRange: {
-      startDate: addDays(new Date(), -30),
-      endDate: new Date(),
+    Tags: [],
+    Status: [],
+    SearchText: '',
+    DateRange: {
+      StartDate: addDays(new Date(), -30),
+      EndDate: new Date(),
     },
-    liveCampaignId: null,
+    LiveCampaignId: null,
     Telephone: null,
     PriorityStatus: null
   }
@@ -58,10 +58,10 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
 
   loadSummaryStatus() {
     let model: SaleOnlineStatusModelDto = {
-      DateStart: this.filterObj.dateRange?.startDate,
-      DateEnd: this.filterObj.dateRange?.endDate,
-      SearchText: this.filterObj.searchText,
-      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+      DateStart: this.filterObj?.DateRange?.StartDate,
+      DateEnd: this.filterObj?.DateRange?.EndDate,
+      SearchText: this.filterObj?.SearchText,
+      TagIds: this.filterObj?.Tags?.map((x: TDSSafeAny) => x.Id)?.join(","),
     }
 
     this.isTabNavs = true;
