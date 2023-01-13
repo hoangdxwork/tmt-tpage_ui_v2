@@ -32,6 +32,7 @@ import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
+import { FilterOptionsComponent } from '../components/filter-option/filter-options.component';
 
 @Component({
   selector: 'app-bill',
@@ -43,6 +44,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('innerText') innerText!: ElementRef;
   @ViewChild('widthTable') widthTable!: ElementRef;
   @ViewChild('billOrderLines') billOrderLines!: ElementRef;
+
+  @ViewChild(FilterOptionsComponent) filterOptions!: TDSSafeAny;
 
   lstOfData: Array<FastSaleOrderDTO> = [];
   lstOfTeam!: CRMTeamDTO[];
@@ -583,7 +586,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       liveCampaignId: null
     }
 
-    this.loadData(this.pageSize, this.pageIndex);
+    this.filterOptions.onCancel();
   }
 
   onView(data: any) {
