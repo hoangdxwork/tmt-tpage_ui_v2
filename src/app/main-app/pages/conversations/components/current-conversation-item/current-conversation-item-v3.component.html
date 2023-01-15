@@ -1,9 +1,9 @@
-<div *ngIf="item" class="text-neutral-1-900 w-full h-full" [ngClass]="reponsiveDesktop ? 'text-body-2' : 'text-caption-2'">
+<div *ngIf="item" class="text-neutral-1-900 w-full h-full desktop:text-body-2 laptop:text-caption-1 text-caption-1">
     <div class="w-full overflow-hidden bg-white h-full break-words whitespace-pre-line">
         <div [ngClass]="conversationItem && (conversationItem.Id == item.Id) ? 'bg-secondary-3 border-blue-500':'bg-white border-transparent'"
-            class="flex w-full h-full min-h-[100px] hover:bg-neutral-3-50 border-l-4">
-            <div class="desktop:p-3.5 p-2 flex flex-col w-full h-full">
-                <div class="flex gap-3">
+            class="flex w-full h-full desktop:min-h-[100px] laptop:min-h-[85px] min-h-[85px] hover:bg-neutral-3-50 border-l-4">
+            <div class="desktop:p-3.5 laptop:p-2 p-2 flex flex-col w-full h-full">
+                <div class="flex desktop:gap-3 laptop:gap-2.5 gap-2.5">
                     <div class="relative">
                         <!-- Facebook -->
                         <tpage-avatar-facebook *ngIf="team.Type == 'Facebook' && reponsiveDesktop"
@@ -18,7 +18,7 @@
 
                         <!-- icon comment -->
                         <span *ngIf="item.LatestMessage && (item.LatestMessage.MessageType == 12) && (type == 'all' || type == 'comment')"
-                            class="absolute desktop:top-[31px] top-[23px] desktop:left-[31px] left-[23px]">
+                            class="absolute desktop:top-[31px] laptop:top-[23px] top-[23px] desktop:left-[31px] laptop:left-[23px] left-[23px]">
                             <svg width="20" height="21" viewBox="0 0 26 27" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1.6665 13.0152C1.6665 16.3866 3.04389 19.3288 5.30367 21.373L5.36031 23.2061C5.36031 23.2061 5.36031 23.2061 5.36031 23.2061C5.4008 24.5175 6.75463 25.3774 7.96053 24.845C7.96056 24.8449 7.96059 24.8449 7.96062 24.8449C7.96097 24.8448 7.96132 24.8446 7.96168 24.8444L10.0314 23.9321C11.076 24.2135 12.1824 24.3646 13.3332 24.3646C19.857 24.3646 24.9998 19.55 24.9998 13.0179C24.9998 6.4862 19.8573 1.66858 13.3332 1.66858C6.80934 1.66858 1.6665 6.4832 1.6665 13.0152Z"
@@ -37,7 +37,7 @@
 
                         <!-- icon message -->
                         <span *ngIf="item.LatestMessage && (item.LatestMessage.MessageType == 11) && (type == 'all' || type == 'message')"
-                            class="absolute desktop:top-[31px] top-[23px] desktop:left-[31px] left-[23px]">
+                            class="absolute desktop:top-[31px] laptop:top-[23px] top-[23px] desktop:left-[31px] laptop:left-[23px] left-[23px]">
                             <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1.6665 13.0134C1.6665 16.3847 3.04389 19.327 5.30367 21.3711L5.36031 23.2042C5.36031 23.2042 5.36031 23.2042 5.36031 23.2042C5.4008 24.5156 6.75463 25.3755 7.96053 24.8431C7.96056 24.8431 7.96059 24.843 7.96062 24.843C7.96097 24.8429 7.96132 24.8427 7.96168 24.8426L10.0314 23.9302C11.076 24.2116 12.1824 24.3627 13.3332 24.3627C19.857 24.3627 24.9998 19.5481 24.9998 13.016C24.9998 6.48431 19.8573 1.66669 13.3332 1.66669C6.80934 1.66669 1.6665 6.48131 1.6665 13.0134Z"
                                     fill="url(#paint0_radial_11437_25390)" stroke="white" stroke-width="2" />
@@ -70,17 +70,17 @@
 
                         <!-- icon comment -->
                         <span *ngIf="item.LatestMessage && item.LatestMessage?.MessageType == 91 && (type == 'all' || type == 'comment')"
-                            class="absolute desktop:top-[31px] top-[23px] desktop:left-[31px] left-[23px] border-2 border-white bg-info-400 rounded-full">
+                            class="absolute desktop:top-[31px] laptop:top-[23px] top-[23px] desktop:left-[31px] laptop:left-[23px] left-[23px] border-2 border-white bg-info-400 rounded-full">
                             <span class="font-extrabold text-transparent bg-clip-text bg-white w-4 h-4 flex items-center justify-center">
-                                <i class="tdsi-message-fill text-caption-1 leading-none"></i>
+                                <i class="tdsi-message-fill desktop:text-[13px] laptop:text-[12px] text-[12px] leading-none"></i>
                             </span>
                         </span>
 
                         <!-- icon message -->
                         <span *ngIf="item.LatestMessage && item.LatestMessage?.MessageType == 92 && (type == 'all' || type == 'message')"
-                            class="absolute desktop:top-[31px] top-[23px] desktop:left-[31px] left-[23px] border-2 border-white bg-gradient-to-b from-d-base-pink-600 to-base-blue-500 rounded-full">
+                            class="absolute desktop:top-[31px] laptop:top-[23px] top-[23px] desktop:left-[31px] laptop:left-[23px] left-[23px] border-2 border-white bg-gradient-to-b from-d-base-pink-600 to-base-blue-500 rounded-full">
                             <span class="font-extrabold text-transparent bg-clip-text bg-white w-4 h-4 flex items-center justify-center">
-                                <i class="tdsi-email-fill text-caption-1 leading-none"></i>
+                                <i class="tdsi-email-fill desktop:text-[13px] laptop:text-[12px] text-[12px] leading-none"></i>
                             </span>
                         </span>
 
@@ -96,9 +96,9 @@
                         </tds-avatar>
 
                         <span *ngIf="item.LatestMessage && item.LatestMessage?.MessageType == 1001"
-                            class="absolute desktop:top-[31px] top-[23px] desktop:left-[31px] left-[23px] border-2 border-white bg-info-400 rounded-full">
+                            class="absolute desktop:top-[31px] laptop:top-[23px] top-[23px] desktop:left-[31px] laptop:left-[23px] left-[23px] border-2 border-white bg-info-400 rounded-full">
                             <span class="font-extrabold text-transparent bg-clip-text bg-white w-4 h-4 flex items-center justify-center">
-                                <i class="tdsi-message-fill text-caption-1 leading-none"></i>
+                                <i class="tdsi-message-fill desktop:text-[13px] laptop:text-[12px] text-[12px] leading-none"></i>
                             </span>
                         </span>
                     </div>
@@ -106,31 +106,30 @@
                         <span class="flex flex-auto justify-between items-start gap-x-1.5 overflow-hidden">
                             <span class="flex flex-auto items-center overflow-hidden">
                                 <span [ngClass]="(type | seenedMessage: item.CountUnread) ? 'font-semibold' : ''"
-                                    class="text-neutral-1-900 truncate"
-                                    [ngClass]="{ 'text-body-1':reponsiveDesktop, 'text-caption-1':!reponsiveDesktop, 'w-4/5':item.State , 'flex-auto':!item.State }"
+                                    class="text-neutral-1-900 truncate desktop:text-body-1 laptop:text-body-2 text-body-2"
+                                    [ngClass]="{ 'w-4/5':item.State , 'flex-auto':!item.State }"
                                     [tooltipTitle]="item.Name" [tooltipPlacement]="['topLeft', 'leftTop']" tds-tooltip>
                                     {{ item.Name }}
                                 </span>
-                                <span *ngIf="item.State" class="flex-auto" [ngClass]="{ 'text-body-2':reponsiveDesktop, 'text-caption-2':!reponsiveDesktop }">
-                                    <span *ngIf="item.State == 1" class="tdsi-friend-fill ml-2" tds-tooltip
+                                <span *ngIf="item.State" class="flex-auto" [ngClass]="{ 'text-body-2':reponsiveDesktop, 'text-caption-1':!reponsiveDesktop }">
+                                    <span *ngIf="item.State == 1" class="tdsi-friend-fill desktop:ml-2 laptop:ml-1 ml-1" tds-tooltip
                                         tooltipTitle="Đang chuyển cho admin xử lý"></span>
-                                    <span *ngIf="item.State == 2" class="tdsi-bot-fill ml-2" tds-tooltip
+                                    <span *ngIf="item.State == 2" class="tdsi-bot-fill desktop:ml-2 laptop:ml-1 ml-1" tds-tooltip
                                         tooltipTitle="Hệ thống chatbot đang gặp vấn đề"></span>
                                 </span>
                             </span>
 
-                            <span class="flex items-center gap-2">
+                            <span class="flex items-center desktop:gap-2 laptop:gap-1.5 gap-1.5">
                                 <span *ngIf="item.CountUnread > 0">
                                     <tds-badge class="flex items-center" [standalone]="true" [count]="item.CountUnread"
                                         title="Phản hồi chưa đọc"
                                         [tdsStyle]="{ backgroundColor: '#FA5171', height:reponsiveDesktop ? '20px' : '16px', 'font-size':reponsiveDesktop ? '12px' : '11px' }"></tds-badge>
                                 </span>
                                 <span *ngIf="!isOpenCollapCheck"
-                                    class="text-neutral-1-400 font-regular font-sans whitespace-nowrap"
-                                    [ngClass]="{ 'text-body-2':reponsiveDesktop, 'text-caption-2':!reponsiveDesktop }">
+                                    class="text-neutral-1-400 desktop:text-body-2 laptop:text-caption-1 text-caption-1 whitespace-nowrap">
                                     {{item.UpdatedTime | yiDateTimeFormat}}
                                 </span>
-                                <tds-checkbox *ngIf="isOpenCollapCheck" [checked]="checked" class="checkboxMessage"
+                                <tds-checkbox *ngIf="isOpenCollapCheck" [checked]="checked" class="checkboxMessage" [size]="reponsiveDesktop ? 'md' : 'sm'"
                                     (click)="changeCheck($event)"></tds-checkbox>
                             </span>
                         </span>
@@ -153,26 +152,26 @@
                                         class="text-white" [size]="17"
                                         [style.background-color]="item.AssignedTo?.Id | randomColor"></tds-avatar>
                                 </span>
-                                <span class="ml-1 !leading-[15px] w-full flex-auto truncate"
-                                    [ngClass]="reponsiveDesktop ? 'text-caption-1' : 'text-caption-2'">{{item.AssignedTo?.Name}}</span>
+                                <span class="ml-1 !leading-[15px] w-full flex-auto truncate desktop:text-caption-1 laptop:text-caption-2 text-caption-2">
+                                    {{item.AssignedTo?.Name}}</span>
                             </span>
                         </span>
                     </div>
                 </div>
 
                 <!--keyTags thêm trong mục binh luận-->
-                <div class="flex justify-end flex-col gap-2" [ngClass]="((item.Tags && item.Tags.length > 0) || item.HasPhone || item.HasAddress )? 'pt-3': ''">
-                    <div class="flex gap-2 items-end">
+                <div class="flex justify-end flex-col desktop:gap-2 laptop:gap-1.5 gap-1.5" [ngClass]="((item.Tags && item.Tags.length > 0) || item.HasPhone || item.HasAddress )? 'pt-3': ''">
+                    <div class="flex desktop:gap-2 laptop:gap-1 gap-1 items-center">
                         <div class="flex-auto flex flex-nowrap gap-1 items-center overflow-hidden" #currentWidthTag>
                             <div *ngIf="item.Tags" class="flex gap-x-1">
                                 <div *ngFor="let tag of item.Tags" #widthTag
                                     class="relative flex items-center max-w-[110px] font-regular text-neutral-1-900 rounded truncate flex-none"
                                         [ngClass]="reponsiveDesktop ? 'text-[11px]' : 'text-[10px]'">
                                     <span [ngStyle]="{'background-color': [tag.ColorClass+'30'] }" tds-tooltip [tooltipTitle]="tag.Name"
-                                        class="w-full rounded-md py-0.5 desktop:px-1.5 px-1 flex justify-center items-center gap-x-1">
+                                        class="w-full rounded-md py-0.5 desktop:px-1.5 laptop:px-1 px-1 flex justify-center items-center gap-x-1">
                                         <span class="flex items-center">
                                             <span [ngStyle]="{'background-color': [tag.ColorClass] }"
-                                            class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
+                                            class="-top-px inline-block align-middle rounded-full desktpo:w-2 laptop:w-1.5 w-1.5 desktop:h-2 laptop:h-1.5 h-1.5"></span>
                                         </span>
                                         <span class="flex-auto truncate">{{tag.Name}}</span>
                                     </span>
@@ -180,9 +179,9 @@
                             </div>
                         </div>
 
-                        <div class="flex gap-1.5 items-center">
-                            <span [ngClass]="{ 'flex':(countHiddenTag > 0), 'hidden':!(countHiddenTag > 0), 'text-[11px]':reponsiveDesktop, 'text-[10px]':!reponsiveDesktop }"
-                                class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] rounded truncate"
+                        <div class="flex desktop:gap-1.5 laptop:gap-1 gap-1 items-center">
+                            <span [ngClass]="{ 'flex':(countHiddenTag > 0), 'hidden':!(countHiddenTag > 0) }"
+                                class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] rounded truncate text-[11px]"
                                 tds-popover [popoverContent]="popoverContentTag"
                                 popoverPlacement="topRight">
                                 +{{countHiddenTag}}
@@ -190,8 +189,7 @@
                             <ng-template #popoverContentTag>
                                 <span class="flex gap-1 flex-wrap items-center max-w-[336px]">
                                     <span *ngFor="let tag of item.Tags | slice:displayTag:item.Tags!.length"
-                                        class="relative flex items-center font-regular text-neutral-1-900 rounded truncate flex-none"
-                                        [ngClass]="{ 'text-[11px]':reponsiveDesktop, 'text-[10px]':!reponsiveDesktop }">
+                                        class="relative flex items-center font-regular text-neutral-1-900 rounded truncate flex-none text-[11px]">
                                         <span [ngStyle]="{'background-color': [tag.ColorClass + '30'] }"
                                             class=" rounded-md py-0.5 desktop:px-1.5 px-1 flex justify-center items-center gap-x-1">
                                             <span [ngStyle]="{'background-color': [tag.ColorClass] }" class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
@@ -200,21 +198,18 @@
                                     </span>
                                 </span>
                             </ng-template>
-                            <span *ngIf="item.HasPhone"
-                                class="tdsi-call-fill leading-none text-white bg-base-green-400 p-0.5 rounded-md"
-                                [ngClass]="{ 'text-body-2':reponsiveDesktop, 'text-caption-2':!reponsiveDesktop }">
+                            <span *ngIf="item.HasPhone" 
+                                class="tdsi-call-fill leading-none text-white bg-base-green-400 p-0.5 rounded-md desktop:text-caption-1 laptop:text-caption-2 text-caption-2">
                             </span>
-                            <span *ngIf="item.HasAddress"
-                                class="tdsi-pin-fill leading-none text-white bg-base-orange-500 p-0.5 rounded-md"
-                                [ngClass]="{ 'text-body-2':reponsiveDesktop, 'text-caption-2':!reponsiveDesktop }">
+                            <span *ngIf="item.HasAddress" 
+                                class="tdsi-pin-fill leading-none text-white bg-base-orange-500 p-0.5 rounded-md desktop:text-caption-1 laptop:text-caption-2 text-caption-2">
                             </span>
                         </div>
                     </div>
                 </div>
 
                 <!-- admin đang xem -->
-                <div class="flex justify-end items-center text-accent-3 pt-2"
-                    [ngClass]="{ 'text-caption-1':reponsiveDesktop, 'text-[11px]':!reponsiveDesktop }"
+                <div class="flex justify-end items-center text-accent-3 pt-2 desktop:text-caption-1 laptop:text-caption-2 text-caption-2"
                     *ngIf="item.Markseen && item.Markseen?.Message">
                     <span class="flex items-center justify-center"><i class="tdsi-flash-on-fill mr-1"></i>
                         {{item.Markseen?.Message}}

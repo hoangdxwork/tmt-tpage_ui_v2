@@ -40,7 +40,7 @@
 
           <div class="xl:hidden 2xl:flex gap-x-2">
             <tds-form-field>
-              <tds-select tds-tooltip="Chọn loại đối tác GH trước"
+              <tds-select
                 valueField="Id" textField="Name" class="xl:w-[100px] 2xl:w-[190px]"
                 placeholder="Chọn đối tác GH" [valuePrimitive]="false" (selectChange)="onChangeDeliveryId($event)" [(ngModel)]="carrierId"
                 disabledField="isActive" [data]="lstCarriers" [allowClear]="true">

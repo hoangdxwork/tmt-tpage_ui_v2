@@ -20,7 +20,7 @@ import { ColumnTableDTO } from '../components/config-column/config-column.compon
 import { Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
-import { FastSaleOrderDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderDTO, FastSaleOrderSummaryStatusModelDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSMessageService } from 'tds-ui/message';
@@ -32,6 +32,7 @@ import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
+import { FilterOptionsComponent } from '../components/filter-option/filter-options.component';
 
 @Component({
   selector: 'app-bill',
@@ -43,6 +44,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('innerText') innerText!: ElementRef;
   @ViewChild('widthTable') widthTable!: ElementRef;
   @ViewChild('billOrderLines') billOrderLines!: ElementRef;
+
+  @ViewChild(FilterOptionsComponent) filterOptions!: TDSSafeAny;
 
   lstOfData: Array<FastSaleOrderDTO> = [];
   lstOfTeam!: CRMTeamDTO[];
@@ -227,7 +230,11 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()),
       TagIds: this.filterObj.tags.join(","),
       TrackingRef: this.filterObj.hasTracking,
-    };
+      States: this.filterObj.status?.length > 0 ? [...this.filterObj.status] : null,
+      ShipPaymentStatus: this.filterObj.shipPaymentStatus,
+      CarrierId: this.filterObj.carrierId > 0 ? this.filterObj.carrierId: null,
+      LiveCampaignId: this.filterObj.liveCampaignId
+    } as FastSaleOrderSummaryStatusModelDTO;
 
 
     this.isTabNavs = true;
@@ -579,7 +586,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       liveCampaignId: null
     }
 
-    this.loadData(this.pageSize, this.pageIndex);
+    this.filterOptions.onCancel();
   }
 
   onView(data: any) {
@@ -729,6 +736,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         this.filterObj.carrierId = -1;
     }
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   onOpenTrackingUrl(data: FastSaleOrderDTO) {

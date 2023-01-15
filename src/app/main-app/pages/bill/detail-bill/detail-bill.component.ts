@@ -44,6 +44,8 @@ export class DetailBillComponent implements OnInit{
   isButtonComfirm: boolean = false;
   teamId!:TDSSafeAny;
 
+  modalImages: boolean = false;
+
   constructor(private route: ActivatedRoute,
     private router: Router,
     private notificationService: TDSNotificationService,
@@ -468,6 +470,13 @@ export class DetailBillComponent implements OnInit{
     }
   }
 
+  openImages() {
+    this.modalImages = true;
+  }
+
+  handleCancel(): void {
+    this.modalImages = false;
+  }
 
   onBack(){
     history.back();

@@ -58,15 +58,15 @@ export class TableAllOrderComponent implements OnInit {
   lstOfTeam!: CRMTeamDTO[];
 
   public filterObj: FilterObjSOOrderModel = {
-    tags: [],
-    status: [],
-    searchText: '',
-    dateRange: {
-      startDate: addDays(new Date(), -30),
-      endDate: new Date(),
+    Tags: [],
+    StatusTexts: [],
+    SearchText: '',
+    DateRange: {
+      StartDate: addDays(new Date(), -30),
+      EndDate: new Date(),
     },
-    liveCampaignId: null,
-    Telephone: null,
+    LiveCampaignId: null,
+    HasTelephone: null,
     PriorityStatus: null
   }
 
@@ -210,18 +210,18 @@ export class TableAllOrderComponent implements OnInit {
     this.pageIndex = 1;
     this.pageSize = 20;
 
-    let lstStatus = event?.status?.filter(x => x != 'Tất cả');
+    let lstStatus = event?.StatusTexts?.filter(x => x != 'Tất cả');
 
     this.filterObj = {
-      tags: event.tags,
-      status: lstStatus ? lstStatus : [],
-      searchText: event.searchText,
-      dateRange: event.dateRange ? {
-        startDate: event.dateRange.startDate,
-        endDate: event.dateRange.endDate,
-      } : null,
-      liveCampaignId: null,
-      Telephone: event.Telephone,
+      Tags: event?.Tags,
+      StatusTexts: lstStatus ? lstStatus : [],
+      SearchText: event?.SearchText,
+      DateRange: {
+        StartDate: event?.DateRange?.StartDate,
+        EndDate: event?.DateRange?.EndDate,
+      },
+      LiveCampaignId: null,
+      HasTelephone: event.HasTelephone,
       PriorityStatus: event.PriorityStatus
     }
 
@@ -232,12 +232,12 @@ export class TableAllOrderComponent implements OnInit {
     this.pageIndex = 1;
 
     this.filterObj = {
-      tags: [],
-      status: [],
-      searchText: '',
-      dateRange: {} as any,
-      liveCampaignId: null,
-      Telephone: null,
+      Tags: [],
+      StatusTexts: [],
+      SearchText: '',
+      DateRange: {} as any,
+      LiveCampaignId: null,
+      HasTelephone: null,
       PriorityStatus: null
     }
 
@@ -314,7 +314,7 @@ export class TableAllOrderComponent implements OnInit {
   onSearch(data: TDSSafeAny) {
     this.tabIndex = 1;
     this.pageIndex = 1;
-    this.filterObj.searchText = data.value;
+    this.filterObj.SearchText = data.value;
 
     let filters = this.odataLiveCampaignOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
@@ -602,10 +602,10 @@ export class TableAllOrderComponent implements OnInit {
 
   loadSummaryStatus() {
     let model: SaleOnlineStatusModelDto = {
-      DateStart: this.filterObj.dateRange?.startDate,
-      DateEnd: this.filterObj.dateRange?.endDate,
-      SearchText: this.filterObj.searchText,
-      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+      DateStart: this.filterObj?.DateRange?.StartDate,
+      DateEnd: this.filterObj?.DateRange?.EndDate,
+      SearchText: this.filterObj?.SearchText,
+      TagIds: this.filterObj?.Tags?.map((x: TDSSafeAny) => x.Id).join(","),
     }
 
     this.isTabNavs = true;

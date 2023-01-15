@@ -2,7 +2,6 @@ import { GenerateTagAttributesFacade } from '@app/services/facades/generate-tag-
 import { InventoryChangeType } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ModalLiveCampaignBillComponent } from './../../../live-campaign/components/modal-live-campaign-bill/modal-live-campaign-bill.component';
 import { ModalLiveCampaignOrderComponent } from './../../../live-campaign/components/modal-live-campaign-order/modal-live-campaign-order.component';
-import { animate } from '@angular/animations';
 import { NgxVirtualScrollerDto } from '@app/dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
 import { THelperDataRequest } from '../../../../../lib/services/helper-data.service';
 import { ProductIndexDBService } from '../../../../services/product-indexdb.service';
@@ -17,7 +16,6 @@ import { LiveCampaignService } from "@app/services/live-campaign.service";
 import { TDSDestroyService } from "tds-ui/core/services";
 import { takeUntil} from "rxjs";
 import { TDSMessageService } from "tds-ui/message";
-import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from "@app/dto/product-pouchDB/product-pouchDB.dto";
 import { LiveCampaignSimpleDetail, LiveCampaignSimpleDto } from "@app/dto/live-campaign/livecampaign-simple.dto";
 import { TDSModalService } from "tds-ui/modal";
@@ -31,6 +29,7 @@ import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socke
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { LiveCampaigntAvailableToBuyDto, LiveCampaigntPendingCheckoutDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
+import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
 
 @Component({
   selector: 'drawer-edit-livecampaign',
@@ -48,6 +47,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   @Input() liveCampaignId: any;
   @Input() visibleDrawerEditLive!: boolean;
   @ViewChild('innerText') viewChildInnerText!: ElementRef;
+  @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
 
   isLoading: boolean = false;
   indexDbStorage!: DataPouchDBDTO[];
@@ -144,6 +144,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
           if(!this.liveCampaignId) return;
+          if(this.isLoading) return;
 
           switch(res?.EventName) {
               // Số lượng sản phẩm chiến dịch chờ chốt
@@ -272,7 +273,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
         })
 
         this.getLstOrderTags(this.lstDetail);
-
         this.isLoading = false;
         this.cdRef.detectChanges();
       },
@@ -338,10 +338,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.liveCampaignService.deleteDetails(id, [item.Id]).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
-
             this.refreshData();
-            this.loadDataDetail();
-
             this.isLoading = false;
             this.message.success('Thao tác thành công');
             this.cdRef.detectChanges();
@@ -618,11 +615,17 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     this.innerTextValue = '';
 
     this.lstDetail = [];
+    this.lstWaitingItems = [];
     this.isEditDetails = {};
 
     this.isLoading = true;
     this.pageIndex = 1;
+    if(this.virtualScroller) {
+      this.virtualScroller.scrollToPosition(0);
+    }
+
     this.loadOverviewDetails(this.pageSize, this.pageIndex);
+    this.loadDataDetail();
   }
 
   openTag(item: ReportLiveCampaignDetailDTO) {
@@ -1042,7 +1045,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   showEditLimitedQuantity() {
     if(this.lstDetail && this.lstDetail.length > 0) {
         this.isShowEditLimitedQuantity = true;
-    } 
+    }
     else {
         this.message.error('Chưa có sản phẩm nào trong danh sách');
         this.isShowEditLimitedQuantity = false;
@@ -1068,7 +1071,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
         this.message.error(err.error?.message);
       }
     });
-    
   }
 
   onClosePopover() {

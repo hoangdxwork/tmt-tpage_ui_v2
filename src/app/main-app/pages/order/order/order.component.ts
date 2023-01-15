@@ -40,8 +40,8 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 import { SaleOnlineOrderGetDetailsDto } from '@app/dto/order/so-orderlines.dto';
-import { ModalOrderDeletedComponent } from '../components/modal-order-deleted/modal-order-deleted.component';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { ModalOrderDeletedComponent } from '../components/modal-order-deleted/modal-order-deleted.component';
 
 @Component({
   selector: 'app-order',
@@ -73,16 +73,16 @@ export class OrderComponent implements OnInit, AfterViewInit {
   orderMessage: TDSSafeAny;
 
   public filterObj: FilterObjSOOrderModel = {
-    tags: [],
-    status: [],
-    searchText: '',
-    dateRange: {
-      startDate: addDays(new Date(), -30),
-      endDate: new Date()
+    Tags: [],
+    StatusTexts: [],
+    SearchText: '',
+    DateRange: {
+      StartDate: addDays(new Date(), -30),
+      EndDate: new Date()
     },
-    teamId: '',
-    liveCampaignId: '',
-    Telephone: null,
+    TeamId: '',
+    LiveCampaignId: '',
+    HasTelephone: null,
     PriorityStatus: null
   }
 
@@ -188,7 +188,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.indClickTag = "";
-    this.filterObj.searchText = data.value;
+    this.filterObj.SearchText = data.value;
 
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
@@ -196,10 +196,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.getViewData(params).subscribe({
         next: (res: any) => {
             this.count = res['@odata.count'] as number;
-            this.lstOfData = [...res.value];
+            this.lstOfData = [...(res?.value || [])];
         },
         error: (error: any) => {
-            this.message.error(error?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
+            this.message.error(error.error?.message);
         }
     });
   }
@@ -231,13 +231,11 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.lstOfData = [];
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
-    // let params = `top=${pageSize}&%24orderby=DateCreated+desc&%24filter=${filters}`;
-
 
     this.getViewData(params).subscribe({
       next: (res: TDSSafeAny) => {
           this.count = res['@odata.count'] as number;
-          this.lstOfData = [...res.value];
+          this.lstOfData = [...(res?.value || [])];
 
           let lstId = this.lstOfData.map((x) => x.PartnerId);
           this.loadParnerStatus(lstId);
@@ -249,15 +247,13 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   loadParnerStatus(params: Array<number>) {
-    this.commonService.getPartnersById(params).subscribe({
+    this.commonService.getPartnersById(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TIDictionary<String>) => {
-        if(res) {
           this.lstOfData.map( x => {
             if(res[x.PartnerId]) {
-              x.PartnerStatus = res[x.PartnerId];
+                x.PartnerStatus = res[x.PartnerId];
             }
           })
-        }
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
@@ -268,31 +264,39 @@ export class OrderComponent implements OnInit, AfterViewInit {
   getViewData(params: string): Observable<ODataSaleOnline_OrderDTOV2> {
     this.isLoading = true;
     return this.odataSaleOnline_OrderService
-      .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => this.isLoading = false));
+      .getView(params, this.filterObj).pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false));
   }
 
   loadSummaryStatus() {
-    let startDate = this.filterObj?.dateRange.startDate as any;
+    let startDate = this.filterObj?.DateRange?.StartDate as any;
     if(startDate) {
         startDate = this.datePipe.transform(new Date(startDate), 'yyyy-MM-ddT00:00:00+00:00');
     }
 
-    let endDate = this.filterObj?.dateRange.endDate as any;
+    let endDate = this.filterObj?.DateRange?.EndDate as any;
     if(endDate) {
         endDate = this.datePipe.transform(new Date(endDate), 'yyyy-MM-ddTHH:mm:ss+00:00');
+    }
+
+    let tagIds;
+    if(this.filterObj?.Tags && this.filterObj?.Tags?.length > 0) {
+      tagIds = this.filterObj.Tags.map((x: TDSSafeAny) => x).join(",") as any;
     }
 
     let model: SaleOnlineStatusModelDto = {
       DateStart: startDate,
       DateEnd: endDate,
-      SearchText: this.filterObj.searchText,
-      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+      SearchText: this.filterObj?.SearchText,
+      TagIds: tagIds,
+      LiveCampaignId: this.filterObj?.LiveCampaignId,
+      HasTelephone: this.filterObj?.HasTelephone,
+      PriorityStatus: this.filterObj?.PriorityStatus,
+      TeamId: this.filterObj?.TeamId,
+      StatusTexts: this.filterObj?.StatusTexts
     }
 
     this.isTabNavs = true;
-    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
-      finalize(() => this.isTabNavs = false)).subscribe({
+    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: Array<SaleOnlineStatusValueDto>) => {
             let tabs: TabNavsDTO[] = [];
             let total = 0;
@@ -300,7 +304,6 @@ export class OrderComponent implements OnInit, AfterViewInit {
             res?.map((x: SaleOnlineStatusValueDto, index: number) => {
                 total += x.Total;
                 index = index + 2;
-
                 tabs.push({ Name: `${x.StatusText}`, Index: index, Total: x.Total });
             });
 
@@ -309,8 +312,13 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
             this.tabNavs = [...tabs];
             this.lstOftabNavs = this.tabNavs.filter(x => Number(x.Index) > 1);
+            this.isTabNavs = false;
+        },
+        error: (error: any) => {
+            this.isTabNavs = false;
+            this.message.error(error.error?.message);
         }
-      });
+    });
   }
 
   loadGridConfig() {
@@ -330,9 +338,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   loadAllTeam() {
     this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-        if(res && TDSHelperArray.hasListValue(res)) {
-          this.lstOfTeam = [...res];
-        }
+          this.lstOfTeam = [...(res || [])];
       },
       error: (err) => {
         this.message.error(err?.error?.message);
@@ -343,7 +349,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   loadTags() {
     let type = "saleonline";
     this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
-      this.lstDataTag = [...res.value];
+      this.lstDataTag = [...(res?.value || [])];
     });
   }
 
@@ -359,9 +365,9 @@ export class OrderComponent implements OnInit, AfterViewInit {
   onCreateQuicklyFS() {
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
-      this.isProcessing = true
+      this.isProcessing = true;
       let ids = [...this.setOfCheckedId];
-      this.showModalCreateBillFast(ids)
+      this.showModalCreateBillFast(ids);
     }
   }
 
@@ -380,7 +386,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
                 }
             });
 
-            this.modal.afterAllClose.subscribe({
+            this.modal.afterAllClose.pipe(takeUntil(this.destroy$)).subscribe({
               next:(x: any) =>{
                 if(x) {
                   this.loadData(this.pageSize,this.pageIndex);
@@ -395,7 +401,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
         error: (error: any) => {
           this.isLoading = false;
           this.isProcessing = false
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+          this.message.error(error.error?.message);
         }
       });
   }
@@ -403,7 +409,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   onCreateBillDefault() {
     if (this.checkValueEmpty() == 1) {
       this.isProcessing = true
-      this.fastSaleOrderService.checkPermissionCreateFSO().subscribe({
+      this.fastSaleOrderService.checkPermissionCreateFSO().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
           let ids = [...this.setOfCheckedId];
 
@@ -418,7 +424,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
             }
           });
 
-          this.modal.afterAllClose.subscribe({
+          this.modal.afterAllClose.pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
               if(res) {
                 this.loadData(this.pageSize, this.pageIndex);
@@ -428,7 +434,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
           this.isProcessing = false
         },
         error: (err) => {
-          this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
+          this.message.error(err.error?.message);
           this.isProcessing = false
         }
       })
@@ -438,7 +444,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
       this.isProcessing = true
-      this.fastSaleOrderService.checkPermissionCreateFSO().subscribe({
+      this.fastSaleOrderService.checkPermissionCreateFSO().pipe(takeUntil(this.destroy$)).subscribe({
         next:(res) => {
           let model = {
             ids: [...this.setOfCheckedId]
@@ -455,19 +461,25 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
               // TODO: lưu filter cache trước khi load trang add bill
               const key =  this.saleOnline_OrderService._keyCacheFilter;
-              this.cacheApi.setItem(key,{ filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
+              let model = { 
+                filterObj: this.filterObj, 
+                pageIndex: this.pageIndex, 
+                pageSize: this.pageSize 
+              };
+
+              this.cacheApi.setItem(key, model);
 
               this.router.navigateByUrl(`bill/create?isorder=true`);
               this.isProcessing = false
             },
             error: (err) => {
-              this.message.error(err?.error?.message || 'Không thể tạo hóa đơn');
+              this.message.error(err.error?.message);
               this.isProcessing = false
             }
           })
         },
         error:(err) => {
-          this.message.error(err?.error?.message || 'Đã có lỗi xảy ra');
+          this.message.error(err.error?.message);
           this.isProcessing = false
         }
       });
@@ -475,18 +487,18 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   onSelectChange(index: TDSSafeAny) {
-    this.filterObj.status = [];
+    this.filterObj.StatusTexts = [];
     let item = this.tabNavs.filter(f => f.Index == index)[0];
 
     if (item?.Name == 'Tất cả') {
-      this.filterObj.status = [];
+      this.filterObj.StatusTexts = [];
     } else {
-      this.filterObj.status.push(item.Name);
+      this.filterObj.StatusTexts.push(item.Name);
     }
 
     this.pageIndex = 1;
     this.indClickTag = "";
-    this.filterObj.tags = [];
+    this.filterObj.Tags = [];
 
     this.indeterminate = false;
     this.loadData(this.pageSize, this.pageIndex);
@@ -560,8 +572,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
             let dataObj = JSON.parse(res.value)?.value;
             if(dataObj){
                 this.filterObj = dataObj.filterObj;
-                this.filterObj.dateRange.startDate = new Date(dataObj.filterObj.dateRange.startDate);
-                this.filterObj.dateRange.endDate = new Date(dataObj.filterObj.dateRange.endDate);
+                this.filterObj!.DateRange!.StartDate = new Date(dataObj.filterObj.DateRange.StartDate);
+                this.filterObj!.DateRange!.EndDate = new Date(dataObj.filterObj.DateRange.EndDate);
                 this.pageIndex = dataObj.pageIndex;
                 this.pageSize = dataObj.pageSize;
             }
@@ -583,19 +595,20 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.setOfCheckedId = new Set<string>();
 
     this.filterObj = {
-      tags: [],
-      status: [],
-      searchText: '',
-      dateRange: {
-        startDate: addDays(new Date(), -30),
-        endDate: new Date(),
+      Tags: [],
+      StatusTexts: [],
+      SearchText: '',
+      DateRange: {
+        StartDate: addDays(new Date(), -30),
+        EndDate: new Date(),
       },
-      liveCampaignId: null,
-      Telephone: null,
+      LiveCampaignId: null,
+      HasTelephone: null,
       PriorityStatus: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 
   // Refresh nhưng không refresh lại Tab, Index
@@ -613,27 +626,25 @@ export class OrderComponent implements OnInit, AfterViewInit {
     this.tabIndex = 1;
     this.pageIndex = 1;
 
-    this.filterObj.tags = event.tags;
-    this.filterObj.status = event.status;
-
-    this.filterObj.dateRange = {
-      startDate: event.dateRange ? event.dateRange?.startDate: null,
-      endDate: event.dateRange?  event.dateRange?.endDate: null
+    this.filterObj = {
+      Tags: [...(event?.Tags || [])],
+      StatusTexts: [...(event?.StatusTexts || [])],
+      SearchText: event?.SearchText,
+      DateRange: {
+        StartDate: event?.DateRange?.StartDate || null,
+        EndDate: event?.DateRange?.EndDate || null
+      },
+      TeamId: event?.TeamId || null,
+      LiveCampaignId: event?.LiveCampaignId || null,
+      HasTelephone: event?.HasTelephone || null,
+      PriorityStatus: event?.PriorityStatus || null
     }
 
-    if (TDSHelperArray.hasListValue(event.status)) {
-      this.tabNavs = this.lstOftabNavs.filter(f => event.status.includes(f.Name));
+    if (TDSHelperArray.hasListValue(event?.StatusTexts)) {
+      this.tabNavs = this.lstOftabNavs.filter(f => event.StatusTexts.includes(f.Name));
     } else {
       this.tabNavs = this.lstOftabNavs;
     }
-
-    this.filterObj.liveCampaignId = event.liveCampaignId ? event.liveCampaignId : null;
-
-    this.filterObj.teamId = event.teamId ? event.teamId : null;
-
-    this.filterObj.PriorityStatus = event.PriorityStatus ? event.PriorityStatus : null;
-
-    this.filterObj.Telephone = event.Telephone;
 
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
@@ -678,7 +689,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
                     }
                 })
 
-                modal.afterClose?.subscribe((obs: string) => {
+                modal.afterClose?.pipe(takeUntil(this.destroy$)).subscribe((obs: string) => {
                     if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
                         this.loadData(this.pageSize, this.pageIndex);
                     }
@@ -715,7 +726,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
       },
       error: (error: any) => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
+        this.message.error(error.error?.message);
       }
     });
   }
@@ -730,7 +741,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   onExportExcel() {
-    if (this.isProcessing) { return }
+    if (this.isProcessing) { 
+      return 
+    }
+
     let filter = {
       logic: 'and',
       filters: [
@@ -788,9 +802,15 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   // Nhãn
   loadStatusTypeExt() {
-    this.commonService.getStatusTypeExt().subscribe(res => {
-      this.lstStatusTypeExt = [...res];
-      this.cdRef.markForCheck();
+    this.commonService.getStatusTypeExt().pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+        this.lstStatusTypeExt = [...res];
+        this.cdRef.markForCheck();
+      },
+      error: (err) => {
+        this.message.error(err.error?.message);
+        this.cdRef.markForCheck();
+      }
     });
   }
 
@@ -806,7 +826,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
           this.cdRef.markForCheck();
       },
       error: (error: any) => {
-          this.message.error(error.error.message || 'Cập nhật thất bại');
+          this.message.error(error.error?.message);
       }
     });
   }
@@ -822,7 +842,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
               }
             },
             error: (error: any) => {
-              this.message.error( `${error?.error?.message}` || 'Load thông tin đơn hàng đã xảy ra lỗi');
+              this.message.error( `${error?.error?.message}` || 'Tải thông tin đơn hàng đã xảy ra lỗi');
             }
         })
       })
@@ -894,7 +914,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
       error: (error: any) => {
         this.isOpenChat = false;
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` || 'Thao tác không thành công');
+        this.message.error(error.error?.message);
       }
     })
   }
@@ -922,7 +942,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
       },
       error: (error: any) => {
           this.isLoading = false;
-          this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+          this.message.error(error.error?.message);
       }
     })
   }

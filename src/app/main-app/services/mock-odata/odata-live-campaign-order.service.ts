@@ -22,7 +22,7 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
 
   getView(params: string, filterObj: FilterObjSOOrderModel, liveCampaignId: string): Observable<ODataResponsesDTO<any>>{
     const api: CoreAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetViewCampaign?TagIds=${filterObj.tags}&liveCampaignId=${liveCampaignId}&${params}&$count=true`,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetViewCampaign?TagIds=${filterObj?.Tags}&liveCampaignId=${liveCampaignId}&${params}&$count=true`,
         method: CoreApiMethodType.get,
     }
 

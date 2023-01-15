@@ -33,14 +33,17 @@
       <div class="flex flex-row items-stretch justify-between w-full">
         <div class="flex flex-auto justify-between items-center pr-2" *ngIf="setOfCheckedId.size == 0">
 
-          <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
-            <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-                <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
-                </tds-filter-status-item>
-            </ng-template>
-          </tds-filter-status>
-
-          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]="setOfCheckedId"
+          <div class="flex flex-auto">
+            <div class="w-full overflow-y-auto">
+              <tds-filter-status class="flex" [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
+                <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
+                    <tds-filter-status-item  [name]='item.Name' [count]='item.Total' [value]="item.Index">
+                    </tds-filter-status-item>
+                </ng-template>
+              </tds-filter-status>
+            </div>
+          </div>
+          <action-dropdown class="flex-shrink-0" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]="setOfCheckedId"
             (onRefreshData)="refreshDataCurrent()"></action-dropdown>
         </div>
 
@@ -75,7 +78,7 @@
         <div class="flex items-center gap-x-2 pr-4">
           <tds-form-field class="w-full">
               <input tdsInput placeholder="Mã, Tên khách hàng, SĐT" autocomplete="off"
-                [(ngModel)]="filterObj.searchText"
+                [(ngModel)]="filterObj!.SearchText"
                 [tdsInputDebounce]="750"
                 (inputKeyup)="onSearch($event)"/>
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>

@@ -84,10 +84,10 @@
                         <th width="80px" class="border-r" [tdsLeft]="true">Ảnh</th>
                         <th width="280px" [tdsLeft]="true" class="border-r">Tên</th>
                         <th width="168px" class="border-r">Đơn vị</th>
-                        <th width="168px" class="border-r">Mã vạch</th>
+                        <th width="218px" class="border-r">Mã vạch</th>
                         <th width="168px" class="border-r" [align]="'right'">Giá bán</th>
                         <th width="168px" class="border-r" [align]="'center'">Hiệu lực</th>
-                        <th width="150px" [tdsRight]="true">Thao tác</th>
+                        <th width="100px" [tdsRight]="true">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -100,9 +100,17 @@
                                     [tdsSrc]="data.ImageUrl?data.ImageUrl:(data.Images?data.Images[0].Url:'')"
                                     [isAvatar]="false"></tds-avatar>
                             </td>
-                            <td class="border-r" [tdsLeft]="true">{{ data.NameGet }}</td>
+                            <td class="border-r" [tdsLeft]="true">
+                                <span class="w-[168px]">
+                                    {{ data.NameGet }}
+                                </span>
+                            </td>
                             <td class="border-r">{{ data.UOMName }}</td>
-                            <td class="border-r">{{ data.DefaultCode }}</td>
+                            <td class="border-r">
+                                <span class="w-[168px]">
+                                    {{ data.DefaultCode }}
+                                </span>
+                            </td>
                             <td class="border-r" [align]="'right'">{{ data.PriceVariant | numberCustom  }} đ</td>
                             <td class="border-r" [align]="'center'">
                                 <span class="flex items-center justify-center">
