@@ -700,7 +700,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     })
   }
 
-  onEditDetails(item: ReportLiveCampaignDetailDTO) {debugger
+  onEditDetails(item: ReportLiveCampaignDetailDTO) {
     if(this.checkIsEdit() == 0) return;
 
     if(item && item.Id) {
