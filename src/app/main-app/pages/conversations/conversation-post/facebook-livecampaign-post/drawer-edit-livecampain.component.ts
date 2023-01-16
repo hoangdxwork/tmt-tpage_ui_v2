@@ -499,8 +499,9 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
               delete this.isEditDetails[x.Id];
           })
 
-          this.lstDetail = [...this.lstDetail];
-          this.getLstOrderTags(this.lstDetail);
+          // this.lstDetail = [...this.lstDetail];
+          // this.getLstOrderTags(this.lstDetail);
+          this.lstDetail = [];
 
           this.loadDataDetail();
           this.loadOverviewDetails(this.pageSize, this.pageIndex);
