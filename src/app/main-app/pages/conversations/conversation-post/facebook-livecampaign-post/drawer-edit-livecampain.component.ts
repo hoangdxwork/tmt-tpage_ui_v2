@@ -249,7 +249,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
     this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
-        if(res?.Details && res.Details?.length) {
+        if(res?.Details && res.Details?.length > 0) {
           this.lstDetail?.map(x => {
             res.Details = res.Details.filter(a => !(a.UOMId == x.UOMId && a.ProductId == x.ProductId));
           });
