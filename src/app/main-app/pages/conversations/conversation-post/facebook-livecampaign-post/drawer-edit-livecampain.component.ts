@@ -249,6 +249,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
     this.liveCampaignService.overviewDetailsReport(this.liveCampaignId, params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
+        if(res?.Details && res.Details?.length) {
+          this.lstDetail?.map(x => {
+            res.Details = res.Details.filter(a => !(a.UOMId == x.UOMId && a.ProductId == x.ProductId));
+          });
+        }
 
         this.lstDetail = [...(this.lstDetail || []), ...(res.Details || [])];
         this.count = res.TotalCount || 0;
@@ -499,9 +504,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
               delete this.isEditDetails[x.Id];
           })
 
-          // this.lstDetail = [...this.lstDetail];
-          // this.getLstOrderTags(this.lstDetail);
-          this.lstDetail = [];
+          this.lstDetail = [...this.lstDetail];
+          this.getLstOrderTags(this.lstDetail);
 
           this.loadDataDetail();
           this.loadOverviewDetails(this.pageSize, this.pageIndex);
@@ -696,7 +700,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     })
   }
 
-  onEditDetails(item: ReportLiveCampaignDetailDTO) {
+  onEditDetails(item: ReportLiveCampaignDetailDTO) {debugger
     if(this.checkIsEdit() == 0) return;
 
     if(item && item.Id) {
