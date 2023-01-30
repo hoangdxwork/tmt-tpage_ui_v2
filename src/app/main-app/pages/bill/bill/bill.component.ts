@@ -230,7 +230,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()),
       TagIds: this.filterObj.tags.join(","),
       TrackingRef: this.filterObj.hasTracking,
-      States: this.filterObj.status?.length > 0 ? [...this.filterObj.status] : null,
+      States: this.filterObj.status?.length > 0 ? [...this.filterObj.status] : [],
       ShipPaymentStatus: this.filterObj.shipPaymentStatus,
       CarrierId: this.filterObj.carrierId > 0 ? this.filterObj.carrierId: null,
       LiveCampaignId: this.filterObj.liveCampaignId
