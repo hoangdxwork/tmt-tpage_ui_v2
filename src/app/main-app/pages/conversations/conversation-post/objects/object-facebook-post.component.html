@@ -146,9 +146,6 @@
                     </div>
                 </div>
                 <div class="flex-auto flex flex-col overflow-hidden desktop:gap-y-2 gap-y-1">
-                    <span class="w-full font-semibold truncate text-caption-2 desktop:text-body-2" *ngIf="child.description">
-                        {{child.description}}
-                    </span>
 
                     <span *ngIf="child.Data && child.Data.message; else noMessChild" class="font-semibold line-clamp text-caption-1 desktop:text-body-2">
                         {{child.Data.message}}
@@ -162,11 +159,6 @@
 
                         <span *ngIf="item.ChannelUpdatedTime" class="text-neutral-1-400 tdsi-time-line" tds-tooltip tooltipTitle="Cập nhật lần cuối lúc {{child.ChannelUpdatedTime | date:'dd/MM/yyyy HH:mm'}}">
                         </span>
-                    </span>
-
-                    <span *ngIf="!(child.created_time | date:'dd/MM/yyyy HH:mm')"
-                        class="text-neutral-1-400">
-                        {{child.created_time | date:'dd/MM/yyyy HH:mm'}}
                     </span>
 
                     <!-- <div class="w-full flex justify-between items-center">

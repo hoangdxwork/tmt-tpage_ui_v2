@@ -335,20 +335,20 @@
         </div>
         <div class="pt-4 ">
             <tds-label>Danh sách số điện thoại seeding</tds-label>
-            <div class="flex gap-x-4 pt-2 items-center">
+            <div class="flex gap-x-2 pt-2 items-center">
                 <tds-form-field class="w-full">
                     <tds-select [ngModel]="dataModel.ExcludedPhones" placeholder='Nhập nội dung và nhấn [Enter]' [backdrop]="true"
-                        mode="tags" [maxTagCount]="10" (ngModelChange)="changeExcludedPhones($event)" [ngModelOptions]="{standalone: true}">
+                        mode="tags" [maxTagCount]="10" (ngModelChange)="changeExcludedPhones($event)" [ngModelOptions]="{standalone: true}" [data]="lstDataExcludedPhones">
                     </tds-select>
                 </tds-form-field>
 
-                <button tds-button-icon color="secondary">
-                    <input type="file" (change)="addExcludedPhone($event)" id="ip_add_excel_phone" class="hidden">
+                <button tds-button-icon color="secondary" tds-tooltip="upload file txt">
+                    <input type="file" (change)="addExcludedPhone($event, 'txt')" id="ip_add_excel_phone" class="hidden">
                     <label class="tdsi-note-fill flex items-center text-neutral-1-500" for="ip_add_excel_phone"></label>
                 </button>
 
-                <!-- <button tds-button-icon color="secondary">
-                    <input type="file" (change)="addExcludedPhone($event)" id="ip_add_txt_phone" class="hidden">
+                <!-- <button tds-button-icon color="secondary" tds-tooltip="upload file excel">
+                    <input type="file" (change)="addExcludedPhone($event, 'xlsx')" id="ip_add_txt_phone" class="hidden">
                     <label class="tdsi-excel-fill flex items-center text-neutral-1-500" for="ip_add_txt_phone"></label>
                 </button> -->
             </div>

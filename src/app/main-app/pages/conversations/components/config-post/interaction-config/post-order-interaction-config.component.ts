@@ -126,6 +126,11 @@ export class PostOrderInteractionConfigComponent implements OnInit {
       return;
     }
 
+    if(!this.dataModel.ShopLabel && !this.dataModel.ShopLabel2) {
+      this.message.error('Yêu cầu nhập một giá trị cho nút [giỏ hàng] hoặc nút [đồng ý]');
+      return;
+    }
+
     let model = this.prepareModel();
     this.isLoading = true;
     this.facebookPostService.onChangeDisable$.emit(true);

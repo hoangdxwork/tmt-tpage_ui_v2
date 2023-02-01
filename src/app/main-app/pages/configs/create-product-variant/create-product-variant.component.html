@@ -90,7 +90,7 @@
                                   <tds-label>Nhóm sản phẩm:</tds-label>
                                   <tds-form-field class="w-full col-span-2">
                                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm sản phẩm'
-                                    disabledField="isActive" formControlName="Categ"
+                                    disabledField="isActive" formControlName="Categ" [required]="true"
                                     [data]="lstProductCateg" [allowClear]="true" [valuePrimitive]="false">
                                     </tds-select>
                                     <tds-error>

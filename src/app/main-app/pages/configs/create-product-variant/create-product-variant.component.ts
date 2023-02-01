@@ -263,17 +263,23 @@ export class CreateProductVariantComponent implements OnInit {
   }
 
   onSave() {
-    let model = this.prepareModel();
+    if(this.isLoading) return;
+    if(!this._form.value.Categ) {
+      this.message.error('Vui lòng chọn nhóm sản phẩm');
+      return;
+    }
 
-    if (!TDSHelperString.hasValueString(model.Name)) {
+    if (!TDSHelperString.hasValueString(this._form.value.Name)) {
       this.message.error('Vui lòng nhập tên sản phẩm');
       return
     }
 
-    if(!TDSHelperArray.hasListValue(model.AttributeValues)){
+    if(!TDSHelperArray.hasListValue(this._form.value.AttributeValues)){
       this.message.error('Vui lòng chọn thuộc tính');
       return
     }
+
+    let model = this.prepareModel();
 
     this.isLoading = true;
     this.productService.insertProduct(model).pipe(takeUntil(this.destroy$)).subscribe({
