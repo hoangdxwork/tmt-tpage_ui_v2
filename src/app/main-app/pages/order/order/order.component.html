@@ -223,6 +223,7 @@
                     <span *ngIf="data.CRMTeamName" [ngClass]="data.CRMTeamId | getTeamIcon:lstOfTeam"></span>
                     <span class="ml-1 ">{{ data.CRMTeamName }}</span>
                   </div>
+                  <div class="font-semibold mt-1 text-caption-1">{{ data?.Source | dictSourcePipe }}</div>
                 </td>
 
                 <!-- Chiến dịch live -->
