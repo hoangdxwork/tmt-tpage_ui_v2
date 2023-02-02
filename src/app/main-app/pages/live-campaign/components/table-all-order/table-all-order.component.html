@@ -133,12 +133,14 @@
               <td  class="border-r">
                 <div class="w-full flex">
                   <span *ngIf="order.CRMTeamName" [ngClass]="order.CRMTeamId | getTeamIcon:lstOfTeam"></span>
-                  <span class="ml-1 ">{{order.CRMTeamName}}</span>
+                  <span class="ml-1">{{order.CRMTeamName}}</span>
                 </div>
 
-                <tds-tag *ngIf="order.PriorityStatus" [status]='order.PriorityStatus | priorityStatusColor'>
+                <tds-tag *ngIf="order.PriorityStatus" [status]='order.PriorityStatus | priorityStatusColor' class="mt-1">
                   {{order.PriorityStatus | priorityStatusName}}
                 </tds-tag>
+
+                <div class="font-semibold mt-1 text-caption-1">{{ order?.Source | dictSourcePipe }}</div>
               </td>
 
               <!-- Tên khách hàng -->

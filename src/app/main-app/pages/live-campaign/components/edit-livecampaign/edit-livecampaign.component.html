@@ -185,7 +185,7 @@
                 <thead>
                   <tr>
                       <th [width]="'64px'" class="text-center">STT</th>
-                      <th [width]="'320px'">
+                      <th [width]="'310px'">
                         <div customFilter class="flex justify-between items-center w-full">
 
                           <span class="w-1/4 py-2"> Sản phẩm </span>
@@ -208,8 +208,8 @@
                           </ng-template>
                       </div>
                       </th>
-                      <th [width]="'80px'" class="text-center">Ẩn/ hiện</th>
-                      <th [width]="'100px'" class="text-center">Số lượng</th>
+                      <th [width]="'80px'" class="text-center">Ẩn / hiện</th>
+                      <th [width]="'110px'" class="text-center">Số lượng</th>
 
                       <th [width]="'150px'" class="text-center">
                         <span class="flex justify-center items-center gap-x-2">
@@ -340,7 +340,7 @@
                     <td class="text-center">
                       <div *ngIf="isEditDetails[detail.value.Id]?.isEdit">
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1" formControlName="Quantity" (ngModelChange)="onChangeQuantity($event, detail.value)"
+                          <tds-input-number [min]="0" [max]="99999" [step]="1" formControlName="Quantity" (ngModelChange)="onChangeQuantity($event, detail.value)"
                              [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
@@ -352,7 +352,7 @@
                     <td class="text-center">
                       <div *ngIf="isEditDetails[detail.value.Id]?.isEdit">
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity" (ngModelChange)="onChangeLimitedQuantity($event, detail.value)"
+                          <tds-input-number [min]="0" [max]="1000000000" [step]="1" formControlName="LimitedQuantity" (ngModelChange)="onChangeLimitedQuantity($event, detail.value)"
                               [formatter]="numberWithCommas" [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
