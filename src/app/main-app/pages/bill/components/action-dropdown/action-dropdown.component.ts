@@ -125,7 +125,7 @@ export class ActionDropdownComponent implements OnInit {
             })
           }
 
-          if(this.filterObj.carrierId && this.filterObj.carrierId >= 0) {
+          if(this.filterObj.carrierId && this.filterObj.carrierId > 0) {
             data.Filter.filters.push({ field: "CarrierId", operator: OperatorEnum.eq, value: this.filterObj.carrierId })
           }
 
