@@ -718,18 +718,25 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     if(!event) return;
     if(this.checkIsEdit() == 0) return;
 
+    this.isLoading = true;
     let id = this.liveCampaignId as string;
     item.IsActive = event.checked;
 
     this.liveCampaignService.updateDetails(id, [item]).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
+          this.isLoading = false;
+
           if(item.IsActive == true) {
               this.message.success("Cập nhật trạng thái sản phẩm thành công");
           } else {
               this.message.success(`Sản phẩm đã được tắt`);
-          }
+          };
+
+          this.cdRef.detectChanges();
       }, error: (err) => {
+          this.isLoading = false;
           this.message.success(err?.error?.message);
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -856,7 +863,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
   showModalLstPost () {
     if(this.facebookPosts.length > 0){
-      const modal = this.modal.create({
+      this.modal.create({
         title: `Danh sách bài viết (${this.facebookPosts.length})`,
         content: ModalListPostComponent,
         size: "xl",
