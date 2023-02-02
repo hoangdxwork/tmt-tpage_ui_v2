@@ -89,7 +89,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   linkFacebook = 'https://www.facebook.com/';
 
   isChanged: boolean = false;
-  isdisabledAutoOrder: boolean = false;
+  isRescanAutoOrder: boolean = false;
   rescanAutoOrderTimer: TDSSafeAny;
 
   constructor(private facebookPostService: FacebookPostService,
@@ -124,7 +124,6 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       } else {
         this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
       }
-
       this.cdRef.detectChanges();
     }
 
@@ -157,10 +156,24 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     // TODO: Tổng bình luận bài viết
     this.postEvent.pushCountRealtimeToView$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniObjectsItemDto) => {
-        if(res && this.data && res.ObjectId == this.data.ObjectId) {
-            this.data.CountComment = res.CountComment;
-            this.cdRef.detectChanges();
-        }
+        let exist = res && this.data && res.ObjectId == this.data.ObjectId;
+        if(!exist) return;
+
+        this.data.CountComment = res.CountComment;
+        this.cdRef.detectChanges();
+      }
+    });
+
+    this.objectFacebookPostEvent.onChangeRescanAutoOrder$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: boolean) => {
+          let exist = res && this.isRescanAutoOrder && this.rescanAutoOrderTimer;
+          if(!exist) return;
+
+          this.destroyTimer();
+          this.isRescanAutoOrder = false;
+          this.message.success('Đã kích hoạt áp dụng ngay cho những bình luận đã có');
+
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -478,18 +491,20 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
   onRescanAutoOrder() {
     this.destroyTimer();
-    this.isdisabledAutoOrder = true;
+    this.isRescanAutoOrder = true;
+
     this.facebookPostService.rescanAutoOrder(this.data?.ObjectId, this.team?.Id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
-        this.message.success('Áp dụng thành công');
-        this.rescanAutoOrderTimer = setTimeout(() => {
-          this.isdisabledAutoOrder = false;
-          this.cdRef.detectChanges();
-        }, 10 * 1000);
+      next: (res: any) => {
+          this.rescanAutoOrderTimer = setTimeout(() => {
+              this.isRescanAutoOrder = false;
+              this.message.success('Đã kích hoạt áp dụng ngay cho những bình luận đã có');
+              this.cdRef.detectChanges();
+          }, 3 * 10 * 1000);
       },
       error: error => {
-        this.isdisabledAutoOrder = false;
-        this.message.error(error?.error?.message);
+          this.isRescanAutoOrder = false;
+          this.message.error(error?.error?.message);
+          this.cdRef.detectChanges();
       }
     })
   }

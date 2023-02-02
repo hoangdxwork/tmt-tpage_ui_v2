@@ -48,6 +48,7 @@ import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-or
 import { LiveCampaignFastSaleOrderDataDto } from '@app/dto/socket-io/livecampain-fastsaleorder.dto';
 import { formatDate } from '@angular/common';
 import { en_US } from "tds-ui/i18n";
+import { ObjectFacebookPostEvent } from '@app/handler-v2/conversation-post/object-facebook-post.event';
 
 @Component({
   selector: 'facebook-comment',
@@ -116,6 +117,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private crmMatchingService: CRMMatchingService,
     private activityMatchingService: ActivityMatchingService,
+    private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private chatomniConversationService: ChatomniConversationService,
     private facebookCommentService: FacebookCommentService,
     private chatomniCommentService: ChatomniCommentService,
@@ -214,6 +216,9 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
                     if(!exit2) break;
                     this.setCommentUpdateOrderCode(fbCreated);
+
+                    // TODO: trường hợp nhấn áp dụng tạo đơn cho các comment đã có
+                    this.objectFacebookPostEvent.onChangeRescanAutoOrder$.emit(true);
                 break;
 
                 // Cập nhật đơn hàng

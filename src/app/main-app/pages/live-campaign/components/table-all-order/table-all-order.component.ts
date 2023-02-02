@@ -270,7 +270,7 @@ export class TableAllOrderComponent implements OnInit {
               }
             })
 
-            modal.afterClose?.subscribe((obs: string) => {
+            modal.afterClose?.pipe(takeUntil(this.destroy$)).subscribe((obs: string) => {
               if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
                 this.loadData(this.pageSize, this.pageIndex);
               }
@@ -298,7 +298,7 @@ export class TableAllOrderComponent implements OnInit {
 
   removeOrder(id: string, code?: string) {
     this.isLoading = true;
-    this.saleOnline_OrderService.remove(id).subscribe({
+    this.saleOnline_OrderService.remove(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.message.info(`${Message.Order.DeleteSuccess} ${code || ''}`);
         this.loadData(this.pageSize, this.pageIndex);
