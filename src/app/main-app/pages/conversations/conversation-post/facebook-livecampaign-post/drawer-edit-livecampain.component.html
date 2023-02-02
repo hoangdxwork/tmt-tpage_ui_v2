@@ -113,7 +113,7 @@
                                     </div>
 
                                     <div class="flex flex-auto gap-x-1">
-                                        <button type="button" tds-button-icon color="secondary" size="sm" (click)="showEditLimitedQuantity()" 
+                                        <button type="button" tds-button-icon color="secondary" size="sm" (click)="showEditLimitedQuantity()"
                                             tds-tooltip tooltipTitle="Chỉnh sửa giới hạn trên đơn cho tất cả sản phẩm"
                                             tds-popover  popoverTrigger="click" [(popoverVisible)]="isShowEditLimitedQuantity" (popoverVisibleChange)="onPopoverApplyLimitQuantityChange($event)"
                                             [popoverAutoClose]="false" [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate">
@@ -147,14 +147,21 @@
                                 <div class="mb-1 inline-block w-full">
                                     <div class="flex-auto flex flex-col gap-y-1">
                                         <div class="w-full flex gap-x-2 justify-between items-center">
-                                            <span class="font-semibold text-[13px] w-full truncate" tds-popover [popoverContent]="popoverTag" popoverPlacement="topLeft"
-                                                tds-tooltip="{{ data.ProductNameGet || data.ProductName}}"  tooltipPlacement="bottomLeft">
-                                                {{ data.ProductNameGet || data.ProductName }}
+                                            <span class="font-semibold text-[13px] w-full truncate">
+                                                <span *ngIf="data.Tags?.length > 0" tds-popover [popoverContent]="popoverTag" popoverPlacement="topLeft"
+                                                  tds-tooltip="{{ data.ProductNameGet || data.ProductName}}"  tooltipPlacement="bottomLeft">
+                                                  {{ data.ProductNameGet || data.ProductName }}
+                                                </span>
+                                                <span *ngIf="data.Tags?.length == 0" tds-tooltip="{{ data.ProductNameGet || data.ProductName}}"  tooltipPlacement="topLeft">
+                                                  {{ data.ProductNameGet || data.ProductName }}
+                                              </span>
                                             </span>
 
                                             <!-- Thao tác -->
 
-                                            <div class="text-center flex justify-end gap-x-1 w-1/4">
+                                            <div class="text-center flex justify-end items-center gap-x-1 w-1/4">
+                                                <tds-checkbox size="sm" [(ngModel)]="data.IsActive" (change)="onChecked($event, data)"></tds-checkbox>
+
                                                 <button *ngIf="!isEditDetails[data.Id]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Chỉnh sửa" (click)="onEditDetails(data)">
                                                     <i class="tdsi-edit-fill"></i>
                                                 </button>
@@ -179,7 +186,7 @@
 
                                         <ng-template #popoverTag>
                                             <div class="max-w-[320px]">
-                                                <div class="flex flex-wrap gap-1 items-center" *ngIf="data.Tags?.length > 0">
+                                                <div class="flex flex-wrap gap-1 items-center">
                                                     <div *ngFor="let item of (data.Tags | stringToStringArray)">
                                                         <tds-tag class="mr-1 cursor-pointer text-[13px]" status='primary'>
                                                             {{ (item || '') }}
