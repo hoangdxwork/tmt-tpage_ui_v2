@@ -351,7 +351,7 @@
                               <!-- Giới hạn trên đơn -->
                               <td class="text-center">
                                 <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity" (ngModelChange)="onChangeLimitedQuantity($event, detail.value)"
+                                  <tds-input-number [min]="0" [max]="1000000000" [step]="1" formControlName="LimitedQuantity" (ngModelChange)="onChangeLimitedQuantity($event, detail.value)"
                                       [formatter]="numberWithCommas" [parser]="parserComas">
                                   </tds-input-number>
                                 </tds-form-field>
@@ -395,7 +395,7 @@
       <div class="w-[304px]">
           <tds-form-field>
             <tds-label>Áp dụng cho tất cả giới hạn trên đơn</tds-label>
-            <tds-input-number [min]="0" [step]="1" [(ngModel)]="limitedQuantityAll"
+            <tds-input-number [min]="0" [max]="1000000000" [step]="1" [(ngModel)]="limitedQuantityAll"
             [formatter]="numberWithCommas" [parser]="parserComas">
           </tds-input-number>
           </tds-form-field>

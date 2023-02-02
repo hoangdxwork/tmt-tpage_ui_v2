@@ -369,7 +369,7 @@
                                         <!-- Giới hạn trên đơn -->
                                         <span class="flex truncate">Giới hạn trên đơn</span>
                                         <tds-form-field class="w-full">
-                                            <tds-input-number [min]="0" [step]="1" size="sm" class="w-full"
+                                            <tds-input-number [min]="0" [max]="1000000000" [step]="1" size="sm" class="w-full"
                                                 [(ngModel)]="data.LimitedQuantity" [ngModelOptions]="{standalone: true}"
                                                 [formatter]="numberWithCommas" [parser]="parserComas">
                                             </tds-input-number>
@@ -516,7 +516,7 @@
     <div class="w-[304px]">
         <tds-form-field>
           <tds-label>Áp dụng giới hạn trên đơn cho tất cả sản phẩm</tds-label>
-          <tds-input-number [min]="0" [step]="1" [(ngModel)]="limitedQuantityAll"
+          <tds-input-number [min]="0" [max]="1000000000" [step]="1" [(ngModel)]="limitedQuantityAll"
           [formatter]="numberWithCommas" [parser]="parserComas">
         </tds-input-number>
         </tds-form-field>
