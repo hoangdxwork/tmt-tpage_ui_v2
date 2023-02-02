@@ -100,6 +100,51 @@ export class ActionDropdownComponent implements OnInit {
             },
           };
 
+          if(TDSHelperString.hasValueString(this.filterObj.hasTracking)) {
+            if(this.filterObj.hasTracking === "isCode"){
+                data.Filter.filters.push({ field: "TrackingRef", operator: OperatorEnum.neq, value: null })
+            }
+            if(this.filterObj.hasTracking === "noCode"){
+                data.Filter.filters.push({ field: "TrackingRef", operator: OperatorEnum.eq, value: null })
+            }
+          }
+
+          if(TDSHelperString.hasValueString(this.filterObj.shipPaymentStatus)) {
+              data.Filter.filters.push({ field: "ShipPaymentStatus", operator: OperatorEnum.eq, value: this.filterObj.shipPaymentStatus })
+          }
+
+          if (TDSHelperArray.hasListValue(this.filterObj.status)) {
+            data.Filter.filters.push({
+                filters: this.filterObj.status.map((x:any) => ({
+                    field: "State",
+                    operator: "eq",
+                    value: x,
+                })),
+
+                logic: "or"
+            })
+          }
+
+          if(this.filterObj.carrierId && this.filterObj.carrierId >= 0) {
+            data.Filter.filters.push({ field: "CarrierId", operator: OperatorEnum.eq, value: this.filterObj.carrierId })
+          }
+
+          if (TDSHelperString.hasValueString(this.filterObj?.searchText)) {
+            let value = TDSHelperString.stripSpecialChars(this.filterObj?.searchText.toLowerCase().trim())
+            data.Filter.filters.push( {
+                filters: [
+                  { field: "PartnerDisplayName", operator: OperatorEnum.contains, value: value },
+                  { field: "Phone", operator: OperatorEnum.contains, value: value },
+                  { field: "Address", operator: OperatorEnum.contains, value: value },
+                  { field: "Number", operator: OperatorEnum.contains, value: value },
+                  { field: "PartnerNameNoSign", operator: OperatorEnum.contains, value: value },
+                  { field: "CarrierName", operator: OperatorEnum.contains, value: value},
+                  { field: "TrackingRef", operator: OperatorEnum.contains, value: value}
+                ],
+                logic: 'or'
+            })
+          }
+
           switch (type) {
             case "excels":
               this.isProcessing = true;

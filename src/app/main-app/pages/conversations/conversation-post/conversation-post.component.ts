@@ -214,6 +214,13 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                   delete this.lstObjects[index].LiveCampaign;
 
                   this.lstObjects[index] = {...this.lstObjects[index]};
+
+                  if(this.extrasChilds[res.ObjectId] && this.extrasChilds[res.ObjectId].length > 0) {
+                    this.extrasChilds[res.ObjectId].map(x => {
+                      delete x.LiveCampaignId;
+                      delete x.LiveCampaign;
+                    })
+                  }
               }
 
               if(this.currentObject && res.Id == this.currentObject?.Id) {
