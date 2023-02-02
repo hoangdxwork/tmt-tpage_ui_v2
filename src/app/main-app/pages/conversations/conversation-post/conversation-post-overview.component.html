@@ -174,7 +174,7 @@
                                     </span>
                                 </tds-tag>
                             </div>
-    
+
                             <div *ngIf="!data.LiveCampaign">
                                 <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
                                     (click)="openTag(data, team.Type)"
@@ -188,7 +188,8 @@
                                     </span>
                                 </tds-tag>
                             </div>
-                            <button tds-button-icon color="primary" class="!h-[26px] !w-[26px]" [disabled]="isdisabledAutoOrder" tds-tooltip="Áp dụng ngay cho những bình luận đã có" (click)="onRescanAutoOrder()">
+                            <button tds-button-icon color="primary" class="!h-[26px] !w-[26px]" [loading]="isRescanAutoOrder"
+                                tds-tooltip="Áp dụng ngay cho những bình luận đã có" (click)="onRescanAutoOrder()">
                                 <i class="tdsi-flash-on-fill text-body-2 leading-none"></i>
                             </button>
                         </div>

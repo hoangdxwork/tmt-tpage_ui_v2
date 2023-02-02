@@ -36,15 +36,15 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
         filters: [],
     }
 
-    if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
+    if (filterObj?.DateRange && filterObj?.DateRange.StartDate && filterObj?.DateRange.EndDate) {
 
-        let startDate = new Date(filterObj?.dateRange.startDate.setHours(0, 0, 0, 0)).toISOString();
-        let endDate = new Date(filterObj?.dateRange.endDate).toISOString();
+        let startDate = new Date(filterObj?.DateRange.StartDate.setHours(0, 0, 0, 0)).toISOString();
+        let endDate = new Date(filterObj?.DateRange.EndDate).toISOString();
 
         let date1 = formatDate(new Date(), 'dd-MM-yyyy', 'en-US');
-        let date2 = formatDate(filterObj?.dateRange.endDate, 'dd-MM-yyyy', 'en-US');
+        let date2 = formatDate(filterObj?.DateRange.EndDate, 'dd-MM-yyyy', 'en-US');
         if(date1 != date2) {
-          endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 0)).toISOString();
+          endDate = new Date(filterObj?.DateRange.EndDate.setHours(23, 59, 59, 0)).toISOString();
         }
 
         dataFilter.filters.push({
@@ -56,16 +56,17 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
         })
     }
 
-    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.SearchText)) {
+        let text = TDSHelperString.stripSpecialChars(filterObj?.SearchText).toLocaleLowerCase().trim();
         dataFilter.filters.push( {
             filters: [
-              { field: "Code", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Facebook_UserName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "UserName", operator: OperatorEnum.contains, value: filterObj.searchText }
+              { field: "Code", operator: OperatorEnum.contains, value: text },
+              { field: "Name", operator: OperatorEnum.contains, value: text },
+              { field: "Telephone", operator: OperatorEnum.contains, value: text },
+              { field: "PartnerName", operator: OperatorEnum.contains, value: text },
+              { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: text },
+              { field: "Facebook_UserName", operator: OperatorEnum.contains, value: text },
+              { field: "UserName", operator: OperatorEnum.contains, value: text }
             ],
             logic: 'or'
         })

@@ -46,7 +46,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadSummaryStatus()
+    this.loadSummaryStatus();
   }
 
   loadTags() {
