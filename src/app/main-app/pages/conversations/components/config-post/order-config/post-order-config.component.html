@@ -227,7 +227,7 @@
 
                                     <div class="pt-6">
                                         <div class="flex rounded-md gap-x-1">
-                                        <tds-form-field class="w-full">
+                                        <tds-form-field class="w-full" [color]="((item.Content | stringToStringArray) || []).length > 0? 'success': 'error'">
                                             <tds-select [ngModel]="(item.Content | stringToStringArray) || []"
                                                 (ngModelChange)="selectContent($event, item)" [disabled]="item.IsActive ? false : true"
                                                 [ngModelOptions]="{standalone: true}"  placeholder='Nội dung nhập'

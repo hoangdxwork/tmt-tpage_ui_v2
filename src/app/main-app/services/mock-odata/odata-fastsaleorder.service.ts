@@ -161,7 +161,7 @@ export class OdataFastSaleOrderService extends BaseSevice {
       })
     }
 
-    if(filterObj.carrierId && filterObj.carrierId >= 0) {
+    if(filterObj.carrierId && filterObj.carrierId > 0) {
       dataFilter.filters.push({ field: "CarrierId", operator: OperatorEnum.eq, value: filterObj.carrierId })
         dataFilter.logic = "and";
     }

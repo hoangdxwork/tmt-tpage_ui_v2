@@ -151,6 +151,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     { text: 'Cũ nhất', value: 'desc' }
   ]
   filterDate: string = '';
+  isFilterObjStatus: boolean = false;
 
   constructor(private odataFastSaleOrderService: OdataFastSaleOrderService,
     @Inject(DOCUMENT) private document: Document,
@@ -450,18 +451,26 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onSelectChange(index: TDSSafeAny) {
-    this.filterObj.status = [];
     let item = this.tabNavs.filter(f => f.Index == index)[0];
 
     if (item?.Name == 'Tất cả') {
-      this.filterObj.status = [];
+        this.filterObj.status = [];
+
+        if(this.isFilterObjStatus) {
+          this.tabNavs.map((x: TabNavsDTO) => {
+            if(x?.Name != 'Tất cả') {
+              this.filterObj.status.push(x.Name);
+            }
+          })
+        }
     } else {
-      this.filterObj.status.push(item.Name);
+        this.filterObj.status = [];
+        this.filterObj.status.push(item.Name);
     }
 
     this.pageIndex = 1;
     this.indClickTag = -1;
-    this.filterObj.tags = [];
+    // this.filterObj.tags = [];
 
     this.indeterminate = false;
     this.loadData(this.pageSize, this.pageIndex);
@@ -510,6 +519,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (res: any) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = [...res.value];
+        this.setOfCheckedId.clear();
+        this.loadSummaryStatus();
       },
       error: (error: any) => {
         this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
@@ -538,8 +549,10 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (TDSHelperArray.hasListValue(event.status)) {
       this.tabNavs = this.summaryStatus.filter(f => event.status.includes(f.Name));
+      this.isFilterObjStatus = true;
     } else {
       this.tabNavs = this.summaryStatus;
+      this.isFilterObjStatus = false;
     }
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);

@@ -1033,7 +1033,7 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
 
           let existContent = TDSHelperString.hasValueString(model.TextContentToOrders[i].Content) && model.TextContentToOrders[i].Content.length > 0;
           if(!existContent) {
-              this.notificationService.error(`Mẫu chốt đơn số ${i + 1} không hợp lệ`, 'Content không được để trống', { duration: 9000 });
+              this.notificationService.error(`Mẫu chốt đơn số ${i + 1} không hợp lệ`, 'Nội dung không được để trống', { duration: 9000 });
               return 0;
           }
       }
