@@ -105,7 +105,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   nextDataTimer: TDSSafeAny;
   isLoadingUpdate: boolean = false;
 
-  extrasChilds: { [id: string] : ExtrasChildsDto[] } = {};
+  extrasChilds: { [id: string] : any[] } = {};
   clickCurrentChild: any;
 
   constructor(private facebookPostService: FacebookPostService,
@@ -186,7 +186,14 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.lstObjects[index].LiveCampaign = {...res.LiveCampaign} as any;
 
                 this.lstObjects[index] = {...this.lstObjects[index]};
-                this.lstObjects = [...this.lstObjects]
+                this.lstObjects = [...this.lstObjects];
+
+                if(this.extrasChilds[res.ObjectId] && this.extrasChilds[res.ObjectId].length > 0) {
+                  this.extrasChilds[res.ObjectId].map(x => {
+                    x.LiveCampaignId = res.LiveCampaignId;
+                    x.LiveCampaign = {...res.LiveCampaign} as any;
+                  })
+                }
             }
 
             if(this.currentObject && res.Id == this.currentObject?.Id) {
