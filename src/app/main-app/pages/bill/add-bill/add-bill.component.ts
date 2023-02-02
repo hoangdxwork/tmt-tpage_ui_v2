@@ -898,7 +898,8 @@ export class AddBillComponent implements OnInit {
       size: "xl",
       viewContainerRef: this.viewContainerRef
     });
-    modal.afterClose.subscribe(event => {
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(event => {
       if (event && event.Id) {
         this.changePartner(event.Id);
       }
@@ -1117,7 +1118,8 @@ export class AddBillComponent implements OnInit {
         partnerId: data?.Id
       }
     });
-    modal.afterClose.subscribe({
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next:(event: any) => {
         if (event) {
           this.changePartner(event);
@@ -1137,7 +1139,8 @@ export class AddBillComponent implements OnInit {
         partnerId: null
       }
     });
-    modal.afterClose.subscribe({
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next:(event: any) => {
         if (event) {
           this.changePartner(event);
@@ -1153,6 +1156,7 @@ export class AddBillComponent implements OnInit {
   }
 
   prepareModel(): any {
+    this.focusField = '';
     let model = {...this.addBillHandler.prepareModel(this.dataModel, this._form, this.id)} as any;
 
     // TODO: gán lại công ty hiện tại
@@ -1474,6 +1478,7 @@ export class AddBillComponent implements OnInit {
     this.shipExtraServices = [];
     this.insuranceInfo = null;
     this.configsProviderDataSource = [];
+    this.focusField = '';
 
     this._form.controls['Ship_ServiceId'].setValue(null);
     this._form.controls['Ship_ServiceName'].setValue(null);
@@ -1499,11 +1504,11 @@ export class AddBillComponent implements OnInit {
       this.updateInsuranceFeeEqualAmountTotal();
     }
 
+    this.prepareCalcFeeButton();
+
     if(event) {
         this.calcFee();
     }
-
-    this.prepareCalcFeeButton();
   }
 
   prepareCalcFeeButton() {
@@ -1639,7 +1644,7 @@ export class AddBillComponent implements OnInit {
       }
     });
 
-    modal.afterClose.subscribe({
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (result: ResultCheckAddressDTO) => {
         if(result) {
           // TODO: cập nhật địa chỉ mới
