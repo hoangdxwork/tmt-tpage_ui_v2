@@ -88,6 +88,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
   isShowEditLimitedQuantity!: boolean;
   limitedQuantityAll: number = 0;
+  isActive: boolean = false;
 
   numberWithCommas =(value: TDSSafeAny) => {
     if(value != null) {
@@ -712,6 +713,18 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     if(item && item.Id) {
       this.addProductLiveCampaignDetails([item]);
     }
+  }
+
+  onChecked(event: any, item: ReportLiveCampaignDetailDTO) {
+    let id = this.liveCampaignId as string;
+    this.liveCampaignService.updateDetails(id, [item]).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        item.IsActive = event.checked;
+        this.message.success("Cập nhật thành công!");
+      }, error: (err) => {
+        this.message.success(err?.error?.message || "Cập nhật thất bại!");
+      }
+    })
   }
 
   loadCurrentCompany() {
