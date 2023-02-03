@@ -29,13 +29,16 @@
                         [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" placeholder="Tìm kiếm sản phẩm"
                         autocomplete="off" [ngModelOptions]="{standalone: true}" />
                     <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                    <span *ngIf="filterObj.searchText" tdsSuffix>
+                      <i class="text-neutral-1-500 tdsi-close-fill desktop:text-body-2 laptop:text-caption-1 text-caption-1 mr-2" (click)="closeSearchProduct()" ></i>
+                    </span>
                 </tds-form-field>
             </div>
         </div>
 
         <div class="w-full flex-auto pb-2.5 text-body-2" *ngIf="configCart?.IsShopCart">
             <tds-table #rowSelectionTable [listData]="lstOfData" [showSizeChanger]="true" [frontPagination]="false"
-                [loading]="isLoading" [scroll]="{y:'auto', x: 'auto'}" [pageSize]="pageSize" [pageIndex]="pageIndex" 
+                [loading]="isLoading" [scroll]="{y:'auto', x: 'auto'}" [pageSize]="pageSize" [pageIndex]="pageIndex"
                 [total]="count" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>
                     <tr class="text-neutral-1-900 text-body-2 font-semibold">
