@@ -209,7 +209,7 @@
                                 <td class="py-2 px-4" [ngClass]="isShowEdit?'w-[16%]':'w-[21%]'">
                                     <div *ngIf="isEditDetails[data.Id]">
                                         <tds-form-field>
-                                            <tds-input-number [min]="0" [step]="1" [(ngModel)]="data.Quantity"
+                                            <tds-input-number [min]="0" [step]="1" [max]="99999" [(ngModel)]="data.Quantity"
                                                 [formatter]="numberWithCommas" [parser]="parserComas">
                                             </tds-input-number>
                                         </tds-form-field>
@@ -231,7 +231,7 @@
                                             <ng-template #contentQuantity>
                                                 <div class="w-[304px]">
                                                     <tds-form-field>
-                                                        <tds-input-number [min]='0' [step]="1" [(ngModel)]="currentQuantity" [formatter]="numberWithCommas" [parser]="parserComas"
+                                                        <tds-input-number [min]='0' [step]="1" [max]="99999" [(ngModel)]="currentQuantity" [formatter]="numberWithCommas" [parser]="parserComas"
                                                             (ngModelChange)="changeQuantity($event)"
                                                             [ngModelOptions]="{standalone: true}">
                                                         </tds-input-number>
@@ -247,7 +247,7 @@
                                                             <i class="tdsi-close-fill"></i>
                                                         </span>
                                                     </button>
-                                                    <button tds-button-icon type="button"  size="sm" color="primary"
+                                                    <button tds-button-icon type="button" size="sm" color="primary"
                                                         (click)="saveChangeQuantity(data)">
                                                         <span class="flex items-center">
                                                             <i class="tdsi-tick-fill"></i>
@@ -265,7 +265,7 @@
                                 </td>
 
                                 <!-- Giá bán -->
-                                <td class="py-2 px-2" [ngClass]="isShowEdit?'w-[12%]':'w-[17%]'">
+                                <td class="py-2 px-2" [ngClass]="isShowEdit ? 'w-[12%]' : 'w-[17%]'">
                                     <div *ngIf="isEditDetails[data.Id]">
                                         <tds-form-field>
                                             <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.Price"

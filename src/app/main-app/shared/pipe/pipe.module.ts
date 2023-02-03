@@ -51,6 +51,7 @@ import { FirebaseSubscribedPipe } from './firebase-subscribed.pipe';
 import { GetSocketNamePipe, CheckSocketTeamTypePipe } from './get-socket-name.pipe';
 import { ImageLazyLoadPipe } from './image-lazy-load.pipe';
 import { GetImageLiveCampaignPipe } from './get-image-livecampaign.pipe';
+import { DictSourcePipe } from './dict-source.pipe';
 
 const cmp = [
   PrettyjsonPipe,
@@ -125,7 +126,8 @@ const cmp = [
   DateDeleteOrderPipe,
   GetImageLiveCampaignPipe,
   IndexTextContentOrderPipe,
-  SizeAvatarPipe
+  SizeAvatarPipe,
+  DictSourcePipe,
 ]
 
 @NgModule({

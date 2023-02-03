@@ -12,7 +12,7 @@
   </div>
   <div class="p-4 h-full">
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
-      <div class="flex items-center justify-between w-full" [ngClass]="(setOfCheckedId.size > 0) || isTabNavs ? 'py-[10.5px]' : ''">
+      <div class="flex items-center justify-between w-full">
         <div *ngIf="setOfCheckedId.size > 0" class="flex flex-row items-center justify-start gap-x-2 ml-2">
           <div class="flex items-center gap-x-4 px-2 pr-4">
               <div class="text-neutral-1-500 text-body-2">{{setOfCheckedId.size}} dòng được chọn</div>
@@ -26,7 +26,7 @@
           </action-dropdown>
         </div>
         <div *ngIf="setOfCheckedId.size == 0" class="flex flex-row items-center justify-start">
-          <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
+          <tds-filter-status [(ngModel)]="tabIndex" (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
                 <tds-filter-status-item [name]='item.Name | getStatusName:filterStatus' [count]='item.Total' [value]="item.Index">
                 </tds-filter-status-item>
@@ -34,7 +34,7 @@
           </tds-filter-status>
         </div>
         <!-- TODO: Thao tác -->
-        <div class="flex flex-row items-center justify-end gap-x-2 pr-4">
+        <div class="flex flex-row items-center justify-end gap-x-2 pr-4 py-[10.5px]">
           <action-dropdown *ngIf="setOfCheckedId.size == 0" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]>
           </action-dropdown>
 
@@ -48,9 +48,12 @@
             </tds-form-field>
           </div>
 
-          <tds-form-field class="flex flex-auto xl:w-[150px] 2xl:w-[190px]">
+          <tds-form-field class="flex flex-auto xl:w-[150px] 2xl:w-[300px]">
               <input tdsInput placeholder="Tên, Địa chỉ, SĐT,..." autocomplete="off" #innerText />
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+              <span tdsSuffix class="cursor-pointer rounded-lg" title="Xóa tìm kiếm" (click)="onClearFilterSearch()" *ngIf="filterObj.searchText">
+                <i class="text-neutral-1-500 tdsi-close-fill"></i>
+              </span>
           </tds-form-field>
 
           <filter-options [lstTags]="lstTags" [summaryStatus]="summaryStatus" (onLoadOption)="onLoadOption($event)"

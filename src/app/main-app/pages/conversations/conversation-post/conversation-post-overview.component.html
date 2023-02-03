@@ -174,7 +174,7 @@
                                     </span>
                                 </tds-tag>
                             </div>
-    
+
                             <div *ngIf="!data.LiveCampaign">
                                 <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
                                     (click)="openTag(data, team.Type)"
@@ -188,7 +188,9 @@
                                     </span>
                                 </tds-tag>
                             </div>
-                            <button tds-button-icon color="primary" class="!h-[26px] !w-[26px]" [disabled]="isdisabledAutoOrder" tds-tooltip="Áp dụng ngay cho những bình luận đã có" (click)="onRescanAutoOrder()">
+                            <button style="display: flex; align-items: center; justify-content: center;"
+                                tds-button-icon color="primary" class="!h-[26px] !w-[26px]" [loading]="isRescanAutoOrder"
+                                tds-tooltip="Áp dụng ngay cho những bình luận đã có" (click)="onRescanAutoOrder()">
                                 <i class="tdsi-flash-on-fill text-body-2 leading-none"></i>
                             </button>
                         </div>
@@ -340,11 +342,14 @@
     <div class="absolute inset-0 pl-1 z-10" [ngStyle]="{ 'width.px': widthConversation }" [ngClass]="visibleDrawerEditLive ? 'block': 'hidden'">
         <tds-spin [spinning]="false" class="h-full w-full flex">
             <tds-drawer [visible]="visibleDrawerEditLive" [width]="widthConversation" [placement]="'left'" [bodyStyle]="{ 'overflow':'hidden', 'display':'flex', 'flex-direction':'column', 'padding':0 }"
-                [closeIcon]="closeTmp" [mask]="false" [title]="'Thông tin chiến dịch'">
+                [closeIcon]="closeTmp" [mask]="false" [title]="header">
                 <ng-container *tdsDrawerContent>
                     <drawer-edit-livecampaign [visibleDrawerEditLive]="visibleDrawerEditLive" [liveCampaignId]="data.LiveCampaignId"></drawer-edit-livecampaign>
                 </ng-container>
             </tds-drawer>
+            <ng-template #header>
+                <span class="font-semibold desktop:text-header-2 laptop:text-body-1 tablet:text-body-1">Thông tin chiến dịch</span>
+            </ng-template>
         </tds-spin>
     </div>
 

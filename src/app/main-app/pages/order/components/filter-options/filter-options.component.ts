@@ -37,6 +37,7 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
   listStatus: Array<TDSSafeAny> = [];
   lstTeams!: Observable<AllFacebookChildTO[]>;
   lstCampaign!: LiveCampaignModel[];
+  lstDefaultStatus: Array<TabNavsDTO> = [];
 
   isActive: boolean = false;
   isVisible: boolean = false;
@@ -73,7 +74,11 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
   }
 
   loadSummaryStatus() {
-    this.listStatus = this.summaryStatus.map(f => {
+    if(this.lstDefaultStatus.length == 0) {
+      this.lstDefaultStatus = [...this.summaryStatus];
+    }
+
+    this.listStatus = this.lstDefaultStatus.map(f => {
       return {
         Name: f.Name,
         Index: f.Index,

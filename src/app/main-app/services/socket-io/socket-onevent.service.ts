@@ -116,7 +116,7 @@ export class SocketOnEventService {
               || socketData.EventName == ChatmoniSocketEventName.onCreatedSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onUpdateSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order
-              || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout
+              || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout;
 
           if(existLive) existTeam = true;
           if (!existTeam) return;

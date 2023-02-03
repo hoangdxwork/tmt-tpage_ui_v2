@@ -128,6 +128,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
   isProcessing: boolean = false;
   filterDate: string = '';
 
+  isFilterObjStatus: boolean = false;
+
   constructor(private cdRef: ChangeDetectorRef,
     private fastSaleOrderService: FastSaleOrderService,
     private tagService: TagService,
@@ -197,6 +199,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
         next: (res: any) => {
             this.count = res['@odata.count'] as number;
             this.lstOfData = [...(res?.value || [])];
+            this.setOfCheckedId.clear();
+            this.loadSummaryStatus();
         },
         error: (error: any) => {
             this.message.error(error.error?.message);
@@ -286,7 +290,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     let model: SaleOnlineStatusModelDto = {
       DateStart: startDate,
       DateEnd: endDate,
-      SearchText: this.filterObj?.SearchText,
+      SearchText: TDSHelperString.stripSpecialChars(this.filterObj?.SearchText.trim()),
       TagIds: tagIds,
       LiveCampaignId: this.filterObj?.LiveCampaignId,
       HasTelephone: this.filterObj?.HasTelephone,
@@ -492,6 +496,14 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
     if (item?.Name == 'Tất cả') {
       this.filterObj.StatusTexts = [];
+
+      if(this.isFilterObjStatus) {
+        this.tabNavs.map((x: TabNavsDTO) => {
+          if(x?.Name != 'Tất cả') {
+            this.filterObj.StatusTexts.push(x.Name);
+          }
+        })
+      }
     } else {
       this.filterObj.StatusTexts.push(item.Name);
     }
@@ -636,14 +648,16 @@ export class OrderComponent implements OnInit, AfterViewInit {
       },
       TeamId: event?.TeamId || null,
       LiveCampaignId: event?.LiveCampaignId || null,
-      HasTelephone: event?.HasTelephone || null,
+      HasTelephone: event?.HasTelephone,
       PriorityStatus: event?.PriorityStatus || null
     }
 
     if (TDSHelperArray.hasListValue(event?.StatusTexts)) {
       this.tabNavs = this.lstOftabNavs.filter(f => event.StatusTexts.includes(f.Name));
+      this.isFilterObjStatus = true;
     } else {
       this.tabNavs = this.lstOftabNavs;
+      this.isFilterObjStatus = false;
     }
 
     this.removeCheckedRow();
@@ -1009,5 +1023,16 @@ export class OrderComponent implements OnInit, AfterViewInit {
     }
 
     this.lstOfData = [...data];
+  }
+    
+  onClearFilterSearch() {
+    this.pageIndex = 1;
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId = new Set<string>();
+    this.filterObj!.SearchText = '';
+    
+    this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
   }
 }

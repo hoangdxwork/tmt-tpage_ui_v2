@@ -189,6 +189,11 @@ export class ConfigPromotionsComponent implements OnInit {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
+  closeSearchProduct() {
+    this.filterObj.searchText = '';
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
   remove(id: number) {
     this.isLoading = true;
     this.saleCouponProgramService.remove(id).subscribe(res => {

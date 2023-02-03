@@ -44,7 +44,6 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     toolbar: null,
     mention: {
       allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
-      // readOnly: true,
       mentionDenotationChars: ["@"],
       showDenotationChar: false,
       positioningStrategy: "relative",
@@ -90,10 +89,23 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     this.isLoading = true;
 
     this.facebookPostService.getOrderConfig(currentTeam.Id, objectId).pipe(takeUntil(this.destroy$)).subscribe({
-      next:(res) => {
+      next: (res: any) => {
 
         if(TDSHelperString.hasValueString(res?.OrderReplyTemplate)) {
-          res.OrderReplyTemplate = res.OrderReplyTemplate?.replace(/\n/g, '<p><br></p>');
+          let splits = res.OrderReplyTemplate.split('\n') as any[];
+          if(splits && splits.length > 0) {
+              let replyTemplate = '';
+
+              splits.map((x: any) => {
+                if(x && x.length > 0) {
+                    replyTemplate = `${replyTemplate}<p>${x}</p>`;
+                }
+              })
+
+              if(TDSHelperString.hasValueString(replyTemplate)) {
+                  res.OrderReplyTemplate = replyTemplate;
+              }
+          }
         }
 
         this.dataModel = {...res};
@@ -123,6 +135,11 @@ export class PostOrderInteractionConfigComponent implements OnInit {
     let objectId = this.data?.ObjectId;
     if(!objectId) {
       this.message.error('Không tìm thấy id bài viết');
+      return;
+    }
+
+    if(!this.dataModel.ShopLabel && !this.dataModel.ShopLabel2) {
+      this.message.error('Yêu cầu nhập một giá trị cho nút [giỏ hàng] hoặc nút [đồng ý]');
       return;
     }
 

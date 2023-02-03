@@ -154,6 +154,12 @@ export class ListProductVariantComponent implements OnInit {
     });
   }
 
+
+  closeSearchProduct(){
+    this.filterObj.searchText = '';
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
   checkValueEmpty() {
     let ids: any[] = [...this.setOfCheckedId];
     this.idsModel = ids;

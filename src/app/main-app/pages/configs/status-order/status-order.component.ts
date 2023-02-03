@@ -205,8 +205,16 @@ export class StatusOrderComponent implements OnInit {
   }
 
   onClearAll(event: MouseEvent) {
-    event.stopPropagation();
-    this.refreshData();
+    switch (this.selectedIndex) {
+      case 0:
+        this.innerText = '';
+        this.refreshData();
+        break;
+      case 1:
+        this.innerText = '';
+        this.PartnerStatusComponent.refreshData();
+        break;
+    }
   }
 
   refreshData() {

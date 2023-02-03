@@ -64,6 +64,8 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
   innerNumberValue!: number | null;
   searchValue: any;
 
+  lstDataExcludedPhones: string[] = [];
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -242,6 +244,12 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
   // Danh sách không có số điện thoại seeding
   changeExcludedPhones(event: string[]) {
     this.dataModel.ExcludedPhones = [...event];
+    if(event && event.length > 0) {
+      let index = this.lstDataExcludedPhones.findIndex(x => x == event[event.length - 1]);
+      if(Number(index) < 0) {
+        this.lstDataExcludedPhones = [...this.lstDataExcludedPhones, event[event.length - 1]];
+      }
+    }
   }
 
   checkInputMatch(strs: string[]) {
@@ -431,14 +439,14 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
     this.tdsTableComponent?.cdkVirtualScrollViewport?.scrollTo({ bottom: 0, behavior: 'smooth'});
   }
 
-  addExcludedPhone(event: any) {
+  addExcludedPhone(event: any, type: string) {
     const target: DataTransfer = <DataTransfer>(event.target);
     const reader: FileReader = new FileReader();
 
     reader.readAsBinaryString(target.files[0]);
 
     let fileName = target.files[0].name;
-    let typeFile = this.isCheckFile(fileName);
+    let typeFile = this.isCheckFile(fileName, type);
 
     switch (typeFile) {
       case 'txt':
@@ -460,6 +468,7 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
 
             let excludedPhonesValue = this.dataModel.ExcludedPhones || [];
             this.dataModel.ExcludedPhones = [...data, ...excludedPhonesValue];
+            this.lstDataExcludedPhones = [...this.dataModel.ExcludedPhones];
             event.target.value = null;
 
             this.cdRef.detectChanges();
@@ -528,12 +537,11 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
     return result;
   }
 
-  isCheckFile(fileName: string) {
+  isCheckFile(fileName: string, type: string) {
     let arr = fileName.split(".");
     let name = arr[arr.length - 1];
 
-    if (name == "txt") return "txt"
-    else if (name == "xlsx") return "xlsx"
+    if (name == type) return name;
 
     this.message.error(Message.ConversationPost.FileNotFormat);
     return null;
@@ -1025,7 +1033,7 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
 
           let existContent = TDSHelperString.hasValueString(model.TextContentToOrders[i].Content) && model.TextContentToOrders[i].Content.length > 0;
           if(!existContent) {
-              this.notificationService.error(`Mẫu chốt đơn số ${i + 1} không hợp lệ`, 'Content không được để trống', { duration: 9000 });
+              this.notificationService.error(`Mẫu chốt đơn số ${i + 1} không hợp lệ`, 'Nội dung không được để trống', { duration: 9000 });
               return 0;
           }
       }

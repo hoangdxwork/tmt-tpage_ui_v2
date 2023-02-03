@@ -35,7 +35,7 @@
 
           <div class="flex flex-auto">
             <div class="w-full overflow-y-auto">
-              <tds-filter-status class="flex" [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
+              <tds-filter-status class="flex" [(ngModel)]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
                 <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
                     <tds-filter-status-item  [name]='item.Name' [count]='item.Total' [value]="item.Index">
                     </tds-filter-status-item>
@@ -47,7 +47,7 @@
             (onRefreshData)="refreshDataCurrent()"></action-dropdown>
         </div>
 
-        <div class="flex justify-start p-[10.5px]" *ngIf="setOfCheckedId.size > 0">
+        <div class="flex justify-start pl-2.5" *ngIf="setOfCheckedId.size > 0">
           <div class="flex items-center gap-x-4 px-2">
             <div class="text-neutral-1-500 text-body-2">{{ setOfCheckedId.size }} dòng được chọn</div>
             <div class="flex gap-1 items-center rounded-md bg-neutral-3-50 pl-1.5 pr-2.5 cursor-pointer">
@@ -75,13 +75,16 @@
         </div>
 
         <!-- TODO: Thao tác -->
-        <div class="flex items-center gap-x-2 pr-4">
-          <tds-form-field class="w-full">
+        <div class="flex items-center gap-x-2 pr-4 py-[10.5px]">
+          <tds-form-field class="w-80">
               <input tdsInput placeholder="Mã, Tên khách hàng, SĐT" autocomplete="off"
                 [(ngModel)]="filterObj!.SearchText"
                 [tdsInputDebounce]="750"
                 (inputKeyup)="onSearch($event)"/>
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+              <span tdsSuffix class="cursor-pointer rounded-lg" title="Xóa tìm kiếm" (click)="onClearFilterSearch()" *ngIf="filterObj.SearchText">
+                <i class="text-neutral-1-500 tdsi-close-fill"></i>
+              </span>
           </tds-form-field>
 
           <div *ngIf="tabNavs && filterObj">
@@ -223,6 +226,7 @@
                     <span *ngIf="data.CRMTeamName" [ngClass]="data.CRMTeamId | getTeamIcon:lstOfTeam"></span>
                     <span class="ml-1 ">{{ data.CRMTeamName }}</span>
                   </div>
+                  <div class="font-semibold mt-1 text-caption-1">{{ data?.Source | dictSourcePipe }}</div>
                 </td>
 
                 <!-- Chiến dịch live -->

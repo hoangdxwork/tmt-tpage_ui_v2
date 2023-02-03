@@ -164,6 +164,11 @@ export class ProductShopCartComponent implements OnInit {
     });
   }
 
+  closeSearchProduct(){
+    this.filterObj.searchText = '';
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
   checkValueEmpty() {
     let ids: any[] = [...this.setOfCheckedId];
     this.idsModel = ids;
@@ -221,7 +226,7 @@ export class ProductShopCartComponent implements OnInit {
     let model = {
       Ids: [data.Id]
     }
-    
+
     this.apiDeleteProductOnShopCart(model);
   }
 
