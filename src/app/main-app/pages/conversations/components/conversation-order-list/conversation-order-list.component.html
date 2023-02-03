@@ -3,14 +3,14 @@
         <!-- Tìm kiếm -->
         <div class="flex gap-x-2 desktop:px-4 px-2 desktop:pt-4 pt-2">
             <tds-form-field class="w-full">
-                <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [(ngModel)]="filterObj.searchText" [tdsInputDebounce]="750" (inputKeyup)="applyFilter($event)"/>
+                <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [(ngModel)]="filterObj.SearchText" [tdsInputDebounce]="750" (inputKeyup)="applyFilter($event)"/>
                 <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                <span tdsSuffix class="cursor-pointer rounded-lg" title="Chọn sản phẩm" (click)="onClearFilter()" *ngIf="filterObj.searchText">
+                <span tdsSuffix class="cursor-pointer rounded-lg" title="Xóa tìm kiếm" (click)="onClearFilter()" *ngIf="filterObj.SearchText">
                     <i class="text-neutral-1-500 tdsi-close-fill"></i>
                 </span>
             </tds-form-field>
 
-            <button tds-tooltip="Check" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
+            <button tds-tooltip="Thao tác nhiều dòng" class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center" (click)="setCheck()"
                 [ngClass]="isOpenCollapCheck ? 'bg-primary-3 text-primary-1' : 'bg-white text-neutral-1-500'" [disabled]="disableCheck">
                 <span class="flex items-center ">
                     <i class="tdsi-success-line text-xl leading-5"></i>

@@ -780,6 +780,19 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.lstOfData = [...data];
   }
 
+  onClearFilterSearch() {
+    this.pageIndex = 1;
+    this.indClickTag = -1;
+    this.innerText.nativeElement.value = '';
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId.clear();
+    this.filterObj.searchText = '';
+    
+    this.loadData(this.pageSize, this.pageIndex);
+    this.loadSummaryStatus();
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

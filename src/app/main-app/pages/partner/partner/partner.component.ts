@@ -1,3 +1,4 @@
+import { FilterOptionPartnerComponent } from './../components/filter-option-partner/filter-option-partner.component';
 import { ChatomniConversationService } from './../../../services/chatomni-service/chatomni-conversation.service';
 import { ChatomniMessageFacade } from './../../../services/chatomni-facade/chatomni-message.facade';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -45,6 +46,8 @@ import { SharedService } from '@app/services/shared.service';
 
 export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  @ViewChild(FilterOptionPartnerComponent) filterOptions!: TDSSafeAny;
+  
   lstOfData: Array<PartnerDTO> = [];
   pageSize = 20;
   pageIndex = 1;
@@ -242,7 +245,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
       searchText: ''
     }
 
-    this.loadData(this.pageSize, this.pageIndex);
+    this.filterOptions.onCancel();
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
@@ -708,6 +711,18 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+  }
+
+  onClearFilterSearch() {
+    this.pageIndex = 1;
+    this.indClickTag = -1;
+    this.tabIndex = 1;
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId.clear();
+    this.filterObj.searchText = ''
+
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   ngOnDestroy(): void {
