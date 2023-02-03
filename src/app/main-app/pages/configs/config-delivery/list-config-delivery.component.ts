@@ -119,6 +119,11 @@ export class ListConfigDeliveryComponent implements OnInit {
     this.isLoading = false;
   }
 
+  closeSearchProduct(){
+    this.keyFilter = '';
+    this.loadData();
+  }
+
   openCollapse(type: string) {
     this.typeCollapse = type;
   }

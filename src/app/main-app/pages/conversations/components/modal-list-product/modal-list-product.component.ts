@@ -143,6 +143,11 @@ export class ModalListProductComponent implements OnInit {
     this.innerTextDebounce = TDSHelperString.stripSpecialChars(this.textSearchProduct.toLocaleLowerCase().trim());
   }
 
+  closeSearchProduct(){
+    this.textSearchProduct = '';
+    this.innerTextDebounce = '';
+  }
+
   addItem(item: any) {
     if(this.isPostConfig || this.defaultOrder){
       this.modal.destroy(item);

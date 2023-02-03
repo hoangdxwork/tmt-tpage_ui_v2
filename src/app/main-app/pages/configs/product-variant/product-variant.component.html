@@ -69,6 +69,9 @@
                         [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" placeholder="Tìm kiếm sản phẩm"
                         autocomplete="off" [ngModelOptions]="{standalone: true}" />
                     <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                    <span *ngIf="filterObj.searchText" tdsSuffix>
+                      <i class="text-neutral-1-500 tdsi-close-fill desktop:text-body-2 laptop:text-caption-1 text-caption-1 mr-2" (click)="closeSearchProduct()" ></i>
+                    </span>
                 </tds-form-field>
             </div>
         </div>

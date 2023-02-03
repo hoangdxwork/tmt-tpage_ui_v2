@@ -204,6 +204,11 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
+  closeSearchProduct() {
+    this.filterObj.searchText = '';
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
   setActive(active: boolean): TDSSafeAny {
     if (this.setOfCheckedId.size == 0) {
       return this.message.error('Vui lòng chọn tối thiểu 1 dòng!');

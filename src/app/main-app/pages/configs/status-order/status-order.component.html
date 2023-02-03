@@ -85,9 +85,8 @@
                 <input tdsInput placeholder="Tìm kiếm trạng thái" autocomplete="off" [(ngModel)]="innerText"
                   [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" />
                 <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                <span tdsSuffix (click)="onClearAll($event)">
-                  <i class="tdsi-close-fill text-neutral-1-500 text-base"
-                    *ngIf="filterObj.value && filterObj.value != ''"></i>
+                <span *ngIf="innerText" tdsSuffix>
+                  <i class="text-neutral-1-500 tdsi-close-fill desktop:text-body-2 laptop:text-caption-1 text-caption-1 mr-2" (click)="onClearAll($event)"></i>
                 </span>
               </tds-form-field>
             </div>
