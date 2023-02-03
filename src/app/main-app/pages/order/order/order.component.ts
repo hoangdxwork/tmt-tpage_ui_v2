@@ -290,7 +290,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
     let model: SaleOnlineStatusModelDto = {
       DateStart: startDate,
       DateEnd: endDate,
-      SearchText: this.filterObj?.SearchText,
+      SearchText: TDSHelperString.stripSpecialChars(this.filterObj?.SearchText.trim()),
       TagIds: tagIds,
       LiveCampaignId: this.filterObj?.LiveCampaignId,
       HasTelephone: this.filterObj?.HasTelephone,
