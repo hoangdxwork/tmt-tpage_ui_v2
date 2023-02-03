@@ -324,7 +324,7 @@
                       <!-- Số lượng -->
                       <td>
                         <tds-form-field>
-                            <tds-input-number [min]="0" [step]="1" formControlName="Quantity" (ngModelChange)="onChangeQuantity($event, detail.value)"
+                            <tds-input-number [min]="0" [step]="1" [max]="99999" formControlName="Quantity" (ngModelChange)="onChangeQuantity($event, detail.value)"
                                [formatter]="numberWithCommas" [parser]="parserComas">
                             </tds-input-number>
                         </tds-form-field>

@@ -120,6 +120,7 @@
                                     <tds-tag *ngIf="order.PriorityStatus && order.PriorityStatus != 'Undefined'" [status]='order.PriorityStatus | priorityStatusColor'>
                                         {{order.PriorityStatus | priorityStatusName}}
                                     </tds-tag>
+                                    <div class="font-semibold mt-1 text-caption-1">{{ order?.Source | dictSourcePipe }}</div>
                                 </div>
                             </div>
 
