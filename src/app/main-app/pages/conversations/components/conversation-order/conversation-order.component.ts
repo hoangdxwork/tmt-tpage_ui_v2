@@ -1327,9 +1327,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this._street = x._street;
   }
 
-  plus(item: Detail_QuickSaleOnlineOrder) {
-    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
-
+  plus(item: Detail_QuickSaleOnlineOrder, index: number) {
     if(index >= 0) {
         this.quickOrderModel.Details[index].Quantity++;
         this.calcTotal();
@@ -1337,9 +1335,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     }
   }
 
-  minus(item: Detail_QuickSaleOnlineOrder) {
-    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
-
+  minus(item: Detail_QuickSaleOnlineOrder, index: number) {
     if(index >= 0) {
         this.quickOrderModel.Details[index].Quantity--;
         if(this.quickOrderModel.Details[index].Quantity < 1) {
