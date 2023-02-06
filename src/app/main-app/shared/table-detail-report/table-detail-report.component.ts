@@ -467,4 +467,12 @@ export class TableDetailReportComponent implements OnInit, OnChanges {
       delete this.isEditDetails[item.Id];
     }
   }
+
+  onClearFilterSearch() {
+    this.innerText = '';
+    this.lstDetails = [];
+    this.pageIndex = 1;
+    this.resfeshScroll = false;
+    this.loadData(this.pageSize, this.pageIndex, this.innerText);
+  }
 }

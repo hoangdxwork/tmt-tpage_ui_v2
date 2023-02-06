@@ -12,7 +12,7 @@ import { CRMMatchingService } from '../../../../services/crm-matching.service';
 import { MDBByPSIdDTO } from '../../../../dto/crm-matching/mdb-by-psid.dto';
 import { CRMTeamService } from '../../../../services/crm-team.service';
 import { PartnerService } from '../../../../services/partner.service';
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef, Output, EventEmitter } from '@angular/core';
 import { ODataLiveCampaignOrderService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-order.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -45,6 +45,7 @@ export class TableAllOrderComponent implements OnInit {
   @ViewChild('expandOrderLivecampaign') expandOrderLivecampaign!: ElementRef;
 
   @Input() liveCampaignId!: string;
+  @Output() onRefreshData = new EventEmitter<TDSSafeAny>();
 
   checked = false;
   indeterminate = false;
@@ -220,6 +221,7 @@ export class TableAllOrderComponent implements OnInit {
         StartDate: event?.DateRange?.StartDate,
         EndDate: event?.DateRange?.EndDate,
       },
+      TeamId: event?.TeamId || null,
       LiveCampaignId: null,
       HasTelephone: event.HasTelephone,
       PriorityStatus: event.PriorityStatus
@@ -241,7 +243,7 @@ export class TableAllOrderComponent implements OnInit {
       PriorityStatus: null
     }
 
-    this.loadData(this.pageSize, this.pageIndex);
+    this.onRefreshData.emit(true);
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
@@ -701,5 +703,11 @@ export class TableAllOrderComponent implements OnInit {
     }
 
     this.lstOfData = [...data];
+  }
+
+  onClearFilterSearch() {
+    this.pageIndex = 1;
+    this.filterObj.SearchText = '';
+    this.loadData(this.pageSize, this.pageIndex);
   }
 }
