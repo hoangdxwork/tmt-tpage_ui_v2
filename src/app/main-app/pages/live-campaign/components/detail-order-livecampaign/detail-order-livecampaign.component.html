@@ -3,7 +3,7 @@
     (selectedIndexChange)="selectedIndexChange($event)">
     <tds-tab [title]="'Tất cả'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
       <ng-template tds-tab>
-        <table-all-order class="h-full" [liveCampaignId]="liveCampaignId"></table-all-order>
+        <table-all-order class="h-full" [liveCampaignId]="liveCampaignId" (onRefreshData)="onRefreshData($event)"></table-all-order>
       </ng-template>
     </tds-tab>
     <tds-tab [title]="'Đơn hàng đã xóa'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
@@ -41,6 +41,9 @@
             <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [(ngModel)]="innerText"
             [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+            <span tdsSuffix class="cursor-pointer rounded-lg" title="Xóa tìm kiếm" (click)="onClearFilterSearch()" *ngIf="innerText">
+              <i class="text-neutral-1-500 tdsi-close-fill"></i>
+            </span>
           </tds-form-field>
 
           <order-filter-options (onLoadOption)="onLoadOption($event)" [summaryStatus]="summaryStatus"

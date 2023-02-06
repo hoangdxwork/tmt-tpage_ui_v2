@@ -72,9 +72,9 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
         })
     }
 
-    if (TDSHelperArray.hasListValue(filterObj.status)) {
+    if (TDSHelperArray.hasListValue(filterObj.StatusTexts)) {
       dataFilter.filters.push({
-        filters: filterObj.status.map((x:any) => ({
+        filters: filterObj.StatusTexts.map((x:any) => ({
           field: "StatusText",
           operator: "eq",
           value: x,
@@ -93,12 +93,21 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
       })
     }
 
-    if(filterObj.Telephone) {
+    if(filterObj.HasTelephone != null) {
       dataFilter.filters.push({
         filters: [
-        { field: "Telephone", operator: (filterObj.Telephone ?  OperatorEnum.gt :  OperatorEnum.eq), value: (filterObj.Telephone ? "" : null) }
+        { field: "Telephone", operator: (filterObj.HasTelephone ?  OperatorEnum.gt :  OperatorEnum.eq), value: (filterObj.HasTelephone ? "" : null) }
       ],
       logic: 'and'
+      })
+    }
+
+    if (filterObj && Number(filterObj?.TeamId)) {
+      dataFilter.filters.push({
+          filters: [
+            { field: "CRMTeamId", operator: OperatorEnum.eq, value: filterObj?.TeamId },
+          ],
+          logic: 'and'
       })
     }
 

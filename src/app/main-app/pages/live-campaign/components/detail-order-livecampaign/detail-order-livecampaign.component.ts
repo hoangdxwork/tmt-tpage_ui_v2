@@ -1,3 +1,4 @@
+import { FilterOptionsComponent } from './../../../order/components/filter-options/filter-options.component';
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { SaleOnlineStatusModelDto, SaleOnlineStatusValueDto } from "@app/dto/saleonlineorder/sale-online-order.dto";
 import { FilterObjSOOrderModel, TabNavsDTO } from "@app/services/mock-odata/odata-saleonlineorder.service";
@@ -16,6 +17,7 @@ import { TableAllOrderComponent } from "../table-all-order/table-all-order.compo
 
 export class DetailOrderLiveCampaignComponent implements OnInit {
   @ViewChild(TableAllOrderComponent) tableAllOrderComponent!: TableAllOrderComponent;
+  @ViewChild(FilterOptionsComponent) filterOptions!: FilterOptionsComponent;
   @Input() liveCampaignId!: string;
 
   public filterObj: FilterObjSOOrderModel = {
@@ -108,6 +110,16 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
 
   onLoadOption(event: any) {
     this.tableAllOrderComponent.onLoadOption(event);
+  }
+
+  onRefreshData(event: boolean) {
+    this.innerText = '';
+    this.filterOptions.onCancel();
+  }
+
+  onClearFilterSearch() {
+    this.innerText = '';
+    this.tableAllOrderComponent.onClearFilterSearch();
   }
 
 }
