@@ -17,6 +17,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
+import { ProductShopCartServiceV2 } from '@app/services/shopcart/product-shopcart-v2.service';
 
 @Component({
   selector: 'product-variant',
@@ -57,6 +58,7 @@ export class ListProductVariantComponent implements OnInit {
     private crmTeamService: CRMTeamService,
     private productService: ProductService,
     private productShopCartService: ProductShopCartService,
+    private productShopCartService_v2: ProductShopCartServiceV2,
     private excelExportService: ExcelExportService) {
   }
 
@@ -289,7 +291,7 @@ export class ListProductVariantComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.productShopCartService.addProductOnShopCart({ model: model }).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productShopCartService_v2.addProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.isLoading = false;
           this.message.success("Thêm sản phẩm vào giỏ hàng thành công");
