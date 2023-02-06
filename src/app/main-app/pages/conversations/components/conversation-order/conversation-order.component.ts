@@ -1328,7 +1328,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   plus(item: Detail_QuickSaleOnlineOrder, index: number) {
-    if(index >= 0) {
+    let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
+
+    if(exsit) {
         this.quickOrderModel.Details[index].Quantity++;
         this.calcTotal();
         this.coDAmount();
@@ -1336,7 +1338,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   minus(item: Detail_QuickSaleOnlineOrder, index: number) {
-    if(index >= 0) {
+    let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
+
+    if(exsit) {
         this.quickOrderModel.Details[index].Quantity--;
         if(this.quickOrderModel.Details[index].Quantity < 1) {
           this.quickOrderModel.Details[index].Quantity == 1;
