@@ -191,8 +191,6 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
     this.filterObj.searchText = '';
     this.filterObj.isActive = null;
     this.filterOptionCampaign.onCancel();
-
-    this.loadData(this.pageSize, this.pageIndex);
   }
 
   columnsChange(event: Array<ColumnTableDTO>) {
@@ -315,6 +313,17 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
             this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
         }
       });
+  }
+
+  onClearFilterSearch() {
+    this.pageIndex = 1;
+    this.innerText = '';
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId = new Set<string>();
+    this.filterObj.searchText = '';
+
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   ngOnDestroy(): void {

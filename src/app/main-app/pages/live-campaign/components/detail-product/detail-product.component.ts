@@ -82,6 +82,8 @@ export class DetailProductComponent implements OnInit {
         searchText: '',
         isOnlyProductCancel: false
     }
+
+    this.innerText = '';
     this.pageIndex = 1;
     this.loadData(this.pageSize, this.pageIndex);
   }
@@ -103,6 +105,13 @@ export class DetailProductComponent implements OnInit {
   onFilterData(event: boolean) {
     this.pageIndex = 1;
     this.filterObj.isOnlyProductCancel = event;
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  onClearFilterSearch() {
+    this.pageIndex = 1;
+    this.innerText = '';
+    this.filterObj.searchText = '';
     this.loadData(this.pageSize, this.pageIndex);
   }
 }

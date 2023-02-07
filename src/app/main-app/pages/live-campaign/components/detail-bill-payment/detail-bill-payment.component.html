@@ -6,6 +6,9 @@
         [tdsInputDebounce]="750"
         (inputKeyup)="onSearch($event)" />
       <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+      <span tdsSuffix class="cursor-pointer rounded-lg" title="Xóa tìm kiếm" (click)="onClearFilterSearch()" *ngIf="filterObj.searchText">
+        <i class="text-neutral-1-500 tdsi-close-fill"></i>
+      </span>
     </tds-form-field>
     <bill-filter-options (onLoadOption)="onLoadOption($event)" [lstTags]="lstTags" tds-tooltip tooltipTitle="Lọc dữ liệu"></bill-filter-options>
     <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>

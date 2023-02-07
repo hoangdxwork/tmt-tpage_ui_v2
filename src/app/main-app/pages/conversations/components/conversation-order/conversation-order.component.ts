@@ -1327,20 +1327,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this._street = x._street;
   }
 
-  plus(item: Detail_QuickSaleOnlineOrder) {
-    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
+  plus(item: Detail_QuickSaleOnlineOrder, index: number) {
+    let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
 
-    if(index >= 0) {
+    if(exsit) {
         this.quickOrderModel.Details[index].Quantity++;
         this.calcTotal();
         this.coDAmount();
     }
   }
 
-  minus(item: Detail_QuickSaleOnlineOrder) {
-    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
+  minus(item: Detail_QuickSaleOnlineOrder, index: number) {
+    let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
 
-    if(index >= 0) {
+    if(exsit) {
         this.quickOrderModel.Details[index].Quantity--;
         if(this.quickOrderModel.Details[index].Quantity < 1) {
           this.quickOrderModel.Details[index].Quantity == 1;

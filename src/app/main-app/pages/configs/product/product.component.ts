@@ -23,6 +23,9 @@ import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
+import { ProductShopCartServiceV2 } from '@app/services/shopcart/product-shopcart-v2.service';
+import { CRMTeamDTO } from '@app/dto/team/team.dto';
+import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
 
 @Component({
   selector: 'app-product',
@@ -81,6 +84,7 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
 
   indClickTag = -1;
   isProcessing: boolean = false;
+  teamShopCart!: CRMTeamDTO;
 
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
   @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
@@ -98,12 +102,15 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
     private productTemplateService: ProductTemplateService,
     private odataService: OdataProductTemplateService,
     private resizeObserver: TDSResizeObserver,
-    private excelExportService: ExcelExportService
+    private excelExportService: ExcelExportService,
+    private productShopCartService_v2: ProductShopCartServiceV2,
+    private productShopCartService: ProductShopCartService,
   ) { }
 
   ngOnInit(): void {
     this.loadGridConfig();
     this.loadTagList();
+    this.loadInitShopCart();
   }
 
   ngAfterViewInit(): void {
@@ -222,6 +229,47 @@ export class ConfigProductComponent implements OnInit, AfterViewInit {
             this.message.error(err?.error?.message || 'Thao tác thất bại!');
           }
         });
+    }
+  }
+
+  loadInitShopCart() {
+    this.productShopCartService.initShopCart().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (team: any) => {
+          this.teamShopCart = team;
+      },
+      error: (err: any) => {
+          this.message.error(err?.error?.message);
+      }
+    })
+  }
+
+  addProductTemplateOnShopCart() {
+    if (this.setOfCheckedId.size == 0) {
+      this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
+      return;
+    } else {
+      let team = this.teamShopCart as CRMTeamDTO;
+      if(!team) {
+          this.message.error('Không tìm thấy CRMTeam ShopCart');
+          return;
+      };
+
+      let model = {
+        TeamId: team.Id,
+        Ids: Array.from(this.setOfCheckedId)
+      }
+
+      this.isLoading = true;
+      this.productShopCartService_v2.addProductTemplateOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+            this.isLoading = false;
+            this.message.success("Thêm sản phẩm vào giỏ hàng thành công");
+        },
+        error: (err: any) => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message);
+        }
+      })
     }
   }
 

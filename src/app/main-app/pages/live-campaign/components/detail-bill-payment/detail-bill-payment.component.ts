@@ -169,7 +169,7 @@ export class DetailBillPaymentComponent implements OnInit {
       liveCampaignId: this.liveCampaignId,
       deliveryType: event.deliveryType,
       carrierDeliveryType: event.carrierDeliveryType,
-      searchText: event.searchText,
+      searchText: this.filterObj.searchText,
       dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
         endDate: event.dateRange.endDate
@@ -201,8 +201,6 @@ export class DetailBillPaymentComponent implements OnInit {
     }
 
     this.billFilterOptions.onCancel();
-
-    this.loadData(this.pageSize, this.pageIndex);
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
@@ -450,5 +448,13 @@ export class DetailBillPaymentComponent implements OnInit {
     }
 
     this.lstOfData = [...data];
+  }
+
+  onClearFilterSearch() {
+    this.pageIndex = 1;
+    this.indClickTag = -1;
+    this.filterObj.searchText = '';
+
+    this.loadData(this.pageSize, this.pageIndex);
   }
 }
