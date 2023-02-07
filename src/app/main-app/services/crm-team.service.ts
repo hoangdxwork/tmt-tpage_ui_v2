@@ -340,4 +340,13 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  patchCRMTeamToken(pageId: number, data: any): Observable<any> {
+    let api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/CRMTeam(${pageId})`,
+      method: CoreApiMethodType.patch
+    }
+
+    return this.apiService.getData<any>(api, data);
+  }
+
 }

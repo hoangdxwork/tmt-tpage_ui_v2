@@ -19,8 +19,6 @@ export class FacebookService extends BaseSevice {
   table: string = "CRMTeam";
   baseRestApi: string = "rest/v1.0/facebook";
 
-  private readonly cacheLoginUser = '_cache_login_user';
-
   constructor(private apiService: TCommonService, public caheApi: THelperCacheService) {
     super(apiService)
   }
@@ -70,7 +68,7 @@ export class FacebookService extends BaseSevice {
     return this.apiService.getData<FacebookVerifyResultDto>(api, model);
   }
 
-  verifyConectGraphFacebook(token: any){
+  getGraphFacebookMe(token: any){
     let version = environment.facebook.appVersion;
     let api: CoreAPIDTO = {
       url: `https://z-p3-graph.facebook.com/${version}/me?access_token=${token}&fields=id%2Cname%2Cpicture&method=get&pretty=0&sdk=joey&suppress_http_code=1`,
@@ -80,28 +78,23 @@ export class FacebookService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  setCacheLoginUser(user: FacebookCacheDto) {
-    let model = {
-      data: user,
-      type: CRMTeamType._Facebook
+  getGraphFacebookChannelId(token: any, channelId: any){
+    let version = environment.facebook.appVersion;
+    let api: CoreAPIDTO = {
+      url: `https://graph.facebook.com/${version}/${channelId}?access_token=${token}&fields=feed.limit(5)%7Bid%2Cpermalink_url%2Cstatus_type%2Cmessage%2Ccreated_time%2Cupdated_time%2Cpicture%2Cfrom%7Bid%2Cname%2Cpicture%7D%2Ccomments.limit(0).summary(true)%2Creactions.limit(0).summary(true)%7D&method=get&pretty=0&sdk=joey&suppress_http_code=1`,
+      method: CoreApiMethodType.get
     }
 
-    let data = JSON.stringify(model);
-    localStorage.setItem(this.cacheLoginUser, data);
+    return this.apiService.getData<any>(api, null);
   }
 
-  getCacheLoginUser(): FacebookCacheDto | null {
-    let data = localStorage.getItem(this.cacheLoginUser);
-
-    if(data) {
-      let model = JSON.parse(data);
-      return model;
-    } else {
-      return null;
+  getGraphFacebookMeAccounts(accessToken: string) {
+    let version = environment.facebook.appVersion;
+    const api: CoreAPIDTO = {
+        url: `https://graph.facebook.com/${version}/me/accounts?access_token=${accessToken}&fields=id%2Cname%2Clink%2Cpicture%2Caccess_token&limit=500&method=get&pretty=0&sdk=joey&suppress_http_code=1`,
+        method: CoreApiMethodType.get,
     }
-  }
 
-  removeCacheLoginUser() {
-    localStorage.removeItem(this.cacheLoginUser);
+    return this.apiService.getData<any>(api,null);
   }
 }
