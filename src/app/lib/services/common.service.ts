@@ -86,6 +86,10 @@ export class TCommonService {
                 options.body = body;
                 result = this.http.delete<T>(URL, options)
                 break;
+            case CoreApiMethodType.patch:
+                options.body = body;
+                result = this.http.patch<T>(URL, data, options)
+                break;
             default:
                 result = this.http.post<T>(URL, JSON.stringify(data), options)
                 break;
