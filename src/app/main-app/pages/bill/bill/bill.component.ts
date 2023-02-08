@@ -571,8 +571,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
     this.loadData(params.pageSize, params.pageIndex);
-    this.checked = false;
-    this.indeterminate = false;
+    this.removeCheckedRow();
   }
 
   refreshData() {

@@ -250,6 +250,7 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
+    this.removeCheckedRow();
     this.loadData(params.pageSize, params.pageIndex);
   }
 
@@ -345,6 +346,9 @@ export class PartnerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   removeCheckedRow() {
     this.setOfCheckedId.clear();
+
+    this.checked = false;
+    this.indeterminate = false;
   }
 
   onLoadOption(event: FilterObjPartnerModel) {

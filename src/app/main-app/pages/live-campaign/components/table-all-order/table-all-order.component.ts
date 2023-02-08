@@ -248,6 +248,7 @@ export class TableAllOrderComponent implements OnInit {
 
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
+    this.removeCheckedRow()
     this.loadData(params.pageSize, params.pageIndex);
   }
 
@@ -709,5 +710,12 @@ export class TableAllOrderComponent implements OnInit {
     this.pageIndex = 1;
     this.filterObj.SearchText = '';
     this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  removeCheckedRow() {
+    this.setOfCheckedId.clear();
+
+    this.indeterminate = false;
+    this.checked = false;
   }
 }

@@ -594,6 +594,7 @@ export class OrderComponent implements OnInit, AfterViewInit {
           }
 
           this.removeFilterCache();
+          this.removeCheckedRow();
           this.loadData(params.pageSize, params.pageIndex);
       }
     })
@@ -972,6 +973,9 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
   removeCheckedRow(){
     this.setOfCheckedId = new Set<string>();
+
+    this.checked = false;
+    this.indeterminate = false;
   }
 
   directPage(url: string){

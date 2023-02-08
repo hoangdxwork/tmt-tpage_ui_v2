@@ -205,6 +205,7 @@ export class DetailBillPaymentComponent implements OnInit {
 
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
+    this.removeCheckedRow();
     this.loadData(params.pageSize, params.pageIndex);
   }
 
@@ -456,5 +457,12 @@ export class DetailBillPaymentComponent implements OnInit {
     this.filterObj.searchText = '';
 
     this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  removeCheckedRow() {
+    this.setOfCheckedId.clear();
+
+    this.indeterminate = false;
+    this.checked = false;
   }
 }
