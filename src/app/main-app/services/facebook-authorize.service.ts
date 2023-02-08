@@ -43,7 +43,7 @@ export class FacebookAuthorizeService extends BaseSevice {
                   if (data.status === 'connected') {
                     this.facebookLoginService.getMe().subscribe({
                       next: (me: any) => {
-                          observer.next(me);
+                          observer.next([data, me]);
                           observer.complete();
                       },
                       error: (error: any) => {
