@@ -1,3 +1,4 @@
+import { FacebookAuthorizeService } from './../../../../services/facebook-authorize.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { VerifyTeamDto, FacebookVerifyResultDto } from '../../../../dto/team/team.dto';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
@@ -44,74 +45,63 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
     private facebookService: FacebookService,
     private notification: TDSNotificationService,
     public router: Router,
-    public activatedRoute: ActivatedRoute) {
+    public activatedRoute: ActivatedRoute,
+    private facebookAuthorizeService: FacebookAuthorizeService) {
       super(crmTeamService, activatedRoute, router);
   }
 
   ngOnInit(): void {
-    this.fbInit();
+    this.fbGetMe();
     this.loadData();
   }
 
-  fbInit() {
-    this.facebookLoginService.init().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (init: any) => {
-          this.facebookLoginService.getLoginStatus().pipe(takeUntil(this.destroy$)).subscribe({
-              next: (res: FacebookAuthResponse) => {
-                if (res.status === 'connected') {
-                    this.userFBAuth = res.authResponse;
-                    this.getMe();
-                }
-              },
-              error: (error) => {
-                  this.me = null;
-              }
-            })
-        },
-        error: (error) => {
-            this.me = null;
+  fbGetMe() {
+    this.facebookAuthorizeService.fbGetMe().subscribe({
+      next: (me: TDSSafeAny) => {
+        if(me && me.id) {
+          this.me = {...me};
+
+          if (this.data && this.data.length > 0) {
+            this.sortByFbLogin(me.id);
+          }
         }
-      })
+      },
+      error: (error: TDSSafeAny) => {
+        this.me = null;
+        console.log(error);
+      }
+    })
   }
 
   facebookSignIn(): void {
-    this.isLoading = true;
-    this.facebookLoginService.init().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (init: any) => {
-          this.facebookLoginService.login().pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: FacebookAuth) => {
-              if(res) {
-                  this.userFBAuth = {...res};
-                  this.getMe();
-              }
-    
-              this.isLoading = false;
-            },
-            error: error => {
-              this.isLoading = false;
-            }
+    this.facebookAuthorizeService.fbSignIn().subscribe({
+      next: (res: TDSSafeAny) => {
+          if(res && res.graphDomain == "facebook") {
+              this.userFBAuth = {...res};
+              this.getMe();
           }
-        )
+
+      },
+      error: (error: TDSSafeAny) => {
+          console.log(error);
       }
     })
   }
 
   facebookSignOut() {
-    this.isLoading = true;
-    this.facebookLoginService.logout().pipe(takeUntil(this.destroy$)).subscribe({
-        next: () => {
-          this.me = null;
-          this.loginTeam = null;
-          this.isLoading = false;
-        },
-        error: error => {
-            this.isLoading = false;
-        }
-      })
+    this.facebookAuthorizeService.fbSignOut().subscribe({
+      next: (res: TDSSafeAny) => {
+        this.me = null;
+        this.loginTeam = null;
+      },
+      error: (error: TDSSafeAny) => {
+          console.log(error);
+      }
+    })
   }
 
   getMe() {
-    this.facebookLoginService.getMe().pipe(takeUntil(this.destroy$)).subscribe({
+    this.facebookLoginService.getMe().subscribe({
         next: (res: FacebookUser) => {
           if(res && res.id) {
             this.me = {...res};

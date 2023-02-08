@@ -10,6 +10,7 @@ export interface FacebookAuth {
   expiresIn: number;
   signedRequest: string;
   userID: string;
+  graphDomain?: any;
 }
 
 export interface FacebookAuthResponse {
