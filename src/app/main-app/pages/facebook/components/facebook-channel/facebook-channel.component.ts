@@ -59,17 +59,24 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
 
   fbGetMe() {
     this.me = null;
+    this.isLoading = true;
     this.facebookAuthorizeService.fbGetMe().subscribe({
-      next: (me: TDSSafeAny) => {
-        if(me && me.id) {
-          this.me = me;
+      next: (response: any) => {debugger
+        if(response && response[0]) {
+          this.userFBAuth = response[0].authResponse;
+        }
+
+        if(response && response[1] && response[1] && response[1].id) {
+          this.me = response[1];
           if(this.data) {
-            this.sortByFbLogin(me.id);
+            this.sortByFbLogin(response[1].id);
           }
         }
+        this.isLoading = false;
       },
       error: (error: TDSSafeAny) => {
         console.log(error);
+        this.isLoading = false;
       }
     })
   }
