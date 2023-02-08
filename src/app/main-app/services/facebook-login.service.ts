@@ -108,7 +108,6 @@ export class FacebookLoginService {
             });
           } catch (e) {
             subscriber.error(e);
-
             subscriber.complete();
           }
         });
@@ -171,7 +170,6 @@ export class FacebookLoginService {
   logout(): Observable<any> {
     return Observable.create((subscriber: TDSSafeAny) => {
       this.sdk.subscribe(sdk => {
-
         this.ngZone.runOutsideAngular(() => {
           try {
             FB.logout((response: any) => {
@@ -182,7 +180,6 @@ export class FacebookLoginService {
             });
           } catch (e) {
             subscriber.error(e);
-
             subscriber.complete();
           }
         });
@@ -201,7 +198,6 @@ export class FacebookLoginService {
               } else {
                 subscriber.next(response);
               }
-
               subscriber.complete();
             });
           });
