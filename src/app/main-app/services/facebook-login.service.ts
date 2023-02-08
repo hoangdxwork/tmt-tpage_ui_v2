@@ -90,7 +90,7 @@ export class FacebookLoginService {
     }));
   }
 
-  getLoginStatus(): Observable<FacebookAuthResponse> {
+  getLoginStatus(): Observable<TDSSafeAny> {
     return Observable.create((subscriber: TDSSafeAny) => {
       this.sdk.subscribe(sdk => {
         this.ngZone.runOutsideAngular(() => {
