@@ -240,6 +240,7 @@ export class DetailBillComponent implements OnInit {
 
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
+    this.removeCheckedRow();
     this.loadData(params.pageSize, params.pageIndex);
   }
 
@@ -534,6 +535,7 @@ export class DetailBillComponent implements OnInit {
                 that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
               }
 
+              this.removeCheckedRow();
               this.loadData(this.pageSize, this.pageIndex);
               this.loadInventoryIds();
               this.isLoading = false;
