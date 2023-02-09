@@ -300,7 +300,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                   case CRMTeamType._TShop:
                     let existItemPostTShop = res.Data && res.Data.Data && res.Data.Data.ChannelType == ChatomniChannelType.TShop
                       && res.Data.Data.Data && res.Data.Data.Data.ShopId && this.currentTeam?.ChannelId == res.Data.Data.Data.ShopId;
-                      
+
                     if(existItemPostTShop) {
                         this.modal.info({
                           title: 'Thông báo bài viết mới',
@@ -319,7 +319,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                   case CRMTeamType._UnofficialTikTok:
                     let existItemPostTikTok = res.Data && res.Data.Data && res.Data.Data.ChannelType == ChatomniChannelType.UnofficialTikTok
                       && res.Data.Data.Data && res.Data.Data.Data.owner && res.Data.Data.Data.owner.id && this.currentTeam?.ChannelId == res.Data.Data.Data.owner.id;
-                      
+
                     if(existItemPostTikTok) {
                         this.modal.info({
                           title: 'Thông báo bài viết mới',
@@ -345,7 +345,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                   this.destroyTimer();
                   this.clickReload = 0;
                   this.isLoadingUpdate = false;
-  
+
                   this.message.remove(this.csLoadingUpdate?.messageId);
                   this.message.success('kết nối bài viết thành công');
                   this.loadData();
@@ -460,7 +460,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             this.isLoadingUpdate = false;
             return;
         }
-        
+
         this.isLoadingUpdate = true;
         this.csLoadingUpdate = this.message.create('loading', `Đang cập nhật hội thoại`, { duration: 60000 });
 
@@ -473,7 +473,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.message.remove(this.csLoadingUpdate?.messageId);
                 this.message.success('Yêu cầu cập nhật hội thoại thành công');
                 this.loadData();
-              }, 1.5 * 10 * 1000);
+              }, 5 * 1000);
           },
           error: (error: any) => {
               this.clickReload = 0;
