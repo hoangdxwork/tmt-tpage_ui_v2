@@ -95,4 +95,7 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
     this.modalRef.destroy();
   }
 
+  getAmountDeposit(){
+    this.currentDeposit = this.data.AmountDeposit || 0;
+  }
 }

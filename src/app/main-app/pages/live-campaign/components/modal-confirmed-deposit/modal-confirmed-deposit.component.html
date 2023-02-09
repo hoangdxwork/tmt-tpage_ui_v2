@@ -16,12 +16,13 @@
         <div class="col-span-2 text-title-1 font-semibold">{{data?.AmountTotal || 0 | numberCustom}}đ</div>
 
         <div>Tiền cọc</div>
-        <div class="col-span-2 text-title-1 font-semibold flex space-x-2">
+        <div class="col-span-2 text-title-1 font-semibold flex space-x-2 items-center">
           <div>{{data.AmountDeposit || 0 | numberCustom}}đ</div>
           <div *ngIf="data.IsDeposited" class="flex items-center space-x-1">
             <i class="tdsi-success-line text-base text-success-400"></i>
             <div class="font-semibold text-success-400">Đã xác nhận</div>
           </div>
+          <span class="tdsi-edit-fill hover:text-success-400" (click)="getAmountDeposit()" tds-tooltip="Chọn xác nhận tiền cọc"></span>
         </div>
 
         <div>Tiền thu hộ:</div>
