@@ -19,6 +19,8 @@ export class FacebookAuthorizeService extends BaseSevice {
     constructor(private apiService: TCommonService,
         private facebookLoginService: FacebookLoginService) {
         super(apiService);
+
+        this.init().subscribe();
     }
 
     init() {
@@ -28,7 +30,8 @@ export class FacebookAuthorizeService extends BaseSevice {
       let model: FacebookInitParams = {
         appId: appId,
         xfbml: true,
-        version: appVersion
+        version: appVersion,
+        status: true
       };
 
       return this.facebookLoginService.init(model);
@@ -36,34 +39,41 @@ export class FacebookAuthorizeService extends BaseSevice {
 
     fbGetMe() {
       return new Observable((observer: TDSSafeAny) => {
-        this.init().subscribe({
-          next: (init: any) => {
-              this.facebookLoginService.getLoginStatus().subscribe({
-                next: (data: FacebookAuthResponse) => {
-                  if (data.status === 'connected') {
-                    this.facebookLoginService.getMe().subscribe({
-                      next: (me: any) => {
-                          observer.next([data, me]);
-                          observer.complete();
-                      },
-                      error: (error: any) => {
-                          observer.next(error);
-                          observer.complete();
-                      }
-                    });
-                  }
-                },
-                error: (error) => {
-                  observer.next(error);
-                  observer.complete();
-                }
-              })
-            },
-            error: (error) => {
-              observer.next(error);
+        this.facebookLoginService.getMe().subscribe({
+          next: (me: any) => {
+            if(me && me.id) {
+                observer.next(me);
+                observer.complete();
+            } else {
+                observer.next();
+                observer.complete();
+            }
+          },
+          error: (error: any) => {
+            observer.next(error);
+            observer.complete();
+          }
+        })
+      })
+    }
+
+    fbLoginStatus() {
+      return new Observable((observer: TDSSafeAny) => {
+        this.facebookLoginService.getLoginStatus().subscribe({
+          next: (data: FacebookAuthResponse) => {
+            if (data.status === 'connected') {
+              observer.next(data);
+              observer.complete();
+            } else {
+              observer.next();
               observer.complete();
             }
-          })
+          },
+          error: (error) => {
+            observer.next(error);
+            observer.complete();
+          }
+        })
       })
     }
 
