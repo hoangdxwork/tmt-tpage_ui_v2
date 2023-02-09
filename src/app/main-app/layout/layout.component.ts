@@ -336,7 +336,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
             link: `/omni-product-tpos`,
           },
         ],
-        hidden: exist ? true : false,
+        hidden: exist ? false : true,
       },
       {
         name: "Cấu hình",
