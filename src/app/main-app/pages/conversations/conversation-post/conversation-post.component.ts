@@ -473,7 +473,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.message.remove(this.csLoadingUpdate?.messageId);
                 this.message.success('Yêu cầu cập nhật hội thoại thành công');
                 this.loadData();
-              }, 3 * 10 * 1000);
+              }, 1.5 * 10 * 1000);
           },
           error: (error: any) => {
               this.clickReload = 0;
