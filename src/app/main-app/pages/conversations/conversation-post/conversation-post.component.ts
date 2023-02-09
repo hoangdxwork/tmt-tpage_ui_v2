@@ -1,3 +1,5 @@
+import { TDSModalService } from 'tds-ui/modal';
+import { ChatomniChannelType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { SessionParamsService } from './../../../services/session-params.service';
 import { OnDestroy } from '@angular/core';
 import { ExtrasChildsDto } from './../../../dto/conversation-all/chatomni/chatomni-data.dto';
@@ -102,11 +104,13 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   widthConversation!: number;
   clickReload: number = 0;
   refreshTimer: TDSSafeAny;
+  refresh3Time: TDSSafeAny;
   nextDataTimer: TDSSafeAny;
   isLoadingUpdate: boolean = false;
 
   extrasChilds: { [id: string] : any[] } = {};
   clickCurrentChild: any;
+  csLoadingUpdate: TDSSafeAny;
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -128,7 +132,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private notification: TDSNotificationService,
     private tiktokService: TiktokService,
     private route: ActivatedRoute,
-    private sessionParamsService: SessionParamsService) {
+    private sessionParamsService: SessionParamsService,
+    private modal: TDSModalService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -263,6 +268,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }
       }
     })
+
   }
 
   onEventSocket() {
@@ -287,10 +293,62 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             break;
 
             case ChatmoniSocketEventName.chatomniCreatePost:
-                let existItemPost = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop && res.Data && res.Data.Data && res.Data.Data.Data && res.Data.Data.Data.ShopId && this.currentTeam?.ChannelId == res.Data.Data.Data.ShopId;
-                      
-                if(existItemPost) {
-                    this.message.info(`${this.currentTeam?.Name} vừa tạo bài viết mới, ấn nút Refresh để xem`);
+                switch (this.currentTeam?.Type) {
+                  case CRMTeamType._Facebook:
+                  break;
+
+                  case CRMTeamType._TShop:
+                    let existItemPostTShop = res.Data && res.Data.Data && res.Data.Data.ChannelType == ChatomniChannelType.TShop
+                      && res.Data.Data.Data && res.Data.Data.Data.ShopId && this.currentTeam?.ChannelId == res.Data.Data.Data.ShopId;
+
+                    if(existItemPostTShop) {
+                        this.modal.info({
+                          title: 'Thông báo bài viết mới',
+                          content: `${this.currentTeam?.Name} vừa tạo bài viết mới, Ấn làm mới để xem`,
+                          onOk: () => {
+                            this.onRefresh(null);
+                          },
+                          onCancel:()=>{},
+                          okText:"Làm mới",
+                          cancelText:"Đóng",
+                          confirmViewType: "compact",
+                        });
+                    }
+                  break;
+
+                  case CRMTeamType._UnofficialTikTok:
+                    let existItemPostTikTok = res.Data && res.Data.Data && res.Data.Data.ChannelType == ChatomniChannelType.UnofficialTikTok
+                      && res.Data.Data.Data && res.Data.Data.Data.owner && res.Data.Data.Data.owner.id && this.currentTeam?.ChannelId == res.Data.Data.Data.owner.id;
+
+                    if(existItemPostTikTok) {
+                        this.modal.info({
+                          title: 'Thông báo bài viết mới',
+                          content: `${this.currentTeam?.Name} vừa tạo bài viết mới, Ấn làm mới để xem`,
+                          onOk: () => {
+                            this.onRefresh(null);
+                          },
+                          onCancel:()=>{},
+                          okText:"Làm mới",
+                          cancelText:"Đóng",
+                          confirmViewType: "compact",
+                        });
+                    }
+                  break;
+
+                }
+            break;
+
+            case ChatmoniSocketEventName.chatomniPostLiveConnected:
+                let existPostLive = res.Data && res.Data.Data && res.Data.Data.ChannelId && res.Data.Data.ChannelId == this.currentTeam?.ChannelId;
+
+                if(existPostLive){
+                  this.destroyTimer();
+                  this.clickReload = 0;
+                  this.isLoadingUpdate = false;
+
+                  this.message.remove(this.csLoadingUpdate?.messageId);
+                  this.message.success('kết nối bài viết thành công');
+                  this.loadData();
                 }
             break;
 
@@ -399,27 +457,30 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         if(!TDSHelperString.hasValueString(ownerId)) {
             this.message.error('Không tìm thấy OwnerId, không thể kích hoạt cập nhật hội thoại');
             this.isRefreshing = false;
+            this.isLoadingUpdate = false;
             return;
         }
 
         this.isLoadingUpdate = true;
-        this.message.info("Đã kích hoạt cập nhật hội thoại");
-        let mess = this.message.create('loading', `Đang cập nhật hội thoại`, { duration: 60000 });
+        this.csLoadingUpdate = this.message.create('loading', `Đang cập nhật hội thoại`, { duration: 60000 });
 
         this.tiktokService.refreshListen(ownerId).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
-              this.clickReload = 0;
-              this.isLoadingUpdate = false;
+              this.refresh3Time = setTimeout(() => {
+                this.clickReload = 0;
+                this.isLoadingUpdate = false;
 
-              this.message.remove(mess?.messageId);
-              this.message.success('Yêu cầu cập nhật hội thoại thành công');
-              this.loadData();
+                this.message.remove(this.csLoadingUpdate?.messageId);
+                this.message.success('Yêu cầu cập nhật hội thoại thành công');
+                this.loadData();
+              }, 5 * 1000);
           },
           error: (error: any) => {
               this.clickReload = 0;
               this.isLoadingUpdate = false;
+              console.log(error);
 
-              this.message.remove(mess?.messageId);
+              this.message.remove(this.csLoadingUpdate?.messageId);
               this.message.error(error?.error?.message || 'Yêu cầu cập nhật thất bại');
           }
         })
@@ -854,6 +915,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
     if (this.nextDataTimer) {
       clearTimeout(this.nextDataTimer);
+    }
+
+    if(this.refresh3Time) {
+      clearTimeout(this.refresh3Time);
     }
   }
 

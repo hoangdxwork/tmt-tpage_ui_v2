@@ -29,7 +29,7 @@ export class FacebookGraphService extends BaseSevice {
       return this.fb.api(path, <FacebookApiMethod>method, <FacebookApiParams>params);
   }
 
-  getUserPages(accessToken: string): Observable<FBUserPageRequestDTO> {
+  getGraphFacebookAccounts(accessToken: string): Observable<FBUserPageRequestDTO> {
     const api: CoreAPIDTO = {
         url: `https://graph.facebook.com/${this.version}/me/accounts?fields=id,name,picture,category,category_list,access_token,link&limit=50&access_token=${accessToken}`,
         method: CoreApiMethodType.get,
@@ -38,7 +38,7 @@ export class FacebookGraphService extends BaseSevice {
     return this.apiService.getData<FBUserPageRequestDTO>(api,null);
   }
 
-  getFeed(accessToken: any): Observable<any> {
+  getGraphFacebookMeFeed(accessToken: any): Observable<any> {
     return this.fb.api(`/me/feed?fields=id,picture,message,story,description&access_token=${accessToken}`, {})
         .pipe((res: any) => {
             return res;

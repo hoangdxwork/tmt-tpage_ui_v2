@@ -205,7 +205,7 @@ export class DetailBillComponent implements OnInit {
       liveCampaignId: this.liveCampaignId,
       deliveryType: event.deliveryType,
       carrierId: event.carrierId,
-      searchText: event.searchText,
+      searchText: this.filterObj.searchText,
       dateRange: event.dateRange ? {
         startDate: event.dateRange.startDate,
         endDate: event.dateRange.endDate
@@ -235,12 +235,12 @@ export class DetailBillComponent implements OnInit {
     }
 
     this.billFilterOptions.onCancel();
-    this.loadData(this.pageSize, this.pageIndex);
     this.loadPartnerCanMergeOrders();
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
+    this.removeCheckedRow();
     this.loadData(params.pageSize, params.pageIndex);
   }
 
@@ -535,6 +535,7 @@ export class DetailBillComponent implements OnInit {
                 that.notification.success('Thông báo', 'Xác nhận bán hàng thành công!');
               }
 
+              this.removeCheckedRow();
               this.loadData(this.pageSize, this.pageIndex);
               this.loadInventoryIds();
               this.isLoading = false;
@@ -908,5 +909,13 @@ export class DetailBillComponent implements OnInit {
     if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
         window.open(data.TrackingUrl, '_blank')
     }
+  }
+
+  onClearFilterSearch() {
+    this.pageIndex = 1;
+    this.indClickTag = -1;
+    this.filterObj.searchText = '';
+
+    this.loadData(this.pageSize, this.pageIndex);
   }
 }

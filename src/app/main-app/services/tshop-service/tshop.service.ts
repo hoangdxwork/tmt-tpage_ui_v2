@@ -37,19 +37,20 @@ export class TShopService extends BaseSevice {
       if(!TDSHelperString.isString(event.data)) return;
 
       let data = event.data;
-      let model = JSON.parse(data) as TUserCacheDto;
-      let exist = model && model.access_token && model.user;
+      if(data) {
+        let model = JSON.parse(data) as TUserCacheDto;
+        let exist = model && model.access_token && model.user;
 
-      if(exist) {
-        let cacheObj =  {
-          access_token: model.access_token,
-          user: model.user,
-        } as TUserCacheDto;
+        if(exist) {
+          let cacheObj =  {
+            access_token: model.access_token,
+            user: model.user,
+          } as TUserCacheDto;
 
-        //TODO: lưu cache tài khoản đăng nhập
-        this.setCacheLoginUser(cacheObj);
-        
-        this.tshopUser$.next(model);
+          //TODO: lưu cache tài khoản đăng nhập
+          this.setCacheLoginUser(cacheObj);
+          this.tshopUser$.next(model);
+        }
       }
     });
   }

@@ -3,6 +3,9 @@
         <tds-form-field class="w-full">
             <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750" [(ngModel)]="innerText" (inputKeyup)="onSearch($event)"/>
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+            <span tdsSuffix class="cursor-pointer rounded-lg" title="Xóa tìm kiếm" (click)="onClearFilterSearch()" *ngIf="innerText">
+                <i class="text-neutral-1-500 tdsi-close-fill"></i>
+            </span>
         </tds-form-field>
     </div>
 

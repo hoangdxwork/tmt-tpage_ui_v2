@@ -1,3 +1,4 @@
+import { ChatomniChannelType } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { SocketioChatomniCreatePostDto } from './../../dto/socket-io/chatomni-create-post.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Injectable } from "@angular/core";
@@ -82,7 +83,20 @@ export class SocketOnEventService {
             break;
 
           case ChatmoniSocketEventName.chatomniCreatePost:
-            channelId = socketData?.Data?.Data?.ShopId;
+              switch (socketData.Data.ChannelType) { 
+
+                case ChatomniChannelType.TShop:
+                  channelId = socketData?.Data?.Data?.ShopId;
+                break; 
+
+                case ChatomniChannelType.UnofficialTikTok:
+                  channelId = socketData?.Data?.Data?.owner?.id;
+                break; 
+              }
+            break;
+
+          case ChatmoniSocketEventName.chatomniPostLiveConnected:
+            channelId = socketData?.Data?.ChannelId;
             break;
 
           default:
@@ -181,11 +195,16 @@ export class SocketOnEventService {
                 this.publishSocketEvent(null, socketData, team); //SocketioChatomniPostLiveEndDto
               break;
 
-            // Thông báo bài viết mới TShop
+            // Thông báo bài viết mới
             case ChatmoniSocketEventName.chatomniCreatePost:
                 let notificationCreatePost = this.prepareCreatePost(socketData, team);
                 this.publishSocketEvent(notificationCreatePost, socketData, team); //SocketioChatomniCreatePostDto
               break;
+
+            // Kết nối bài viết thành công
+            case ChatmoniSocketEventName.chatomniPostLiveConnected:
+              this.publishSocketEvent(null, socketData, team);
+            break;
           }
         },
         error: (error: any) => {
@@ -327,12 +346,29 @@ export class SocketOnEventService {
 
   prepareCreatePost(socketData: any, team: CRMTeamDTO) {
     let createPost = {...socketData} as SocketioChatomniCreatePostDto;
-    let notification = {
-        Title: `TShop: <span class="font-semibold">${team?.Name || 'Kênh TShop'}</span> vừa tạo bài viết mới` ,
-        Message: `${createPost.Data.Description || ''}`,
-        Attachments: null,
-        Url: `/conversation/post?teamId=${team.Id}&type=post&post_id=${socketData.Data?.ObjectId}`
-    } as SocketEventNotificationDto;
+    let notification = {} as SocketEventNotificationDto;
+
+    switch (socketData.Data.ChannelType) { 
+        case ChatomniChannelType.TShop:
+          notification = {
+            Title: `TShop: <span class="font-semibold">${team?.Name || 'Kênh TShop'}</span> vừa tạo bài viết mới` ,
+            Message: `${createPost.Data.Description || ''}`,
+            Attachments: null,
+            Url: `/conversation/post?teamId=${team.Id}&type=post&post_id=${socketData.Data?.ObjectId}`
+        } as SocketEventNotificationDto;
+        break;
+
+        case ChatomniChannelType.UnofficialTikTok:
+          notification = {
+            Title: `TikTok: <span class="font-semibold">${team?.Name || 'Kênh TikTok'}</span> vừa tạo bài viết mới` ,
+            Message: `${createPost.Data.Description || ''}`,
+            Attachments: null,
+            Url: `/conversation/post?teamId=${team.Id}&type=post&post_id=${socketData.Data?.ObjectId}`
+        } as SocketEventNotificationDto;
+        break;
+    }
+
+   
 
     return {...notification};
   }

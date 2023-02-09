@@ -12,6 +12,9 @@
             <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput [tdsInputDebounce]="750" [(ngModel)]="innerText"
                 [ngModelOptions]="{standalone: true}" (inputKeyup)="onSearch($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+            <span tdsSuffix class="cursor-pointer rounded-lg" title="Xóa tìm kiếm" (click)="onClearFilterSearch()" *ngIf="innerText">
+                <i class="text-neutral-1-500 tdsi-close-fill"></i>
+            </span>
         </tds-form-field>
     </div>
     <div class="h-full pb-2.5">

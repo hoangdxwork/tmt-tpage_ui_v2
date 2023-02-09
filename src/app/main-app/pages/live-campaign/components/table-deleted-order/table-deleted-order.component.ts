@@ -61,6 +61,7 @@ export class TableDeletedOrderComponent implements OnInit {
     this.pageSize = params.pageSize;
     this.pageIndex = params.pageIndex;
     let skip = (params.pageIndex -1) * params.pageSize;
+    this.removeCheckedRow();
     this.loadDeletedOrder(this.liveCampaignId, skip, params.pageSize);
   }
 
@@ -115,5 +116,12 @@ export class TableDeletedOrderComponent implements OnInit {
     }
 
     this.lstDeletedOrder = [...data];
+  }
+
+  removeCheckedRow() {
+    this.setOfCheckedId.clear();
+
+    this.indeterminate = false;
+    this.checked = false;
   }
 }

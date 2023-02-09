@@ -25,7 +25,7 @@ export class ProductShopCartServiceV2 extends BaseSevice {
           url: `${this._BASE_URL}/${this.baseRestApi}/crmteam/initshopcart`,
           method: CoreApiMethodType.post,
         }
-    
+
         return this.apiService.getData<any>(api, null);
     }
 
@@ -42,7 +42,7 @@ export class ProductShopCartServiceV2 extends BaseSevice {
         if (TDSHelperString.hasValueString(queryString)) {
             url = `${url}?${queryString}`;
         }
-        
+
         const api: CoreAPIDTO = {
           url: url,
           method: CoreApiMethodType.get
@@ -52,7 +52,7 @@ export class ProductShopCartServiceV2 extends BaseSevice {
 
     addProductTemplateOnShopCart(data: any): Observable<TDSSafeAny> {
         const api: CoreAPIDTO = {
-          url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/addproductteamplateonshopcart`,
+          url: `${this._BASE_URL}/rest/v1/shopcart/addproductteamplateonshopcart`,
           method: CoreApiMethodType.post
         }
         return this.apiService.getData<TDSSafeAny>(api, data);
@@ -76,7 +76,7 @@ export class ProductShopCartServiceV2 extends BaseSevice {
 
     addProductOnShopCart(data: any): Observable<TDSSafeAny> {
         const api: CoreAPIDTO = {
-          url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/addproductonshopcart`,
+          url: `${this._BASE_URL}/rest/v1/shopcart/addproductonshopcart`,
           method: CoreApiMethodType.post
         }
         return this.apiService.getData<TDSSafeAny>(api, data);
@@ -97,5 +97,5 @@ export class ProductShopCartServiceV2 extends BaseSevice {
         }
         return this.apiService.getData<TDSSafeAny>(api, data);
     }
-    
+
 }

@@ -59,7 +59,7 @@
       <div class="flex items-center justify-end pr-3.5">
         <button tds-button-flat-icon color="custom" rounded="!rounded-full" tds-tooltip="Refresh"
           class="text-neutral-1-200 bg-transparent hover:text-info-500 hover:bg-info-100 focus:text-info-500 focus:bg-info-100 focus:ring-transparent"
-          (click)="onRefresh()">
+          (click)="onRefresh()" [disabled]="disableRefresh">
           <i [ngClass]="isRefreshing?'animate-spin':''" class="tdsi-reload-fill"></i>
         </button>
       </div>
