@@ -1,3 +1,5 @@
+import { TDSModalService } from 'tds-ui/modal';
+import { ChatomniChannelType } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { SessionParamsService } from './../../../services/session-params.service';
 import { OnDestroy } from '@angular/core';
 import { ExtrasChildsDto } from './../../../dto/conversation-all/chatomni/chatomni-data.dto';
@@ -129,7 +131,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private notification: TDSNotificationService,
     private tiktokService: TiktokService,
     private route: ActivatedRoute,
-    private sessionParamsService: SessionParamsService) {
+    private sessionParamsService: SessionParamsService,
+    private modal: TDSModalService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -297,10 +300,48 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             break;
 
             case ChatmoniSocketEventName.chatomniCreatePost:
-                let existItemPost = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop && res.Data && res.Data.Data && res.Data.Data.Data && res.Data.Data.Data.ShopId && this.currentTeam?.ChannelId == res.Data.Data.Data.ShopId;
+                switch (this.currentTeam?.Type) {
+                  case CRMTeamType._Facebook:
+                  break;
+
+                  case CRMTeamType._TShop:
+                    let existItemPostTShop = res.Data && res.Data.Data && res.Data.Data.ChannelType == ChatomniChannelType.TShop
+                      && res.Data.Data.Data && res.Data.Data.Data.ShopId && this.currentTeam?.ChannelId == res.Data.Data.Data.ShopId;
                       
-                if(existItemPost) {
-                    this.message.info(`${this.currentTeam?.Name} vừa tạo bài viết mới, ấn nút Refresh để xem`);
+                    if(existItemPostTShop) {
+                        this.modal.info({
+                          title: 'Thông báo bài viết mới',
+                          content: `${this.currentTeam?.Name} vừa tạo bài viết mới, Ấn làm mới để xem`,
+                          onOk: () => {
+                            this.onRefresh(null);
+                          },
+                          onCancel:()=>{},
+                          okText:"Làm mới",
+                          cancelText:"Đóng",
+                          confirmViewType: "compact",
+                        });
+                    }
+                  break;
+
+                  case CRMTeamType._UnofficialTikTok:
+                    let existItemPostTikTok = res.Data && res.Data.Data && res.Data.Data.ChannelType == ChatomniChannelType.UnofficialTikTok
+                      && res.Data.Data.Data && res.Data.Data.Data.owner && res.Data.Data.Data.owner.id && this.currentTeam?.ChannelId == res.Data.Data.Data.owner.id;
+                      
+                    if(existItemPostTikTok) {
+                        this.modal.info({
+                          title: 'Thông báo bài viết mới',
+                          content: `${this.currentTeam?.Name} vừa tạo bài viết mới, Ấn làm mới để xem`,
+                          onOk: () => {
+                            this.onRefresh(null);
+                          },
+                          onCancel:()=>{},
+                          okText:"Làm mới",
+                          cancelText:"Đóng",
+                          confirmViewType: "compact",
+                        });
+                    }
+                  break;
+
                 }
             break;
 

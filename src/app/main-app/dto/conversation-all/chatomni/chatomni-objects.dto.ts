@@ -16,6 +16,7 @@ export interface ChatomniObjectsItemDto {
   CreatedTime: Date | any;
   ChannelCreatedTime: Date | any;
   ChannelUpdatedTime?: Date | any;
+  ChannelType?: number;
   Title?: any;
   Description: string;
   Thumbnail?: Thumbnail;
