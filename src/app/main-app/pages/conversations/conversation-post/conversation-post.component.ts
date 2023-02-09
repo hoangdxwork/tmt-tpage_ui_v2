@@ -110,6 +110,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   extrasChilds: { [id: string] : any[] } = {};
   clickCurrentChild: any;
+  csLoadingUpdate: TDSSafeAny;
 
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
@@ -268,14 +269,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       }
     })
 
-    this.postEvent.listenEventFromSocket$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
-        if(res && this.clickReload == 3 && this.currentTeam && this.currentTeam?.Type == CRMTeamType._UnofficialTikTok) {
-          this.destroyTimer();
-          this.cdRef.detectChanges();
-        }
-      }
-    })
   }
 
   onEventSocket() {
@@ -342,6 +335,20 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                     }
                   break;
 
+                }
+            break;
+
+            case ChatmoniSocketEventName.chatomniPostLiveConnected:
+                let existPostLive = res.Data && res.Data.Data && res.Data.Data.ChannelId && res.Data.Data.ChannelId == this.currentTeam?.ChannelId;
+
+                if(existPostLive){
+                  this.destroyTimer();
+                  this.clickReload = 0;
+                  this.isLoadingUpdate = false;
+  
+                  this.message.remove(this.csLoadingUpdate?.messageId);
+                  this.message.success('kết nối bài viết thành công');
+                  this.loadData();
                 }
             break;
 
@@ -446,38 +453,37 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
     let exist = (this.clickReload == 3) && this.currentTeam && this.currentTeam?.Type == CRMTeamType._UnofficialTikTok;
     if (exist) {
+        let ownerId = this.currentTeam?.OwnerId as any;
+        if(!TDSHelperString.hasValueString(ownerId)) {
+            this.message.error('Không tìm thấy OwnerId, không thể kích hoạt cập nhật hội thoại');
+            this.isRefreshing = false;
+            this.isLoadingUpdate = false;
+            return;
+        }
+        
         this.isLoadingUpdate = true;
+        this.csLoadingUpdate = this.message.create('loading', `Đang cập nhật hội thoại`, { duration: 60000 });
 
-        this.refresh3Time = setTimeout(() => {
-          let ownerId = this.currentTeam?.OwnerId as any;
-          if(!TDSHelperString.hasValueString(ownerId)) {
-              this.message.error('Không tìm thấy OwnerId, không thể kích hoạt cập nhật hội thoại');
-              this.isRefreshing = false;
-              this.isLoadingUpdate = false;
-              return;
-          }
-          
-          this.message.info("Đã kích hoạt cập nhật hội thoại");
-          let mess = this.message.create('loading', `Đang cập nhật hội thoại`, { duration: 30000 });
-
-          this.tiktokService.refreshListen(ownerId).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: any) => {
+        this.tiktokService.refreshListen(ownerId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+              this.refresh3Time = setTimeout(() => {
                 this.clickReload = 0;
                 this.isLoadingUpdate = false;
 
-                this.message.remove(mess?.messageId);
+                this.message.remove(this.csLoadingUpdate?.messageId);
                 this.message.success('Yêu cầu cập nhật hội thoại thành công');
                 this.loadData();
-            },
-            error: (error: any) => {
-                this.clickReload = 0;
-                this.isLoadingUpdate = false;
+              }, 3 * 10 * 1000);
+          },
+          error: (error: any) => {
+              this.clickReload = 0;
+              this.isLoadingUpdate = false;
+              console.log(error);
 
-                this.message.remove(mess?.messageId);
-                this.message.error(error?.error?.message || 'Yêu cầu cập nhật thất bại');
-            }
-          })
-        }, 3 * 10 * 1000);
+              this.message.remove(this.csLoadingUpdate?.messageId);
+              this.message.error(error?.error?.message || 'Yêu cầu cập nhật thất bại');
+          }
+        })
     } else {
         this.refreshTimer = setTimeout(() => {
             this.loadFilterDataSource();

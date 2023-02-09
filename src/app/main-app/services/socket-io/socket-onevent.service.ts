@@ -203,7 +203,7 @@ export class SocketOnEventService {
 
             // Kết nối bài viết thành công
             case ChatmoniSocketEventName.chatomniPostLiveConnected:
-              this.publishSocketEvent(null, socketData, team); //SocketioChatomniCreatePostDto
+              this.publishSocketEvent(null, socketData, team);
             break;
           }
         },
