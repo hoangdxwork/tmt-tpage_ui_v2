@@ -21,7 +21,8 @@ export class TpageTeamDropdownComponent implements OnInit, OnDestroy {
 
   @Output() readonly tdsClickItem = new EventEmitter<CRMTeamDTO>();
   @Output() isRefresh = new EventEmitter<boolean>();
-  @Input() isRefreshing!: boolean
+  @Input() isRefreshing!: boolean;
+  @Input() disableRefresh!: boolean;
 
   constructor(private crmTeamService: CRMTeamService,
     @Optional() @Host() public headerCmp: TDSHeaderComponent,

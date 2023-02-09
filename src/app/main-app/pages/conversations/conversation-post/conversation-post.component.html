@@ -5,7 +5,8 @@
             <div class="bg-white p-2.5 flex flex-col gap-y-4">
 
                 <div class="w-full">
-                    <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)" (isRefresh)="onRefresh($event)" [isRefreshing]="isRefreshing"></tpage-team-dropdown>
+                    <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)" (isRefresh)="onRefresh($event)" [isRefreshing]="isRefreshing"
+                        [disableRefresh]="isLoadingUpdate"></tpage-team-dropdown>
                 </div>
 
                 <div class="flex desktop:gap-x-1">

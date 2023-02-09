@@ -15,4 +15,7 @@ export class ConversationPostEvent{
     // TODO: Đếm số comment được realtime trả về
     public countRealtimeMessage$: EventEmitter<boolean> = new EventEmitter();
     public pushCountRealtimeToView$: EventEmitter<ChatomniObjectsItemDto> = new EventEmitter();
+
+    // TODO: Lắng nghe trạng thái khi socket event trả dữ liệu
+    public listenEventFromSocket$: EventEmitter<boolean> = new EventEmitter();
 }
