@@ -5,7 +5,7 @@
       <div *ngFor="let team of data; let i = index" class="bg-white rounded-xl w-full border border-neutral-2-100">
         <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
           <tds-collapse-panel [header]="header"
-            [tdsClass]="'p-0'" 
+            [tdsClass]="'p-0'"
             [active]="team.Childs && team.Childs?.length && team.Childs.length > 0 ? true : false">
 
             <!--TODO: Thông tin tài khoản -->
@@ -53,7 +53,7 @@
                         <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
                       </span>
                   </button>
-                  
+
                   <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" (click)="unconnectTeam(team, $event)"
                     class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
                         hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
@@ -161,21 +161,21 @@
       <ng-template #userLoggedFacebook>
         <div class="bg-white rounded-xl p-4 pt-10 flex flex-col items-center">
           <div>
-            <img class="text-white avatar-fb w-[132px] h-[132px] rounded-full" [src]="me?.picture?.data.url" 
+            <img class="text-white avatar-fb w-[132px] h-[132px] rounded-full" [src]="me?.picture?.data.url"
               [ngClass]="'border-3 border-white ring-2 ring-primary-1'">
           </div>
-          <span class="mt-4 text-header-1 font-semibold text-neutral-1-900">{{ me?.name }}!</span>
+          <span class="mt-4 text-header-1 font-semibold text-neutral-1-900">{{ me?.name }}</span>
           <span class="mt-2 text-body-2 text-neutral-1-400">tmt30.tpos.vn</span>
 
-          <div class="mt-6 text-title-1 font-semibold text-success-400" 
+          <div class="mt-6 text-title-1 font-semibold text-success-400"
             *ngIf="loginTeam != null && loginTeam?.Childs && loginTeam?.Childs?.length != 0">Số trang Facebook đang quản lí</div>
 
           <tpage-avatar-group-facebook *ngIf="loginTeam?.Childs">
-            <tpage-avatar-facebook *ngFor="let child of loginTeam?.Childs || []; let i=index" 
+            <tpage-avatar-facebook *ngFor="let child of loginTeam?.Childs || []; let i=index"
               [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'sm'">
             </tpage-avatar-facebook>
           </tpage-avatar-group-facebook>
-          
+
           <button tds-button color="secondary" class="w-full mt-6" (click)="facebookSignOut()">
             <span class="flex items-center">
               <i class="tdsi-log-out-fill text-lg text-neutral-1-500 leading-none mr-2"></i>Đăng xuất
@@ -206,7 +206,7 @@
 
         <ng-template #footerTpl>
           <button tds-button color="custom" class="text-white focus:ring-2 focus:ring-secondary-1/20 border-secondary-1
-            bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:border-secondary-1 mt-3" 
+            bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:border-secondary-1 mt-3"
             (click)="facebookSignIn()">
             <span class="flex items-center">
               <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Kết nối với tài khoản Facebook

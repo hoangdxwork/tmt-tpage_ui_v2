@@ -12,9 +12,9 @@ import { FBUserPageRequestDTO, UserPageDTO } from 'src/app/main-app/dto/team/use
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { FacebookLoginService } from 'src/app/main-app/services/facebook-login.service';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
-import { takeUntil, debounceTime } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TpageBaseComponent } from '@app/shared/tpage-base/tpage-base.component';
 import { FacebookService } from '@app/services/facebook.service';
@@ -61,17 +61,14 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
     this.me = null;
     this.isLoading = true;
     this.facebookAuthorizeService.fbGetMe().subscribe({
-      next: (response: any) => {debugger
-        if(response && response[0]) {
-          this.userFBAuth = response[0].authResponse;
-        }
-
-        if(response && response[1] && response[1] && response[1].id) {
-          this.me = response[1];
+      next: (me: FacebookUser | any) => {
+        if(me && me.id) {
+          this.me = me;
           if(this.data) {
-            this.sortByFbLogin(response[1].id);
+            this.sortByFbLogin(me.id);
           }
         }
+
         this.isLoading = false;
       },
       error: (error: TDSSafeAny) => {
@@ -103,6 +100,7 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
         this.userFBAuth = null;
 
         this.message.success('Đăng xuất thành công');
+        this.isLoading = true;
         this.document.location.reload();
       },
       error: (error: TDSSafeAny) => {
@@ -141,11 +139,11 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
 
           if(this.me) {
             this.sortByFbLogin(this.me.id);
+            this.isLoading = false;
           } else {
             this.fbGetMe();
           }
 
-          this.isLoading = false;
           this.cdRef.detectChanges();
         },
         error: (error) => {
@@ -174,7 +172,25 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
       this.message.error('Kênh đã tồn tại');
     }
 
-    this.insertUserChannel(this.userFBAuth?.accessToken);
+    if(!TDSHelperString.hasValueString(this.userFBAuth?.accessToken)) {
+      this.fbLoginStatus();
+    } else {
+      this.insertUserChannel(this.userFBAuth?.accessToken);
+    }
+  }
+
+  fbLoginStatus() {
+    this.facebookAuthorizeService.fbLoginStatus().subscribe({
+      next: (data: FacebookAuthResponse | any) => {
+        if (data.status === 'connected') {
+          this.userFBAuth = data.authResponse;
+          this.insertUserChannel(this.userFBAuth?.accessToken);
+        }
+      },
+      error: (error: any) => {
+        console.log(error);
+      }
+    })
   }
 
   insertUserChannel(accessToken?: string) {
@@ -183,9 +199,9 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
         grant_type: 'fb_exchange_token',
     };
 
-    this.facebookService.getGraphFacebookMe(accessToken).pipe(takeUntil(this.destroy$)).subscribe({
+    this.facebookService.getGraphFacebookMe(accessToken).subscribe({
       next: (me: any) => {
-        this.crmTeamService.getLongLiveToken(model).pipe(takeUntil(this.destroy$)).subscribe({
+        this.crmTeamService.getLongLiveToken(model).subscribe({
             next: (res) => {
               let team = this.prepareLoginModel();
               this.crmTeamService.insert(team).pipe(takeUntil(this.destroy$)).subscribe({
@@ -403,11 +419,11 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
     this.isLoading = true;
     let ownerToken = team.OwnerToken;
 
-    this.facebookService.getGraphFacebookMe(ownerToken).pipe(takeUntil(this.destroy$)).subscribe({
+    this.facebookService.getGraphFacebookMe(ownerToken).subscribe({
       next: (me: any) => {
           let model = this.prepareVerifyModel(team);
 
-          this.facebookService.verifyConect(model).pipe(takeUntil(this.destroy$)).subscribe({
+          this.facebookService.verifyConect(model).subscribe({
               next: (res: FacebookVerifyResultDto) => {
 
                 let userToken = res.Data?.Facebook_UserToken;
@@ -417,7 +433,7 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
                     return;
                 }
 
-                this.facebookGraphService.getGraphFacebookAccounts(userToken).pipe(takeUntil(this.destroy$)).subscribe({
+                this.facebookGraphService.getGraphFacebookAccounts(userToken).subscribe({
                     next: (res: FBUserPageRequestDTO) => {
                         this.isLoading = false;
 
