@@ -22,7 +22,7 @@
             <i class="tdsi-success-line text-base text-success-400"></i>
             <div class="font-semibold text-success-400">Đã xác nhận</div>
           </div>
-          <span class="tdsi-edit-fill hover:text-success-400" (click)="getAmountDeposit()" tds-tooltip="Chọn xác nhận tiền cọc"></span>
+          <span *ngIf="!data.IsDeposited" class="tdsi-edit-fill hover:text-success-400 cursor-pointer" (click)="getAmountDeposit()" tds-tooltip="Chọn xác nhận tiền cọc"></span>
         </div>
 
         <div>Tiền thu hộ:</div>
