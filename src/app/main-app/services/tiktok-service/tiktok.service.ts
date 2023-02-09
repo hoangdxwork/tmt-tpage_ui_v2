@@ -33,7 +33,7 @@ export class TiktokService extends BaseSevice {
 
   refreshListen(id: string) {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/rest/v2.0/chatomni/unofficialtiktok/${id}`,
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/unofficialtiktok?id=${id}`,
       method: CoreApiMethodType.post,
     }
 

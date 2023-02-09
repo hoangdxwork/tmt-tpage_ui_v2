@@ -188,6 +188,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
     this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: SocketEventSubjectDto) => {
         if(!res) return;
+        this.postEvent.listenEventFromSocket$.emit(true);
 
         switch(res?.EventName) {
             // Cập nhật bình luận
