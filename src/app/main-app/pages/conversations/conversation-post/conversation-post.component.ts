@@ -276,7 +276,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       next: (res: SocketEventSubjectDto) => {
         switch(res?.EventName){
             case ChatmoniSocketEventName.chatomniPostLiveEnd:
-              let exist = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop && res.Data && res.Data.Data && res.Data.Data.ObjectId;
+              let exist = this.currentTeam && res.Data && res.Data.Data 
+                && res.Data.Data.ShopId == this.currentTeam.ChannelId && res.Data.Data.ObjectId;
 
               if(exist) {
                 let index = this.lstObjects.findIndex(x => x.ObjectId == res.Data.Data.ObjectId);
@@ -361,16 +362,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                   this.isLoadingUpdate = false;
   
                   this.message.remove(this.csLoadingUpdate?.messageId);
-                  this.message.success('Không tìm thấy bài viết');
-                  this.loadData();
+                  this.message.success('Không tìm thấy bài Live');
                 }
             break;
 
-            case ChatmoniSocketEventName.chatomniPostLiveConnected:
+            case ChatmoniSocketEventName.chatomniPostLiveDisconnected:
                 let existPostLiveConnected = res.Data && res.Data.Data && res.Data.Data.ChannelId && res.Data.Data.ChannelId == this.currentTeam?.ChannelId;
 
                 if(existPostLiveConnected){
-                  this.message.success("Server mất kết nối với TikTok");
+                  this.message.warning("Server mất kết nối với TikTok");
                 }
             break;
 

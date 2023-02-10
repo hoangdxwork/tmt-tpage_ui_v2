@@ -145,6 +145,16 @@ export class AppComponent {
               this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
           break;
 
+          // Thông báo kết thúc bài live
+          case ChatmoniSocketEventName.chatomniPostLiveEnd:
+              if(!localSocket[ChatmoniSocketEventName.chatomniPostLiveEnd]) return;
+              let paramsPostLiveEnd = this.router.url.startsWith('/conversation/post') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
+              let existPostLiveEnd = res && paramsPostLiveEnd;
+
+              if(existPostLiveEnd == true) break;
+              this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+          break;
+
           default:
           break;
         }
