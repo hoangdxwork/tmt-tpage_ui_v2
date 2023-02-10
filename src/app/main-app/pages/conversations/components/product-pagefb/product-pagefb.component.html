@@ -34,23 +34,23 @@
       (queryParams)="onQueryParamsChange($event)">
       <thead>
         <tr>
-          <th style="width: 10%;">Ảnh</th>
-          <th style="width: 40%">Sản phẩm</th>
-          <th style="width: 15%; text-align: center">Đơn vị tính</th>
-          <th style="width: 15%; text-align: right">Giá</th>
-          <th style="width: 20%; text-align: center">Thao tác</th>
+          <th width="10%">Ảnh</th>
+          <th width="40%">Sản phẩm</th>
+          <th width="15%" class="text-center">Đơn vị tính</th>
+          <th width="15%" class="text-right">Giá</th>
+          <th width="20%" class="text-center">Thao tác</th>
         </tr>
       </thead>
       <tbody>
         <ng-template  ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
             <tr>
-              <td style="width: 10%;">
+              <td>
                   <tds-avatar class="rounded-lg" [shape]="'square'" [size]="44" [tdsSrc]="data.ImageUrl?data.ImageUrl:(data.Images?data.Images[0].Url:'')" [isAvatar]="false"></tds-avatar>
               </td>
-              <td style="width: 40%">{{ data.NameGet }}</td>
-              <td style="width: 15%; text-align: center">{{ data.UOMName }}</td>
-              <td style="width: 15%; text-align: right">{{ data.Price | numberCustom }}</td>
-              <td style="width: 20%; text-align: center">
+              <td>{{ data.NameGet }}</td>
+              <td class="text-center">{{ data.UOMName }}</td>
+              <td class="text-right">{{ data.Price | numberCustom }}</td>
+              <td class="text-center">
                 <button tds-button-outline color="primary" size="sm" (click)="onPushItem(data)">
                   <span class="flex items-center">
                     <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Gửi sản phẩm
