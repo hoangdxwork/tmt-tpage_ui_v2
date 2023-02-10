@@ -97,7 +97,7 @@
 
                     <div class="w-full desktop:pt-4 laptop:pt-1 pt-1 flex items-stretch bg-white">
                         <textarea tdsInput placeholder="Ghi chú" 
-                            class="resize-none no-scrollbar desktop:w-3/4 laptop:w-2/3 desktop:mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400 desktop:text-body-2 laptop:text-caption-1 text-caption-1"
+                            class="resize-none no-scrollbar desktop:w-3/4 laptop:w-2/3 desktop:mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 desktop:text-body-2 laptop:text-caption-1 text-caption-1"
                             [(ngModel)]="quickOrderModel.Note" (change)="changeNote($event)"></textarea>
 
                         <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [autoClose]="true" [backdrop]="true" [tdsDropdownMenu]="menuUser"
