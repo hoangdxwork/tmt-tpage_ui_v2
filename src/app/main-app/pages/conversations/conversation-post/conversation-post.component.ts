@@ -366,6 +366,14 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 }
             break;
 
+            case ChatmoniSocketEventName.chatomniPostLiveConnected:
+                let existPostLiveConnected = res.Data && res.Data.Data && res.Data.Data.ChannelId && res.Data.Data.ChannelId == this.currentTeam?.ChannelId;
+
+                if(existPostLiveConnected){
+                  this.message.success("Server mất kết nối với TikTok");
+                }
+            break;
+
             default: break;
         }
       }

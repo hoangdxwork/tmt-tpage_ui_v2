@@ -103,6 +103,10 @@ export class SocketOnEventService {
             channelId = socketData?.Data?.ChannelId;
             break;
 
+          case ChatmoniSocketEventName.chatomniPostLiveDisconnected:
+            channelId = socketData?.Data?.ChannelId;
+            break;
+
           default:
             channelId = socketData.Conversation?.ChannelId;
             break;
@@ -214,6 +218,13 @@ export class SocketOnEventService {
             case ChatmoniSocketEventName.chatomniPostNotExist:
               this.publishSocketEvent(null, socketData, team);
             break;
+
+            // Server mất kết nối với TikTok
+            case ChatmoniSocketEventName.chatomniPostLiveDisconnected:
+              let notificationPostLiveDisconnected = this.preparePostLiveDisconnected(socketData, team);
+              this.publishSocketEvent(notificationPostLiveDisconnected, socketData, team);
+            break;
+            
           }
         },
         error: (error: any) => {
@@ -377,7 +388,16 @@ export class SocketOnEventService {
         break;
     }
 
-   
+    return {...notification};
+  }
+
+  preparePostLiveDisconnected(socketData: any, team: CRMTeamDTO) {
+    let notification = {
+        Title: `TikTok: <span class="font-semibold">${team?.Name || 'Kênh TikTok'}</span>` ,
+        Message: `Server mất kết nối với TikTok`,
+        Attachments: null,
+        Url: `/conversation/post?teamId=${team.Id}&type=post&post_id=${socketData.Data?.ObjectId}`
+    } as SocketEventNotificationDto;
 
     return {...notification};
   }
