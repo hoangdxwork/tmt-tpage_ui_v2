@@ -18,5 +18,6 @@ export enum ChatmoniSocketEventName {
   inventory_updated = "inventory_updated",
   chatomniCreatePost = "chatomni.create-post",
   producttemplate_create = "created",
-  chatomniPostLiveConnected = "chatomni.post-live-connected"
+  chatomniPostLiveConnected = "chatomni.post-live-connected",
+  chatomniPostNotExist = "chatomni.post-not-exist"
 }
