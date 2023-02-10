@@ -1,0 +1,30 @@
+<div class="w-full h-full text-body-2 bg-white rounded-lg border-t border-x">
+  <tds-table class="min-h-[50px]" #basicTable [listData]="dataExpand" [noResult]="emptyTable" [showPagination]="false"
+    [loading]="isLoading">
+    <thead class="rounded">
+      <tr>
+        <th width="20%">Id</th>
+        <th width="20%">Tên</th>
+        <th width="20%">Đơn vị</th>
+        <th width="20%">Số lượng</th>
+        <th width="20%">Giá bán</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template ngFor let-data [ngForOf]="basicTable.data">
+        <tr>
+          <td>{{ data?.Id }}</td>
+          <td>{{ data?.NameTemplate }}</td>
+          <td>{{ data?.UOMName }}</td>
+          <td>{{ data?.ShopQuantity }}</td>
+          <td>{{ data?.Price | numberCustom }} đ</td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </tds-table>
+  <ng-template #emptyTable>
+    <div class="w-full pb-3 border-b">
+      <tds-empty></tds-empty>
+    </div>
+  </ng-template>
+</div>

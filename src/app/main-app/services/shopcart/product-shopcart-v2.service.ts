@@ -22,7 +22,7 @@ export class ProductShopCartServiceV2 extends BaseSevice {
 
     initShopCart(): Observable<TDSSafeAny> {
         const api: CoreAPIDTO = {
-          url: `${this._BASE_URL}/${this.baseRestApi}/crmteam/initshopcart`,
+          url: `${this._BASE_URL}/rest/v1.0/crmteam/initshopcart`,
           method: CoreApiMethodType.post,
         }
 
@@ -52,7 +52,7 @@ export class ProductShopCartServiceV2 extends BaseSevice {
 
     addProductTemplateOnShopCart(data: any): Observable<TDSSafeAny> {
         const api: CoreAPIDTO = {
-          url: `${this._BASE_URL}/rest/v1/shopcart/addproductteamplateonshopcart`,
+          url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/addproductteamplateonshopcart`,
           method: CoreApiMethodType.post
         }
         return this.apiService.getData<TDSSafeAny>(api, data);
@@ -61,14 +61,19 @@ export class ProductShopCartServiceV2 extends BaseSevice {
     deleteProductTemplateOnShopCart(data: any): Observable<TDSSafeAny> {
         const api: CoreAPIDTO = {
           url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/deleteproducttemplateonshopcart`,
-          method: CoreApiMethodType.post
+          method: CoreApiMethodType.delete
         }
-        return this.apiService.getData<TDSSafeAny>(api, data);
+        return this.apiService.deleteData<TDSSafeAny>(api, null, data);
     }
 
-    getVariantByProductTemplateId(): Observable<TDSSafeAny> {
+    getVariantByProductTemplateId(id: number): Observable<TDSSafeAny> {
+        let url =  `${this._BASE_URL}/${this.baseRestApi}/${this.table}/getvariantbyproducttemplateid`
+
+        if (Number(id) > 0) {
+            url = `${url}?id=${id}`;
+        }
         const api: CoreAPIDTO = {
-          url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/getvariantbyproducttemplateid`,
+          url: url,
           method: CoreApiMethodType.get
         }
         return this.apiService.getData<TDSSafeAny>(api, null);
@@ -76,7 +81,7 @@ export class ProductShopCartServiceV2 extends BaseSevice {
 
     addProductOnShopCart(data: any): Observable<TDSSafeAny> {
         const api: CoreAPIDTO = {
-          url: `${this._BASE_URL}/rest/v1/shopcart/addproductonshopcart`,
+          url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/addproductonshopcart`,
           method: CoreApiMethodType.post
         }
         return this.apiService.getData<TDSSafeAny>(api, data);
