@@ -79,7 +79,7 @@ export class ProductShopCartComponent implements OnInit {
     this.loadInitShopCart();
   }
 
-  loadData(pageSize: number, pageIndex: number) {
+  loadData(pageSize: number, pageIndex: number) {debugger
     this.lstOfData = [];
 
     let filters = this.odataProductService.buildFilter(this.filterObj || null);
@@ -152,7 +152,7 @@ export class ProductShopCartComponent implements OnInit {
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageIndex = params.pageIndex;
     this.pageSize = params.pageSize;
-    this.loadData(this.pageSize, this.pageIndex);
+    this.loadData(params.pageSize, params.pageIndex);
   }
 
   onSelectChange(value: number) {

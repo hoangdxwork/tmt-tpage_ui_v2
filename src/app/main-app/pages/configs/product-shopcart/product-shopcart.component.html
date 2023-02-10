@@ -55,6 +55,7 @@
                         <th width="168px" class="border-r">Đơn vị</th>
                         <th width="168px" class="border-r" [align]="'right'">Giá bán</th>
                         <th width="168px" class="border-r" [align]="'right'">Số lượng</th>
+                        <th width="168px" class="border-r" [align]="'center'">Ngày tạo</th>
                         <th width="168px" class="border-r" [align]="'center'">Hiệu lực</th>
                         <th width="150px" [tdsRight]="true" [align]="'center'">Thao tác</th>
                     </tr>
@@ -62,7 +63,7 @@
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
                         <tr [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
-                            <td [tdsLeft]="true" [expand]="expandSet.has(data.Id)" class="border-r text-center"
+                            <td [tdsLeft]="true" [expand]="expandSet.has(data.Id)" class="border-r justify-center"
                               (expandChange)="onExpandChange(data.Id, $event)">
                             </td>
                             <td [checked]="setOfCheckedId.has(data.Id)" [tdsLeft]="true" class="border-r"
@@ -118,6 +119,7 @@
                                     </ng-template>
                                 </div>
                             </td>
+                            <td class="border-r" [align]="'center'">{{ data.DateCreated | yiDateTimeFormat }}</td>
                             <td class="border-r" [align]="'center'">
                                 <span class="flex items-center justify-center">
                                     <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
