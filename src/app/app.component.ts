@@ -135,6 +135,16 @@ export class AppComponent {
               this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
           break;
 
+          // Thông báo mất kết nối bài viết
+          case ChatmoniSocketEventName.chatomniPostLiveDisconnected:
+              // if(!localSocket[ChatmoniSocketEventName.chatomniPostLiveDisconnected]) return;
+              let paramsPostLiveDisconnected = this.router.url.startsWith('/conversation/post') && Number(this.route.snapshot.queryParams?.teamId) == res.Team?.Id;
+              let existPostLiveDisconnected = res && paramsPostLiveDisconnected;
+
+              if(existPostLiveDisconnected == true) break;
+              this.notification.template( this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+          break;
+
           default:
           break;
         }
