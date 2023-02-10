@@ -90,9 +90,9 @@ export class ProductShopCartServiceV2 extends BaseSevice {
     deleteProductOnShopCart(data: any): Observable<TDSSafeAny> {
         const api: CoreAPIDTO = {
           url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/deleteproductonshopcart`,
-          method: CoreApiMethodType.post
+          method: CoreApiMethodType.delete
         }
-        return this.apiService.getData<TDSSafeAny>(api, data);
+        return this.apiService.deleteData<TDSSafeAny>(api, null, data);
     }
 
     updateQuantityProductOnShopCart(data: any): Observable<TDSSafeAny> {
