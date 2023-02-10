@@ -352,6 +352,20 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 }
             break;
 
+            case ChatmoniSocketEventName.chatomniPostNotExist:
+                let existPostNotLive = res.Data && res.Data.Data && res.Data.Data.ChannelId && res.Data.Data.ChannelId == this.currentTeam?.ChannelId;
+
+                if(existPostNotLive){
+                  this.destroyTimer();
+                  this.clickReload = 0;
+                  this.isLoadingUpdate = false;
+  
+                  this.message.remove(this.csLoadingUpdate?.messageId);
+                  this.message.success('Không tìm thấy bài viết');
+                  this.loadData();
+                }
+            break;
+
             default: break;
         }
       }
@@ -478,6 +492,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           error: (error: any) => {
               this.clickReload = 0;
               this.isLoadingUpdate = false;
+              this.isRefreshing = false;
               console.log(error);
 
               this.message.remove(this.csLoadingUpdate?.messageId);
