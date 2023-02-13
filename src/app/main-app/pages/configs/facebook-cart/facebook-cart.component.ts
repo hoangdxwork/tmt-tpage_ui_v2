@@ -111,7 +111,7 @@ export class FacebookCartComponent implements OnInit {
 
         this.generalConfigService.getAccountJournalById(value).pipe(takeUntil(this.destroy$)).subscribe({
           next: (data: any) => {
-            this.accountJournalItem = data;debugger
+            this.accountJournalItem = data;
             this.isLoading = false;
           },
           error: (err: any) => {
@@ -120,6 +120,8 @@ export class FacebookCartComponent implements OnInit {
           }
         })
       }
+    } else {
+      this.accountJournalItem = null;
     }
   }
 
