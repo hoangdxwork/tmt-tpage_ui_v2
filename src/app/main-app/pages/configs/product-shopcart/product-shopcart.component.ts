@@ -79,11 +79,18 @@ export class ProductShopCartComponent implements OnInit {
     this.loadInitShopCart();
   }
 
-  loadData(pageSize: number, pageIndex: number) {debugger
+  loadData(pageSize: number, pageIndex: number) {
     this.lstOfData = [];
 
     let filters = this.odataProductService.buildFilter(this.filterObj || null);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null, this.sort);
+    // let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null, this.sort);
+
+    let params = {
+      q: '',
+      offset: (this.pageIndex - 1) * this.pageSize,
+      limit: this.pageSize,
+      sort: 'date_desc',
+    }
 
     this.isLoading = true;
     this.getViewData(params).subscribe({
@@ -111,7 +118,7 @@ export class ProductShopCartComponent implements OnInit {
     }
   }
 
-  onLoadOption(event: any): void {debugger
+  onLoadOption(event: any): void {
     // this.sort = event.Price;
     this.sort[0].dir = event.DateCreated;
     this.sort[1].dir = event.Price;
