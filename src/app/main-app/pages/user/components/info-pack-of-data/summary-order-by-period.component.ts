@@ -21,7 +21,8 @@ export class SummaryOrderByPeriodComponent implements OnInit {
   axisPreviousData: Date[] = [];
   axisCurrentData: Date[] = [];
 
-  axisData: number[] = [];
+  currentAxisData: string[] = [];
+  previousAxisData: string[] = [];
   currentData: any[] = [];
   previousData: any[] = [];
   currentMonth!: number;
@@ -77,26 +78,51 @@ export class SummaryOrderByPeriodComponent implements OnInit {
   }
 
   buildData(currentDate: Date) {
-    this.axisData = [];
+    this.currentAxisData = [];
+    this.previousAxisData = [];
     this.previousData = [];
     this.currentData = [];
 
     this.currentMonth = new Date(currentDate).getMonth() + 1;
-    this.previousMonth = new Date(currentDate).getMonth() == 0 ? 12 : new Date(currentDate).getMonth();
+    let currentYear = new Date(currentDate).getFullYear();
+    let previousYear = 0;
+
+    if(new Date(currentDate).getMonth() == 0) {
+      this.previousMonth = 12;
+      previousYear = currentYear - 1;
+    } else {
+      this.previousMonth = new Date(currentDate).getMonth();
+      previousYear = currentYear;
+    }
+    
 
     let currentItems = this.sumOrder?.Current?.Items?.filter(x => this.currentMonth == (new Date(x.Time).getMonth() + 1));
     let previousItems = this.sumOrder?.Previous?.Items?.filter(x => this.previousMonth == (new Date(x.Time).getMonth() + 1));
     // bổ sung các ngày còn thiếu trong danh sách
     currentItems = this.converseList(currentItems);
     previousItems = this.converseList(previousItems);
+    let daysInPreviousMonth = this.daysInMonth(this.previousMonth, previousYear);
+    let daysInCurrentMonth = this.daysInMonth(this.currentMonth, currentYear);
+    let days = daysInPreviousMonth > daysInCurrentMonth ? daysInPreviousMonth : daysInCurrentMonth;
 
-    for (let i = 1; i <= 31; i++) {
+    for (let i = 1; i <= days; i++) {
       let existCurrent = currentItems.find(x => Number(formatDate(x.Time,'dd','vi_VN')) == i);
       let existPrevious = previousItems.find(x => Number(formatDate(x.Time,'dd','vi_VN')) == i);
 
       if(existCurrent || existPrevious) {
         // khởi tạo data axis
-        this.axisData.push(i);
+        if(i <= daysInCurrentMonth) {
+          this.currentAxisData.push(`${i}/${this.currentMonth}`);
+        } else {
+          this.currentAxisData.push(`${i - daysInCurrentMonth}/${this.currentMonth + 1}`);
+        }
+        
+        if(i <= daysInPreviousMonth) {
+          this.previousAxisData.push(`${i}/${this.previousMonth}`);
+        } else {
+          this.previousAxisData.push(`${i - daysInPreviousMonth}/${this.previousMonth + 1}`);
+        }
+        
         // khởi tạo data series
         if(existCurrent) {
           this.currentData.push(existCurrent.Count);
@@ -115,6 +141,10 @@ export class SummaryOrderByPeriodComponent implements OnInit {
     //Tính interval
     let max = Math.max(...this.previousData,...this.currentData);
     this.interval = this.getInterval(max);
+  }
+
+  daysInMonth(month: number, year: number) {
+    return new Date(year, month, 0).getDate();
   }
 
   buildSummaryOrderChart() {
@@ -150,7 +180,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
             axisLine: {
               onZero: false
             },
-            data: this.axisData.map(x => { return `${x}/${this.previousMonth}` })
+            data: this.previousAxisData
           },
           {
             type: 'category',
@@ -163,7 +193,7 @@ export class SummaryOrderByPeriodComponent implements OnInit {
             axisLine: {
               onZero: false
             },
-            data: this.axisData.map(x => { return `${x}/${this.currentMonth}` })
+            data: this.currentAxisData
           }
         ],
         yAxis: [
