@@ -39,6 +39,10 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
     return value;
   };
 
+  notIsValidToOrderTagHelpers = [
+    { id: "Tên Facebook khách hàng", value: "{facebook.name}" }
+  ];
+
   tagHelpers = [
     { id: "Tên Facebook khách hàng", value: "{facebook.name}" },
     { id: "Bình luận Facebook của khách hàng", value: "{facebook.comment}" }
@@ -60,6 +64,38 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
       source: (searchTerm: string, renderList: (arg0: { id: string; value: string; }[], arg1: any) => void, mentionChar: any) => {
         let values;
         values = this.tagHelpers as any;
+
+        if (searchTerm.length === 0) {
+          renderList(values, searchTerm);
+        } else {
+          const matches = [];
+          for (var i = 0; i < values.length; i++)
+            if (  ~values[i].id.toLowerCase().indexOf(searchTerm.toLowerCase()))
+              matches.push(values[i]);
+
+          renderList(matches, searchTerm);
+        }
+      },
+    } as any
+  } as any;
+
+
+  notIsValidToOrderQuillTagHelpers = {
+    toolbar: null,
+    mention: {
+      allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+      // readOnly: true,
+      mentionDenotationChars: ["@"],
+      showDenotationChar: false,
+      positioningStrategy: "relative",
+      defaultMenuOrientation: "bottom",
+      mentionContainerClass: "ql-mention-list-container",
+      renderItem: (item: { id: any; }, searItem: any) => {
+        return item.id;
+      },
+      source: (searchTerm: string, renderList: (arg0: { id: string; value: string; }[], arg1: any) => void, mentionChar: any) => {
+        let values;
+        values = this.notIsValidToOrderTagHelpers as any;
 
         if (searchTerm.length === 0) {
           renderList(values, searchTerm);
@@ -100,7 +136,12 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
       ContentForAutoReplyWithMessage: [null],
       selectedWord1s: [null],
       selectedWord2s: [null],
-      selectedWord3s: [null]
+      selectedWord3s: [null],
+
+      // Cho phép phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ
+      IsEnableAutoReplyCommentInNotIsValidToOrder: [false],
+      // Nội dung phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ
+      ContentForAutoReplyCommentInNotIsValidToOrder : [null],
     });
   }
 
@@ -173,6 +214,9 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
     if (data.ContentOfCommentForNotAutoReply) {
       formControls['selectedWord3s'].setValue(data.ContentOfCommentForNotAutoReply.split(','));
     }
+
+    formControls['IsEnableAutoReplyCommentInNotIsValidToOrder'].setValue(data.IsEnableAutoReplyCommentInNotIsValidToOrder);
+    formControls['ContentForAutoReplyCommentInNotIsValidToOrder'].setValue(data.ContentForAutoReplyCommentInNotIsValidToOrder);
   }
 
   onSave(channelId: string) {
@@ -209,6 +253,8 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
       IsEnableAutoReplyCommentInMessage: formValue["IsEnableAutoReplyCommentInMessage"],
       ContentForAutoReplyWithComment: formValue["ContentForAutoReplyWithComment"],
       ContentForAutoReplyWithMessage: formValue["ContentForAutoReplyWithMessage"],
+      IsEnableAutoReplyCommentInNotIsValidToOrder: formValue["IsEnableAutoReplyCommentInNotIsValidToOrder"],
+      ContentForAutoReplyCommentInNotIsValidToOrder: formValue["ContentForAutoReplyCommentInNotIsValidToOrder"]
     };
 
     if (formValue["selectedWord2s"]) {

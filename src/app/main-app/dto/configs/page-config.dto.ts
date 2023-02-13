@@ -13,6 +13,10 @@ export interface AutoReplyConfigDTO {
   ContentForAutoReplyWithMessage: string;
   PhonePattern?: any;
   EmailPattern?: any;
+  // Cho phép phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ
+  IsEnableAutoReplyCommentInNotIsValidToOrder: boolean;
+  // Nội dung phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ
+  ContentForAutoReplyCommentInNotIsValidToOrder: string;
 }
 
 export interface AutoHideCommentDTO {

@@ -18,13 +18,13 @@
             </ng-template>
 
             <!-- Đang live -->
-            <div *ngIf="item.StatusLive == 0" class="h-[22px] px-2 flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+            <div *ngIf="item.StatusLive == 1" class="h-[22px] px-2 flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
                 <div class="tdsi-live-broadcast-fill text-white leading-2 mr-2 text-caption-2 font-[Lato]"></div>
                 <span class="text-white leading-2 text-caption-2 font-[Lato]">LIVE</span>
             </div>
 
             <!-- Tắt live -->
-            <div *ngIf="item.StatusLive == 1" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+            <div *ngIf="item.StatusLive != 1" class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
                     <div class="tdsi-video-camera-fill text-white leading-none"></div>
             </div>
 
@@ -46,8 +46,8 @@
         </div>
     </div>
     <div class="flex-auto flex flex-col overflow-hidden desktop:gap-y-2 gap-y-1.5 text-caption-2 desktop:text-body-2">
-        <span *ngIf="item.StatusLive == 0" class="w-full font-semibold truncate text-base-red-600">Đang phát trực tiếp</span>
-        <span *ngIf="item.StatusLive == 1" class="w-full font-semibold truncate">Đã phát trực tiếp</span>
+        <span *ngIf="item.StatusLive == 1" class="w-full font-semibold truncate text-base-red-600">Đang phát trực tiếp</span>
+        <span *ngIf="item.StatusLive != 1" class="w-full font-semibold truncate">Đã phát trực tiếp</span>
 
         <span *ngIf="item.Description" class=" text-neutral-1-400 line-clamp text-caption-1 desktop:text-body-2">
             <span>{{item.Description}}</span>

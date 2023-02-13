@@ -30,7 +30,6 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
   checked = false;
   indeterminate = false;
   isMerge: boolean = false;
-  isLoadingAll: boolean = false;
 
   pageSize: number = 10;
   pageIndex: number = 1;
@@ -136,17 +135,24 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
   }
 
   mergeOrderAll(){
-    if(this.isLoading) return;
-    this.isLoadingAll = true;
+    this.isLoading = true;
+    let model = {
+      LiveCampaignId: this.liveCampaignId,
+      PartnerIds: [...this.setOfCheckedId]
+    }
 
-    this.setOfCheckedId.forEach(x => {
-      if(this.isLoadingAll) {
-          this.mergeOrderItem(x);
+    this.fastSaleOrderService.mergeordersbypartnerids(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+        this.message.success('Gộp đơn thành công');
+        this.isMerge = true;
+        this.validateData();
+        this.loadPartnerCanMergeOrders(this.pageSize, this.pageIndex);
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message);
       }
-    });
-
-    this.isLoadingAll = false;
-    this.isLoading = false;
+    })
   }
 
   mergeOrderItem(partnerId: number) {
@@ -172,12 +178,7 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
           this.fastSaleOrderService.mergeOrders(model).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: FastSaleOrderModelDTO) => {
                 this.isMerge = true;
-
-                if(this.isLoadingAll) {
-                    this.isLoading = true;
-                } else {
-                    this.isLoading = false;
-                }
+                this.isLoading = false;
 
                 this.setOfCheckedId.delete(partnerId);
 
@@ -188,7 +189,6 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
             },
             error: (err) => {
                 this.isLoading = false;
-                this.isLoadingAll = false;
                 this.message.error(err?.error?.message);
             }
           });
@@ -198,7 +198,6 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
       error: (err: any) => {
           this.isLoadingExpand = false;
           this.isLoading = false;
-          this.isLoadingAll = false;
           this.message.error(err?.error?.message);
       }
     })
@@ -210,7 +209,7 @@ export class ModalMergeOrderComponent implements OnInit, OnChanges {
 
   validateData() {
     this.isLoading = false;
-    this.isLoadingAll = false;
+    this.refreshCheckedStatus();
     this.pageSize = 10;
     this.pageIndex  = 1;
     this.lstPartner = [];

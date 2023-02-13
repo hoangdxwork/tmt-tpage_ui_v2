@@ -1,0 +1,50 @@
+<div class="w-full min-h-[50px] max-h-[184px] h-[184px] text-body-2 bg-white rounded-lg border">
+  <tds-table class="min-h-[50px]" [scroll]="{y:'auto'}" #basicTable [listData]="dataExpand" [noResult]="emptyTable" [showPagination]="false"
+    [loading]="isLoading">
+    <thead class="rounded">
+      <tr>
+        <th width="5%" [align]="'center'">STT</th>
+        <th width="7%">Hình ảnh</th>
+        <th width="20%">Tên</th>
+        <th width="10%">Đơn vị</th>
+        <th width="10%" [align]="'center'">Số lượng</th>
+        <th width="15%" [align]="'right'">Giá bán</th>
+        <th width="15%" [align]="'center'">Hiệu lực</th>
+        <th width="15%" [align]="'center'">Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index">
+        <tr>
+          <td [align]="'center'">{{ index + 1 }}</td>
+          <td>
+              <tds-avatar class="rounded-lg" [shape]="'square'" [size]="44"
+                  [tdsSrc]="data.ImageUrl"
+                  [isAvatar]="false"></tds-avatar>
+          </td>
+          <td>{{ data?.NameGet }}</td>
+          <td>{{ data?.UOMName }}</td>
+          <td [align]="'center'">{{ data?.ShopQuantity }}</td>
+          <td [align]="'right'">{{ data?.Price | numberCustom }} đ</td>
+          <td [align]="'center'">
+            <span class="flex items-center justify-center">
+              <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
+          </span>
+          </td>
+          <td [align]="'center'">
+            <button tds-button-icon color="secondary" type="button" size="sm" tds-tooltip="Xóa" (click)="onDelete(data)">
+              <span class="flex items-center">
+                  <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
+              </span>
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </tds-table>
+  <ng-template #emptyTable>
+    <div class="w-full">
+      <tds-empty></tds-empty>
+    </div>
+  </ng-template>
+</div>

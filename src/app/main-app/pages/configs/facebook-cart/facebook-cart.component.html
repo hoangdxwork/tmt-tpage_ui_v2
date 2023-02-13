@@ -24,10 +24,30 @@
             </div>
 
             <span class="text-title-1 font-semibold pt-6">Cấu hình cập nhật và thanh toán</span>
+
             <!-- Cho phép thanh toán -->
             <div class="flex flex-row items-center pt-4">
               <tds-switch size="md" formControlName="IsCheckout"></tds-switch>
               <span class="text-neutral-1-900 text-body-2 pl-2">Cho phép thanh toán</span>
+            </div>
+
+            <!-- Phương thức thanh toán -->
+            <div *ngIf="_form.controls['IsCheckout'].value" class="w-2/3 m-4" style="padding: 20px 12px; background: #f0f0f0; border-radius: 8px;">
+              <tds-form-field class="w-2/3">
+                <tds-label>Chọn phương thức thanh toán</tds-label>
+                <tds-select valueField="Id" textField="Name" placeholder='Chọn phương thức thanh toán'
+                  disabledField="isActive" formControlName="AccountJournal" [required]='true'
+                  [data]="lstAccountJournal" [allowClear]="true" (ngModelChange)="onChangeAccountJournal($event)">
+                </tds-select>
+              </tds-form-field>
+
+              <!-- Nội dung ghi chú -->
+              <div *ngIf="_form.controls['AccountJournalId'].value" class="flex flex-row items-center pt-4">
+                <div class="w-full">
+                  <tds-label>Thông tin tài khoản:</tds-label>
+                  <div class="text-neutral-1-900 text-body-2"> {{accountJournalItem ? accountJournalItem.Description : 'N/A'}}</div>
+                </div>
+              </div>
             </div>
 
             <!-- Cho phép mua thêm -->

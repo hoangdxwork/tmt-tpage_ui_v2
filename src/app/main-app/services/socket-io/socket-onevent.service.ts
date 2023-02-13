@@ -1,3 +1,4 @@
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { ChatomniChannelType } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { SocketioChatomniCreatePostDto } from './../../dto/socket-io/chatomni-create-post.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -70,8 +71,11 @@ export class SocketOnEventService {
             break;
 
           case ChatmoniSocketEventName.chatomniOnMessage:
-            let tshopCmt = socketData?.Message?.ChannelId && socketData?.Message?.MessageType == ChatomniMessageType.TShopComment;
-            if(tshopCmt) {
+            let tshopTiktokCmt = socketData?.Message?.ChannelId 
+              && (socketData?.Message?.MessageType == ChatomniMessageType.TShopComment
+              || socketData?.Message?.MessageType == ChatomniMessageType.UnofficialTikTokChat);
+
+            if(tshopTiktokCmt) {
                 channelId = socketData.Message.ChannelId;
             } else {
                 channelId = socketData.Conversation?.ChannelId;
@@ -83,7 +87,7 @@ export class SocketOnEventService {
             break;
 
           case ChatmoniSocketEventName.chatomniCreatePost:
-              switch (socketData.Data.ChannelType) { 
+              switch (socketData?.Data?.ChannelType) { 
 
                 case ChatomniChannelType.TShop:
                   channelId = socketData?.Data?.Data?.ShopId;
@@ -97,6 +101,18 @@ export class SocketOnEventService {
 
           case ChatmoniSocketEventName.chatomniPostLiveConnected:
             channelId = socketData?.Data?.ChannelId;
+            break;
+
+          case ChatmoniSocketEventName.chatomniPostNotExist:
+            channelId = socketData?.Data?.ChannelId;
+            break;
+
+          case ChatmoniSocketEventName.chatomniPostLiveDisconnected:
+            channelId = socketData?.Data?.ChannelId;
+            break;
+
+          case ChatmoniSocketEventName.chatomniPostLiveEnd:
+            channelId = socketData?.Data?.ShopId;
             break;
 
           default:
@@ -126,7 +142,6 @@ export class SocketOnEventService {
           let existTeam = team && team?.Id;
           let existLive = socketData.EventName == ChatmoniSocketEventName.livecampaign_Quantity_AvailableToBuy
               || socketData.EventName == ChatmoniSocketEventName.livecampaign_Quantity_Order_Pending_Checkout
-              || socketData.EventName == ChatmoniSocketEventName.chatomniPostLiveEnd
               || socketData.EventName == ChatmoniSocketEventName.onCreatedSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onUpdateSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order
@@ -190,9 +205,10 @@ export class SocketOnEventService {
                 this.publishSocketEvent(null, socketData, team); //SocketLiveCampaignAvailableToBuyDto
               break;
 
-            // Thông báo kết thúc live TShop
+            // Thông báo kết thúc live
             case ChatmoniSocketEventName.chatomniPostLiveEnd:
-                this.publishSocketEvent(null, socketData, team); //SocketioChatomniPostLiveEndDto
+                let notificationPostLiveEnd = this.preparePostLiveEnd(socketData, team);
+                this.publishSocketEvent(notificationPostLiveEnd, socketData, team); //SocketioChatomniPostLiveEndDto
               break;
 
             // Thông báo bài viết mới
@@ -205,6 +221,18 @@ export class SocketOnEventService {
             case ChatmoniSocketEventName.chatomniPostLiveConnected:
               this.publishSocketEvent(null, socketData, team);
             break;
+
+            // Không tìm thấy bài Live
+            case ChatmoniSocketEventName.chatomniPostNotExist:
+              this.publishSocketEvent(null, socketData, team);
+            break;
+
+            // Server mất kết nối với TikTok
+            case ChatmoniSocketEventName.chatomniPostLiveDisconnected:
+              let notificationPostLiveDisconnected = this.preparePostLiveDisconnected(socketData, team);
+              this.publishSocketEvent(notificationPostLiveDisconnected, socketData, team);
+            break;
+            
           }
         },
         error: (error: any) => {
@@ -280,7 +308,7 @@ export class SocketOnEventService {
             Title: `TikTok: <span class="font-semibold"> ${socketData.Conversation?.Name || tikitok?.nickname || 'Người dùng Tiktok'} </span> vừa bình luận`,
             Message: `${socketData.Message?.Message}`,
             Attachments: null,
-            Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId}`
+            Url: `/conversation/all?teamId=${team?.Id}&type=all&csid=${socketData.Conversation?.UserId || socketData.Message?.UserId}`
         };
         break;
 
@@ -368,7 +396,41 @@ export class SocketOnEventService {
         break;
     }
 
-   
+    return {...notification};
+  }
+
+  preparePostLiveDisconnected(socketData: any, team: CRMTeamDTO) {
+    let notification = {
+        Title: `TikTok: <span class="font-semibold">${team?.Name || 'Kênh TikTok'}</span>` ,
+        Message: `Server mất kết nối với TikTok`,
+        Attachments: null,
+        Url: `/conversation/post?teamId=${team.Id}&type=post&post_id=${socketData.Data?.ObjectId}`
+    } as SocketEventNotificationDto;
+
+    return {...notification};
+  }
+
+  preparePostLiveEnd(socketData: any, team: CRMTeamDTO) {
+    let notification = {} as SocketEventNotificationDto;
+    switch (team.Type) {
+        case CRMTeamType._TShop:
+          notification = {
+            Title: `TShop: <span class="font-semibold">${team?.Name || 'Kênh TikTok'}</span>` ,
+            Message: `Đã Kết thúc bài live`,
+            Attachments: null,
+            Url: `/conversation/post?teamId=${team.Id}&type=post&post_id=${socketData.Data?.ObjectId}`
+        } as SocketEventNotificationDto;
+        break;
+
+        case CRMTeamType._UnofficialTikTok:
+          notification = {
+            Title: `TikTok: <span class="font-semibold">${team?.Name || 'Kênh TikTok'}</span>` ,
+            Message: `Đã Kết thúc bài live`,
+            Attachments: null,
+            Url: `/conversation/post?teamId=${team.Id}&type=post&post_id=${socketData.Data?.ObjectId}`
+        } as SocketEventNotificationDto;
+        break
+    }
 
     return {...notification};
   }

@@ -24,15 +24,19 @@
                         </div>
                     </tds-dropdown-menu>
                 </tds-button-group>
-                <tds-form-field class="w-2/3">
-                    <input tdsInput class="text-neutral-1-900" [(ngModel)]="filterObj.searchText"
+                <tds-form-field class="w-2/3 mr-2">
+                    <input tdsInput class="text-neutral-1-900" [(ngModel)]="filterObj.q"
                         [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" placeholder="Tìm kiếm sản phẩm"
                         autocomplete="off" [ngModelOptions]="{standalone: true}" />
                     <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                    <span *ngIf="filterObj.searchText" tdsSuffix>
+                    <span *ngIf="filterObj.q" tdsSuffix>
                       <i class="text-neutral-1-500 tdsi-close-fill desktop:text-body-2 laptop:text-caption-1 text-caption-1 mr-2" (click)="closeSearchProduct()" ></i>
                     </span>
                 </tds-form-field>
+                <div *ngIf="filterObj">
+                  <filter-options (onLoadOption)="onLoadOption($event)">
+                  </filter-options>
+              </div>
             </div>
         </div>
 
@@ -42,21 +46,26 @@
                 [total]="count" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>
                     <tr class="text-neutral-1-900 text-body-2 font-semibold">
+                        <th width="44px" [tdsLeft]="true" [align]="'center'" class="border-r"></th>
                         <th width="44px" class="hover:bg-neutral-3-100 border-r" [checked]="checked" [tdsLeft]="true"
                             [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)">
                         </th>
                         <th width="80px" class="border-r" [tdsLeft]="true">Ảnh</th>
                         <th width="280px" [tdsLeft]="true" class="border-r">Tên</th>
-                        <th width="168px" class="border-r">Đơn vị</th>
-                        <th width="168px" class="border-r" [align]="'right'">Giá bán</th>
-                        <th width="168px" class="border-r" [align]="'right'">Số lượng</th>
-                        <th width="168px" class="border-r" [align]="'center'">Hiệu lực</th>
-                        <th width="150px" [tdsRight]="true" [align]="'center'">Thao tác</th>
+                        <th width="100px" class="border-r">Đơn vị</th>
+                        <th width="150px" class="border-r" [align]="'right'">Giá bán</th>
+                        <th width="150px" class="border-r" [align]="'right'">Số lượng</th>
+                        <th width="168px" class="border-r" [align]="'center'">Ngày tạo</th>
+                        <th width="120px" class="border-r" [align]="'center'">Hiệu lực</th>
+                        <th width="100px" [tdsRight]="true" [align]="'center'">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
                         <tr [ngClass]="{'tds-row-selected':setOfCheckedId.has(data.Id)}">
+                            <td [tdsLeft]="true" [expand]="expandSet.has(data.Id)" class="border-r justify-center"
+                              (expandChange)="onExpandChange(data.Id, $event)">
+                            </td>
                             <td [checked]="setOfCheckedId.has(data.Id)" [tdsLeft]="true" class="border-r"
                                 (checkedChange)="onItemChecked(data.Id, $event)"></td>
                             <td [tdsLeft]="true" class="border-r">
@@ -110,6 +119,7 @@
                                     </ng-template>
                                 </div>
                             </td>
+                            <td class="border-r" [align]="'center'">{{ data.DateCreated | yiDateTimeFormat }}</td>
                             <td class="border-r" [align]="'center'">
                                 <span class="flex items-center justify-center">
                                     <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
@@ -123,6 +133,9 @@
                                 </button>
                             </td>
                         </tr>
+                        <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full">
+                          <product-shopcart-detail class="w-full p-3 block" *ngIf="expandSet.has(data.Id)" [id]="data.Id"></product-shopcart-detail>
+                      </tr>
                     </ng-template>
                 </tbody>
             </tds-table>

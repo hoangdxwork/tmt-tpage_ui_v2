@@ -15,6 +15,8 @@ import { TDSTableQueryParams } from 'tds-ui/table';
 import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
 import { SortDataRequestDTO } from '@core/dto/dataRequest.dto';
 import { SortEnum } from '@core/enum';
+import { ProductShopCartServiceV2 } from '@app/services/shopcart/product-shopcart-v2.service';
+import { FilterObjFastSaleModel } from '@app/services/mock-odata/odata-fastsaleorder.service';
 
 @Component({
   selector: 'product-shopcart',
@@ -39,18 +41,26 @@ export class ProductShopCartComponent implements OnInit {
   pageSize: number = 20;
   pageIndex: number = 1;
   count: number = 0;
+  sort!: string;
 
   public filterObj: TDSSafeAny = {
-    searchText: ''
+    q: ''
   }
 
-  sort: Array<SortDataRequestDTO>= [{
-    field: "DateCreated",
-    dir: SortEnum.desc,
-  }];
+  // sort: Array<SortDataRequestDTO>= [
+  //   {
+  //     field: "DateCreated",
+  //     dir: SortEnum.desc,
+  //   },
+  //   {
+  //     field: "Price",
+  //       dir: SortEnum.desc,
+  //   }
+  // ];
 
   idsModel: any = [];
   teamShopCart!: CRMTeamDTO;
+  expandSet = new Set<number>();
 
   indClickQuantity: number = -1;
   currentQuantity: number = 0;
@@ -61,7 +71,8 @@ export class ProductShopCartComponent implements OnInit {
     private odataProductService: OdataProductService,
     private generalConfigService: GeneralConfigService,
     private message: TDSMessageService,
-    private productShopCartService: ProductShopCartService) {
+    private productShopCartService: ProductShopCartService,
+    private productShopCartService_v2: ProductShopCartServiceV2) {
   }
 
   ngOnInit(): void {
@@ -73,23 +84,45 @@ export class ProductShopCartComponent implements OnInit {
     this.lstOfData = [];
 
     let filters = this.odataProductService.buildFilter(this.filterObj || null);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null, this.sort);
+    // let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null, this.sort);
+
+    let params = {
+      q: '',
+      offset: (this.pageIndex - 1) * this.pageSize,
+      limit: this.pageSize,
+      sort: this.sort,
+    }
 
     this.isLoading = true;
     this.getViewData(params).subscribe({
       next:(res: any) => {
-        if(res && res.value && TDSHelperArray.isArray(res.value)) {
-            this.count = res['@odata.count'] as number;
-            this.lstOfData = [...res.value];
+        if(res && res.Datas && TDSHelperArray.isArray(res.Datas)) {
+            this.count = res.Total as number;
+            this.lstOfData = [...res.Datas];
         }
-
+        this.expandSet = new Set<number>();
         this.isLoading = false;
       },
       error: (err) => {
+        this.expandSet = new Set<number>();
         this.isLoading = false;
         this.message.error(err?.error?.message);
       }
     });
+  }
+
+  onExpandChange(id: number, checked: boolean): void {
+    if (checked) {
+      this.expandSet = new Set<number>();
+      this.expandSet.add(id);
+    } else {
+      this.expandSet.delete(id);
+    }
+  }
+
+  onLoadOption(event: any): void {
+    this.sort = event;
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   loadConfigCart() {
@@ -119,8 +152,8 @@ export class ProductShopCartComponent implements OnInit {
     })
   }
 
-  private getViewData(params: string): Observable<OdataProductShopCartDto> {
-    return this.odataProductService.getProductOnShopCart(params).pipe(takeUntil(this.destroy$));
+  private getViewData(params: any): Observable<OdataProductShopCartDto> {
+    return this.productShopCartService_v2.getProductTemplateOnShopCart(params).pipe(takeUntil(this.destroy$));
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
@@ -131,7 +164,7 @@ export class ProductShopCartComponent implements OnInit {
 
   onSelectChange(value: number) {
     this.pageIndex = 1;
-    this.filterObj.searchText = '';
+    this.filterObj.q = '';
 
     this.checked = false;
     this.indeterminate = false;
@@ -142,17 +175,24 @@ export class ProductShopCartComponent implements OnInit {
 
   onSearch(ev: TDSSafeAny) {
     this.pageIndex = 1;
-    this.filterObj.searchText = ev.value;
+    this.filterObj.q = ev.value;
 
     let filters = this.odataProductService.buildFilter(this.filterObj || null);
-    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null, this.sort);
+    // let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null, this.sort);
+
+    let params = {
+      q: this.filterObj.q,
+      offset: (this.pageIndex - 1) * this.pageSize,
+      limit: this.pageSize,
+      sort: 'date_desc',
+    }
     this.isLoading = true;
 
     this.getViewData(params).subscribe({
       next: (res: any) => {
-        if(res && res.value) {
-            this.count = res['@odata.count'] as number;
-            this.lstOfData = [...(res.value || [])];
+        if(res && res.Datas) {
+            this.count = res.Total as number;
+            this.lstOfData = [...(res.Datas || [])];
         }
 
         this.isLoading = false;
@@ -165,7 +205,7 @@ export class ProductShopCartComponent implements OnInit {
   }
 
   closeSearchProduct(){
-    this.filterObj.searchText = '';
+    this.filterObj.q = '';
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -241,7 +281,7 @@ export class ProductShopCartComponent implements OnInit {
 
   apiDeleteProductOnShopCart(model: any) {
     this.isLoading = true;
-    this.productShopCartService.deleteProductOnShopCart({ model: model}).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productShopCartService_v2.deleteProductTemplateOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.message.success("Xóa sản phẩm trong giỏ hàng thành công");
 
@@ -259,7 +299,7 @@ export class ProductShopCartComponent implements OnInit {
 
   refreshData() {
     this.pageIndex = 1;
-    this.filterObj.searchText = '';
+    this.filterObj.q = '';
 
     this.checked = false;
     this.indeterminate = false;

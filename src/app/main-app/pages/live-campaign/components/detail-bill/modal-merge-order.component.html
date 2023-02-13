@@ -7,8 +7,8 @@
         <thead>
             <tr>
                 <th width="3%" [tdsLeft]="true"></th>
-                <!-- <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)"
-                    [width]="'5%'" [align]="'center'" [tdsLeft]="true"></th> -->
+                <th [(checked)]="checked" [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)"
+                    [width]="'5%'" [align]="'center'" [tdsLeft]="true"></th>
                 <th width="5%">STT</th>
                 <th width="24%">Tên khách hàng</th>
                 <th width="18%">Điện thoại</th>
@@ -21,11 +21,11 @@
                 <tr class="text-body-2 text-neutral-900 font-regular" [ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''">
                     <td [expand]="expandSet.has(data.Id)" class="text-center" (expandChange)="onExpandChange(data.Id, $event)"
                         [tdsLeft]="true" [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' "></td>
-                    <!-- <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
+                    <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
                         class="text-center" [tdsLeft]="true"
                         [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
-                    </td> -->
-                    <td>{{ i | numericalOrder:pageSize:pageIndex }}</td>
+                    </td>
+                    <td>{{ i | numericalOrder: pageSize: pageIndex }}</td>
                     <td>{{ data.DisplayName || data.Name }}</td>
                     <td>{{ data.Phone }}</td>
                     <td>{{ data.Street }}</td>
@@ -79,6 +79,6 @@
 </div>
 
 <div class="w-full flex justify-end gap-x-2 p-4" *tdsModalFooter>
-    <!-- <button tds-button class="min-w-[100px]" color="primary" (click)="mergeOrderAll()" *ngIf="setOfCheckedId.size > 0">Gộp đơn</button> -->
-    <button tds-button class="min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
+    <button type="button" tds-button class="min-w-[100px]" color="primary" (click)="mergeOrderAll()" *ngIf="setOfCheckedId.size > 0">Gộp đơn</button>
+    <button type="button" tds-button class="min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
 </div>

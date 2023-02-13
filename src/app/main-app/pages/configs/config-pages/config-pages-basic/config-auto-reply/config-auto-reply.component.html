@@ -81,6 +81,19 @@
                 <quill-editor [spellcheck]="false" placeholder="Nhập nội dung" formControlName="ContentForAutoReplyWithMessage" [modules]="quillTagHelpers" class="input-quill-editor"></quill-editor>
             </div>
         </div>
+
+        <!-- Cho phép phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ -->
+        <div class="flex gap-x-2 items-center">
+            <tds-switch formControlName="IsEnableAutoReplyCommentInNotIsValidToOrder" size="md"></tds-switch>
+            <span class="">Cho phép phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ</span>
+        </div>
+
+        <!-- Nội dung phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ -->
+        <div *ngIf="_form.value?.IsEnableAutoReplyCommentInNotIsValidToOrder">
+            <tds-label> Nội dung phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ:</tds-label>
+            <quill-editor [spellcheck]="false" placeholder="Nhập nội dung"
+            formControlName="ContentForAutoReplyCommentInNotIsValidToOrder" [modules]="notIsValidToOrderQuillTagHelpers" class="input-quill-editor"></quill-editor>
+        </div>
     </div>
   </form>
 </tds-spin>

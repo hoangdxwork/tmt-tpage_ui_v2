@@ -276,7 +276,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       next: (res: SocketEventSubjectDto) => {
         switch(res?.EventName){
             case ChatmoniSocketEventName.chatomniPostLiveEnd:
-              let exist = this.currentTeam && this.currentTeam.Type == CRMTeamType._TShop && res.Data && res.Data.Data && res.Data.Data.ObjectId;
+              let exist = this.currentTeam && res.Data && res.Data.Data 
+                && res.Data.Data.ShopId == this.currentTeam.ChannelId && res.Data.Data.ObjectId;
 
               if(exist) {
                 let index = this.lstObjects.findIndex(x => x.ObjectId == res.Data.Data.ObjectId);
@@ -349,6 +350,27 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                   this.message.remove(this.csLoadingUpdate?.messageId);
                   this.message.success('kết nối bài viết thành công');
                   this.loadData();
+                }
+            break;
+
+            case ChatmoniSocketEventName.chatomniPostNotExist:
+                let existPostNotLive = res.Data && res.Data.Data && res.Data.Data.ChannelId && res.Data.Data.ChannelId == this.currentTeam?.ChannelId;
+
+                if(existPostNotLive){
+                  this.destroyTimer();
+                  this.clickReload = 0;
+                  this.isLoadingUpdate = false;
+  
+                  this.message.remove(this.csLoadingUpdate?.messageId);
+                  this.message.success('Không tìm thấy bài Live');
+                }
+            break;
+
+            case ChatmoniSocketEventName.chatomniPostLiveDisconnected:
+                let existPostLiveConnected = res.Data && res.Data.Data && res.Data.Data.ChannelId && res.Data.Data.ChannelId == this.currentTeam?.ChannelId;
+
+                if(existPostLiveConnected){
+                  this.message.warning("Server mất kết nối với TikTok");
                 }
             break;
 
@@ -478,6 +500,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           error: (error: any) => {
               this.clickReload = 0;
               this.isLoadingUpdate = false;
+              this.isRefreshing = false;
               console.log(error);
 
               this.message.remove(this.csLoadingUpdate?.messageId);

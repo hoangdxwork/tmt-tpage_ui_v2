@@ -124,6 +124,8 @@ import { FirebaseRegisterService } from '@app/services/firebase/firebase-registe
 import { AccountJournalService } from '@app/services/account-journal.service';
 import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
 import { ProductShopCartComponent } from './product-shopcart/product-shopcart.component';
+import { ProductShopcartDetailComponent } from './components/product-shopcart-detail/product-shopcart-detail.component';
+import { FilterOptionsComponent } from './components/filter-options/filter-options.component';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -213,7 +215,9 @@ const SERVICES = [
     CreateOrderStatusComponent,
     PartnerStatusComponent,
     DeliveryListComponent,
-    ProductShopCartComponent
+    ProductShopCartComponent,
+    ProductShopcartDetailComponent,
+    FilterOptionsComponent
   ],
   imports: [
     CommonModule,
