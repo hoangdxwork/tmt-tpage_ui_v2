@@ -7,21 +7,21 @@ import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utili
 })
 export class FilterOptionsComponent implements OnInit {
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
-  @Input() sort!: any;
 
   isActive: boolean = false;
   isVisible: boolean = false;
   selectSortDate!: string | null;
   selectSortPrice!: string | null;
+  sort!: string;
 
   dateRange = [
-    { text: 'Tăng dần theo ngày', value: 'asc', IsSelected: false },
-    { text: 'Giảm dần theo ngày', value: 'desc', IsSelected: false },
+    { text: 'Tăng dần theo ngày', value: 'date', IsSelected: false },
+    { text: 'Giảm dần theo ngày', value: 'date_desc', IsSelected: false },
   ];
 
   priceRange = [
-    { text: 'Tăng dần theo giá', value: 'asc', IsSelected: false },
-    { text: 'Giảm dần theo giá', value: 'desc', IsSelected: false },
+    { text: 'Tăng dần theo giá', value: 'price', IsSelected: false },
+    { text: 'Giảm dần theo giá', value: 'price_desc', IsSelected: false },
   ];
 
   constructor() { }
@@ -30,35 +30,32 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   checkActive(): boolean {
-    let exist = TDSHelperArray.hasListValue(this.sort.DateCreated) || TDSHelperArray.hasListValue(this.sort.Price)
-
-    if (exist) {
+    if (this.sort) {
       return true
     } else {
       return false
     }
   }
 
-  selectPrice(event: any): void {
-    if (event && event.value && event.IsSelected) {
-      this.selectSortPrice = event.value;
+  // selectPrice(event: any): void {
+  //   if (event && event.value && event.IsSelected) {
+  //     this.sort = event.value;
 
-      this.priceRange.map(x=> {
-        if(x.value == event.value) {
-          return x.IsSelected = true;
-        }
-        return x.IsSelected = false;
-      })
-    } else {
-      this.selectSortPrice = null;
-    }
+  //     this.priceRange.map(x=> {
+  //       if(x.value == event.value) {
+  //         return x.IsSelected = true;
+  //       }
+  //       return x.IsSelected = false;
+  //     })
+  //   } else {
+  //     this.sort = '';
+  //   }
 
-    this.sort.Price = this.selectSortPrice;
-  }
+  // }
 
   selectDate(event: any): void {
     if (event && event.value && event.IsSelected) {
-      this.selectSortDate = event.value;
+      this.sort = event.value;
 
       this.dateRange.map(x=> {
         if(x.value == event.value) {
@@ -67,10 +64,9 @@ export class FilterOptionsComponent implements OnInit {
         return x.IsSelected = false;
       })
     } else {
-      this.selectSortDate = null;
+      this.sort = '';
     }
 
-    this.sort.DateCreated = this.selectSortDate;
   }
 
   onApply() {
@@ -79,7 +75,11 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   onCancel() {
-
+    this.sort = '';
+    // this.priceRange.map(x => x.IsSelected = false);
+    this.dateRange.map(x=> x.IsSelected = false)
+    this.onLoadOption.emit(this.sort);
+    this.closeMenu();
   }
 
   closeMenu() {

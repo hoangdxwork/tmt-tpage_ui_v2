@@ -41,21 +41,22 @@ export class ProductShopCartComponent implements OnInit {
   pageSize: number = 20;
   pageIndex: number = 1;
   count: number = 0;
+  sort!: string;
 
   public filterObj: TDSSafeAny = {
     q: ''
   }
 
-  sort: Array<SortDataRequestDTO>= [
-    {
-      field: "DateCreated",
-      dir: SortEnum.desc,
-    },
-    {
-      field: "Price",
-        dir: SortEnum.desc,
-    }
-  ];
+  // sort: Array<SortDataRequestDTO>= [
+  //   {
+  //     field: "DateCreated",
+  //     dir: SortEnum.desc,
+  //   },
+  //   {
+  //     field: "Price",
+  //       dir: SortEnum.desc,
+  //   }
+  // ];
 
   idsModel: any = [];
   teamShopCart!: CRMTeamDTO;
@@ -89,7 +90,7 @@ export class ProductShopCartComponent implements OnInit {
       q: '',
       offset: (this.pageIndex - 1) * this.pageSize,
       limit: this.pageSize,
-      sort: 'date_desc',
+      sort: this.sort,
     }
 
     this.isLoading = true;
@@ -99,10 +100,11 @@ export class ProductShopCartComponent implements OnInit {
             this.count = res.Total as number;
             this.lstOfData = [...res.Datas];
         }
-
+        this.expandSet = new Set<number>();
         this.isLoading = false;
       },
       error: (err) => {
+        this.expandSet = new Set<number>();
         this.isLoading = false;
         this.message.error(err?.error?.message);
       }
@@ -119,9 +121,7 @@ export class ProductShopCartComponent implements OnInit {
   }
 
   onLoadOption(event: any): void {
-    // this.sort = event.Price;
-    this.sort[0].dir = event.DateCreated;
-    this.sort[1].dir = event.Price;
+    this.sort = event;
     this.loadData(this.pageSize, this.pageIndex);
   }
 
