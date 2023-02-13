@@ -605,4 +605,13 @@ export class FastSaleOrderService extends BaseSevice {
 
     return this.apiService.getData(api, null);
   }
+
+  mergeordersbypartnerids(data: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/fastsaleorder/mergeordersbypartnerids`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData(api, data);
+  }
 }
