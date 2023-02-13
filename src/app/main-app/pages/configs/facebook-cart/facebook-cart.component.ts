@@ -25,6 +25,9 @@ export class FacebookCartComponent implements OnInit {
   dataModel!: ConfigFacebookCartDTO;
   teamShopCart!: CRMTeamDTO;
 
+  lstAccountJournal: any[] = [];
+  accountJournalItem: any;
+
   constructor(private fb: FormBuilder,
     private generalConfigService: GeneralConfigService,
     private message: TDSMessageService,
@@ -35,6 +38,7 @@ export class FacebookCartComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+    this.loadAccountJournal();
   }
 
   createForm() {
@@ -54,12 +58,32 @@ export class FacebookCartComponent implements OnInit {
       IsRemoveProductInValid: [false],// Cho phép xóa sản phẩm không hợp lệ (Không mua được)
       IsDisplayInventory: [false],// Cho phép hiện tồn kho
       IsMergeOrder: [false],// Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng
-      IsShopCart: [false]// hiển thị thông tin giỏ hàng
+      IsShopCart: [false], // hiển thị thông tin giỏ hàng
+
+      AccountJournalId: [null],
+      AccountJournal: [null],
     })
   }
 
   updateForm(data: ConfigFacebookCartDTO) {
     this._form.patchValue(data);
+
+    if(data.AccountJournal) {
+      this._form.controls['AccountJournal'].setValue(data.AccountJournal);
+    }
+
+    if(data.AccountJournalId) {
+      this._form.controls['AccountJournalId'].setValue(data.AccountJournalId);
+      this.generalConfigService.getAccountJournalById(data.AccountJournalId).pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (data: any) => {
+            this.accountJournalItem = data;
+          },
+          error: (err: any) => {
+            this.message.error(err?.error?.message);
+          }
+      })
+    }
 
     if(data.IsApplyConfig == true) {
       this._form.controls["IsUpdatePartnerInfo"].disable();
@@ -76,6 +100,31 @@ export class FacebookCartComponent implements OnInit {
     }
   }
 
+  onChangeAccountJournal(value: any) {
+    if(value && value > 0) {
+      this.isLoading = true;
+
+      let exist = this.lstAccountJournal.filter(x => x.Id === value)[0];
+      if(exist) {
+        this._form.controls['AccountJournalId'].setValue(value);
+        this.accountJournalItem = null;
+
+        this.generalConfigService.getAccountJournalById(value).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (data: any) => {
+            this.accountJournalItem = data;
+            this.isLoading = false;
+          },
+          error: (err: any) => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message);
+          }
+        })
+      }
+    } else {
+      this.accountJournalItem = null;
+    }
+  }
+
   loadData() {
     let name = "ConfigCart";
     this.isLoading  = true;
@@ -89,6 +138,17 @@ export class FacebookCartComponent implements OnInit {
       error:(err) => {
         this.isLoading = false;
           this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+      }
+    })
+  }
+
+  loadAccountJournal() {
+    this.generalConfigService.getAccountJournal().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.lstAccountJournal = [...(res.value || [])];
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
       }
     })
   }
@@ -231,7 +291,10 @@ export class FacebookCartComponent implements OnInit {
         IsRemoveProductInValid: formModel.IsRemoveProductInValid as boolean,
         IsDisplayInventory: formModel.IsDisplayInventory as boolean,
         IsMergeOrder: formModel.IsMergeOrder as boolean,
-        IsShopCart: formModel.IsShopCart as boolean
+        IsShopCart: formModel.IsShopCart as boolean,
+        AccountJournalId: formModel.AccountJournalId,
+        AccountJournal: formModel.AccountJournal,
+
     } as ConfigFacebookCartDTO
 
     return model;
