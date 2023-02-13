@@ -1,4 +1,4 @@
-<div class="w-full min-h-[50px] h-[200px] text-body-2 bg-white rounded-lg border-t border-x">
+<div class="w-full min-h-[50px] max-h-[184px] h-[184px] text-body-2 bg-white rounded-lg border">
   <tds-table class="min-h-[50px]" [scroll]="{y:'auto'}" #basicTable [listData]="dataExpand" [noResult]="emptyTable" [showPagination]="false"
     [loading]="isLoading">
     <thead class="rounded">
@@ -43,7 +43,7 @@
     </tbody>
   </tds-table>
   <ng-template #emptyTable>
-    <div class="w-full pb-3 border-b">
+    <div class="w-full">
       <tds-empty></tds-empty>
     </div>
   </ng-template>

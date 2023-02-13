@@ -34,7 +34,7 @@
                     </span>
                 </tds-form-field>
                 <div *ngIf="filterObj">
-                  <filter-options [sort]="sort"  (onLoadOption)="onLoadOption($event)">
+                  <filter-options (onLoadOption)="onLoadOption($event)">
                   </filter-options>
               </div>
             </div>
