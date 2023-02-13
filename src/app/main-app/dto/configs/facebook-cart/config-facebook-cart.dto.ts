@@ -13,4 +13,6 @@ export interface ConfigFacebookCartDTO {
   IsDisplayInventory: boolean;// Cho phép hiện tồn kho
   IsMergeOrder: boolean;// Cho phép khách hàng gộp phiếu bán hàng trên giỏ hàng
   IsShopCart: boolean;// Hiển thị thông tin sản phẩm giỏ hàng
+  AccountJournalId: any;
+  AccountJournal: any;
 }

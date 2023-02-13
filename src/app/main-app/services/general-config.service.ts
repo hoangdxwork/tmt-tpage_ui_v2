@@ -45,4 +45,22 @@ export class GeneralConfigService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, { name: name, value: data });
   }
 
+  getAccountJournal(): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/AccountJournal/OdataService.GetAccountJournalList?%24count=true`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
+  getAccountJournalById(id: any): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/AccountJournal(${id})`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
 }
