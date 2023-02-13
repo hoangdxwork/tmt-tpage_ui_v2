@@ -184,8 +184,8 @@
               <tds-table #tableProduct [showSizeChanger]="true" [frontPagination]="false" [scroll]="{ y: 'auto' }" [listData]="_form.controls['Details'].value">
                 <thead>
                   <tr>
-                      <th [width]="'64px'" class="text-center">STT</th>
-                      <th [width]="'310px'">
+                      <th [width]="'54px'" class="text-center">STT</th>
+                      <th [width]="'300px'">
                         <div customFilter class="flex justify-between items-center w-full">
 
                           <span class="w-1/4 py-2"> Sản phẩm </span>
@@ -208,7 +208,17 @@
                           </ng-template>
                       </div>
                       </th>
-                      <th [width]="'80px'" class="text-center">Ẩn / hiện</th>
+                      <th [width]="'100px'" class="text-center">
+                        <span class="flex justify-center items-center gap-x-2">
+                          Ẩn/ Hiện
+                          <span class="relative z-20 tdsi-edit-2-fill text-neutral-1-500 leading-none cursor-pointer" (click)="showIsActiveProduct()">
+                            <span tds-tooltip="Chỉnh sửa hoạt động sản phẩm" class=" inset-0 absolute z-0"
+                            tds-popover  popoverTrigger="click" [(popoverVisible)]="isShowIsActiveProduct"
+                            [popoverAutoClose]="true"  [popoverContent]="contentTemplateIsActive"></span>
+                          </span>
+                        </span>
+                      </th>
+
                       <th [width]="'110px'" class="text-center">Số lượng</th>
 
                       <th [width]="'150px'" class="text-center">
@@ -408,7 +418,6 @@
                   </tr>
                 </tbody>
               </tds-table>
-
             </div>
           </div>
         </div>
@@ -417,6 +426,15 @@
   </form>
 </tds-spin>
 
+<!-- Bật tắt sản phẩm -->
+<ng-template #contentTemplateIsActive>
+  <div class="w-[304px] flex items-center">
+      <span class="text-body-2 mr-4"> Ẩn/ Hiện cho tất cả sản phẩm: </span>
+      <tds-switch size="md" [(ngModel)]="isIsActiveProduct" (ngModelChange)="onChangeIsActiveProduct($event)"></tds-switch>
+  </div>
+</ng-template>
+
+<!-- Giới hạn trên đơn -->
 <ng-template #contentTemplate>
   <div class="w-[304px]">
       <tds-form-field>
@@ -427,6 +445,7 @@
       </tds-form-field>
   </div>
 </ng-template>
+
 <ng-template #footerTemplate>
   <div class="flex justify-end pt-2">
       <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="onClosePopover()">
