@@ -100,7 +100,12 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
       ContentForAutoReplyWithMessage: [null],
       selectedWord1s: [null],
       selectedWord2s: [null],
-      selectedWord3s: [null]
+      selectedWord3s: [null],
+
+      // Cho phép phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ
+      IsEnableAutoReplyCommentInNotIsValidToOrder: [false],
+      // Nội dung phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ
+      ContentForAutoReplyCommentInNotIsValidToOrder : [null],
     });
   }
 
@@ -173,6 +178,9 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
     if (data.ContentOfCommentForNotAutoReply) {
       formControls['selectedWord3s'].setValue(data.ContentOfCommentForNotAutoReply.split(','));
     }
+
+    formControls['IsEnableAutoReplyCommentInNotIsValidToOrder'].setValue(data.IsEnableAutoReplyCommentInNotIsValidToOrder);
+    formControls['ContentForAutoReplyCommentInNotIsValidToOrder'].setValue(data.ContentForAutoReplyCommentInNotIsValidToOrder);
   }
 
   onSave(channelId: string) {
@@ -209,6 +217,8 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
       IsEnableAutoReplyCommentInMessage: formValue["IsEnableAutoReplyCommentInMessage"],
       ContentForAutoReplyWithComment: formValue["ContentForAutoReplyWithComment"],
       ContentForAutoReplyWithMessage: formValue["ContentForAutoReplyWithMessage"],
+      IsEnableAutoReplyCommentInNotIsValidToOrder: formValue["IsEnableAutoReplyCommentInNotIsValidToOrder"],
+      ContentForAutoReplyCommentInNotIsValidToOrder: formValue["ContentForAutoReplyCommentInNotIsValidToOrder"]
     };
 
     if (formValue["selectedWord2s"]) {
