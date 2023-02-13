@@ -86,8 +86,8 @@
           <!-- Nội dung phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ -->
           <div *ngIf="dataModel.IsEnableAutoReplyCommentInNotIsValidToOrder">
             <tds-label> Nội dung phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ:</tds-label>
-            <quill-editor [spellcheck]="false" placeholder="Nhập nội dung" [(ngModel)]="dataModel.ContentForAutoReplyCommentInNotIsValidToOrder "
-              [modules]="quillTagHelpers" class="input-quill-editor" [ngModelOptions]="{standalone: true}"></quill-editor>
+            <quill-editor [spellcheck]="false" placeholder="Nhập nội dung" [(ngModel)]="dataModel.ContentForAutoReplyCommentInNotIsValidToOrder"
+              [modules]="notIsValidToOrderQuillTagHelpers" class="input-quill-editor" [ngModelOptions]="{standalone: true}"></quill-editor>
           </div>
     </div>
 </tds-spin>
