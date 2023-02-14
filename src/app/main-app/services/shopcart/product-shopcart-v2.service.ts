@@ -98,7 +98,7 @@ export class ProductShopCartServiceV2 extends BaseSevice {
     updateQuantityProductOnShopCart(data: any): Observable<TDSSafeAny> {
         const api: CoreAPIDTO = {
           url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/updatequantityproductonshopcart`,
-          method: CoreApiMethodType.post
+          method: CoreApiMethodType.put
         }
         return this.apiService.getData<TDSSafeAny>(api, data);
     }
