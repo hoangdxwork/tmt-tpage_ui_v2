@@ -37,4 +37,13 @@ export class SaleOnline_FacebookCommentService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  getCommentsOfOrder_v2(teamId: any, objectId: string, userId: string): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/facebookpost/${teamId}_${objectId}/commentsbyuser?userId=${userId}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
 }

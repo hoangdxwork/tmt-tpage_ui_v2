@@ -102,13 +102,13 @@
 
                       <div *ngIf="lstComment" style="margin:0;" class="overflow-auto tds-panel-scroll flex flex-col max-h-60 py-2">
                         <div *ngFor="let comment of lstComment; let index = index"
-                          [ngClass]="quickOrderModel?.Note?.includes(comment.message) ? 'bg-neutral-3-50':''"
+                          [ngClass]="quickOrderModel?.Note?.includes(comment.Message) ? 'bg-neutral-3-50':''"
                           class="p-3 border-b border-neutral-2-200 flex justify-between w-full cursor-pointer hover:bg-neutral-3-50"
-                          (click)="addComment(comment.message)">
+                          (click)="addComment(comment.Message)">
                           <div>
-                            <span [innerHTML]="comment.message"></span><span class="text-info-400 ml-2">{{ comment.created_time | date: "dd/MM/yyyy HH:mm:ss" }}</span>
+                            <span [innerHTML]="comment.Message"></span><span class="text-info-400 ml-2">{{ comment.CreatedTime | date: "dd/MM/yyyy HH:mm:ss" }}</span>
                           </div>
-                          <span *ngIf="quickOrderModel?.Note?.includes(comment.message)" class="tdsi-success-fill text-primary-1"></span>
+                          <span *ngIf="quickOrderModel?.Note?.includes(comment.Message)" class="tdsi-success-fill text-primary-1"></span>
                         </div>
                       </div>
                     </tds-collapse-panel>
@@ -151,13 +151,13 @@
                                       <div class="w-full flex gap-x-2">
                                           <span class="text-neutral-1-400 font-regular text-[13px] flex gap-x-2 items-center"> Tồn kho:
                                               <span class="text-primary-1" *ngIf="lstInventory">{{lstInventory[data.Id]? lstInventory[data.Id].QtyAvailable : 0}}</span>
-                                              <tds-spinner [color]="'primary'" class="w-2.5 h-2.5" 
+                                              <tds-spinner [color]="'primary'" class="w-2.5 h-2.5"
                                                 *ngIf="!lstInventory"></tds-spinner>
                                           </span>
                                           <span class="ml-1 mr-1"> / </span>
                                           <span class="text-neutral-1-400 font-regular text-[13px] flex gap-x-2 items-center"> Tồn dự báo:
                                               <span class="text-primary-1" *ngIf="lstInventory">{{lstInventory[data.Id]? lstInventory[data.Id].VirtualAvailable : 0}}</span>
-                                              <tds-spinner [color]="'primary'" class="w-2.5 h-2.5" 
+                                              <tds-spinner [color]="'primary'" class="w-2.5 h-2.5"
                                                 *ngIf="!lstInventory"></tds-spinner>
                                           </span>
                                       </div>
