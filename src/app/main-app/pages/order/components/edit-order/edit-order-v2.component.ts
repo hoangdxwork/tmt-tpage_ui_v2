@@ -239,12 +239,12 @@ export class EditOrderV2Component implements OnInit {
 
     this.mappingAddress(this.quickOrderModel);
 
-    let postId = this.quickOrderModel.Facebook_PostId;
+    let objectId = this.quickOrderModel.Facebook_PostId;
     let teamId = this.quickOrderModel.CRMTeamId;
-    let asId = this.quickOrderModel.Facebook_ASUserId;
+    let userId = this.quickOrderModel.Facebook_ASUserId;
 
-    if(postId && teamId && asId) {
-        this.commentsOfOrder(postId, teamId, asId);
+    if(objectId && teamId && userId) {
+        this.commentsOfOrder(teamId, objectId, userId);
     }
   }
 
@@ -596,12 +596,12 @@ export class EditOrderV2Component implements OnInit {
     this.calcFee();
   }
 
-  commentsOfOrder(fb_PostId: string, teamId: any, fb_ASUserId: string) {
-    this.saleOnline_FacebookCommentService.getCommentsOfOrder(fb_PostId, teamId, fb_ASUserId)
+  commentsOfOrder(teamId: any, objectId: string, userId: string) {
+    this.saleOnline_FacebookCommentService.getCommentsOfOrder_v2(teamId, objectId, userId)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: data => {
-              if(data) {
-                  this.lstComment = data.filter((x: any) => x.message != '');
+              if(data  && data.Items && data.Items.length > 0) {
+                this.lstComment = data.Items.filter((x: any) => x.Message != '');
               }
           },
           error: (error: any) => {
@@ -617,6 +617,8 @@ export class EditOrderV2Component implements OnInit {
       }else{
           this.quickOrderModel.Note = comment;
       }
+    } else {
+      this.quickOrderModel.Note = this.quickOrderModel.Note?.replace(comment, '').trim();
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ProductShopCartDto } from '@app/dto/configs/product/config-product-shopcart.dto';
 import { ProductShopCartServiceV2 } from '@app/services/shopcart/product-shopcart-v2.service';
 import { takeUntil } from 'rxjs';
@@ -13,7 +13,10 @@ import { TDSMessageService } from 'tds-ui/message';
 export class ProductShopcartDetailComponent implements OnInit {
   dataExpand: any;
   isLoading: boolean = false;
+  indClickQuantity: number = -1;
+  currentQuantity: number = 0;
   @Input() id!: number;
+  @Output() onLoadOption = new EventEmitter<boolean>();
 
   constructor(private productShopCartService_v2: ProductShopCartServiceV2,
     private destroy$: TDSDestroyService,
@@ -55,5 +58,48 @@ export class ProductShopcartDetailComponent implements OnInit {
       }
     })
   }
+
+
+  openQuantityPopover(data: ProductShopCartDto) {
+    this.indClickQuantity = data.Id;
+    this.currentQuantity = data.ShopQuantity || 0;
+  }
+
+  closeQuantityPopover(): void {
+    this.indClickQuantity = -1;
+  }
+
+  changeQuantity(value: number) {
+    this.currentQuantity = value;
+}
+
+  saveChangeQuantity(data: ProductShopCartDto) {
+    this.isLoading = true;
+
+    let model = {
+      ProductId: data.Id,
+      Quantity: this.currentQuantity,
+    }
+
+    this.productShopCartService_v2.updateQuantityProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
+      next:(res: any) => {
+          let index = this.dataExpand.findIndex((x: any) => x.Id == data.Id);
+          if(index > -1) {
+            this.dataExpand[index].ShopQuantity = this.currentQuantity;
+          }
+
+          this.message.success('Cập nhật thành công');
+          this.isLoading = false;
+          this.onLoadOption.emit(true);
+          this.indClickQuantity = -1;
+      },
+      error:(err) => {
+          this.isLoading = false;
+          this.message.error(err.error?.message);
+          this.indClickQuantity = -1;
+      }
+    })
+  }
+
 
 }

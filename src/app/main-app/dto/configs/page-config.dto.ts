@@ -15,8 +15,11 @@ export interface AutoReplyConfigDTO {
   EmailPattern?: any;
   // Cho phép phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ
   IsEnableAutoReplyCommentInNotIsValidToOrder: boolean;
-  // Nội dung phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ
   ContentForAutoReplyCommentInNotIsValidToOrder: string;
+
+  //  Cho phép phản hồi tự động khi bình luận tạo đơn thành công
+  IsEnableAutoReplyCommentOrderCreated : boolean;
+  ContentForAutoReplyCommentOrderCreated: string;
 }
 
 export interface AutoHideCommentDTO {

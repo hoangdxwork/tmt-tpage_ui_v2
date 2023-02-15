@@ -15,13 +15,25 @@
            <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex" class="w-full pr-2">
               <div *ngIf="item && item.Type == 12" class="flex flex-auto w-full h-full pb-3">
                   <div>
-                      <tpage-avatar-facebook class="cursor-pointer"
+                      <tpage-avatar-facebook class="cursor-pointer" [ngClass]="item.Status == 30 || item.Status == 40? 'opacity-60':''"
                         [shape]="'circle'" [size]="'lg'" [psid]="item.Data?.from?.id || item.UserId" [token]="team.ChannelToken">
                       </tpage-avatar-facebook>
                   </div>
 
                   <div class="ml-2 w-full h-full">
-                      <div class="bg-white rounded-2xl desktop:px-4 desktop:py-3 px-3 py-2" [ngClass]="dictActiveComment[item.Id]? 'bg-primary-3': ''" (click)="onDictActiveComment(item)">
+                      <div class="bg-white rounded-2xl desktop:px-4 desktop:py-3 px-3 py-2 relative" [ngClass]="dictActiveComment[item.Id]? 'bg-primary-3': ''" (click)="onDictActiveComment(item)">
+                          <div *ngIf="item.Status == 40 || item.Status == 30" class="absolute inset-0 bg-white bg-opacity-60 z-10 rounded-2xl cursor-no-drop desktop:px-4 desktop:py-3 px-3 py-2 flex items-end">
+                              <!-- Thông báo Bình luận ẩn -->
+                              <a class="flex items-center text-error-400" *ngIf="item.Status == 30">
+                                <span class="tdsi-eye-close-fill text-error-400 text-body-1 leading-none mr-2" ></span> Bình luận đã ẩn
+                              </a>
+
+                              <!-- Thông báo Bình luận đã xóa -->
+                              <a class="flex items-center text-error-400" *ngIf="item.Status == 40">
+                                <span class="tdsi-trash-line text-error-400 text-body-1 leading-none mr-2" ></span> Bình luận đã xóa
+                              </a>
+                          </div>
+
                           <div class="flex items-center justify-between desktop:gap-x-2 gap-x-1 desktop:text-body-2 laptop:text-caption-1">
                               <div class="flex gap-x-2 items-center">
                                   <div *ngIf="(item.Data | facebookDataCs) && (item.Data | facebookDataCs)?.from" class="min-w-[50px] desktop:max-w-[220px] max-w-[100px] truncate">
@@ -161,7 +173,7 @@
                           </div>
 
                           <!-- thao tác -->
-                          <div class="flex items-center pt-3">
+                          <div class="flex items-center pt-3" *ngIf="item.Status != 30 && item.Status != 40">
                               <button *ngIf="!isShowModal && !item.ParentId" [loading]="isLoadingInsertFromPost" [loadingTemplate]="'Tạo đơn hàng'" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
 
                               <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
@@ -271,6 +283,10 @@
 
                               </div>
                           </div>
+
+                          <!-- Lỗi gửi tin, Bình luận ẩn, Bình luận đã xóa (Khoản trắng để hiện thông báo)-->
+                          <a class="flex items-center pt-3 text-white" *ngIf="item.Status == 30 || item.Status == 40">.</a>
+
                       </div>
 
                     <!-- Input trả lời bình luận -->
@@ -321,12 +337,26 @@
                   <div *ngFor="let child of dataSource.Extras.Childs[item.Data.id]">
                       <div *ngIf="child && child.Type == 12" class="pl-14 flex flex-auto w-full h-full" style="padding-bottom: 0.75rem">
                           <div>
-                              <tpage-avatar-facebook class="cursor-pointer" [shape]="'circle'" [size]="'md'" [psid]="child.Data?.from?.id" [token]="team.ChannelToken">
+                              <tpage-avatar-facebook class="cursor-pointer" [shape]="'circle'" [size]="'md'"
+                                  [ngClass]="child.Status == 30 || child.Status == 40? 'opacity-60':''"
+                                  [psid]="child.Data?.from?.id" [token]="team.ChannelToken">
                               </tpage-avatar-facebook>
                           </div>
 
                           <div class="ml-2 w-full h-full">
-                              <div class="bg-white rounded-2xl desktop:px-4 desktop:py-3 px-3 py-2" [ngClass]="dictActiveComment[child.Id]? 'bg-primary-3': ''"  (click)="onDictActiveComment(child)">
+                              <div class="bg-white rounded-2xl desktop:px-4 desktop:py-3 px-3 py-2 relative" [ngClass]="dictActiveComment[child.Id]? 'bg-primary-3': ''"  (click)="onDictActiveComment(child)">
+                                  <div *ngIf="child.Status == 40 || child.Status == 30" class="absolute inset-0 bg-white bg-opacity-60 z-10 rounded-2xl cursor-no-drop desktop:px-4 desktop:py-3 px-3 py-2 flex items-end">
+                                      <!-- Thông báo Bình luận ẩn -->
+                                      <a class="flex items-center text-error-400" *ngIf="child.Status == 30">
+                                        <span class="tdsi-eye-close-fill text-error-400 text-body-1 leading-none mr-2" ></span> Bình luận đã ẩn
+                                      </a>
+        
+                                      <!-- Thông báo Bình luận đã xóa -->
+                                      <a class="flex items-center text-error-400" *ngIf="child.Status == 40">
+                                        <span class="tdsi-trash-line text-error-400 text-body-1 leading-none mr-2" ></span> Bình luận đã xóa
+                                      </a>
+                                  </div>
+
                                   <div class="flex items-center justify-between desktop:gap-x-2 gap-x-1 desktop:text-body-2 laptop:text-caption-1">
                                       <div class="flex gap-x-2 items-center">
                                           <div *ngIf="(child.Data | facebookDataCs) && (child.Data | facebookDataCs)?.from" class="min-w-[50px] desktop:max-w-[220px] max-w-[105px] truncate text-body-2">
@@ -464,7 +494,7 @@
                                   </div>
 
                                   <!-- thao tác -->
-                                  <div class="flex items-center pt-3">
+                                  <div class="flex items-center pt-3" *ngIf="child.Status != 30 && child.Status != 40">
                                       <button *ngIf="!isShowModal && !child.ParentId" [loading]="isLoadingInsertFromPost" [loadingTemplate]="'Tạo đơn hàng'" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(child)">Tạo đơn hàng</button>
 
                                       <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
@@ -574,6 +604,10 @@
 
                                       </div>
                                   </div>
+
+                                  <!-- Lỗi gửi tin, Bình luận ẩn, Bình luận đã xóa (Khoản trắng để hiện thông báo)-->
+                                  <a class="flex items-center pt-3 text-white" *ngIf="child.Status == 30 || child.Status == 40">.</a>
+
                               </div>
 
                             <!-- Input trả lời bình luận -->

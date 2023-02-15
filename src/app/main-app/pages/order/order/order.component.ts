@@ -465,10 +465,10 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
               // TODO: lưu filter cache trước khi load trang add bill
               const key =  this.saleOnline_OrderService._keyCacheFilter;
-              let model = { 
-                filterObj: this.filterObj, 
-                pageIndex: this.pageIndex, 
-                pageSize: this.pageSize 
+              let model = {
+                filterObj: this.filterObj,
+                pageIndex: this.pageIndex,
+                pageSize: this.pageSize
               };
 
               this.cacheApi.setItem(key, model);
@@ -756,8 +756,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
   }
 
   onExportExcel() {
-    if (this.isProcessing) { 
-      return 
+    if (this.isProcessing) {
+      return
     }
 
     let filter = {
@@ -1028,14 +1028,14 @@ export class OrderComponent implements OnInit, AfterViewInit {
 
     this.lstOfData = [...data];
   }
-    
+
   onClearFilterSearch() {
     this.pageIndex = 1;
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<string>();
     this.filterObj!.SearchText = '';
-    
+
     this.loadData(this.pageSize, this.pageIndex);
     this.loadSummaryStatus();
   }

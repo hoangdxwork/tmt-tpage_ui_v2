@@ -77,7 +77,8 @@
                             <td class="border-r">{{ data.UOMName }}</td>
                             <td class="border-r" [align]="'right'">{{ (data.Price | numberCustom) || 0 }} đ</td>
                             <td class="border-r" [align]="'right'">
-                                <div class="flex flex-row items-center justify-end">
+                                {{ (data?.ShopQuantity | numberCustom) || 0 }}
+                                <!-- <div class="flex flex-row items-center justify-end">
                                     <span tds-tooltip tooltipTitle="{{ data.ShopQuantity | numberCustom }}" class="truncate mr-2">{{ data.ShopQuantity }}</span>
                                     <div class="text-info-400 hover:bg-info-100 active:bg-info-100 rounded-md w-[26px] h-[26px]"
                                         tds-popover [popoverVisible]="indClickQuantity == data.Id" popoverTrigger="click"
@@ -89,7 +90,7 @@
                                             <i class="tdsi-edit-1-line text-base"></i>
                                         </span>
                                     </div>
-                                    <!-- button thêm nhãn -->
+                                    button thêm nhãn
                                     <ng-template #contentQuantity>
                                         <div class="w-[304px]">
                                             <tds-form-field>
@@ -117,7 +118,7 @@
                                             </button>
                                         </div>
                                     </ng-template>
-                                </div>
+                                </div> -->
                             </td>
                             <td class="border-r" [align]="'center'">{{ data.DateCreated | yiDateTimeFormat }}</td>
                             <td class="border-r" [align]="'center'">
@@ -134,7 +135,7 @@
                             </td>
                         </tr>
                         <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full">
-                          <product-shopcart-detail class="w-full p-3 block" *ngIf="expandSet.has(data.Id)" [id]="data.Id"></product-shopcart-detail>
+                          <product-shopcart-detail class="w-full p-3 block" *ngIf="expandSet.has(data.Id)" (onLoadOption)="reload($event)" [id]="data.Id"></product-shopcart-detail>
                       </tr>
                     </ng-template>
                 </tbody>
