@@ -75,7 +75,7 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   onCancel() {
-    this.sort = '';
+    this.sort = 'date';
     // this.priceRange.map(x => x.IsSelected = false);
     this.dateRange.map(x=> x.IsSelected = false)
     this.onLoadOption.emit(this.sort);
