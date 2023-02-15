@@ -239,7 +239,7 @@ export class ProductShopCartComponent implements OnInit {
       }]
     }
 
-    this.productShopCartService.updateQuantityProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productShopCartService_v2.updateQuantityProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
           this.isLoading = false;
           let index = this.lstOfData.findIndex(x => x.Id == data.Id && x.UOMId == data.UOMId);
