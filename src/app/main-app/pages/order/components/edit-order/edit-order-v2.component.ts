@@ -617,6 +617,8 @@ export class EditOrderV2Component implements OnInit {
       }else{
           this.quickOrderModel.Note = comment;
       }
+    } else {
+      this.quickOrderModel.Note = this.quickOrderModel.Note?.replace(comment, '').trim();
     }
   }
 
