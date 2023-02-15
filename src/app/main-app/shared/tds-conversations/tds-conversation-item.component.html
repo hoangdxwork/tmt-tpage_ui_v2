@@ -242,7 +242,7 @@
           <!-- Avatar Facebook_PageId -->
           <div class="mr-2">
             <div *ngIf="dataItem.Type == 12">
-                <tpage-avatar-facebook [shape]="'circle'" [size]="36"
+                <tpage-avatar-facebook [shape]="'circle'" [size]="36" [ngClass]="dataItem.Error?.Message || dataItem.Status == 2 || dataItem.Status == 30 || dataItem.Status == 40? 'opacity-60':''"
                     [psid]="!dataItem.IsOwner ? dataItem.UserId : team.ChannelId"
                     [token]="team.ChannelToken">
                 </tpage-avatar-facebook>
@@ -256,7 +256,8 @@
               <!-- Nội dung bình luận -->
               <div class="chat-body w-full !m-0" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
 
-                  <div class="chat-content bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
+                  <div class="chat-content bg-white px-4 py-2 rounded-b-xl rounded-r-xl" 
+                      [ngClass]="dataItem.Error?.Message || dataItem.Status == 2 || dataItem.Status == 30 || dataItem.Status == 40 ? 'opacity-60':''">
                       <div class="flex flex-auto">
                           <!--Nội dung-->
                           <div *ngIf="dataItem.MessageFormatted || dataItem.Message">
@@ -276,8 +277,26 @@
                   <div class="max-w-[336px] text-body-2 text-neutral-1-900">{{dataItem.Error? dataItem.Error.Message: ''}}</div>
               </ng-template>
 
+              <!-- Thông báo Bình luận ẩn -->
+              <a class="flex items-center cursor-pointer ml-2" *ngIf="dataItem.Status == 30">
+                <span class="tdsi-eye-close-fill text-error-400 text-body-1 leading-none" tds-popover [popoverContent]="popoverhidden"></span>
+              </a>
+
+              <ng-template #popoverhidden>
+                  <div class="max-w-[336px] text-body-2 text-neutral-1-900">Bình luận đã ẩn</div>
+              </ng-template>
+
+               <!-- Thông báo Bình luận đã xóa -->
+               <a class="flex items-center cursor-pointer ml-2" *ngIf="dataItem.Status == 40">
+                <span class="tdsi-trash-line text-error-400 text-body-1 leading-none" tds-popover [popoverContent]="popoverDelete"></span>
+              </a>
+
+              <ng-template #popoverDelete>
+                  <div class="max-w-[336px] text-body-2 text-neutral-1-900">Bình luận đã xóa</div>
+              </ng-template>
+
             <!-- Thao tác -->
-            <div *ngIf="!dataItem.Data?.attachments" class="chat-option invisible group-hover:visible">
+            <div *ngIf="!dataItem.Data?.attachments && dataItem.Status != 2 && dataItem.Status != 40 && dataItem.Status != 30" class="chat-option invisible group-hover:visible">
                 <div class="select-order flex flex-row items-center w-fit h-full pl-3">
                     <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" (click)="selectOrder('phone')"
                         class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5">
@@ -299,7 +318,8 @@
           <div class="chat-meta bg-transparent text-neutral-1-600 desktop:text-caption-2 text-[10px] font-regular mt-1.5">
             <div class="chat-acts flex flex-row items-center" style="position: relative;">
 
-              <button class="link-act hover:underline" [disabled]="isReplyingComment"
+              <button class="link-act hover:underline" 
+                  [disabled]="isReplyingComment || dataItem.Error?.Message || dataItem.Status == 2 || dataItem.Status == 30 || dataItem.Status == 40"
                   (click)="clickReply()"> Phản hồi
               </button>
 
@@ -309,7 +329,8 @@
 
               <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
-              <button class="link-act hover:underline" [disabled]="isLiking" [ngClass]="dataItem.Data?.user_likes ? 'text-secondary-1' : ''"
+              <button class="link-act hover:underline" 
+                  [disabled]="isLiking || dataItem.Error?.Message || dataItem.Status == 2 || dataItem.Status == 30 || dataItem.Status == 40" [ngClass]="dataItem.Data?.user_likes ? 'text-secondary-1' : ''"
                   (click)="addLike()">
                   {{dataItem.Data?.user_likes ? 'Đã thích' : 'Thích'}}
               </button>
@@ -317,8 +338,9 @@
               <tds-spinner *ngIf="isLiking" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
               <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
-              <button class="link-act hover:underline" [disabled]="isHiding" (click)="hideComment()">
-                {{dataItem.Data?.is_hidden ? 'Hiện' : 'Ẩn'}}
+              <button class="link-act hover:underline" 
+                  [disabled]="isHiding || dataItem.Error?.Message || dataItem.Status == 2 || dataItem.Status == 30 || dataItem.Status == 40" (click)="hideComment()">
+                  {{dataItem.Data?.is_hidden ? 'Hiện' : 'Ẩn'}}
               </button>
 
               <tds-spinner *ngIf="isHiding" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
@@ -386,6 +408,7 @@
               <div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index;">
                   <div *ngIf="dataItem.Type == 12" class="avatar mr-2">
                     <tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.Data?.from?.id"
+                        [ngClass]="child.Error?.Message || child.Status == 2 || child.Status == 30 || child.Status == 40? 'opacity-60':''"
                         [token]="team.ChannelToken">
                     </tpage-avatar-facebook>
                   </div>
@@ -394,7 +417,8 @@
                       <div class="inline-flex w-fit group">
                           <div class="chat-body !m-0" tds-tooltip
                               tooltipTitle="{{child.ChannelCreatedTime | date:'dd'}}/{{child.ChannelCreatedTime | date:'MM'}} {{child.ChannelCreatedTime | date:'HH:mm'}}">
-                              <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
+                              <div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl"
+                                  [ngClass]="child.Error?.Message || child.Status == 2 || child.Status == 30 || child.Status == 40? 'opacity-60':''">
                                   <div class="border-activety-comment" *ngIf="child.MessageFormatted || child.Message">
                                         <div *ngIf="dataItem.Type == 12">
                                             <div class="name font-semibold pb-1">{{child.Data?.from?.name}}</div>
@@ -406,7 +430,33 @@
                               </div>
                           </div>
 
-                        <div *ngIf="!child.Data?.attachments" class="chat-option invisible group-hover:visible">
+                        <!-- Lỗi gửi tin -->
+                        <a class="flex items-center cursor-pointer ml-2" *ngIf="child.Error?.Message || child.Status == 2" tds-popover [popoverContent]="popoverBug">
+                            <span class="tdsi-info-line text-error-400 text-body-1 leading-none" ></span>
+                        </a>
+                        <ng-template #popoverBug>
+                            <div class="max-w-[336px] text-body-2 text-neutral-1-900">{{child.Error? child.Error.Message: ''}}</div>
+                        </ng-template>
+
+                        <!-- Thông báo Bình luận ẩn -->
+                        <a class="flex items-center cursor-pointer ml-2" *ngIf="child.Status == 30">
+                          <span class="tdsi-eye-close-fill text-error-400 text-body-1 leading-none" tds-popover [popoverContent]="popoverhidden"></span>
+                        </a>
+
+                        <ng-template #popoverhidden>
+                            <div class="max-w-[336px] text-body-2 text-neutral-1-900">Bình luận đã ẩn</div>
+                        </ng-template>
+
+                        <!-- Thông báo Bình luận đã xóa -->
+                        <a class="flex items-center cursor-pointer ml-2" *ngIf="child.Status == 40">
+                          <span class="tdsi-trash-line text-error-400 text-body-1 leading-none"  tds-popover [popoverContent]="popoverDelete"></span>
+                        </a>
+
+                        <ng-template #popoverDelete>
+                            <div class="max-w-[336px] text-body-2 text-neutral-1-900">Bình luận đã xóa</div>
+                        </ng-template>
+
+                        <div *ngIf="!child.Data?.attachments && child.Status != 2 && child.Status != 40 && child.Status != 30" class="chat-option invisible group-hover:visible">
                             <div class="select-order flex flex-row items-center w-fit h-full pl-3">
                                 <span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
                                     class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"

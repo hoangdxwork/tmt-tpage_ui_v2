@@ -219,7 +219,9 @@ export interface PagingTimestamp {
 export enum ChatomniStatus {
   Pending = 0, // Chờ gửi
   Done = 1, // Gửi thành công
-  Error = 2 // Gửi lỗi
+  Error = 2, // Gửi lỗi
+  hidden = 30, // Ẩn
+  delete = 40 // Xóa
 }
 
 export enum ChatomniMessageType {
