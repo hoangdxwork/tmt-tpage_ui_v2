@@ -41,7 +41,7 @@ export class ProductShopCartComponent implements OnInit {
   pageSize: number = 20;
   pageIndex: number = 1;
   count: number = 0;
-  sort!: string;
+  sort: string = 'date';
 
   public filterObj: TDSSafeAny = {
     q: ''
@@ -256,6 +256,12 @@ export class ProductShopCartComponent implements OnInit {
           this.indClickQuantity = -1;
       }
     })
+  }
+
+  reload(event: boolean) {
+    if(event == true) {
+      this.loadData(this.pageSize, this.pageIndex);
+    }
   }
 
   closeQuantityPopover(): void {
