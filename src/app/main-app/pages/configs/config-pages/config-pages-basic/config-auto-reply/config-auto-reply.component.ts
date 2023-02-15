@@ -140,8 +140,11 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
 
       // Cho phép phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ
       IsEnableAutoReplyCommentInNotIsValidToOrder: [false],
-      // Nội dung phản hồi tự động khi bình luận tạo đơn tự động không hợp lệ
       ContentForAutoReplyCommentInNotIsValidToOrder : [null],
+
+      //  Cho phép phản hồi tự động khi bình luận tạo đơn thành công
+      IsEnableAutoReplyCommentOrderCreated: [false],
+      ContentForAutoReplyCommentOrderCreated: [null]
     });
   }
 
@@ -217,6 +220,9 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
 
     formControls['IsEnableAutoReplyCommentInNotIsValidToOrder'].setValue(data.IsEnableAutoReplyCommentInNotIsValidToOrder);
     formControls['ContentForAutoReplyCommentInNotIsValidToOrder'].setValue(data.ContentForAutoReplyCommentInNotIsValidToOrder);
+
+    formControls['IsEnableAutoReplyCommentOrderCreated'].setValue(data.IsEnableAutoReplyCommentOrderCreated );
+    formControls['ContentForAutoReplyCommentOrderCreated'].setValue(data.ContentForAutoReplyCommentOrderCreated );
   }
 
   onSave(channelId: string) {
@@ -253,8 +259,12 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
       IsEnableAutoReplyCommentInMessage: formValue["IsEnableAutoReplyCommentInMessage"],
       ContentForAutoReplyWithComment: formValue["ContentForAutoReplyWithComment"],
       ContentForAutoReplyWithMessage: formValue["ContentForAutoReplyWithMessage"],
+
       IsEnableAutoReplyCommentInNotIsValidToOrder: formValue["IsEnableAutoReplyCommentInNotIsValidToOrder"],
-      ContentForAutoReplyCommentInNotIsValidToOrder: formValue["ContentForAutoReplyCommentInNotIsValidToOrder"]
+      ContentForAutoReplyCommentInNotIsValidToOrder: formValue["ContentForAutoReplyCommentInNotIsValidToOrder"],
+
+      IsEnableAutoReplyCommentOrderCreated: formValue["IsEnableAutoReplyCommentOrderCreated"],
+      ContentForAutoReplyCommentOrderCreated: formValue["ContentForAutoReplyCommentOrderCreated"]
     };
 
     if (formValue["selectedWord2s"]) {
