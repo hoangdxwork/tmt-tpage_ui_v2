@@ -43,7 +43,7 @@ export class ProductShopCartComponent implements OnInit {
   count: number = 0;
   sort: string = 'date';
   filterDate: string = '';
-  // filterPrice: string = '';
+  filterPrice: string = '';
 
   public filterObj: TDSSafeAny = {
     q: ''
@@ -116,44 +116,56 @@ export class ProductShopCartComponent implements OnInit {
     switch(this.filterDate) {
       case '':
         this.filterDate = 'asc';
-        data = data.sort((a: any, b: any) => new Date(a.DateCreated).getTime() - new Date(b.DateCreated).getTime());
+        this.filterPrice = '';
+        this.sort = 'date';
+        this.loadData(this.pageSize, this.pageIndex);
       break;
 
       case 'asc':
         this.filterDate = 'desc';
-        data = data.sort((a: any, b: any) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
-
+        this.filterPrice = '';
+        this.sort = 'date_desc';
+        this.loadData(this.pageSize, this.pageIndex);
       break;
 
-      case'desc':
-        this.filterDate = '';
+      case 'desc':
+        this.filterDate = 'asc';
+        this.filterPrice = '';
+        this.sort = 'date';
+        this.loadData(this.pageSize, this.pageIndex);
       break;
     }
 
     this.lstOfData = [...data];
   }
 
-  // onChangeFilterPrice()  {
-  //   let data = this.lstOfData;
-  //   switch(this.filterPrice) {
-  //     case '':
-  //       this.filterPrice = 'asc';
-  //       data = data.sort((a: any, b: any) => new Date(a.Price).valueOf() - new Date(b.Price).valueOf());
-  //     break;
+  onChangeFilterPrice()  {
+    let data = this.lstOfData;
+    switch(this.filterPrice) {
+      case '':
+        this.filterPrice = 'asc';
+        this.filterDate = '';
+        this.sort = 'price';
+        this.loadData(this.pageSize, this.pageIndex);
+      break;
 
-  //     case 'asc':
-  //       this.filterPrice = 'desc';
-  //       data = data.sort((a: any, b: any) => new Date(b.Price).valueOf() - new Date(a.Price).valueOf());
+      case 'asc':
+        this.filterPrice = 'desc';
+        this.filterDate = '';
+        this.sort = 'price_desc';
+        this.loadData(this.pageSize, this.pageIndex);
+      break;
 
-  //     break;
+      case 'desc':
+        this.filterPrice = 'asc';
+        this.filterDate = '';
+        this.sort = 'price';
+        this.loadData(this.pageSize, this.pageIndex);
+      break;
+    }
 
-  //     case'desc':
-  //       this.filterPrice = '';
-  //     break;
-  //   }
-
-  //   this.lstOfData = [...data];
-  // }
+    this.lstOfData = [...data];
+  }
 
   loadConfigCart() {
     let name = "ConfigCart";

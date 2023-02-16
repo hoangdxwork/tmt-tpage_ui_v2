@@ -49,15 +49,15 @@
                         <th width="80px" class="border-r" [tdsLeft]="true">Ảnh</th>
                         <th width="280px" [tdsLeft]="true" class="border-r">Tên</th>
                         <th width="100px" class="border-r">Đơn vị</th>
-                        <th width="150px" class="border-r" [align]="'right'">Giá bán</th>
-                        <!-- <th width="150px" class="border-r">
+                        <!-- <th width="150px" class="border-r" [align]="'right'">Giá bán</th> -->
+                        <th width="150px" class="border-r">
                           <div class="flex justify-end gap-x-1">
                             <span>Giá bán</span>
                             <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterPrice()">
                               <i [ngClass]="filterPrice | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
                             </span>
                           </div>
-                        </th> -->
+                        </th>
                         <th width="150px" class="border-r" [align]="'right'">Số lượng</th>
                         <!-- <th width="168px" class="border-r" [align]="'center'">Ngày tạo</th> -->
                         <th width="168px" class="border-r">
@@ -88,6 +88,7 @@
                             <td class="border-r" [tdsLeft]="true">{{ data.NameGet }}</td>
                             <td class="border-r">{{ data.UOMName }}</td>
                             <td class="border-r" [align]="'right'">{{ (data.Price | numberCustom) || 0 }} đ</td>
+
                             <td class="border-r" [align]="'right'">
                                 {{ (data?.ShopQuantity | numberCustom) || 0 }}
                                 <!-- <div class="flex flex-row items-center justify-end">
