@@ -42,21 +42,12 @@ export class ProductShopCartComponent implements OnInit {
   pageIndex: number = 1;
   count: number = 0;
   sort: string = 'date';
+  filterDate: string = '';
+  filterPrice: string = '';
 
   public filterObj: TDSSafeAny = {
     q: ''
   }
-
-  // sort: Array<SortDataRequestDTO>= [
-  //   {
-  //     field: "DateCreated",
-  //     dir: SortEnum.desc,
-  //   },
-  //   {
-  //     field: "Price",
-  //       dir: SortEnum.desc,
-  //   }
-  // ];
 
   idsModel: any = [];
   teamShopCart!: CRMTeamDTO;
@@ -120,9 +111,60 @@ export class ProductShopCartComponent implements OnInit {
     }
   }
 
-  onLoadOption(event: any): void {
-    this.sort = event;
-    this.loadData(this.pageSize, this.pageIndex);
+  onChangeFilterDate() {
+    let data = this.lstOfData;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        this.filterPrice = '';
+        this.sort = 'date';
+        this.loadData(this.pageSize, this.pageIndex);
+      break;
+
+      case 'asc':
+        this.filterDate = 'desc';
+        this.filterPrice = '';
+        this.sort = 'date_desc';
+        this.loadData(this.pageSize, this.pageIndex);
+      break;
+
+      case 'desc':
+        this.filterDate = 'asc';
+        this.filterPrice = '';
+        this.sort = 'date';
+        this.loadData(this.pageSize, this.pageIndex);
+      break;
+    }
+
+    this.lstOfData = [...data];
+  }
+
+  onChangeFilterPrice()  {
+    let data = this.lstOfData;
+    switch(this.filterPrice) {
+      case '':
+        this.filterPrice = 'asc';
+        this.filterDate = '';
+        this.sort = 'price';
+        this.loadData(this.pageSize, this.pageIndex);
+      break;
+
+      case 'asc':
+        this.filterPrice = 'desc';
+        this.filterDate = '';
+        this.sort = 'price_desc';
+        this.loadData(this.pageSize, this.pageIndex);
+      break;
+
+      case 'desc':
+        this.filterPrice = 'asc';
+        this.filterDate = '';
+        this.sort = 'price';
+        this.loadData(this.pageSize, this.pageIndex);
+      break;
+    }
+
+    this.lstOfData = [...data];
   }
 
   loadConfigCart() {
