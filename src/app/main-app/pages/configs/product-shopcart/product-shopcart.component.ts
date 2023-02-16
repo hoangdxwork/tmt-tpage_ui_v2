@@ -42,21 +42,12 @@ export class ProductShopCartComponent implements OnInit {
   pageIndex: number = 1;
   count: number = 0;
   sort: string = 'date';
+  filterDate: string = '';
+  // filterPrice: string = '';
 
   public filterObj: TDSSafeAny = {
     q: ''
   }
-
-  // sort: Array<SortDataRequestDTO>= [
-  //   {
-  //     field: "DateCreated",
-  //     dir: SortEnum.desc,
-  //   },
-  //   {
-  //     field: "Price",
-  //       dir: SortEnum.desc,
-  //   }
-  // ];
 
   idsModel: any = [];
   teamShopCart!: CRMTeamDTO;
@@ -120,10 +111,49 @@ export class ProductShopCartComponent implements OnInit {
     }
   }
 
-  onLoadOption(event: any): void {
-    this.sort = event;
-    this.loadData(this.pageSize, this.pageIndex);
+  onChangeFilterDate() {
+    let data = this.lstOfData;
+    switch(this.filterDate) {
+      case '':
+        this.filterDate = 'asc';
+        data = data.sort((a: any, b: any) => new Date(a.DateCreated).getTime() - new Date(b.DateCreated).getTime());
+      break;
+
+      case 'asc':
+        this.filterDate = 'desc';
+        data = data.sort((a: any, b: any) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
+
+      break;
+
+      case'desc':
+        this.filterDate = '';
+      break;
+    }
+
+    this.lstOfData = [...data];
   }
+
+  // onChangeFilterPrice()  {
+  //   let data = this.lstOfData;
+  //   switch(this.filterPrice) {
+  //     case '':
+  //       this.filterPrice = 'asc';
+  //       data = data.sort((a: any, b: any) => new Date(a.Price).valueOf() - new Date(b.Price).valueOf());
+  //     break;
+
+  //     case 'asc':
+  //       this.filterPrice = 'desc';
+  //       data = data.sort((a: any, b: any) => new Date(b.Price).valueOf() - new Date(a.Price).valueOf());
+
+  //     break;
+
+  //     case'desc':
+  //       this.filterPrice = '';
+  //     break;
+  //   }
+
+  //   this.lstOfData = [...data];
+  // }
 
   loadConfigCart() {
     let name = "ConfigCart";

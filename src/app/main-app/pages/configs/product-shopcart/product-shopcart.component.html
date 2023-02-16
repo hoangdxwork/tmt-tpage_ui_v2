@@ -33,10 +33,6 @@
                       <i class="text-neutral-1-500 tdsi-close-fill desktop:text-body-2 laptop:text-caption-1 text-caption-1 mr-2" (click)="closeSearchProduct()" ></i>
                     </span>
                 </tds-form-field>
-                <div *ngIf="filterObj">
-                  <filter-options (onLoadOption)="onLoadOption($event)">
-                  </filter-options>
-              </div>
             </div>
         </div>
 
@@ -54,8 +50,24 @@
                         <th width="280px" [tdsLeft]="true" class="border-r">Tên</th>
                         <th width="100px" class="border-r">Đơn vị</th>
                         <th width="150px" class="border-r" [align]="'right'">Giá bán</th>
+                        <!-- <th width="150px" class="border-r">
+                          <div class="flex justify-end gap-x-1">
+                            <span>Giá bán</span>
+                            <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterPrice()">
+                              <i [ngClass]="filterPrice | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+                            </span>
+                          </div>
+                        </th> -->
                         <th width="150px" class="border-r" [align]="'right'">Số lượng</th>
-                        <th width="168px" class="border-r" [align]="'center'">Ngày tạo</th>
+                        <!-- <th width="168px" class="border-r" [align]="'center'">Ngày tạo</th> -->
+                        <th width="168px" class="border-r">
+                          <div class="flex gap-x-1">
+                            <span>Ngày tạo</span>
+                            <span class=" flex flex-col p-0.5 cursor-pointer" (click)="onChangeFilterDate()" tds-tooltip [tooltipTitle]="filterDate | sortDateName">
+                              <i [ngClass]="filterDate | sortDateClass" class="text-primary-1 tdsi-sort-up-down-fill active text-base leading-4"></i>
+                            </span>
+                          </div>
+                        </th>
                         <th width="120px" class="border-r" [align]="'center'">Hiệu lực</th>
                         <th width="100px" [tdsRight]="true" [align]="'center'">Thao tác</th>
                     </tr>
@@ -120,7 +132,7 @@
                                     </ng-template>
                                 </div> -->
                             </td>
-                            <td class="border-r" [align]="'center'">{{ data.DateCreated | yiDateTimeFormat }}</td>
+                            <td class="border-r">{{ data.DateCreated | yiDateTimeFormat }}</td>
                             <td class="border-r" [align]="'center'">
                                 <span class="flex items-center justify-center">
                                     <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
