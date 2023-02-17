@@ -337,7 +337,7 @@
 
                   <tds-form-field>
                       <tds-label>Ghi chú</tds-label>
-                      <textarea tdsInput placeholder="Nhập ghi chú" class="resize-none no-scrollbar"  [(ngModel)]="partner.Comment" [ngModelOptions]="{standalone: true}"></textarea>
+                      <textarea tdsInput placeholder="Nhập ghi chú" class="resize-none no-scrollbar" [(ngModel)]="partner.Comment" [ngModelOptions]="{standalone: true}"></textarea>
                   </tds-form-field>
 
                   <div class="flex flex-col gap-y-2">
@@ -349,8 +349,8 @@
 
                             <tds-select valueField="Address" textField="Address"
                                 placeholder='Nhập địa chỉ cần tìm' disabledField="isActive"
-                                [data]="suggestData" [allowClear]="true" [valuePrimitive]="false"
-                                [autoClearSearchValue]="true"
+                                [data]="suggestData | async" [allowClear]="true" [valuePrimitive]="false"
+                                [autoClearSearchValue]="true" [serverSearch]="true"
                                 (onSearch)="onSearchSuggestion($event)" (selectChange)="onSelectSuggestion($event)">
 
                                <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">

@@ -70,7 +70,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   tempPartner!: ConversationPartnerDto | any; // biến tạm khi thay đổi thông tin khách hàng nhưng không bấm lưu
 
   suggestAddress!: string;
-  suggestData: any[] = [];
+  suggestData: Observable<any> = new Observable<any>();
 
   constructor(private message: TDSMessageService,
     private conversationService: ConversationService,
@@ -94,23 +94,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   onSearchSuggestion(event: any) {
-    if(!TDSHelperString.hasValueString(event)){
-      this.suggestData = [];
-      return;
-    }
+    if(!TDSHelperString.hasValueString(event)) return;
 
     event = TDSHelperString.stripSpecialChars(event).trim().toLocaleLowerCase();
-    this.suggestService.suggest(event).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data: any) => {
-          this.suggestData = [...(data?.data || [])];
-          this.cdRef.detectChanges();
-      },
-      error: (err: any) => {
-          this.message.error(err?.title);
-          this.cdRef.detectChanges();
-          console.log(err);
-      }
-    })
+    this.suggestData = this.suggestService.suggest(event)
+      .pipe(delay(100), takeUntil(this.destroy$))
+      .pipe(map(x => ([...x?.data || []])));
   }
 
   onSelectSuggestion(event: any) {
