@@ -1,10 +1,11 @@
+import { Observable, delay, finalize } from 'rxjs';
 import { PartnerChangeStatusDTO } from './../../../../dto/partner/partner-status.dto';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -28,6 +29,7 @@ import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenu
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { SuggestAddressService } from '@app/services/suggest-address.service';
 
 @Component({
     selector: 'conversation-partner',
@@ -67,6 +69,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   visibleDrawerBillDetail: boolean = false;
   tempPartner!: ConversationPartnerDto | any; // biến tạm khi thay đổi thông tin khách hàng nhưng không bấm lưu
 
+  suggestAddress!: string;
+  suggestData: any[] = [];
+
   constructor(private message: TDSMessageService,
     private conversationService: ConversationService,
     private fastSaleOrderService: FastSaleOrderService,
@@ -74,6 +79,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private commonService: CommonService,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
+    private suggestService: SuggestAddressService,
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private cdRef: ChangeDetectorRef,
@@ -87,10 +93,33 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private chatomniConversationService: ChatomniConversationService) {
   }
 
+  onSearchSuggestion(event: any) {
+    if(!TDSHelperString.hasValueString(event)){
+      this.suggestData = [];
+      return;
+    }
+
+    event = TDSHelperString.stripSpecialChars(event).trim().toLocaleLowerCase();
+    this.suggestService.suggest(event).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+          this.suggestData = [...(data?.data || [])];
+          this.cdRef.detectChanges();
+      },
+      error: (err: any) => {
+          this.message.error(err?.title);
+          this.cdRef.detectChanges();
+          console.log(err);
+      }
+    })
+  }
+
+  onSelectSuggestion(event: any) {
+  }
+
   ngOnInit(): void  {
     if(this.conversationInfo) {
-        this.loadData(this.conversationInfo);
-        this.loadNotes(this.team.ChannelId, this.conversationItem.ConversationId);
+      this.loadData(this.conversationInfo);
+      this.loadNotes(this.team.ChannelId, this.conversationItem.ConversationId);
     }
 
     this.loadPartnerStatus();

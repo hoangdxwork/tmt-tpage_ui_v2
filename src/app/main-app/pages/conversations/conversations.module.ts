@@ -153,6 +153,7 @@ import { ObjectTiktokPostComponent } from './conversation-post/objects/object-ti
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { CurrentConversationItemV3Component } from './components/current-conversation-item/current-conversation-item-v3.component';
 import { TDSAlertModule } from "tds-ui/alert";
+import { SuggestAddressService } from '@app/services/suggest-address.service';
 
 const SERVICES = [
   ConversationFacebookState,
@@ -206,7 +207,8 @@ const SERVICES = [
   PrepareUpdateTShopByLiveCampaign,
   PrepareAddCampaignHandler,
   CsOrder_FromConversationHandler,
-  ConversationPostEvent
+  ConversationPostEvent,
+  SuggestAddressService
 ]
 
 const FACADES = [
