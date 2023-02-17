@@ -161,13 +161,11 @@
                             <div class="text-neutral-1-400 font-regular desktop:text-body-2 laptop:text-caption-1 font-sans">Phiếu bán hàng gần nhất</div>
 
                             <div class="flex gap-2 items-center" *ngIf="lastInvoice">
-
                                 <drawer-detail-bill [isBillNearest]="true" [bill]="lastInvoice"></drawer-detail-bill>
-
-                                <tds-tag status='primary' class="w-full truncate" type="outline" [status]="lastInvoice.ShowState | getColorStatusShowState">
-                                  {{ lastInvoice.ShowState }}
+                                <tds-tag status='primary' class="w-full truncate" style="width: auto;"
+                                    type="outline" [status]="lastInvoice.ShowState | getColorStatusShowState">
+                                    {{lastInvoice.ShowState}}
                                 </tds-tag>
-
                             </div>
                         </div>
                     </div>
@@ -345,15 +343,34 @@
                   <div class="flex flex-col gap-y-2">
                       <tds-label>Địa chỉ</tds-label>
                       <div class="flex gap-x-2 items-center">
+
                         <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
-                            <input tdsInput autocomplete="off" class="w-full truncate" placeholder="Địa chỉ" [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"/>
+                            <!-- <input tdsInput autocomplete="off" class="w-full truncate" placeholder="Địa chỉ" [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"/> -->
+
+                            <tds-select valueField="Address" textField="Address"
+                                placeholder='Nhập địa chỉ cần tìm' disabledField="isActive"
+                                [data]="suggestData" [allowClear]="true" [valuePrimitive]="false"
+                                [autoClearSearchValue]="true"
+                                (onSearch)="onSearchSuggestion($event)" (selectChange)="onSelectSuggestion($event)">
+
+                               <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
+                                  <span [ngClass]="{'text-primary-1':selected}">
+                                      {{item.Address}}
+                                  </span>
+                                </ng-template>
+                            </tds-select>
                         </tds-form-field>
+
                         <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip [tooltipTitle]="partner.Street ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'">
                             <span class="flex items-center">
-                            <i class="tdsi-location-fill"></i>
+                               <i class="tdsi-location-fill"></i>
                             </span>
                         </button>
                       </div>
+                  </div>
+
+                  <div>
+                    {{suggestData | json}}
                   </div>
 
                   <div class="mt-4">
