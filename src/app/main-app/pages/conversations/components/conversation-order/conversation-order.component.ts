@@ -7,7 +7,7 @@ import { ProductTemplateUOMLineService } from './../../../../services/product-te
 import { ChangeDetectionStrategy, ChangeDetectorRef, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { takeUntil, pipe } from 'rxjs';
+import { takeUntil, pipe, Observable, map } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -69,6 +69,7 @@ import { OnSocketOnSaleOnline_OrderDto } from '@app/dto/socket-io/chatomni-on-or
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
+import { SuggestAddressDto, SuggestAddressService } from '@app/services/suggest-address.service';
 
 @Component({
   selector: 'conversation-order',
@@ -136,6 +137,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   clickPrint: string = '';
   tiktokUniqueId: any = null;
 
+  suggestData: Observable<any> = new Observable<any>();
+
   numberWithCommas = (value:TDSSafeAny) => {
     if(value != null){
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -185,6 +188,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     private orderPrintService: OrderPrintService,
     private printerService: PrinterService,
     private sharedService: SharedService,
+    private suggestService: SuggestAddressService,
     private chatomniConversationService: ChatomniConversationService,
     private ngZone: NgZone,
     private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
@@ -1602,7 +1606,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
                           }
                         }
                     }
-                  }) 
+                  })
             }
 
             if(this.quickOrderModel?.Details && this.quickOrderModel?.Details.length > 0) {
@@ -1787,5 +1791,50 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   ngOnDestroy(): void {
     this.destroyTimer();
+  }
+
+
+  onSearchSuggestion(event: any) {
+    if(!TDSHelperString.hasValueString(event)) return;
+
+    this.quickOrderModel.Address = event;
+    event = TDSHelperString.stripSpecialChars(event).trim().toLocaleLowerCase();
+
+    this.suggestData = this.suggestService.suggest(event)
+      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
+  }
+
+  onSelectSuggestion(event: SuggestAddressDto) {
+    if(event) {
+      this.quickOrderModel.Address = event.Address;
+      this._street = event.Address;
+
+      this.quickOrderModel.CityCode = event.CityCode;
+      this.quickOrderModel.CityName = event.CityName;
+      this._cities = {
+        code: event.CityCode,
+        name: event.CityName
+      }
+
+      this.quickOrderModel.DistrictCode = event.DistrictCode;
+      this.quickOrderModel.DistrictName = event.DistrictName;
+      this._districts = {
+        code: event.DistrictCode,
+        name: event.DistrictName,
+        cityName: event.CityCode,
+        cityCode: event.CityName
+      }
+
+      this.quickOrderModel.WardCode = event.WardCode;
+      this.quickOrderModel.WardName = event.WardName;
+      this._wards = {
+        code: event.WardCode,
+        name: event.WardName,
+        cityName: event.CityCode,
+        cityCode: event.CityName,
+        districtCode: event.DistrictCode,
+        districtName: event.DistrictName
+      }
+    }
   }
 }

@@ -1,3 +1,4 @@
+import { OnDestroy } from '@angular/core';
 import { Observable, delay, finalize } from 'rxjs';
 import { PartnerChangeStatusDTO } from './../../../../dto/partner/partner-status.dto';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
@@ -29,7 +30,7 @@ import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenu
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
-import { SuggestAddressService } from '@app/services/suggest-address.service';
+import { SuggestAddressDto, SuggestAddressService } from '@app/services/suggest-address.service';
 
 @Component({
     selector: 'conversation-partner',
@@ -69,7 +70,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   visibleDrawerBillDetail: boolean = false;
   tempPartner!: ConversationPartnerDto | any; // biến tạm khi thay đổi thông tin khách hàng nhưng không bấm lưu
 
-  suggestAddress!: string;
   suggestData: Observable<any> = new Observable<any>();
 
   constructor(private message: TDSMessageService,
@@ -91,18 +91,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private destroy$: TDSDestroyService,
     private router: Router,
     private chatomniConversationService: ChatomniConversationService) {
-  }
-
-  onSearchSuggestion(event: any) {
-    if(!TDSHelperString.hasValueString(event)) return;
-
-    event = TDSHelperString.stripSpecialChars(event).trim().toLocaleLowerCase();
-    this.suggestData = this.suggestService.suggest(event)
-      .pipe(delay(100), takeUntil(this.destroy$))
-      .pipe(map(x => ([...x?.data || []])));
-  }
-
-  onSelectSuggestion(event: any) {
   }
 
   ngOnInit(): void  {
@@ -143,7 +131,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
-
     this.validateData();
     this.isLoading = true;
     this.conversationInfo = {...conversationInfo};
@@ -563,37 +550,34 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         _wards: this._wards,
         _street: this.partner.Street || '',
         isSelectAddress: true,
-        isSelectAddressConversation: true
+        isSelectAddressConversation: true,
       }
     });
 
-  modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-    next: (result: TDSSafeAny) => {
-      if(result){
-          this.partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(result.value, this.partner)};
-          this.mappingAddress(this.partner);
-          if(result.type == 'confirm') {
-            this.updatePartner(result.type);
-          }
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (result: any) => {
+        if(result){
+            this.partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(result.value, this.partner)};
+            this.mappingAddress(this.partner);
+            if(result.type == 'confirm') {
+                this.updatePartner(result.type);
+            }
+        }
+        this.cdRef.detectChanges();
       }
-      this.cdRef.detectChanges();
-    }
   })}
 
   checkAddressByPhone() {
     let phone = this.partner.Phone;
     if (TDSHelperString.hasValueString(phone)) {
-
-      this.commonService.checkAddressByPhone(phone)
-        .pipe(takeUntil(this.destroy$)).subscribe(
-          {
-            next: (res: any) => {
-              this.message.info('Chưa có dữ liệu');
-            },
-            error: error => {
-              this.message.error(`${error?.error?.message}`)
-            }
-          })
+      this.commonService.checkAddressByPhone(phone).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.message.info('Chưa có dữ liệu');
+        },
+        error: (error: any) => {
+          this.message.error(`${error?.error?.message}`)
+        }
+      })
     }
   }
 
@@ -637,5 +621,73 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     (this._street as any) = null;
     delete this.tempPartner;
   }
+
+  onSearchSuggestion(event: any) {
+    if(!TDSHelperString.hasValueString(event)) return;
+
+    this.partner.Street = event;
+    event = TDSHelperString.stripSpecialChars(event).trim().toLocaleLowerCase();
+
+    this.suggestData = this.suggestService.suggest(event)
+      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
+  }
+
+  onSelectSuggestion(event: SuggestAddressDto) {
+    if(event) {
+      this.partner.Street = event.Address;
+      this._street = event.Address;
+
+      this.partner.CityCode = event.CityCode;
+      this.partner.CityName = event.CityName;
+      this.partner.City = {
+        code: event.CityCode,
+        name: event.CityName
+      }
+
+      this._cities = {
+        code: event.CityCode,
+        name: event.CityName
+      }
+
+      this.partner.DistrictCode = event.DistrictCode;
+      this.partner.DistrictName = event.DistrictName;
+      this.partner.District = {
+        code: event.DistrictCode,
+        name: event.DistrictName,
+        cityName: event.CityCode,
+        cityCode: event.CityName
+      }
+
+      this._districts = {
+        code: event.DistrictCode,
+        name: event.DistrictName,
+        cityName: event.CityCode,
+        cityCode: event.CityName
+      }
+
+      this.partner.WardCode = event.WardCode;
+      this.partner.WardName = event.WardName;
+      this.partner.Ward = {
+        code: event.WardCode,
+        name: event.WardName,
+        cityName: event.CityCode,
+        cityCode: event.CityName,
+        districtCode: event.DistrictCode,
+        districtName: event.DistrictName
+      }
+
+      this._wards = {
+        code: event.WardCode,
+        name: event.WardName,
+        cityName: event.CityCode,
+        cityCode: event.CityName,
+        districtCode: event.DistrictCode,
+        districtName: event.DistrictName
+      }
+
+      this.cdRef.detectChanges();
+    }
+  }
+
 
 }

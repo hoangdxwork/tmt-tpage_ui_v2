@@ -90,4 +90,5 @@ export class CsPartner_SuggestionHandler {
     (this._wards as any) = null;
     (this._street as any) = null;
   }
+
 }
