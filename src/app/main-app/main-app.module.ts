@@ -44,7 +44,7 @@ const omniConfigFactory = (authService: TAuthService): OmnichannelConfigurationP
           clientId: clientId,
           apiUrl: appUrl,
           tiktokShop: {
-              eChannel: 0
+              eChannel: 0,
           },
           lazada: {
               eChannel: 1,
