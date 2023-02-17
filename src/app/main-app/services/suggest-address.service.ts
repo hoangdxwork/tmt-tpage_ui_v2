@@ -89,3 +89,16 @@ export class SuggestAddressService extends BaseSevice {
   }
 
 }
+
+export interface SuggestAddressDto {
+  Telephone?: any;
+  Address: string;
+  ShortAddress?: any;
+  CityCode: string;
+  CityName: string;
+  DistrictCode: string;
+  DistrictName: string;
+  WardCode: string;
+  WardName: string;
+  Score: number;
+}
