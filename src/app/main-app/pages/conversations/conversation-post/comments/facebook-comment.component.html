@@ -148,8 +148,18 @@
                           </div>
 
                           <!-- nội dung bình luận -->
-                          <div class="flex flex-row gap-x-3 desktop:text-body-2 text-caption-1" style="white-space: pre-line; word-break: break-word;">
-                              <div #contentMessage showMore [length]="100" [text]="((item.MessageFormatted || item.Message) | formatIconLike | bbcodeConvert )"></div>
+                          <div class="flex items-center flex-row gap-x-3 desktop:text-body-2 text-caption-1 pt-1" style="white-space: pre-line; word-break: break-word;">
+                              <!-- Thông báo Bình luận đã xóa -->
+                              <div class="w-[141px] flex items-center text-neutral-1-400 px-2 py-1 rounded-full text-caption-1 bg-neutral-3-100" *ngIf="item.Status == 40">
+                                  <span class="tdsi-block-line text-body-1 leading-none mr-2" ></span> Bình luận đã xóa
+                              </div>
+                              
+                              <!-- Thông báo Bình luận ẩn -->
+                              <div class="w-[134px] flex items-center text-neutral-1-400 px-2 py-1 rounded-full text-caption-1 bg-neutral-3-100" *ngIf="item.Status == 30">
+                                  <span class="tdsi-eye-close-fill text-body-1 leading-none mr-2" ></span> Bình luận đã ẩn
+                              </div>
+
+                              <div class="flex-auto" #contentMessage showMore [length]="100" [text]="((item.MessageFormatted || item.Message) | formatIconLike | bbcodeConvert )"></div>
                           </div>
 
                           <!-- hình ảnh đính kèm -->
@@ -161,9 +171,8 @@
                           </div>
 
                           <!-- thao tác -->
-                          <div class="flex items-center pt-3" *ngIf="item.Status != 30 && item.Status != 40">
+                          <div class="flex items-center pt-3">                           
                               <button *ngIf="!isShowModal && !item.ParentId" [loading]="isLoadingInsertFromPost" [loadingTemplate]="'Tạo đơn hàng'" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
-
                               <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
                                   tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" tds-tooltip>
                                   <span class="flex items-center justify-center">
@@ -203,7 +212,7 @@
                                   </button>
                               </div>
 
-                              <div *ngIf="partnerDict && partnerDict[item.UserId]" class="w-full flex flex-row items-center justify-between">
+                              <div *ngIf="partnerDict && partnerDict[item.UserId]" class="flex-auto flex flex-row items-center justify-between">
                                   <!-- trạng thái khách hàng & mã đơn hàng -->
                                   <div class="flex items-center gap-1.5">
 
@@ -268,20 +277,8 @@
                                           </div>
                                       </div>
                                   </div>
-
                               </div>
-                          </div>
-
-                          <!-- Thông báo Bình luận ẩn -->
-                          <a class="flex items-center text-error-400 pt-3" *ngIf="item.Status == 30">
-                            <span class="tdsi-eye-close-fill text-error-400 text-body-1 leading-none mr-2" ></span> Bình luận đã ẩn
-                          </a>
-
-                          <!-- Thông báo Bình luận đã xóa -->
-                          <a class="flex items-center text-error-400 pt-3" *ngIf="item.Status == 40">
-                            <span class="tdsi-trash-line text-error-400 text-body-1 leading-none mr-2" ></span> Bình luận đã xóa
-                          </a>
-
+                          </div>             
                       </div>
 
                     <!-- Input trả lời bình luận -->
@@ -464,6 +461,16 @@
 
                                   <!-- nội dung bình luận -->
                                   <div class="flex flex-row gap-x-3 desktop:text-body-2 text-caption-1" style="white-space: pre-line; word-break: break-word;">
+                                      <!-- Thông báo Bình luận đã xóa -->
+                                      <div class="w-[141px]  flex items-center text-neutral-1-400 px-2 py-1 rounded-full text-caption-1 bg-neutral-3-100" *ngIf="child.Status == 40">
+                                        <span class="tdsi-block-line text-body-1 leading-none mr-2" ></span> Bình luận đã xóa
+                                      </div>
+
+                                      <!-- Thông báo Bình luận ẩn -->
+                                      <div class=" w-[134px] flex items-center text-neutral-1-400 px-2 py-1 rounded-full text-caption-1 bg-neutral-3-100" *ngIf="child.Status == 30">
+                                        <span class="tdsi-eye-close-fill text-body-1 leading-none mr-2" ></span> Bình luận đã ẩn
+                                      </div>
+
                                       <div #contentMessage showMore [length]="100" [text]="((child.MessageFormatted || child.Message) | formatIconLike | bbcodeConvert )"></div>
                                   </div>
 
@@ -476,7 +483,7 @@
                                   </div>
 
                                   <!-- thao tác -->
-                                  <div class="flex items-center pt-3" *ngIf="child.Status != 30 && child.Status != 40">
+                                  <div class="flex items-center pt-3">
                                       <button *ngIf="!isShowModal && !child.ParentId" [loading]="isLoadingInsertFromPost" [loadingTemplate]="'Tạo đơn hàng'" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(child)">Tạo đơn hàng</button>
 
                                       <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
@@ -518,7 +525,7 @@
                                           </button>
                                       </div>
 
-                                      <div *ngIf="partnerDict && partnerDict[child.UserId]" class="w-full flex flex-row items-center justify-between">
+                                      <div *ngIf="partnerDict && partnerDict[child.UserId]" class="flex-auto flex flex-row items-center justify-between">
                                           <!-- trạng thái khách hàng & mã đơn hàng -->
                                           <div class="flex items-center gap-1.5">
 
@@ -586,16 +593,6 @@
 
                                       </div>
                                   </div>
-
-                                   <!-- Thông báo Bình luận ẩn -->
-                                   <a class="flex items-center text-error-400" *ngIf="child.Status == 30">
-                                    <span class="tdsi-eye-close-fill text-error-400 text-body-1 leading-none mr-2" ></span> Bình luận đã ẩn
-                                  </a>
-    
-                                  <!-- Thông báo Bình luận đã xóa -->
-                                  <a class="flex items-center text-error-400" *ngIf="child.Status == 40">
-                                    <span class="tdsi-trash-line text-error-400 text-body-1 leading-none mr-2" ></span> Bình luận đã xóa
-                                  </a>
 
                               </div>
 
