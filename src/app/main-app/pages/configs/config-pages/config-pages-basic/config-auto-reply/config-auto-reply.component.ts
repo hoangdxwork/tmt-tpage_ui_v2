@@ -40,7 +40,16 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges {
   };
 
   notIsValidToOrderTagHelpers = [
-    { id: "Tên Facebook khách hàng", value: "{facebook.name}" }
+    { id: "Tên Facebook khách hàng", value: "{facebook.name}" },
+    { id: "Tên khách hàng", value: "{partner.name}" },
+    { id: "Mã khách hàng", value: "{partner.code}" },
+    { id: "Số điện thoại khách hàng", value: "{partner.phone}" },
+    { id: "Địa chỉ khách hàng", value: "{partner.address}" },
+    { id: "Mã đơn hàng", value: "{order.code}" },
+    { id: "Ghi chú đơn hàng", value: "{order.note}" },
+    { id: "Tổng tiền đơn hàng", value: "{order.total_amount}" },
+    { id: "Sản phẩm hóa đơn", value: "{order.product}" },
+    { id: "Chi tiết đơn hàng", value: "{order.details}" }
   ];
 
   tagHelpers = [
