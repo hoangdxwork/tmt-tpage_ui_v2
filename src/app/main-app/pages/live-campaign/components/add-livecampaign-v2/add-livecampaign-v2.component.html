@@ -187,8 +187,8 @@
                 <tds-table #tableProduct [showSizeChanger]="true" [frontPagination]="false" [scroll]="{ y: 'auto' }" [listData]="_form.controls['Details'].value">
                   <thead>
                     <tr>
-                        <th [width]="'64px'" class="text-center">STT</th>
-                        <th [width]="'320px'">
+                        <th [width]="'54px'" class="text-center">STT</th>
+                        <th [width]="'300px'">
                           <div customFilter class="flex justify-between items-center w-full gap-x-2">
                             <span class="w-1/4 py-2"> Sản phẩm </span>
                             <div class="flex-auto flex justify-end">
@@ -210,8 +210,17 @@
                           </ng-template>
                         </div>
                         </th>
-                        <th [width]="'80px'">Ẩn/ hiện</th>
-                        <th [width]="'120px'">Số lượng</th>
+                        <th [width]="'100px'">
+                          <span class="flex justify-center items-center gap-x-2">
+                            Ẩn/ hiện
+                            <span class="relative z-20 tdsi-edit-2-fill text-neutral-1-500 leading-none cursor-pointer" (click)="showIsActiveProduct()">
+                              <span tds-tooltip="Chỉnh sửa hoạt động sản phẩm" class=" inset-0 absolute z-0"
+                              tds-popover  popoverTrigger="click" [(popoverVisible)]="isShowIsActiveProduct"
+                              [popoverAutoClose]="true"  [popoverContent]="contentTemplateIsActive"></span>
+                            </span>
+                          </span>
+                        </th>
+                        <th [width]="'110px'">Số lượng</th>
 
                         <th [width]="'145px'">
                           <span class="flex justify-center items-center gap-x-2">
@@ -392,3 +401,17 @@
           </button>
       </div>
   </ng-template>
+
+  <!-- Bật tắt sản phẩm -->
+<ng-template #contentTemplateIsActive>
+  <div class="w-full ml-4 mr-4">
+    <div class="w-full flex items-center mb-2">
+        <span class="text-body-2 mr-4">Tắt hoạt động sản phẩm:</span>
+        <tds-checkbox size="md" [(ngModel)]="unactiveProduct" (ngModelChange)="onChangeIsActiveProduct($event, 'unactive')"></tds-checkbox>
+    </div>
+    <div class="w-full flex items-center mt-2">
+        <span class="text-body-2 mr-4">Bật hoạt động sản phẩm:</span>
+        <tds-checkbox size="md" [(ngModel)]="activeProduct" (ngModelChange)="onChangeIsActiveProduct($event, 'active')"></tds-checkbox>
+    </div>
+  </div>
+</ng-template>

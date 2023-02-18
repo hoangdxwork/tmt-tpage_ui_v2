@@ -113,6 +113,16 @@
                                     </div>
 
                                     <div class="flex flex-auto gap-x-1">
+
+                                        <button type="button" tds-button-icon color="secondary" size="sm" (click)="showIsActiveProduct()"
+                                            tds-tooltip tooltipTitle="Bật tắt hoạt động sản phẩm"
+                                            tds-popover popoverTrigger="click" [(popoverVisible)]="isShowIsActiveProduct"
+                                            [popoverAutoClose]="true" [popoverContent]="contentTemplateIsActive">
+                                            <span class="flex items-center text-neutral-1-500">
+                                                <i class="tdsi-maintenance-fill"></i>
+                                            </span>
+                                        </button>
+
                                         <button type="button" tds-button-icon color="secondary" size="sm" (click)="showEditLimitedQuantity()"
                                             tds-tooltip tooltipTitle="Chỉnh sửa giới hạn trên đơn cho tất cả sản phẩm"
                                             tds-popover  popoverTrigger="click" [(popoverVisible)]="isShowEditLimitedQuantity" (popoverVisibleChange)="onPopoverApplyLimitQuantityChange($event)"
@@ -521,18 +531,33 @@
         </tds-input-number>
         </tds-form-field>
     </div>
-  </ng-template>
-  <ng-template #footerTemplate>
-    <div class="flex justify-end pt-2">
-        <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="onClosePopover()">
-        <span class="flex items-center">
-            <i class="tdsi-close-fill"></i>
-        </span>
-        </button>
-        <button tds-button-icon size="sm" color="primary" (click)="onSavePopover()">
-        <span class="flex items-center">
-            <i class="tdsi-tick-fill"></i>
-        </span>
-        </button>
+</ng-template>
+<ng-template #footerTemplate>
+  <div class="flex justify-end pt-2">
+      <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="onClosePopover()">
+      <span class="flex items-center">
+          <i class="tdsi-close-fill"></i>
+      </span>
+      </button>
+      <button tds-button-icon size="sm" color="primary" (click)="onSavePopover()">
+      <span class="flex items-center">
+          <i class="tdsi-tick-fill"></i>
+      </span>
+      </button>
+  </div>
+</ng-template>
+
+<!-- Bật tắt sản phẩm -->
+<ng-template #contentTemplateIsActive>
+  <div class="w-full ml-4 mr-4">
+    <div class="w-full flex items-center mb-2">
+        <span class="text-body-2 mr-4">Tắt hoạt động sản phẩm:</span>
+        <tds-checkbox size="md" [disabled]="isLoading ? true : false" [(ngModel)]="unactiveProduct" (ngModelChange)="onChangeIsActiveProduct($event, 'unactive')"></tds-checkbox>
     </div>
-  </ng-template>
+
+    <div class="w-full flex items-center mt-2">
+        <span class="text-body-2 mr-4">Bật hoạt động sản phẩm:</span>
+        <tds-checkbox size="md" [disabled]="isLoading ? true : false" [(ngModel)]="activeProduct" (ngModelChange)="onChangeIsActiveProduct($event, 'active')"></tds-checkbox>
+    </div>
+  </div>
+</ng-template>
