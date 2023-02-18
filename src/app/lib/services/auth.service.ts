@@ -112,7 +112,12 @@ export class TAuthService {
             this._userInitObs.next(undefined);
             this._roleObs.next([]);
             this.cacheService.clear().subscribe();
+
+            let tokenFireBase = localStorage.getItem('_firebaseDeviceToken');
             localStorage.clear();
+            if(tokenFireBase) {
+              localStorage.setItem('_firebaseDeviceToken', tokenFireBase);
+            }
         });
     }
 
