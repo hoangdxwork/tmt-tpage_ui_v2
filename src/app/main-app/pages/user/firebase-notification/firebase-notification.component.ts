@@ -236,7 +236,7 @@ export class FirebaseNotificationComponent implements OnInit {
     } else {
       setTimeout(() => {
         let scrollContent = document.getElementsByClassName('scrollable-content')?.item(0);
-        
+
         if(scrollContent) {
           this.render.addClass(scrollContent,'!h-auto');//set thuộc tính h-auto cho viewport
 
