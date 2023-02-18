@@ -7,7 +7,7 @@ import { ProductTemplateUOMLineService } from './../../../../services/product-te
 import { ChangeDetectionStrategy, ChangeDetectorRef, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { takeUntil, pipe, Observable, map } from 'rxjs';
+import { takeUntil, pipe, Observable, map, BehaviorSubject } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -137,8 +137,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   clickPrint: string = '';
   tiktokUniqueId: any = null;
 
-  suggestData: Observable<any> = new Observable<any>();
-
   numberWithCommas = (value:TDSSafeAny) => {
     if(value != null){
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -171,6 +169,18 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   noteWhenNoId!: string | TDSSafeAny;
   syncTimer: any;
+
+  suggestData: Observable<any> = new Observable<any>();
+  suggestText: any;
+  isSuggestion: boolean = false;
+
+  private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
+  private districtSubject = new BehaviorSubject<SuggestDistrictsDTO[]>([]);
+  private wardSubject = new BehaviorSubject<SuggestWardsDTO[]>([]);
+
+  lstCity: Array<SuggestCitiesDTO> = [];
+  lstDistrict: Array<SuggestDistrictsDTO> = [];
+  lstWard: Array<SuggestWardsDTO> = [];
 
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -425,6 +435,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     this.quickOrderModel = {...this.csOrder_FromConversationHandler.getOrderFromConversation(conversationInfo, this.team)};
     this.mappingAddress(this.quickOrderModel);
+    this.suggestText  = this.quickOrderModel.Address;
 
     this.isLoading = false;
     this.cdRef.detectChanges();
@@ -1504,6 +1515,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     (this._street as any) = null;
     this.commentPost = null as any;
     this.disableSyncOrder = false;
+    this.suggestText = null;
+    this.isSuggestion = false;
   }
 
   handleIsEqualAmountInsurance() {
@@ -1696,13 +1709,16 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           this.orderPrintService.printId(id, this.quickOrderModel, message);
       } else
         if(this.saleOnlineSettings?.isPrintMultiTimes) {
-            this.orderPrintService.printId(id, this.quickOrderModel, message);
+          this.orderPrintService.printId(id, this.quickOrderModel, message);
       }
     }
   }
 
   prepareResponseSaleOnline(order: QuickSaleOnlineOrderModel, type?: string) {
     this.quickOrderModel = {...order};
+    this.isEditPartner = false;
+    this.isSuggestion = false;
+    this.suggestText = order.Address;
 
     if(this.isEnableCreateOrder) {
         this.onCreateFastSaleOrder(this.quickOrderModel, type);
@@ -1793,19 +1809,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.destroyTimer();
   }
 
+  onSearchSuggestion(text: any) {
+    this.suggestText = text || null;
+    if(!TDSHelperString.hasValueString(text)) return;
 
-  onSearchSuggestion(event: any) {
-    if(!TDSHelperString.hasValueString(event)) return;
+    text = TDSHelperString.stripSpecialChars(text.toLowerCase().trim());
+    text = encodeURIComponent(text);
 
-    this.quickOrderModel.Address = event;
-    event = TDSHelperString.stripSpecialChars(event).trim().toLocaleLowerCase();
-
-    this.suggestData = this.suggestService.suggest(event)
+    this.suggestData = this.suggestService.suggest(text)
       .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
   }
 
   onSelectSuggestion(event: SuggestAddressDto) {
     if(event) {
+      this.isSuggestion = true;
       this.quickOrderModel.Address = event.Address;
       this._street = event.Address;
 
@@ -1816,13 +1833,21 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         name: event.CityName
       }
 
+      if(this.lstCity && this.lstCity.length == 0) {
+        this.loadCity();
+      }
+
       this.quickOrderModel.DistrictCode = event.DistrictCode;
       this.quickOrderModel.DistrictName = event.DistrictName;
       this._districts = {
         code: event.DistrictCode,
         name: event.DistrictName,
-        cityName: event.CityCode,
-        cityCode: event.CityName
+        cityCode: event.CityCode,
+        cityName: event.CityName
+      }
+
+      if(this.lstDistrict && this.lstDistrict.length == 0) {
+        this.loadDistricts(event.CityCode);
       }
 
       this.quickOrderModel.WardCode = event.WardCode;
@@ -1835,6 +1860,149 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         districtCode: event.DistrictCode,
         districtName: event.DistrictName
       }
+
+      if(this.lstWard && this.lstWard.length == 0) {
+        this.loadWards(event.DistrictCode);
+      }
+
+      this.cdRef.detectChanges();
     }
+  }
+
+  loadCity(): void {
+    this.lstCity = [];
+    this.suggestService.setCity();
+    this.suggestService.getCity().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.lstCity = [...res];
+          this.citySubject.next(res);
+        }
+      });
+  }
+
+  loadDistricts(code: string) {
+    this.lstDistrict = [];
+    this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.lstDistrict = [...res];
+          this.districtSubject.next(res);
+        }
+      });
+  }
+
+  loadWards(code: string) {
+    this.lstWard = [];
+    this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.lstWard = [...res];
+          this.wardSubject.next(res);
+        }
+      });
+  }
+
+  handleCityFilter(value: string) {
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstCity?.filter((x: SuggestCitiesDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      this.citySubject.next(result);
+    }
+  }
+
+  handleFilterDistrict(value: string) {
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstDistrict?.filter((x: SuggestDistrictsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      this.districtSubject.next(result);
+    }
+  }
+
+  handleFilterWard(value: string) {
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstWard?.filter((x: SuggestWardsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      this.wardSubject.next(result);
+    }
+  }
+
+  changeCity(city: SuggestCitiesDTO) {
+    this.quickOrderModel.CityCode = '';
+    this.quickOrderModel.CityName = '';
+    this._cities = null as any;
+
+    this.quickOrderModel.DistrictCode = '';
+    this.quickOrderModel.DistrictName = '';
+    this._districts = null as any;
+
+    this.quickOrderModel.WardCode = '';
+    this.quickOrderModel.WardName = '';
+    this._wards = null as any;
+
+    if(city && city.code) {
+      this.quickOrderModel.CityCode = city.code;
+      this.quickOrderModel.CityName = city.name;
+      this._cities = {
+        code: city.code,
+        name: city.name
+      }
+
+      this.loadDistricts(city.code);
+    }
+
+    this.mappingStreet();
+    this.cdRef.detectChanges();
+  }
+
+  changeDistrict(district: SuggestDistrictsDTO) {
+    this.quickOrderModel.DistrictCode = '';
+    this.quickOrderModel.DistrictName = '';
+    this._districts = null as any;
+
+    this.quickOrderModel.WardCode = '';
+    this.quickOrderModel.WardName = '';
+    this._wards = null as any;
+
+    if(district && district.code) {
+      this.quickOrderModel.DistrictCode = district.code;
+      this.quickOrderModel.DistrictName = district.name;
+      this._districts = {
+        code: district.code,
+        name: district.name,
+        cityCode: district.cityCode,
+        cityName: district.cityName
+      }
+
+      this.loadWards(district.code);
+    }
+
+    this.mappingStreet();
+    this.cdRef.detectChanges();
+  }
+
+  changeWard(ward: SuggestWardsDTO) {
+    this.quickOrderModel.WardCode = '';
+    this.quickOrderModel.WardName = '';
+    this._wards = null as any;
+
+    if(ward && ward.code) {
+      this.quickOrderModel.WardCode = ward.code;
+      this.quickOrderModel.WardName = ward.name;
+      this._wards = {
+        code: ward.code,
+        name: ward.name,
+        cityName: ward.cityCode,
+        cityCode: ward.cityName,
+        districtCode: ward.districtCode,
+        districtName: ward.districtName
+      }
+    }
+
+    this.mappingStreet();
+    this.cdRef.detectChanges();
+  }
+
+  mappingStreet(){
+    let street = (TDSHelperString.hasValueString(this.quickOrderModel.WardName) ? (this.quickOrderModel.WardName + ', ') : '')
+      + (TDSHelperString.hasValueString(this.quickOrderModel.DistrictName) ? (this.quickOrderModel.DistrictName + ', ') : '')
+      + (TDSHelperString.hasValueString(this.quickOrderModel.CityName) ? this.quickOrderModel.CityName : '');
+
+    this.quickOrderModel.Address = street;
+    this._street = street as any;
   }
 }
