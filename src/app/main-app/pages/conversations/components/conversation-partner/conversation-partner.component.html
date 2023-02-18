@@ -351,12 +351,8 @@
                               placeholder='Nhập địa chỉ cần tìm' disabledField="isActive"
                               [data]="suggestData | async" [allowClear]="true" [valuePrimitive]="false"
                               [autoClearSearchValue]="true" [serverSearch]="true"
-                              [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"
+                              [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}"
                               (onSearch)="onSearchSuggestion($event)" (selectChange)="onSelectSuggestion($event)">
-
-                              <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
-                                  <a [ngClass]="{'text-primary-1':selected}"> {{item.Address}} </a>
-                              </ng-template>
                           </tds-select>
                         </tds-form-field>
 
@@ -368,11 +364,45 @@
                       </div>
                   </div>
 
+                  <!-- Suggest -->
+                  <div *ngIf="isSuggestion" class="flex flex-col overflow-hidden">
+                    <div class="w-full flex mb-2">
+                      <tds-form-field class="w-full">
+                        <tds-select valueField="code" textField="name" placeholder='Tỉnh/Thành' [valuePrimitive]="false"
+                          (onSearch)="handleCityFilter($event)" [(ngModel)]="partner.City" [ngModelOptions]="{standalone: true}"
+                          disabledField="isActive" [data]="lstCity"
+                          [allowClear]="true" (selectChange)="changeCity($event)">
+                        </tds-select>
+                      </tds-form-field>
+                    </div>
+                    <div class="w-full flex mb-2">
+                      <tds-form-field class="w-full">
+                        <tds-select valueField="code" textField="name" placeholder='Quận/Huyện' [valuePrimitive]="false"
+                          (onSearch)="handleFilterDistrict($event)" [(ngModel)]="partner.District" [ngModelOptions]="{standalone: true}"
+                          disabledField="isActive" [data]="lstDistrict" [allowClear]="true" (selectChange)="changeDistrict($event)">
+                        </tds-select>
+                      </tds-form-field>
+                    </div>
+                    <div class="w-full flex mb-2">
+                      <tds-form-field class="w-full">
+                        <tds-select valueField="code" textField="name" placeholder='Phường/Xã' [valuePrimitive]="false"
+                          (onSearch)="handleFilterWard($event)" [(ngModel)]="partner.Ward" [ngModelOptions]="{standalone: true}"
+                           disabledField="isActive" [data]="lstWard"
+                          [allowClear]="true" (selectChange)="changeWard($event)">
+                        </tds-select>
+                      </tds-form-field>
+                    </div>
+                    <div class="w-full flex">
+                      <tds-form-field class="w-full">
+                           <input tdsInput autocomplete="off" class="w-full truncate" placeholder="Địa chỉ" [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"/>
+                      </tds-form-field>
+                    </div>
+                  </div>
+
                   <div class="mt-4">
                       <button type="button" tds-button class="w-[100px]" type="submit" color="primary" (click)="onSaveEdit()">Lưu</button>
                       <button type="button" tds-button class="ml-3 w-[100px]" color="secondary" (click)="onCancelEdit()">Hủy bỏ</button>
                   </div>
-
               </div>
           </div>
 
