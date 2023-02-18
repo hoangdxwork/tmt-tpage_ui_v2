@@ -73,6 +73,9 @@ export class EditLiveCampaignComponent implements OnInit {
   isShowIsActiveProduct: boolean = false;
   isIsActiveProduct: boolean = false;
 
+  unactiveProduct: boolean = false;
+  activeProduct: boolean = false;
+
   numberWithCommas =(value:TDSSafeAny) => {
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -895,26 +898,40 @@ export class EditLiveCampaignComponent implements OnInit {
     this.isShowIsActiveProduct = true;
   }
 
-  onChangeIsActiveProduct(event: any) {
-    this.isIsActiveProduct = event;
+  onClosePopoverIsActiveProduct() {
+    this.isShowIsActiveProduct = false;
+  }
+
+  onChangeIsActiveProduct(event: any, type: string) {
     this.isLoading = true;
-    this.liveCampaignService.applyActiveallDetails(this.liveCampaignId, event).pipe(takeUntil(this.destroy$)).subscribe({
+    let value: any = null;
+
+    if(type == 'active') {
+      this.activeProduct = true;
+      this.unactiveProduct = false;
+      value = true;
+    } else {
+      this.activeProduct = false;
+      this.unactiveProduct = true;
+      value = false;
+    }
+
+    this.liveCampaignService.applyActiveallDetails(this.liveCampaignId, value).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        if(event == true) {
+        if(value == true) {
           this.message.success('Đã bật hoạt động tất cả sản phẩm');
         } else {
           this.message.success('Đã tắt hoạt động tất cả sản phẩm');
         }
+
+        this.onClosePopoverIsActiveProduct();
         this.refreshData();
       },
       error: (err: any) => {
-        this.isLoading = false;
-        this.message.error(err?.error?.message);
+          this.isLoading = false;
+          this.message.error(err?.error?.message);
       }
     })
   }
 
-  onClosePopoverIsActiveProduct() {
-    this.isShowIsActiveProduct = false;
-  }
 }

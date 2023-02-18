@@ -92,6 +92,13 @@ export class AddLiveCampaignV2Component implements OnInit {
     return value;
   };
 
+
+  isShowIsActiveProduct: boolean = false;
+  isIsActiveProduct: boolean = false;
+
+  unactiveProduct: boolean = false;
+  activeProduct: boolean = false;
+
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
     private message: TDSMessageService,
@@ -803,7 +810,7 @@ export class AddLiveCampaignV2Component implements OnInit {
 
     if(formDetails && formDetails.length > 0) {
         this.isShowEditLimitedQuantity = true;
-    } 
+    }
     else {
         this.message.error('Chưa có sản phẩm nào trong danh sách');
         this.isShowEditLimitedQuantity = false;
@@ -820,10 +827,10 @@ export class AddLiveCampaignV2Component implements OnInit {
     let formDetails = this.detailsForm.value as any[];
 
     if(formDetails && formDetails.length > 0) {
-      formDetails.map(x=> {
+      formDetails.map((x: any) => {
         return x.LimitedQuantity = this.limitedQuantityAll;
       })
-  
+
       this.detailsForm.clear();
       this.initFormDetails(formDetails);
       this.message.success('Áp dụng thành công');
@@ -834,4 +841,40 @@ export class AddLiveCampaignV2Component implements OnInit {
   onClosePopover() {
     this.isShowEditLimitedQuantity = false;
   }
+
+  showIsActiveProduct() {
+    this.isShowIsActiveProduct = true;
+  }
+
+  onClosePopoverIsActiveProduct() {
+    this.isShowIsActiveProduct = false;
+  }
+
+  onChangeIsActiveProduct(event: any, type: string) {
+    let formDetails = this.detailsForm.value as any[];
+
+    if(formDetails && formDetails.length > 0) {
+      if(type == 'active') {
+          this.activeProduct = true;
+          this.unactiveProduct = false;
+
+          formDetails.map((x: any) => {
+            return x.IsActive = true;
+          })
+
+      } else {
+        this.activeProduct = false;
+        this.unactiveProduct = true;
+
+        formDetails.map((x: any) => {
+          return x.IsActive = false;
+        })
+      }
+
+      this.detailsForm.clear();
+      this.initFormDetails(formDetails);
+      this.onClosePopoverIsActiveProduct();
+    }
+  }
+
 }
