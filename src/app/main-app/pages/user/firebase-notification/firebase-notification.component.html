@@ -15,6 +15,7 @@
         <tds-tab title="Thông báo" clsContent="p-0 h-full w-full">
           <div class="w-full h-full pb-3">
             <div class="flex flex-col h-full w-full">
+
               <virtual-scroller #scroll [items]="data" (vsEnd)="vsEnd($event)" [enableUnequalChildrenSizes]="true" [scrollAnimationTime]="750"
                 class="h-full w-full p-2 text-caption-1 overflow-hidden overflow-y-auto tds-custom-scroll bg-white flex flex-col gap-y-2">
                 <div *ngFor="let item of scroll.viewPortItems" (click)="onDetail(item)"
@@ -49,10 +50,12 @@
             </div>
           </div>
         </tds-tab>
+
         <tds-tab title="Realtime" clsContent="p-0 h-full w-full">
           <div class="p-4 border-l-3 border-blue-500 bg-secondary-3 text-body-2 font-semibold">Thông báo socket</div>
         </tds-tab>
       </tds-tabset>
+
       <ng-template #extraTemplate>
         <button tds-button-icon color="custom" (click)="modalGetNotifications()" [ngClass]="deviceToken ? '' : 'hidden'"
           class="text-neutral-1-500 border-0 border-transparent ring-0 ring-transparent bg-transparent hover:text-neutral-1-500 hover:bg-neutral-3-50 focus:text-neutral-1-500 focus:bg-neutral-3-50">

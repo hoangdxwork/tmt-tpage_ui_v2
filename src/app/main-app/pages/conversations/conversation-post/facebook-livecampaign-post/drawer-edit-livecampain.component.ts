@@ -108,6 +108,12 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   productIds: { [key: string]: DetailExistsDTO } = {};
   orderTags: { [key: string] : string[] } = {};
 
+  isShowIsActiveProduct: boolean = false;
+  isIsActiveProduct: boolean = false;
+
+  unactiveProduct: boolean = false;
+  activeProduct: boolean = false;
+
   constructor(private liveCampaignService: LiveCampaignService,
     private message: TDSMessageService,
     private modal: TDSModalService,
@@ -1147,5 +1153,47 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyTimer();
+  }
+
+  showIsActiveProduct() {
+    this.isShowIsActiveProduct = true;
+  }
+
+  onClosePopoverIsActiveProduct() {
+    this.isShowIsActiveProduct = false;
+  }
+
+  onChangeIsActiveProduct(event: any, type: string) {
+    this.isLoading = true;
+    let value: any = null;
+
+    if(type == 'active') {
+      this.activeProduct = true;
+      this.unactiveProduct = false;
+      value = true;
+    } else {
+      this.activeProduct = false;
+      this.unactiveProduct = true;
+      value = false;
+    }
+
+    this.liveCampaignService.applyActiveallDetails(this.liveCampaignId, value).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(value == true) {
+          this.message.success('Đã bật hoạt động tất cả sản phẩm');
+        } else {
+          this.message.success('Đã tắt hoạt động tất cả sản phẩm');
+        }
+
+        this.onClosePopoverIsActiveProduct();
+        this.refreshData();
+        this.cdRef.detectChanges();
+      },
+      error: (err: any) => {
+          this.isLoading = false;
+          this.message.error(err?.error?.message);
+          this.cdRef.detectChanges();
+      }
+    })
   }
 }

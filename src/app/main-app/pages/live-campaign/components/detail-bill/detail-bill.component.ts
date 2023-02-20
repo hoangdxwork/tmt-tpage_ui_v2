@@ -125,7 +125,9 @@ export class DetailBillComponent implements OnInit {
     this.setFilter();
     this.loadTags();
     this.loadGridConfig();
-    this.loadPartnerCanMergeOrders();
+
+    // this.loadPartnerCanMergeOrders();
+    this.countPartnerCanMergeOrders();
   }
 
   setFilter() {
@@ -168,29 +170,40 @@ export class DetailBillComponent implements OnInit {
     return this.oDataLiveCampaignBillService.getView(params, this.filterObj);
   }
 
-  loadPartnerCanMergeOrders() {
+  countPartnerCanMergeOrders() {
     let id = this.liveCampaignId;
-    this.lstPartner = [];
-    this.isLoading = true;
-
-    let pageSize = 10;
-    let pageIndex = 1;
-
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
-    this.fastSaleOrderService.getPartnerCanMergeOrders(id, params).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          delete res['@odata.context'];
-          this.countPartner = res['@odata.count'];
-
-          this.lstPartner = [...(res?.value || 0)];
-          this.isLoading = false;
+    this.fastSaleOrderService.countPartnerCanMergeOrders(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+        this.countPartner = data;
       },
-      error: (err) => {
-          this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-          this.isLoading = false;
+      error: (err: any) => {
+        this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
       }
     })
   }
+
+  // loadPartnerCanMergeOrders() {
+  //   let id = this.liveCampaignId;
+  //   this.lstPartner = [];
+  //   this.isLoading = true;
+
+  //   let pageSize = 10;
+  //   let pageIndex = 1;
+
+  //   let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+  //   this.fastSaleOrderService.getPartnerCanMergeOrders(id, params).pipe(takeUntil(this.destroy$)).subscribe({
+  //     next: (res: any) => {
+  //         delete res['@odata.context'];
+  //         // this.countPartner = res['@odata.count'];
+  //         this.lstPartner = [...(res?.value || 0)];
+  //         this.isLoading = false;
+  //     },
+  //     error: (err) => {
+  //         this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
+  //         this.isLoading = false;
+  //     }
+  //   })
+  // }
 
   onLoadOption(event: any): void {
     this.tabIndex = 1;
@@ -235,7 +248,8 @@ export class DetailBillComponent implements OnInit {
     }
 
     this.billFilterOptions.onCancel();
-    this.loadPartnerCanMergeOrders();
+    // this.loadPartnerCanMergeOrders();
+    this.countPartnerCanMergeOrders();
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
@@ -823,13 +837,13 @@ export class DetailBillComponent implements OnInit {
   mergeOrderAll() {
     if (this.isLoading || this.isProcessing) return;
 
-    let exist = this.lstPartner && this.lstPartner.length == 0;
+    let exist = this.countPartner == 0;
     if(exist) {
       this.notification.error('Không thể gộp đơn', 'Không có đơn nào hợp lệ');
       return;
     }
 
-    let modal =  this.modal.create({
+    let modal = this.modal.create({
       title: 'Danh sách có thể gộp đơn',
       content: ModalMergeOrderComponent,
       onCancel: function(){
@@ -845,8 +859,9 @@ export class DetailBillComponent implements OnInit {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: boolean) => {
         if(res) {
-            this.loadData(this.pageSize, this.pageIndex);
-            this.loadPartnerCanMergeOrders();
+          this.loadData(this.pageSize, this.pageIndex);
+          // this.loadPartnerCanMergeOrders();
+          this.countPartnerCanMergeOrders();
         }
       }
     })
@@ -864,7 +879,8 @@ export class DetailBillComponent implements OnInit {
           this.pageIndex = 1;
           this.removeCheckedRow();
           this.loadData(this.pageSize, this.pageIndex);
-          this.loadPartnerCanMergeOrders();
+          // this.loadPartnerCanMergeOrders();
+          this.countPartnerCanMergeOrders();
 
           this.setOfCheckedId.add(res.Id);
           this.isLoading = false;

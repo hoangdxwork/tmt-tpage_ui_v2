@@ -1,10 +1,12 @@
+import { OnDestroy } from '@angular/core';
+import { Observable, delay, finalize, BehaviorSubject } from 'rxjs';
 import { PartnerChangeStatusDTO } from './../../../../dto/partner/partner-status.dto';
 import { ModalAddAddressV2Component } from './../modal-add-address-v2/modal-add-address-v2.component';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -28,6 +30,7 @@ import { ChatomniConversationInfoDto, ConversationPartnerDto, ConversationRevenu
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
+import { SuggestAddressDto, SuggestAddressService } from '@app/services/suggest-address.service';
 
 @Component({
     selector: 'conversation-partner',
@@ -36,7 +39,7 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
     providers: [TDSDestroyService]
 })
 
-export class ConversationPartnerComponent implements OnInit, OnChanges {
+export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestroy {
 
   @Input() conversationInfo!: ChatomniConversationInfoDto | any;
   @Input() team!: CRMTeamDTO | any;
@@ -67,6 +70,20 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   visibleDrawerBillDetail: boolean = false;
   tempPartner!: ConversationPartnerDto | any; // biến tạm khi thay đổi thông tin khách hàng nhưng không bấm lưu
 
+  onSyncTimer: any;
+
+  suggestData: Observable<any> = new Observable<any>();
+  suggestText: any;
+  isSuggestion: boolean = false;
+
+  private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
+  private districtSubject = new BehaviorSubject<SuggestDistrictsDTO[]>([]);
+  private wardSubject = new BehaviorSubject<SuggestWardsDTO[]>([]);
+
+  lstCity: Array<SuggestCitiesDTO> = [];
+  lstDistrict: Array<SuggestDistrictsDTO> = [];
+  lstWard: Array<SuggestWardsDTO> = [];
+
   constructor(private message: TDSMessageService,
     private conversationService: ConversationService,
     private fastSaleOrderService: FastSaleOrderService,
@@ -74,6 +91,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private commonService: CommonService,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
+    private suggestService: SuggestAddressService,
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private cdRef: ChangeDetectorRef,
@@ -89,8 +107,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   ngOnInit(): void  {
     if(this.conversationInfo) {
-        this.loadData(this.conversationInfo);
-        this.loadNotes(this.team.ChannelId, this.conversationItem.ConversationId);
+      this.loadData(this.conversationInfo);
+      this.loadNotes(this.team.ChannelId, this.conversationItem.ConversationId);
     }
 
     this.loadPartnerStatus();
@@ -125,7 +143,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadData(conversationInfo: ChatomniConversationInfoDto) {
-
     this.validateData();
     this.isLoading = true;
     this.conversationInfo = {...conversationInfo};
@@ -139,6 +156,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     if(this.team && conversationInfo) {
         this.partner = {...this.csPartner_PrepareModelHandler.getPartnerFromConversation(conversationInfo, this.team)};
         this.mappingAddress(this.partner);
+        this.suggestText = this.partner.Street;
     }
 
     if(this.team && conversationInfo.Conversation) {
@@ -394,7 +412,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
     });
 
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
         if (TDSHelperObject.hasValue(result)) {
           this.partner.PhoneReport = true;
         }
@@ -420,7 +438,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
     });
 
-    modal.componentInstance?.changeReportPartner.subscribe({
+    modal.componentInstance?.changeReportPartner.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.partner.PhoneReport = res;
       }
@@ -462,20 +480,24 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
           this.isEditPartner = false;
           this.isLoading = false;
+          this.suggestText = res.Street;
+          this.isSuggestion = false;
+
           delete this.tempPartner;
           this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.isLoading = false
           this.isEditPartner = false;
-          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.message.error(error?.error?.message);
           this.cdRef.detectChanges();
       }
     });
   }
 
   onSyncConversationOrder(csid: any) {
-    setTimeout(() => {
+    this.destroyTimer();
+    this.onSyncTimer = setTimeout(() => {
       this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (info: ChatomniConversationInfoDto) => {
@@ -487,6 +509,16 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           }
       })
     }, 350);
+  }
+
+  destroyTimer() {
+    if(this.onSyncTimer) {
+      clearTimeout(this.onSyncTimer);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyTimer();
   }
 
   prepareModel() {
@@ -545,37 +577,34 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         _wards: this._wards,
         _street: this.partner.Street || '',
         isSelectAddress: true,
-        isSelectAddressConversation: true
+        isSelectAddressConversation: true,
       }
     });
 
-  modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
-    next: (result: TDSSafeAny) => {
-      if(result){
-          this.partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(result.value, this.partner)};
-          this.mappingAddress(this.partner);
-          if(result.type == 'confirm') {
-            this.updatePartner(result.type);
-          }
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (result: any) => {
+        if(result){
+            this.partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(result.value, this.partner)};
+            this.mappingAddress(this.partner);
+            if(result.type == 'confirm') {
+                this.updatePartner(result.type);
+            }
+        }
+        this.cdRef.detectChanges();
       }
-      this.cdRef.detectChanges();
-    }
   })}
 
   checkAddressByPhone() {
     let phone = this.partner.Phone;
     if (TDSHelperString.hasValueString(phone)) {
-
-      this.commonService.checkAddressByPhone(phone)
-        .pipe(takeUntil(this.destroy$)).subscribe(
-          {
-            next: (res: any) => {
-              this.message.info('Chưa có dữ liệu');
-            },
-            error: error => {
-              this.message.error(`${error?.error?.message}`)
-            }
-          })
+      this.commonService.checkAddressByPhone(phone).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.message.info('Chưa có dữ liệu');
+        },
+        error: (error: any) => {
+          this.message.error(`${error?.error?.message}`)
+        }
+      })
     }
   }
 
@@ -618,6 +647,254 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     (this._wards as any) = null;
     (this._street as any) = null;
     delete this.tempPartner;
+
+    this.suggestText = null;
+    this.isSuggestion = false;
+  }
+
+  onSearchSuggestion(text: any) {
+    this.suggestText = text || null;
+    if(!TDSHelperString.hasValueString(text)) return;
+
+    text = TDSHelperString.stripSpecialChars(text.toLowerCase().trim());
+    text = encodeURIComponent(text);
+
+    this.suggestData = this.suggestService.suggest(text)
+      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
+  }
+
+  onSelectSuggestion(event: SuggestAddressDto) {
+    if(event) {
+      this.isSuggestion = true;
+      this.partner.Street = event.Address;
+      this._street = event.Address;
+
+      this.partner.CityCode = event.CityCode;
+      this.partner.CityName = event.CityName;
+      this.partner.City = {
+        code: event.CityCode,
+        name: event.CityName
+      }
+
+      this._cities = {
+        code: event.CityCode,
+        name: event.CityName
+      }
+
+      if(this.lstCity && this.lstCity.length == 0) {
+        this.loadCity();
+      }
+
+      this.partner.DistrictCode = event.DistrictCode;
+      this.partner.DistrictName = event.DistrictName;
+      this.partner.District = {
+        code: event.DistrictCode,
+        name: event.DistrictName,
+        cityName: event.CityCode,
+        cityCode: event.CityName
+      }
+
+      this._districts = {
+        code: event.DistrictCode,
+        name: event.DistrictName,
+        cityCode: event.CityCode,
+        cityName: event.CityName
+      }
+
+      if(this.lstDistrict && this.lstDistrict.length == 0) {
+        this.loadDistricts(event.CityCode);
+      }
+
+      this.partner.WardCode = event.WardCode;
+      this.partner.WardName = event.WardName;
+      this.partner.Ward = {
+        code: event.WardCode,
+        name: event.WardName,
+        cityCode: event.CityCode,
+        cityName: event.CityName,
+        districtCode: event.DistrictCode,
+        districtName: event.DistrictName
+      }
+
+      this._wards = {
+        code: event.WardCode,
+        name: event.WardName,
+        cityName: event.CityCode,
+        cityCode: event.CityName,
+        districtCode: event.DistrictCode,
+        districtName: event.DistrictName
+      }
+
+      if(this.lstWard && this.lstWard.length == 0) {
+        this.loadWards(event.DistrictCode);
+      }
+
+      this.cdRef.detectChanges();
+    }
+  }
+
+  loadCity(): void {
+    this.lstCity = [];
+    this.suggestService.setCity();
+    this.suggestService.getCity().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.lstCity = [...res];
+          this.citySubject.next(res);
+        }
+      });
+  }
+
+  loadDistricts(code: string) {
+    this.lstDistrict = [];
+    this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.lstDistrict = [...res];
+          this.districtSubject.next(res);
+        }
+      });
+  }
+
+  loadWards(code: string) {
+    this.lstWard = [];
+    this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.lstWard = [...res];
+          this.wardSubject.next(res);
+        }
+      });
+  }
+
+  handleCityFilter(value: string) {
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstCity?.filter((x: SuggestCitiesDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      this.citySubject.next(result);
+    }
+  }
+
+  handleFilterDistrict(value: string) {
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstDistrict?.filter((x: SuggestDistrictsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      this.districtSubject.next(result);
+    }
+  }
+
+  handleFilterWard(value: string) {
+    if(TDSHelperString.hasValueString(value)){
+      let result = this.lstWard?.filter((x: SuggestWardsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
+      this.wardSubject.next(result);
+    }
+  }
+
+  changeCity(city: SuggestCitiesDTO) {
+    this.partner.CityCode = null;
+    this.partner.CityName = null;
+    this.partner.City = null as any;
+    this._cities = null as any;
+
+    this.partner.DistrictCode = null;
+    this.partner.DistrictName = null;
+    this.partner.District = null;
+    this._districts = null as any;
+
+    this.partner.WardCode = null;
+    this.partner.WardName = null;
+    this.partner.Ward = null as any;
+    this._wards = null as any;
+
+    if(city && city.code) {
+      this.partner.CityCode = city.code;
+      this.partner.CityName = city.name;
+      this.partner.City = {
+        code: city.code,
+        name: city.name
+      }
+
+      this._cities = {
+        code: city.code,
+        name: city.name
+      }
+
+      this.loadDistricts(city.code);
+    }
+
+    this.mappingStreet();
+    this.cdRef.detectChanges();
+  }
+
+  changeDistrict(district: SuggestDistrictsDTO) {
+    this.partner.DistrictCode = null;
+    this.partner.DistrictName = null;
+    this.partner.District = null;
+    this._districts = null as any;
+
+    this.partner.WardCode = null;
+    this.partner.WardName = null;
+    this.partner.Ward = null as any;
+    this._wards = null as any;
+
+    if(district && district.code) {
+      this.partner.DistrictCode = district.code;
+      this.partner.DistrictName = district.name;
+      this.partner.District = {
+        code: district.code,
+        name: district.name,
+        cityCode: district.cityCode,
+        cityName: district.cityName
+      }
+
+      this._districts = {
+        code: district.code,
+        name: district.name,
+        cityCode: district.cityCode,
+        cityName: district.cityName
+      }
+
+      this.loadWards(district.code);
+    }
+
+    this.mappingStreet();
+    this.cdRef.detectChanges();
+  }
+
+  changeWard(ward: SuggestWardsDTO) {
+    this.partner.WardCode = null;
+    this.partner.WardName = null;
+    this.partner.Ward = null as any;
+    this._wards = null as any;
+
+    if(ward && ward.code) {
+      this.partner.WardCode = ward.code;
+      this.partner.WardName = ward.name;
+      this.partner.Ward = {
+        code: ward.code,
+        name: ward.name,
+        cityCode: ward.cityCode,
+        cityName: ward.cityName,
+        districtCode: ward.districtCode,
+        districtName: ward.districtName
+      }
+
+      this._wards = {
+        code: ward.code,
+        name: ward.name,
+        cityName: ward.cityCode,
+        cityCode: ward.cityName,
+        districtCode: ward.districtCode,
+        districtName: ward.districtName
+      }
+    }
+
+    this.mappingStreet();
+    this.cdRef.detectChanges();
+  }
+
+  mappingStreet(){
+    let street = (TDSHelperString.hasValueString(this.partner.WardName) ? (this.partner.WardName + ', ') : '')
+      + (TDSHelperString.hasValueString(this.partner.DistrictName) ? (this.partner.DistrictName + ', ') : '')
+      + (TDSHelperString.hasValueString(this.partner.CityName) ? this.partner.CityName : '');
+
+    this.partner.Street = street;
+    this._street = street as any;
   }
 
 }

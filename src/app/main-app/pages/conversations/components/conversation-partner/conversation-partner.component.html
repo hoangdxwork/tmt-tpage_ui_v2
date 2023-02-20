@@ -161,13 +161,11 @@
                             <div class="text-neutral-1-400 font-regular desktop:text-body-2 laptop:text-caption-1 font-sans">Phiếu bán hàng gần nhất</div>
 
                             <div class="flex gap-2 items-center" *ngIf="lastInvoice">
-
                                 <drawer-detail-bill [isBillNearest]="true" [bill]="lastInvoice"></drawer-detail-bill>
-
-                                <tds-tag status='primary' class="w-full truncate" type="outline" [status]="lastInvoice.ShowState | getColorStatusShowState">
-                                  {{ lastInvoice.ShowState }}
+                                <tds-tag status='primary' class="w-full truncate" style="width: auto;"
+                                    type="outline" [status]="lastInvoice.ShowState | getColorStatusShowState">
+                                    {{lastInvoice.ShowState}}
                                 </tds-tag>
-
                             </div>
                         </div>
                     </div>
@@ -339,28 +337,72 @@
 
                   <tds-form-field>
                       <tds-label>Ghi chú</tds-label>
-                      <textarea tdsInput placeholder="Nhập ghi chú" class="resize-none no-scrollbar"  [(ngModel)]="partner.Comment" [ngModelOptions]="{standalone: true}"></textarea>
+                      <textarea tdsInput placeholder="Nhập ghi chú" class="resize-none no-scrollbar" [(ngModel)]="partner.Comment" [ngModelOptions]="{standalone: true}"></textarea>
                   </tds-form-field>
 
                   <div class="flex flex-col gap-y-2">
                       <tds-label>Địa chỉ</tds-label>
                       <div class="flex gap-x-2 items-center">
+
                         <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
-                            <input tdsInput autocomplete="off" class="w-full truncate" placeholder="Địa chỉ" [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"/>
+                          <!-- <input tdsInput autocomplete="off" class="w-full truncate" placeholder="Địa chỉ" [(ngModel)]="" [ngModelOptions]="{standalone: true}"/> -->
+
+                          <tds-select valueField="Address" textField="Address"
+                              placeholder='Nhập địa chỉ cần tìm' disabledField="isActive"
+                              [data]="suggestData | async" [allowClear]="true" [valuePrimitive]="false"
+                              [autoClearSearchValue]="true" [serverSearch]="true"
+                              [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}"
+                              (onSearch)="onSearchSuggestion($event)" (selectChange)="onSelectSuggestion($event)">
+                          </tds-select>
                         </tds-form-field>
+
                         <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip [tooltipTitle]="partner.Street ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'">
                             <span class="flex items-center">
-                            <i class="tdsi-location-fill"></i>
+                               <i class="tdsi-location-fill"></i>
                             </span>
                         </button>
                       </div>
+                  </div>
+
+                  <!-- Suggest -->
+                  <div *ngIf="isSuggestion" class="flex flex-col overflow-hidden">
+                    <div class="w-full flex mb-2">
+                      <tds-form-field class="w-full">
+                        <tds-select valueField="code" textField="name" placeholder='Tỉnh/Thành' [valuePrimitive]="false"
+                          (onSearch)="handleCityFilter($event)" [(ngModel)]="partner.City" [ngModelOptions]="{standalone: true}"
+                          disabledField="isActive" [data]="lstCity"
+                          [allowClear]="true" (selectChange)="changeCity($event)">
+                        </tds-select>
+                      </tds-form-field>
+                    </div>
+                    <div class="w-full flex mb-2">
+                      <tds-form-field class="w-full">
+                        <tds-select valueField="code" textField="name" placeholder='Quận/Huyện' [valuePrimitive]="false"
+                          (onSearch)="handleFilterDistrict($event)" [(ngModel)]="partner.District" [ngModelOptions]="{standalone: true}"
+                          disabledField="isActive" [data]="lstDistrict" [allowClear]="true" (selectChange)="changeDistrict($event)">
+                        </tds-select>
+                      </tds-form-field>
+                    </div>
+                    <div class="w-full flex mb-2">
+                      <tds-form-field class="w-full">
+                        <tds-select valueField="code" textField="name" placeholder='Phường/Xã' [valuePrimitive]="false"
+                          (onSearch)="handleFilterWard($event)" [(ngModel)]="partner.Ward" [ngModelOptions]="{standalone: true}"
+                           disabledField="isActive" [data]="lstWard"
+                          [allowClear]="true" (selectChange)="changeWard($event)">
+                        </tds-select>
+                      </tds-form-field>
+                    </div>
+                    <div class="w-full flex">
+                      <tds-form-field class="w-full">
+                           <input tdsInput autocomplete="off" class="w-full truncate" placeholder="Địa chỉ" [(ngModel)]="partner.Street" [ngModelOptions]="{standalone: true}"/>
+                      </tds-form-field>
+                    </div>
                   </div>
 
                   <div class="mt-4">
                       <button type="button" tds-button class="w-[100px]" type="submit" color="primary" (click)="onSaveEdit()">Lưu</button>
                       <button type="button" tds-button class="ml-3 w-[100px]" color="secondary" (click)="onCancelEdit()">Hủy bỏ</button>
                   </div>
-
               </div>
           </div>
 
