@@ -101,6 +101,7 @@ import { TableAllOrderComponent } from './components/table-all-order/table-all-o
 import { TableDeletedOrderComponent } from './components/table-deleted-order/table-deleted-order.component';
 import { ImportProductLivecampaignComponent } from './components/import-product-livecampaign/import-product-livecampaign.component';
 import { GenerateTagAttributesFacade } from '@app/services/facades/generate-tag-attributes.facade';
+import { TDSCarouselModule } from 'tds-ui/carousel';
 
 const cmp =[
   LiveCampaignComponent,
@@ -219,7 +220,8 @@ const FACADE = [
     TDSConversationsModule,
     OrderModule,
     DirectivesModule,
-    TDSImageModule
+    TDSImageModule,
+    TDSCarouselModule
   ],
   providers: [
     ...SERVICES,
