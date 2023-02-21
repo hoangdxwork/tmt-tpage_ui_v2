@@ -551,7 +551,11 @@ export class DetailBillComponent implements OnInit {
 
               this.removeCheckedRow();
               this.loadData(this.pageSize, this.pageIndex);
-              this.loadInventoryIds();
+
+              if(res.Success == true && !res.Error) {
+                this.loadInventoryIds();
+              }
+
               this.isLoading = false;
             },
             error:error => {
