@@ -45,9 +45,23 @@
       </div>
 
     </div>
-    <div class="flex justify-center">
-      <div class="h-[350px] flex items-center w-2/3 rounded-xl bg-neutral-3-50 border overflow-hidden">
-        <img tds-image class="object-cover h-full w-full" tdsSrc="{{data?.IRAttachmentUrl}}" alt="">
+    <div class="flex justify-center col-span-1 overflow-hidden">
+          <div class="w-full overflow-x-hidden">
+            <div class="w-full flex justify-end items-center overflow-hidden relative">
+              <div id="scroll-product" class="flex gap-6 snap-x snap-mandatory overflow-x-auto tds-custom-scroll">
+                <!-- <div class="snap-start shrink-0 h-[350px] flex items-center rounded-xl bg-neutral-3-50 border overflow-hidden">
+                  <img tds-image class="object-cover h-full w-full" tdsSrc="{{data?.IRAttachmentUrl}}" alt="">
+                </div> -->
+                <div *ngFor="let item of data?.IRAttachmentUrls" #itemProduct class="snap-start shrink-0">
+                    <div *ngIf="item; else noPicture" class="relative rounded-xl bg-neutral-3-50 border overflow-hidden">
+                      <img tds-image tdsSrc="{{ item }}" alt="" class="w-full h-[350px] object-cover">
+                    </div>
+                    <ng-template #noPicture>
+                      <img tds-image tdsSrc="../assets/imagesv2/errorPic.svg" alt="" class="w-full h-[350px] rounded-md p-4">
+                    </ng-template>
+                </div>
+              </div>
+          </div>
       </div>
     </div>
   </div>
@@ -57,18 +71,6 @@
       <button class="mr-2 min-w-[100px]" tds-button color="secondary" (click)="onCancel()">
         Đóng
       </button>
-
-      <!-- <button class="mr-2" tds-button color="info" (click)="onBefore()">
-        <span class="flex items-center">
-          <i class="tdsi-arrow-left-line text-lg leading-none mr-2"></i>Đơn trước
-        </span>
-      </button>
-
-      <button tds-button color="info" (click)="onNext()">
-        <span class="flex items-center">
-          Đơn tiếp theo<i class="tdsi-arrow-right-line text-lg leading-none ml-2"></i>
-        </span>
-      </button> -->
     </div>
   </div>
 </tds-spin>

@@ -541,6 +541,7 @@ export interface FastSaleOrderModelDTO {
   PageName: string;
   Tags: string;
   IRAttachmentUrl: string;
+  IRAttachmentUrls?: string[];
   IsDeposited?: boolean;
   LiveCampaignName: string;
   LiveCampaignId?: string;
