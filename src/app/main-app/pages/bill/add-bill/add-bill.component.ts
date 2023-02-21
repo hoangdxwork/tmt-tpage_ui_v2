@@ -1384,6 +1384,7 @@ export class AddBillComponent implements OnInit {
                 this.productService.lstInventory = null; // mapping để check tồn kho
                 this.loadInventoryWarehouseId(warehouseId);
             }
+
             this.loadInventoryIds(data);
           }
 

@@ -404,7 +404,10 @@ export class DetailBillComponent implements OnInit{
                 }
 
                 this.loadData();
-                this.loadInventoryIds();
+
+                if(res.Success == true && !res.Error) {
+                  this.loadInventoryIds();
+                }
             }
 
             that.isProcessing = false;
