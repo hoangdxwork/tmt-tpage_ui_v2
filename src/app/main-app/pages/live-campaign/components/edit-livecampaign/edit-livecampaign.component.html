@@ -428,14 +428,17 @@
 
 <!-- Bật tắt sản phẩm -->
 <ng-template #contentTemplateIsActive>
-  <div class="w-full ml-4 mr-4">
-    <div class="w-full flex items-center mb-2">
-        <span class="text-body-2 mr-4">Tắt hoạt động sản phẩm:</span>
-        <tds-checkbox size="md" [(ngModel)]="unactiveProduct" (ngModelChange)="onChangeIsActiveProduct($event, 'unactive')"></tds-checkbox>
-    </div>
-    <div class="w-full flex items-center mt-2">
-        <span class="text-body-2 mr-4">Bật hoạt động sản phẩm:</span>
-        <tds-checkbox size="md" [(ngModel)]="activeProduct" (ngModelChange)="onChangeIsActiveProduct($event, 'active')"></tds-checkbox>
+  <div class="w-fullml-1 mr-1">
+    <p class="text-body-2 mb-2">Hoạt động sản phẩm</p>
+    <div class="flex items-center">
+      <div class="w-full flex items-center">
+          <span class="text-body-2 mr-2">Bật</span>
+          <tds-checkbox size="md" [(ngModel)]="activeProduct" (ngModelChange)="onChangeIsActiveProduct($event, 'active')"></tds-checkbox>
+      </div>
+      <div class="w-full flex items-center">
+          <span class="text-body-2 mr-2">Tắt</span>
+          <tds-checkbox size="md" [(ngModel)]="unactiveProduct" (ngModelChange)="onChangeIsActiveProduct($event, 'unactive')"></tds-checkbox>
+      </div>
     </div>
   </div>
 </ng-template>
