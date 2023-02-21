@@ -656,9 +656,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     this.suggestText = text || null;
     if(!TDSHelperString.hasValueString(text)) return;
 
-    text = TDSHelperString.stripSpecialChars(text.toLowerCase().trim());
-    text = encodeURIComponent(text);
-
     this.suggestData = this.suggestService.suggest(text)
       .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
   }
