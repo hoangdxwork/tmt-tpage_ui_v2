@@ -144,7 +144,7 @@
                                 </div>
                                 <div class="flex items-center">
                                     <div class="rounded-full bg-neutral-3-100 px-2">
-                                        <span class="text-neutral-1-700 font-semibold">{{ dataModel.ShowShipStatus || '---' }}</span>
+                                        <span class="text-neutral-1-700 font-semibold">{{ dataModel.ShipPaymentStatus || '---' }}</span>
                                     </div>
                                     <span class="text-info-500 font-semibold ml-2 w-1/3 truncate" *ngIf="dataModel.TrackingRef" (click)="onOpenTrackingUrl(dataModel)">{{ dataModel.TrackingRef }}</span>
                                 </div>
@@ -512,11 +512,17 @@
                                 <span *ngIf="!dataModel.DeliveryNote">---</span>
                             </div>
                         </div>
-                        <tds-modal [(visible)]="modalImages" title="Hình ảnh thanh toán" [size]="'lg'" [bodyStyle]="{ 'padding' : '0px' }">
+                        <tds-modal [(visible)]="modalImages" title="Hình ảnh thanh toán" [size]="'lg'" [bodyStyle]="{ 'padding' : '0px' }" (onCancel)="handleCancel()">
                             <ng-container *tdsModalContent>
-                              <div *ngIf="dataModel.IRAttachmentUrl != null" class="w-full p-4 grid grid-cols-3 gap-4 justify-items-center overflow-hidden overflow-y-auto max-h-[350px] tds-custom-scroll">
-                                <div *ngFor="let item of dataModel?.IRAttachmentUrls">
-                                  <img class="max-h-[250px] max-w-[200px] object-cover" src="{{ item }}" alt="">
+                              <div *ngIf="dataModel.IRAttachmentUrl != null" class="w-full h-[350px] flex justify-items-center overflow-hidden overflow-y-auto p-4">
+                                <div class="pl-4 h-full w-full flex bg-neutral-1-50 rounded-xl border">
+                                    <tds-carousel [tdsEffect]="'scrollx'" class="h-[350px] w-full truncate">
+                                        <div tds-carousel-content *ngFor="let img of dataModel?.IRAttachmentUrls">
+                                            <div class="flex justify-center items-center">
+                                            <img tds-image tdsSrc="{{ img }}" alt="" />
+                                            </div>
+                                        </div>
+                                    </tds-carousel>
                                 </div>
                               </div>
                               <div *ngIf="dataModel.IRAttachmentUrl == null">

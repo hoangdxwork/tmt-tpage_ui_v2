@@ -5,7 +5,7 @@
           <div class="w-full grid grid-cols-2 gap-x-8">
               <div class="flex gap-x-4">
                   <div class="w-1/3">
-                      <upload-pictures-wall (getResult)="getUrl($event)" [isAvatar]="true" [size]="84" [data]="partnerId ? _form.controls['ImageUrl'].value : _form.controls['Image'].value">
+                      <upload-pictures-wall (getResult)="getUrl($event)" (getBase64)="getBase64($event)" [isAvatar]="true" [size]="84" [data]="partnerId ? _form.controls['ImageUrl'].value : _form.controls['Image'].value">
                       </upload-pictures-wall>
                   </div>
                   <div class="w-2/3 flex flex-col gap-y-4">

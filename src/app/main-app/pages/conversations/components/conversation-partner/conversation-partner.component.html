@@ -350,7 +350,7 @@
                           <tds-select valueField="Address" textField="Address"
                               placeholder='Nhập địa chỉ cần tìm' disabledField="isActive"
                               [data]="suggestData | async" [allowClear]="true" [valuePrimitive]="false"
-                              [autoClearSearchValue]="true" [serverSearch]="true"
+                              [autoClearSearchValue]="true" [serverSearch]="true" [tdsInputDebounce]="300"
                               [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}"
                               (onSearch)="onSearchSuggestion($event)" (selectChange)="onSelectSuggestion($event)">
                           </tds-select>

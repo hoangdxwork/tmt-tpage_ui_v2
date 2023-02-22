@@ -1,3 +1,4 @@
+import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { FormGroup } from '@angular/forms';
 import { PartnerDetailDTO } from './../../dto/partner/partner-detail.dto';
 import { ChangePartnerPriceListDTO } from './../../dto/partner/change-partner-pricelist.dto';
@@ -86,5 +87,19 @@ export class PreparePartnerHandler {
                 }
             })
         }
+    }
+
+    public prepareDataModel(dataModel: FastSaleOrder_DefaultDTOV2, model: any, partner: any) {
+        if(model.Account != null && dataModel.Account == null) {
+            dataModel.Account = model.Account;
+            dataModel.AccountId = model.AccountId || model.Account?.Id;
+        }
+
+        if(partner != null && dataModel.Partner == null) {
+            dataModel.Partner = partner;
+            dataModel.PartnerId = partner.Id;
+        }
+
+        return dataModel;
     }
 }

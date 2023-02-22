@@ -1,3 +1,5 @@
+import { TDSImageModule } from 'tds-ui/image';
+import { TDSCarouselModule } from 'tds-ui/carousel';
 import { ChatomniCommentService } from './../../services/chatomni-service/chatomni-comment.service';
 import { ChatomniConversationFacade } from './../../services/chatomni-facade/chatomni-conversation.facade';
 import { PrepareDetailsOrderLineHandler } from './../../handler-v2/order-handler/prepare-details-orderLine.handler';
@@ -225,6 +227,8 @@ const SERVICES = [
     TDSTimelineModule,
     DirectivesModule,
     TDSEmptyModule,
+    TDSCarouselModule,
+    TDSImageModule
   ],
   providers: [
    ...SERVICES,

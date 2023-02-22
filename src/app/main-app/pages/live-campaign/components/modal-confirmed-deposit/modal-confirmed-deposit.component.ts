@@ -1,5 +1,6 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
-import { finalize } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { FastSaleOrderModelDTO, ListUpdateDepositDTO, UpdateDepositDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
@@ -9,16 +10,15 @@ import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'modal-confirmed-deposit',
-  templateUrl: './modal-confirmed-deposit.component.html'
+  templateUrl: './modal-confirmed-deposit.component.html',
+  providers: [ TDSDestroyService ]
 })
 export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
 
   @Input() data!: FastSaleOrderModelDTO;
-  @Output() eventOrderBefore = new EventEmitter();
-  @Output() eventOrderNext = new EventEmitter();
-  @Output() eventConfirmed = new EventEmitter();
 
   isLoading: boolean = false;
+  isConfirmed: boolean = false;
 
   currentDeposit: number = 0;
 
@@ -41,14 +41,15 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
   constructor(
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
-    private fastSaleOrderService: FastSaleOrderService
+    private fastSaleOrderService: FastSaleOrderService,
+    private destroy$: TDSDestroyService,
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
   }
 
   ngOnInit(): void {
-    console.log(this.data);
+
   }
 
   onConfirmed() {
@@ -56,15 +57,21 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
       let model = this.prepareModel();
 
       this.isLoading = true;
-      this.fastSaleOrderService.listUpdateDeposit(model)
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe(res => {
-          this.data.IsDeposited = true;
-          this.message.success(Message.UpdatedSuccess);
-          this.eventConfirmed.emit(this.currentDeposit);
-        }, error => {
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-        });
+      this.fastSaleOrderService.listUpdateDeposit(model).pipe(takeUntil(this.destroy$)).subscribe(
+        {
+          next: res => {
+            this.data.IsDeposited = true;
+            this.message.success(Message.UpdatedSuccess);
+
+            this.isConfirmed = true;
+            this.isLoading = false;
+          }, 
+          error: error => {
+            this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+            this.isLoading = false;
+          }
+        }
+      );
     }
   }
 
@@ -83,16 +90,8 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
     return result;
   }
 
-  onBefore() {
-
-  }
-
-  onNext() {
-
-  }
-
   onCancel() {
-    this.modalRef.destroy();
+    this.modalRef.destroy(this.isConfirmed);
   }
 
   getAmountDeposit(){

@@ -132,7 +132,7 @@ export class DetailBillPaymentComponent implements OnInit {
 
   loadTags(){
     let type = "fastsaleorder";
-    this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
+    this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
         this.lstTags = res.value;
     });
   }
@@ -141,11 +141,15 @@ export class DetailBillPaymentComponent implements OnInit {
     let filters = this.oDataLiveCampaignBillService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe(res => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = res.value;
-    }, error => {
-        this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+    this.getViewData(params).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: res => {
+          this.count = res['@odata.count'] as number;
+          this.lstOfData = res.value;
+      }, 
+        error: error => {
+          this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+      }
     });
   }
 
@@ -241,22 +245,25 @@ export class DetailBillPaymentComponent implements OnInit {
       return;
     }
     let model = { OrderId: id, Tags: tags };
-    this.fastSaleOrderService.assignTagFastSaleOrder(model)
-      .subscribe((res: TDSSafeAny) => {
-        if(res && res.OrderId) {
-          var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
-          if(exits) {
-            exits.Tags = JSON.stringify(tags)
+    this.fastSaleOrderService.assignTagFastSaleOrder(model).pipe(takeUntil(this.destroy$)).subscribe(
+      {
+        next: (res: TDSSafeAny) => {
+          if(res && res.OrderId) {
+            var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+            if(exits) {
+              exits.Tags = JSON.stringify(tags)
+            }
+  
+            this.indClickTag = -1;
+            this.modelTags = [];
+            this.message.success('Gán nhãn thành công!');
           }
-
+  
+      }, 
+        error: error => {
           this.indClickTag = -1;
-          this.modelTags = [];
-          this.message.success('Gán nhãn thành công!');
-        }
-
-    }, error => {
-      this.indClickTag = -1;
-      this.message.error('Gán nhãn thất bại!');
+          this.message.error('Gán nhãn thất bại!');
+      }
     });
   }
 
@@ -271,9 +278,10 @@ export class DetailBillPaymentComponent implements OnInit {
       }
     });
 
-    modal.componentInstance?.eventConfirmed.subscribe(res => {
-      data.IsDeposited = true;
-      data.AmountDeposit = res;
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      if(res) {
+        this.refreshData();
+      }
     });
   }
 

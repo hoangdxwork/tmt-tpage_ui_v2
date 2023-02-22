@@ -362,6 +362,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
                   }
 
                   this.mappingAddress(this.quickOrderModel);
+                  this.suggestText = this.quickOrderModel.Address;
                   this.postEvent.spinLoadingTab$.emit(false);
 
                   this.isLoading = false;
@@ -393,6 +394,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           }
 
           this.mappingAddress(this.quickOrderModel);
+          this.suggestText = this.quickOrderModel.Address;
           this.checkSelectNote();
           this.cdRef.detectChanges();
       }
@@ -1699,7 +1701,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     }
 
     if(this.clickPrint == '_click_print') {
-      this.orderPrintService.printId(id, this.quickOrderModel, message);
+      this.orderPrintService.printId(id, this.quickOrderModel, null);
       this.clickPrint = '';
     } else {
       let print = type && !this.saleOnlineSettings?.isDisablePrint;
@@ -1813,9 +1815,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.suggestText = text || null;
     if(!TDSHelperString.hasValueString(text)) return;
 
-    text = TDSHelperString.stripSpecialChars(text.toLowerCase().trim());
-    text = encodeURIComponent(text);
-
     this.suggestData = this.suggestService.suggest(text)
       .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
   }
@@ -1846,7 +1845,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         cityName: event.CityName
       }
 
-      if(this.lstDistrict && this.lstDistrict.length == 0) {
+      if(event.CityCode) {
         this.loadDistricts(event.CityCode);
       }
 
@@ -1861,7 +1860,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         districtName: event.DistrictName
       }
 
-      if(this.lstWard && this.lstWard.length == 0) {
+      if(event.DistrictCode) {
         this.loadWards(event.DistrictCode);
       }
 
@@ -1896,6 +1895,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         next: (res: any) => {
           this.lstWard = [...res];
           this.wardSubject.next(res);
+          this.cdRef.detectChanges();
         }
       });
   }
