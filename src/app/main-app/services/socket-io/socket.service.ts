@@ -35,7 +35,7 @@ export class SocketService {
   }
 
   initSocket(): void {
-    let hostname = 'tmt30.tpos.vn';
+    let hostname = this.document.location.hostname;
 
     this.socket = io(environment.socketUrl, {
       transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
