@@ -1882,7 +1882,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstDistrict = [...res];
-          this.districtSubject.next(res);debugger
+          this.districtSubject.next(res);
         }
       });
   }

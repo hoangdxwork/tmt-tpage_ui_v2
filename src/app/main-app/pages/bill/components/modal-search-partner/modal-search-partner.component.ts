@@ -33,16 +33,18 @@ export class ModalSearchPartnerComponent implements OnInit {
 
   loadCustomers() {
     this.isLoading = true;
-    this.partnerService.getCustomers(this.page, this.limit, this.keyFilter)
-      .subscribe((res: any) => {
-        if(TDSHelperArray.hasListValue(res.value)) {
-            this.lstCustomers = res.value;
+    this.partnerService.getCustomers(this.page, this.limit, this.keyFilter).subscribe({
+      next: (res: any) => {
+        if(res?.value && TDSHelperArray.hasListValue(res.value)) {
+            this.lstCustomers = [...res.value];
             this.isLoading = false;
         }
-      }, error => {
+      }, 
+      error: (error: any) => {
           this.isLoading = false;
           this.message.error('Load danh sách khách hàng đã xảy ra lỗi');
-      })
+      }
+    })
   }
 
   onSearch() {

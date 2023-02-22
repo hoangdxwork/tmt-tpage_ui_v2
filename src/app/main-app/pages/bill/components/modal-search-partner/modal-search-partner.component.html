@@ -19,21 +19,27 @@
             [listData]="lstCustomers">
             <thead>
                   <tr style="width: 100%;">
-                      <th style="width: 30%;">Tên</th>
-                      <th style="width: 30%;">Điện thoại</th>
-                      <th style="width: 40%;">Địa chỉ</th>
-                      <!-- <th style="width: 10%;">Thao tác</th> -->
+                      <th style="width: 20%;">Tên</th>
+                      <th style="width: 15%;">Điện thoại</th>
+                      <th style="width: 30%;">Địa chỉ</th>
+                      <th style="width: 10%;">Zalo</th>
+                      <th style="width: 10%;">Facebook</th>
+                      <th style="width: 15%;">Ngày tạo</th>
                   </tr>
             </thead>
             <tbody>
                 <ng-template ngFor let-data [ngForOf]="TableListPartner.data">
-                    <tr (click)="selectCustomer(data)">
+                    <tr (click)="selectCustomer(data)" class="cursor-pointer">
                         <td class="font-semibold">{{ data.DisplayName || data.Name }}</td>
                         <td>{{ data.Phone }}</td>
                         <td>{{ data.Street }}</td>
-                        <!-- <td>
-                            <button tds-button color="success" (click)="selectCustomer(data)">Chọn</button>
-                        </td> -->
+                        <td>{{ data.Zalo }}</td>
+                        <td>
+                            <a href="https://facebook.com/{{ data.FacebookId }}" target="_blank" class="hover:underline text-info-500 font-semibold">
+                                {{ data.FacebookId }}
+                            </a>
+                        </td>
+                        <td>{{ data.DateCreated | date:'dd/MM/yyyy HH:mm' }}</td>
                     </tr>
                 </ng-template>
             </tbody>
