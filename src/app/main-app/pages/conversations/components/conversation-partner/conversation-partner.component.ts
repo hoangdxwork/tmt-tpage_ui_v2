@@ -654,7 +654,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
 
   onSearchSuggestion(text: any) {
     this.suggestText = text || null;
-    
+
     if(!TDSHelperString.hasValueString(text)) {
       this.suggestText = this.partner?.Street || this._street;
       this.suggestData = new Observable<any>();
@@ -703,7 +703,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
         cityName: event.CityName
       }
 
-      if(this.lstDistrict && this.lstDistrict.length == 0) {
+      if(event.CityCode) {
         this.loadDistricts(event.CityCode);
       }
 
@@ -727,7 +727,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
         districtName: event.DistrictName
       }
 
-      if(this.lstWard && this.lstWard.length == 0) {
+      if(event.DistrictCode) {
         this.loadWards(event.DistrictCode);
       }
 

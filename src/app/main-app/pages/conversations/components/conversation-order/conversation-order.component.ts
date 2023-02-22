@@ -1843,7 +1843,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         cityName: event.CityName
       }
 
-      if(this.lstDistrict && this.lstDistrict.length == 0) {
+      if(event.CityCode) {
         this.loadDistricts(event.CityCode);
       }
 
@@ -1858,7 +1858,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         districtName: event.DistrictName
       }
 
-      if(this.lstWard && this.lstWard.length == 0) {
+      if(event.DistrictCode) {
         this.loadWards(event.DistrictCode);
       }
 
@@ -1882,7 +1882,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstDistrict = [...res];
-          this.districtSubject.next(res);
+          this.districtSubject.next(res);debugger
         }
       });
   }
@@ -1893,6 +1893,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         next: (res: any) => {
           this.lstWard = [...res];
           this.wardSubject.next(res);
+          this.cdRef.detectChanges();
         }
       });
   }
