@@ -335,7 +335,7 @@ export class ModalEditPartnerComponent implements OnInit {
               this.modal.destroy(this.partnerId);
               this.isLoading = false;
             },
-            error: error => {
+            error: (error) => {
               this.message.error('Cập nhật khách hàng thất bại!');
               this.isLoading = false;
             }
@@ -470,6 +470,12 @@ export class ModalEditPartnerComponent implements OnInit {
     }
   }
 
+  getBase64(base64: any) {
+    if (base64) {
+      this._form.controls["Image"].setValue(base64);
+    }
+  }
+
   selectItem(item: AddressesV2) {
     if (item && item.CityCode) {
       this._cities = {
@@ -516,13 +522,14 @@ export class ModalEditPartnerComponent implements OnInit {
 
   prepareModel() {
     const formModel = this._form.value;
+    
     if (formModel.Name != null) {
       this.data['Name'] = formModel.Name;
     }
-    if (formModel.Image != null && !this.partnerId) {
-      this.data['Image'] = formModel.ImageUrl
+    if (formModel.Image != null) {
+      this.data['Image'] = formModel.Image;
     }
-    if (formModel.ImageUrl != null && this.partnerId) {
+    if (formModel.ImageUrl != null) {
       this.data['ImageUrl'] = formModel.ImageUrl;
     }
     if (formModel.Ref != null) {
