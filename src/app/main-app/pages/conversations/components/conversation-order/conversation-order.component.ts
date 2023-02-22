@@ -362,6 +362,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
                   }
 
                   this.mappingAddress(this.quickOrderModel);
+                  this.suggestText = this.quickOrderModel.Address;
                   this.postEvent.spinLoadingTab$.emit(false);
 
                   this.isLoading = false;
@@ -393,6 +394,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           }
 
           this.mappingAddress(this.quickOrderModel);
+          this.suggestText = this.quickOrderModel.Address;
           this.checkSelectNote();
           this.cdRef.detectChanges();
       }
