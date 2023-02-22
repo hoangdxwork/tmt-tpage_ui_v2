@@ -654,7 +654,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
 
   onSearchSuggestion(text: any) {
     this.suggestText = text || null;
-    if(!TDSHelperString.hasValueString(text)) return;
+    
+    if(!TDSHelperString.hasValueString(text)) {
+      this.suggestText = this.partner.Street;
+      this.suggestData = new Observable<any>();
+      return;
+    };
 
     this.suggestData = this.suggestService.suggest(text)
       .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
