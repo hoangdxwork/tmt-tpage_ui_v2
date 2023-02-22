@@ -1699,7 +1699,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     }
 
     if(this.clickPrint == '_click_print') {
-      this.orderPrintService.printId(id, this.quickOrderModel, message);
+      this.orderPrintService.printId(id, this.quickOrderModel, null);
       this.clickPrint = '';
     } else {
       let print = type && !this.saleOnlineSettings?.isDisablePrint;
