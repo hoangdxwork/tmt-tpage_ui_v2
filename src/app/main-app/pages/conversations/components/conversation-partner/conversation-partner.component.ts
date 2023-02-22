@@ -656,7 +656,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     this.suggestText = text || null;
     
     if(!TDSHelperString.hasValueString(text)) {
-      this.suggestText = this.partner.Street || this._street;
+      this.suggestText = this.partner?.Street || this._street;
       this.suggestData = new Observable<any>();
       return;
     };
