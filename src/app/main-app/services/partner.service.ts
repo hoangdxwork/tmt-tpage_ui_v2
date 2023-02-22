@@ -188,6 +188,7 @@ export class PartnerService extends BaseSevice {
   getCustomers(page: number, limit: number, keyword: string): Observable<any> {
     let filter = "";
     if (TDSHelperString.hasValueString(keyword)) {
+      keyword = TDSHelperString.stripSpecialChars(keyword.trim());
       filter = `and (contains(DisplayName,'${keyword}') or contains(NameNoSign,'${keyword}') or contains(Name,'${keyword}') or contains(Phone,'${keyword}'))`
     }
 
@@ -351,5 +352,12 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData(api, null);
   }
 
+  searchCustomers(q: any) : Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/partner/searchcustomers?q=${q}`,
+      method: CoreApiMethodType.get,
+    }
 
+    return this.apiService.getData<any>(api, null);
+  }
 }

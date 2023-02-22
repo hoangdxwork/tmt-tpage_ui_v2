@@ -50,7 +50,7 @@
                       <tds-form-field>
                           <tds-select valueField="Id" textField="DisplayName" [valuePrimitive]="false"
                             placeholder='Chọn tên khách hàng' formControlName="Partner" (onSearch)="onSearchPartner($event)"
-                            (selectChange)="selectChangePartner($event)"
+                            (selectChange)="selectChangePartner($event)" [serverSearch]="true"
                             [data]="(lstCustomers | async) || []" [allowClear]="true">
 
                             <ng-template tds-label-tmp let-item="item">

@@ -107,7 +107,7 @@ export class AddBillComponent implements OnInit {
   private districtSubject = new BehaviorSubject<SuggestDistrictsDTO[]>([]);
   private wardSubject = new BehaviorSubject<SuggestWardsDTO[]>([]);
 
-  keyFilter!: '';
+  keyFilter!: string;
   page: number = 1;
   limit: number = 20;
 
@@ -547,7 +547,7 @@ export class AddBillComponent implements OnInit {
 
   onSearchPartner(event: any) {
     if (TDSHelperString.hasValueString(event)) {
-      this.keyFilter = event;
+      this.keyFilter = TDSHelperString.stripSpecialChars(event.trim().toLocaleLowerCase());
     } else {
       this.keyFilter = '';
     }
@@ -559,6 +559,15 @@ export class AddBillComponent implements OnInit {
     return this.partnerService.getById(partnerId).pipe(mergeMap((partner: TDSSafeAny) => {
       delete partner['@odata.context'];
       let model = this.prepareModel();
+
+      if(!model.Account) {
+        delete model.Account;
+      }
+
+      if(model.PartnerId == null || model.PartnerId == 0) {
+        model.PartnerId = partnerId || partner?.Id;
+        model.Partner = this.preparepartnerwithnull(partner);
+      }
 
       return this.fastSaleOrderService.onChangePartnerPriceList({ model: model })
         .pipe(map((data: TDSSafeAny) => {
@@ -575,6 +584,7 @@ export class AddBillComponent implements OnInit {
       next: ([data, partner]) => {
           if (data && partner) {
             this.preparePartnerHandler.prepareModel(this._form, data, partner, this.id);
+            this.dataModel = this.preparePartnerHandler.prepareDataModel(this.dataModel, data, partner);
             if(Number(this.id) == 0 || !this.id) {
               this.mappingDataAddress(data);
             }
@@ -592,6 +602,26 @@ export class AddBillComponent implements OnInit {
           this.message.error(`${error?.error?.message}` || 'Thay đổi khách hàng đã xảy ra lỗi!');
       }
     })
+  }
+
+  preparepartnerwithnull(partner: any) {
+    return {
+      Active: partner?.Active,
+      CityCode: partner?.CityCode,
+      CityName: partner?.CityName,
+      Customer: partner?.Customer,
+      DisplayName: partner?.DisplayName,
+      DistrictCode: partner?.DistrictCode,
+      DistrictName: partner?.DistrictName,
+      Id: partner?.Id,
+      Name: partner?.Name,
+      Phone: partner?.Phone,
+      Ref: partner?.Ref,
+      StatusText: partner?.StatusText,
+      Street: partner?.Street,
+      WardCode: partner?.WardCode,
+      WardName: partner?.WardName
+    } as any;
   }
 
   onChangePriceList(event: any) {
@@ -1587,8 +1617,8 @@ export class AddBillComponent implements OnInit {
   }
 
   loadCustomers() {
-    return this.partnerService.getCustomers(this.page, this.limit, this.keyFilter)
-      .pipe(map(res => res.value));
+    return this.partnerService.searchCustomers(this.keyFilter)
+      .pipe(map(res => res));
   }
 
   loadWareHouse() {

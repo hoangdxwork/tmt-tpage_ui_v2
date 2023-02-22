@@ -3,7 +3,7 @@ export const environment = {
   staging: true,
   urlLogin:'/account/login',
   signalRAppend: "?host=test.tpos.dev",
-  socketUrl: 'https://socket-tpos.dev.tmtco.org/chatomni',
+  socketUrl: 'https://rt-2.tpos.app/chatomni',
   tShopUrl: 'https://app.live.dev.tmtco.org/oauth',
   apiAccount:{
     signInPassword:"/token",

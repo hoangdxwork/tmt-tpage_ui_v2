@@ -1,3 +1,4 @@
+import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { FormGroup } from '@angular/forms';
 import { PartnerDetailDTO } from './../../dto/partner/partner-detail.dto';
 import { ChangePartnerPriceListDTO } from './../../dto/partner/change-partner-pricelist.dto';
@@ -86,5 +87,43 @@ export class PreparePartnerHandler {
                 }
             })
         }
+    }
+
+    public prepareDataModel(dataModel: FastSaleOrder_DefaultDTOV2, model: any, partner: any) {
+        if(model.Account != null && dataModel.Account == null) {
+            dataModel.Account = model.Account;
+            dataModel.AccountId = model.AccountId;
+        }
+
+        if(partner != null && dataModel.Partner == null) {
+            dataModel.Partner = partner;
+            dataModel.PartnerId = partner.Id;
+            
+            dataModel.ReceiverName = dataModel.ReceiverName || partner.Name;
+            dataModel.ReceiverPhone = dataModel.ReceiverPhone || partner.Phone;
+
+            if(dataModel.ReceiverAddress == null) {
+                dataModel.ReceiverAddress = partner.Street || partner.FullAddress;
+                dataModel.Ship_Receiver = {
+                    City: {
+                        code: partner.CityCode,
+                        name: partner.CityName
+                    },
+                    District: {
+                        code: partner.DistrictCode,
+                        name: partner.DistrictName
+                    },
+                    Ward:{
+                        code: partner.WardCode,
+                        name: partner.WardName
+                    },
+                    Street: partner.Street,
+                    Name: partner.Name,
+                    Phone: partner.Phone
+                }
+            }
+        }
+
+        return dataModel;
     }
 }
