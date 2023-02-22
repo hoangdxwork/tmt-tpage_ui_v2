@@ -160,6 +160,10 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
           } else {
               note = message;
           }
+
+          if (quickOrderModel.Address) {
+              note = `Đc: ${quickOrderModel.Address}` + '\n-------------\n' + note;
+          }
       }
     } else {
       if (this.configModel && this.configModel.enablePrintComment) {

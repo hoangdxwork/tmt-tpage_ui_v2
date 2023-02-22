@@ -188,7 +188,7 @@ export interface ChatomniDataItemDto {
   Id: string;
   ObjectId: string;
   ParentId?: string | any;
-  Message: string;
+  Message: string | any;
   MessageFormatted: string;
   Source?: any;
   Type: ChatomniMessageType;
