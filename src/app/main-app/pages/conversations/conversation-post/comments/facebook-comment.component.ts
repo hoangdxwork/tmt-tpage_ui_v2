@@ -590,7 +590,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
     let order = null as any;
     if(orders && orders.length > 0) {
-      order = orders[0] as any;
+      order = orders[orders.length - 1] as any;
     }
 
     this.prepareLoadTab(item, order, null);
@@ -604,8 +604,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
     if(order.DateDeleted) {
       let format = this.getFormatDate(order.DateDeleted);
       if(format != '0101-01-01') {
-          this.message.info('Đơn hàng không tồn tại');
-          return;
+        this.message.info('Đơn hàng không tồn tại');
+        return;
       }
     }
 
