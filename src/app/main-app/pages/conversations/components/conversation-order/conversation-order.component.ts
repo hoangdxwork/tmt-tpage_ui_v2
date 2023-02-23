@@ -1718,6 +1718,15 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   prepareResponseSaleOnline(order: QuickSaleOnlineOrderModel, type?: string) {
     this.quickOrderModel = {...order};
+    if(order && !TDSHelperString.hasValueString(order.PartnerName)) {
+      if(this.conversationInfo && this.conversationInfo.Conversation && this.conversationInfo.Conversation.Name) {
+        this.quickOrderModel.PartnerName = this.conversationInfo.Conversation.Name;
+      } else
+      if(this.insertFromPostModel && this.insertFromPostModel.Name) {
+        this.quickOrderModel.PartnerName = this.insertFromPostModel.Name;
+      }
+    }
+
     this.isEditPartner = false;
     this.isSuggestion = false;
     this.suggestText = order.Address;
