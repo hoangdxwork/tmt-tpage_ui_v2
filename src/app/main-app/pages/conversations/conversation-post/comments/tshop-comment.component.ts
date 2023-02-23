@@ -604,7 +604,7 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
 
     let order = null as any;
     if(orders && orders.length > 0) {
-      order = orders[0] as any;
+      order = orders[orders.length - 1] as any;
     }
 
     this.prepareLoadTab(item, order, null);
