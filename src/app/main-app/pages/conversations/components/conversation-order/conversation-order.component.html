@@ -90,9 +90,12 @@
                                 <tds-select valueField="Address" textField="Address"
                                     placeholder='Nhập địa chỉ cần tìm' disabledField="isActive"
                                     [data]="suggestData | async" [allowClear]="true" [valuePrimitive]="false"
-                                    [autoClearSearchValue]="true" [serverSearch]="true" [tdsInputDebounce]="300"
+                                    [autoClearSearchValue]="true" [serverSearch]="true" 
                                     [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}"
-                                    (onSearch)="onSearchSuggestion($event)" (selectChange)="onSelectSuggestion($event)">
+                                    [tdsInputDebounce]="300" 
+                                    (inputKeyup)="onInputKeyupSuggestion($event)"
+                                    (onSearch)="onSearchSuggestion($event)" 
+                                    (selectChange)="onSelectSuggestion($event)">
 
                                     <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
                                         <a [ngClass]="{'text-primary-1':selected}"> {{item.Address}} </a>
