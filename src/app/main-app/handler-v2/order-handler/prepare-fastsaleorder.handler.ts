@@ -72,7 +72,7 @@ export class SO_PrepareFastSaleOrderHandler {
         saleModel.SaleOnlineIds = [quickOrderModel.Id];
       }
 
-      if(quickOrderModel && (quickOrderModel.UserId || quickOrderModel.User?.Id)) {debugger
+      if(quickOrderModel && (quickOrderModel.UserId || quickOrderModel.User?.Id)) {
         saleModel.UserId = quickOrderModel.UserId || quickOrderModel.User?.Id;
         saleModel.UserName = quickOrderModel.UserName || quickOrderModel.User?.Name;
         saleModel.User = {
