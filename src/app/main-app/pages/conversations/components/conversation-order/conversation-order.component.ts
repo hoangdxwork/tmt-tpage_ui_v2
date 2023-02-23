@@ -990,8 +990,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     fs_model.CompanyId = this.companyCurrents?.CompanyId;
     fs_model.FormAction = order.FormAction;
 
-    let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
-    fs_model.PriceListId = priceListItems?.Id || 0;
+    //TODO cập nhật id list price
+    // let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
+    // fs_model.PriceListId = priceListItems?.Id || 0;
 
     // TODO check cấu hình ghi chú in
     fs_model.Comment = '';
