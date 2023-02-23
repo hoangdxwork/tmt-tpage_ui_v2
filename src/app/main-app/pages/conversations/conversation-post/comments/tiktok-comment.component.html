@@ -22,25 +22,51 @@
                         <div class="flex items-center justify-between desktop:gap-x-2 gap-x-1 desktop:text-body-2 laptop:text-caption-1">
                             <div class="flex gap-x-2 items-center">
 
-                                  <div class="min-w-[50px] desktop:max-w-[220px] max-w-[100px] truncate">
-                                      <label class="font-semibold cursor-pointer" *ngIf="item.Data">{{ (item.Data | tiktokDataCs)?.nickname }} </label>
-                                  </div>
-
-                                <!-- Mã đơn hàng -->
-                                <div *ngIf="commentOrders && item?.UserId && commentOrders[item?.UserId] && !item.IsOwner" class="flex flex-row items-center min-w-[110px] max-w-[200px]">
-                                    <div *ngFor="let order of commentOrders[item?.UserId]"  class="text-info-500 font-semibold flex flex-row items-center gap-2">
-                                        <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(item, order)">
-                                            <span *ngIf="!order?.code?.includes('#')">#</span>{{ order.code }}
-                                        </div>
-                                    </div>
+                                <div class="min-w-[50px] desktop:max-w-[220px] max-w-[100px] truncate">
+                                    <label class="font-semibold cursor-pointer" *ngIf="item.Data">{{ (item.Data | tiktokDataCs)?.nickname }} </label>
                                 </div>
 
-                                  <!-- Mã hóa đơn -->
+                                <!-- Mã đơn hàng -->
+                                <div *ngIf="commentOrders && item?.UserId && commentOrders[item?.UserId] && !item.IsOwner" class="flex flex-row items-center min-w-[110px] gap-x-1">
+                                    <div class="text-info-500 font-semibold flex flex-row items-center gap-x-2">
+                                        <div *ngIf="!isShowModal" class="flex flex-row cursor-pointer hover:underline" (click)="loadOrderByCode(item, commentOrders[item?.UserId][commentOrders[item?.UserId].length - 1])">
+                                            <span *ngIf="!commentOrders[item?.UserId][commentOrders[item?.UserId].length - 1].code?.includes('#')">#</span>
+                                            {{ commentOrders[item?.UserId][commentOrders[item?.UserId].length - 1].code }}
+                                        </div>
+                                    </div>
+                                    <span *ngIf="commentOrders[item?.UserId].length > 1" class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer"
+                                      tds-popover
+                                      [popoverContent]="contentOrder"
+                                      popoverTrigger="click"
+                                      [popoverBackdrop]="true">
+                                      +{{commentOrders[item?.UserId].length - 1}}
+                                    </span>
+                                    <ng-template #contentOrder>
+                                        <div class="flex flex-wrap min-w-[100px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
+                                            <div *ngFor="let cmt of commentOrders[item?.UserId]">
+                                            <span *ngIf="cmt.id != commentOrders[item?.UserId][commentOrders[item?.UserId].length - 1].id && (i <= 10 || isShowAllNumber)" classs="cursor-pointer " (click)="loadOrderByCode(item, cmt)">
+                                                <span class="text-info-500 font-semibold cursor-pointer hover:underline" style="font-size: 14px">{{ cmt.code }}</span>
+                                                <span *ngIf="cmt.id != commentOrders[item?.UserId][commentOrders[item?.UserId].length - 2].id" class="pr-2">,</span>
+                                            </span>
+                                            </div>
+                                            <div *ngIf="commentOrders[item?.UserId].length > 10 && !isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore(true)">
+                                                ...Xem thêm
+                                            </div>
+
+                                            <div *ngIf="commentOrders[item?.UserId].length > 10 && isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
+                                                ...Thu gọn
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </div>
+
+                                <!-- Mã hóa đơn -->
                                 <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i && !item.IsOwner" class="flex flex-auto flex-row items-center">
-                                  <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
-                                      <span *ngIf="invoiceDict[partnerDict[item.UserId].i][0]" class="text-primary-1 font-semibold cursor-pointer hidden desktop:block" (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][0])">
-                                          {{ invoiceDict[partnerDict[item.UserId].i][0].Number }}
-                                      </span>
+                                    <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
+                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1]" class="text-primary-1 font-semibold cursor-pointer hidden desktop:block" 
+                                            (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1])">
+                                            {{ invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Number }}
+                                        </span>
 
                                         <div tds-popover
                                             [popoverVisible]="idPopoverVisible == item.Id"
@@ -58,31 +84,31 @@
                                             </span>
                                         </div>
 
-                                      <ng-template #invContent>
-                                          <div class="flex flex-wrap min-w-[200px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
-                                              <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]; let i = index">
-                                                  <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][0].Id && (i <= 10 || isShowAllNumber)"
-                                                  class="hover:underline decoration-primary-1 hidden desktop:block" (click)="onOpenDrawerBillDetail(inv)">
-                                                      <span class="text-primary-1 font-semibold cursor-pointer text-[14px]">{{ inv.Number || 'N/A' }}</span>
-                                                      <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
-                                                  </span>
+                                        <ng-template #invContent>
+                                            <div class="flex flex-wrap min-w-[200px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
+                                                <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]; let i = index">
+                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id && (i < 10 || isShowAllNumber)"
+                                                    class="hover:underline decoration-primary-1 hidden desktop:block" (click)="onOpenDrawerBillDetail(inv)">
+                                                        <span class="text-primary-1 font-semibold cursor-pointer text-[14px]">{{ inv.Number || 'N/A' }}</span>
+                                                        <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 2].Id" class="pr-2">,</span>
+                                                    </span>
 
-                                                  <span *ngIf="(i <= 10 || isShowAllNumber)" class="hover:underline decoration-primary-1 desktop:hidden block" (click)="onOpenDrawerBillDetail(inv)">
-                                                    <span class="text-primary-1 font-semibold cursor-pointer text-[14px]">{{ inv.Number || 'N/A' }}</span>
-                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
-                                                </span>
-                                              </div>
+                                                    <span *ngIf="(i < 10 || isShowAllNumber)" class="hover:underline decoration-primary-1 desktop:hidden block" (click)="onOpenDrawerBillDetail(inv)">
+                                                        <span class="text-primary-1 font-semibold cursor-pointer text-[14px]">{{ inv.Number || 'N/A' }}</span>
+                                                        <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
+                                                    </span>
+                                                </div>
 
-                                              <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && !isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore(true)">
-                                                  ...Xem thêm
-                                              </div>
+                                                <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && !isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer" (click)="onChangeShowMore(true)">
+                                                    ...Xem thêm
+                                                </div>
 
-                                              <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
-                                                  ...Thu gọn
-                                              </div>
-                                          </div>
-                                      </ng-template>
-                                  </div>
+                                                <div *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 10 && isShowAllNumber" class="text-info-500 italic hover:text-info-400 cursor-pointer pl-2" (click)="onChangeShowMore(false)">
+                                                    ...Thu gọn
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </div>
                                 </div>
                               </div>
 
