@@ -69,7 +69,16 @@ export class SO_PrepareFastSaleOrderHandler {
       saleModel.FacebookName = quickOrderModel.Facebook_UserName;
 
       if(quickOrderModel.Id) {
-          saleModel.SaleOnlineIds = [quickOrderModel.Id];
+        saleModel.SaleOnlineIds = [quickOrderModel.Id];
+      }
+
+      if(quickOrderModel && (quickOrderModel.UserId || quickOrderModel.User?.Id)) {debugger
+        saleModel.UserId = quickOrderModel.UserId || quickOrderModel.User?.Id;
+        saleModel.UserName = quickOrderModel.UserName || quickOrderModel.User?.Name;
+        saleModel.User = {
+          Id: quickOrderModel.UserId || quickOrderModel.User?.Id,
+          Name: quickOrderModel.UserName || quickOrderModel.User?.Name
+        }
       }
 
       saleModel.DateCreated = new Date();
