@@ -112,6 +112,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   clickCurrentChild: any;
   csLoadingUpdate: TDSSafeAny;
 
+  modalInfoObject: TDSSafeAny;
+  postNewSocket: { [key: string] : boolean } = {};
+
   constructor(private facebookPostService: FacebookPostService,
     private facebookGraphService: FacebookGraphService,
     private activityMatchingService: ActivityMatchingService,
@@ -322,7 +325,16 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                       && res.Data.Data.Data && res.Data.Data.Data.owner && res.Data.Data.Data.owner.id && this.currentTeam?.ChannelId == res.Data.Data.Data.owner.id;
 
                     if(existItemPostTikTok) {
-                        this.modal.info({
+                        if(this.postNewSocket[`${this.currentTeam?.Id}_${res.Data.Data.ObjectId}`]) return;
+
+                        if(this.modalInfoObject) {
+                          this.modalInfoObject.close();
+                          delete this.modalInfoObject;
+                        }
+
+                        this.postNewSocket[`${this.currentTeam?.Id}_${res.Data.Data.ObjectId}`] = true;
+
+                        this.modalInfoObject = this.modal.info({
                           title: 'Thông báo bài viết mới',
                           content: `${this.currentTeam?.Name} vừa tạo bài viết mới, Ấn làm mới để xem`,
                           onOk: () => {

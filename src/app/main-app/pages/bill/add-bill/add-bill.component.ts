@@ -13,7 +13,7 @@ import { UpdateOrderLinesHandler } from './../../../handler-v2/bill-handler/upda
 import { GetServiceHandler } from './../../../handler-v2/bill-handler/get-services.handler';
 import { PrepareSuggestionsBillHandler } from './../../../handler-v2/bill-handler/prepare-suggestions-bill.handler';
 import { formatNumber } from '@angular/common';
-import { Component, OnInit, ViewContainerRef, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ChangeDetectorRef, HostListener, ViewEncapsulation } from '@angular/core';
 import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { SharedService } from 'src/app/main-app/services/shared.service';
@@ -69,7 +69,9 @@ import { ProductService } from '@app/services/product.service';
 @Component({
   selector: 'app-add-bill',
   templateUrl: './add-bill.component.html',
-  providers: [ TDSDestroyService ]
+  styleUrls: ['./add-bill.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  providers: [TDSDestroyService]
 })
 
 export class AddBillComponent implements OnInit {
@@ -431,7 +433,6 @@ export class AddBillComponent implements OnInit {
     }
 
     this.shipExtraServices = this.getServiceHandler.getShipExtrasService(data) || [];
-
     //TODO: cập nhật price of product theo bảng giá
     if (data.PriceListId) {
       this.commonService.getPriceListItems(data.PriceListId).pipe(takeUntil(this.destroy$)).subscribe({
@@ -626,14 +627,14 @@ export class AddBillComponent implements OnInit {
 
   onChangePriceList(event: any) {
     if (TDSHelperObject.hasValue(event)) {
-        this.commonService.getPriceListItems(event.Id).pipe(takeUntil(this.destroy$)).subscribe({
-            next: (res: any) => {
-                this.priceListItems = res;
-            },
-            error: (error: any) => {
-                this.message.error(error?.error?.message || 'Tải thông tin bảng giá đã xảy ra lỗi!');
-            }
-        })
+      this.commonService.getPriceListItems(event.Id).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.priceListItems = res;
+        },
+        error: (error: any) => {
+            this.message.error(error?.error?.message || 'Tải thông tin bảng giá đã xảy ra lỗi!');
+        }
+      })
     }
   }
 
