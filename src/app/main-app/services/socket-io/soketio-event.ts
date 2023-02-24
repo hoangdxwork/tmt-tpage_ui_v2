@@ -1,4 +1,3 @@
-import { Product } from './../../dto/order/so-orderlines.dto';
 
 export enum SocketIoEvent {
   onEvents = "on-events",
@@ -20,5 +19,6 @@ export enum ChatmoniSocketEventName {
   producttemplate_create = "created",
   chatomniPostLiveConnected = "chatomni.post-live-connected",
   chatomniPostNotExist = "chatomni.post-not-exist",
-  chatomniPostLiveDisconnected = "chatomni.post-live-disconnected"
+  chatomniPostLiveDisconnected = "chatomni.post-live-disconnected",
+  facebookShareds = "facebook.shareds"
 }

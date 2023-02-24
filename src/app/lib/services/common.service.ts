@@ -165,17 +165,20 @@ export class TCommonService {
                 'Content-type': 'application/json;charset=utf-8',
                 'Accept-Language': 'vi',
                 'Access-Control-Allow-Origin': '*',
+                'Source': 'TPage'
             })
         } else {
             return istoken ? new HttpHeaders({
                 'Content-type': 'application/x-www-form-urlencoded',
                 'Accept-Language': 'vi',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Source': 'TPage'
             }) : new HttpHeaders({
                 'Data-type': 'json',
                 'Content-type': 'application/json;charset=utf-8',
                 'Accept-Language': 'vi',
                 'Access-Control-Allow-Origin': '*',
+                'Source': 'TPage'
             });
         }
     }

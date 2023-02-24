@@ -52,19 +52,14 @@
 
           <!-- Người xóa -->
           <td class="border-r">
-            <span *ngIf="order.UserName && !order.IsCancelCheckout; else isUserName">
-              {{order.UserName}}
-            </span>
-            <ng-template #isUserName>
-              Người dùng xóa
-            </ng-template>
+            {{ order.DeletedBy | getDeletedByName }}
           </td>
 
           <!-- Địa chỉ -->
           <td class="border-r">{{ order.Address }}</td>
 
           <!-- Ngày tạo -->
-          <td class="border-r">{{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}</td>
+          <td class="border-r">{{ order.DateCreated | date: 'dd/MM/yyyy HH:mm' }}</td>
 
           <!-- Tổng số lượng -->
           <td class="text-center border-r">{{ order.TotalQuantity }}</td>

@@ -365,6 +365,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
                   }
 
                   this.mappingAddress(this.quickOrderModel);
+                  this.suggestText = this.quickOrderModel.Address;
                   this.postEvent.spinLoadingTab$.emit(false);
 
                   this.isLoading = false;
@@ -396,6 +397,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           }
 
           this.mappingAddress(this.quickOrderModel);
+          this.suggestText = this.quickOrderModel.Address;
           this.checkSelectNote();
           this.cdRef.detectChanges();
       }
@@ -990,6 +992,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     fs_model = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, order)};
     fs_model.CompanyId = this.companyCurrents?.CompanyId;
     fs_model.FormAction = order.FormAction;
+
+    //TODO cập nhật id list price
+    // let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
+    // fs_model.PriceListId = priceListItems?.Id || 0;
 
     // TODO check cấu hình ghi chú in
     fs_model.Comment = '';
@@ -1719,7 +1725,29 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   prepareResponseSaleOnline(order: QuickSaleOnlineOrderModel, type?: string) {
+    let user: any = {};
+    if(this.quickOrderModel && this.quickOrderModel.UserId) {
+      user.UserId = this.quickOrderModel.UserId as any;
+      user.UserName = this.quickOrderModel.UserName as any;
+      user.User = this.quickOrderModel.User as any;
+    }
+
     this.quickOrderModel = {...order};
+    if(user && user.UserId) {
+      this.quickOrderModel.UserId = user.UserId;
+      this.quickOrderModel.UserName = user.UserName;
+      this.quickOrderModel.User = user.User as any;
+    }
+
+    if(order && !TDSHelperString.hasValueString(order.PartnerName)) {
+      if(this.conversationInfo && this.conversationInfo.Conversation && this.conversationInfo.Conversation.Name) {
+        this.quickOrderModel.PartnerName = this.conversationInfo.Conversation.Name;
+      } else
+      if(this.insertFromPostModel && this.insertFromPostModel.Name) {
+        this.quickOrderModel.PartnerName = this.insertFromPostModel.Name;
+      }
+    }
+
     this.isEditPartner = false;
     this.isSuggestion = false;
     this.suggestText = order.Address;
@@ -1813,11 +1841,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.destroyTimer();
   }
 
-  onSearchSuggestion(text: any) {
+  onSearchSuggestion(text: string) {
     this.suggestText = text || null;
-    if(!TDSHelperString.hasValueString(text)) return;
+  }
 
-    this.suggestData = this.suggestService.suggest(text)
+  onInputKeyupSuggestion(event: any) {
+    if(!TDSHelperString.hasValueString(this.suggestText)) return;
+
+    this.suggestData = this.suggestService.suggest(this.suggestText)
       .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
   }
 
