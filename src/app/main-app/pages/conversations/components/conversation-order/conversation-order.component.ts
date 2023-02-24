@@ -238,7 +238,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     this.onEventEmitter();
     this.onEventSocket();
-    console.log(this.quickOrderModel)
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -2072,6 +2071,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     }
 
     this.calcTotal();
+    this.coDAmount();
     this.cdRef.detectChanges();
   }
 }
