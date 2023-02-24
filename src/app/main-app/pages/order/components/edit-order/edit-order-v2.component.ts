@@ -1224,4 +1224,41 @@ export class EditOrderV2Component implements OnInit {
   trackByIndex(_: number, data: DataPouchDBDTO): number {
     return data.Id;
   }
+
+  onCopyProduct(x: Detail_QuickSaleOnlineOrder, index: number) {
+    let items = this.quickOrderModel?.Details || [];
+
+    let item = {
+        Factor: x.Factor,
+        Price: x.Price,
+        ProductId: x.ProductId,
+        Note: null,
+        ProductName: x.ProductName,
+        ProductNameGet: x.ProductNameGet,
+        ProductCode: x.ProductCode,
+        Quantity: x.Quantity,
+        UOMId: x.UOMId,
+        UOMName: x.UOMName,
+        ImageUrl: x.ImageUrl
+    } as Detail_QuickSaleOnlineOrder;
+
+    const insert = (arr: string | any[], index: number, ...newItems: any[]) => [
+      // part of the array before the specified index
+      ...arr.slice(0, index + 1),
+      // inserted items
+      ...newItems,
+      // part of the array after the specified index
+      ...arr.slice(index + 1)
+    ];
+
+    let datas = insert(items, index++, item) || [];
+
+    if (datas) {
+      this.quickOrderModel.Details = [...datas];
+    }
+
+    this.calcTotal();
+    this.coDAmount();
+    this.cdRef.detectChanges();
+  }
 }

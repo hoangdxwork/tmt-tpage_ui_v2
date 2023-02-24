@@ -182,6 +182,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   lstDistrict: Array<SuggestDistrictsDTO> = [];
   lstWard: Array<SuggestWardsDTO> = [];
 
+  isConfigProduct: boolean = false;
+
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
     private csOrder_FromConversationHandler: CsOrder_FromConversationHandler,
@@ -1120,7 +1122,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: StoragePriceListItemsDto) => {
-          this.productIndexDB();
+            this.isConfigProduct = true;
+            this.productIndexDB();
         }
     })
   }
@@ -1259,10 +1262,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.visibleIndex = -1;
   }
 
-  onRemoveProduct(item: Detail_QuickSaleOnlineOrder) {
-    let index = this.quickOrderModel.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
+  onRemoveProduct(item: Detail_QuickSaleOnlineOrder, index: number) {
+    let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
 
-    if(index >= 0) {
+    if(exsit) {
         this.quickOrderModel.Details?.splice(index,1);
         this.calcTotal();
         this.coDAmount();
@@ -1628,7 +1631,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
                   })
             }
 
-            if(this.quickOrderModel?.Details && this.quickOrderModel?.Details.length > 0) {
+            if(this.quickOrderModel?.Details && this.quickOrderModel?.Details.length > 0 && this.isConfigProduct) {
               this.quickOrderModel?.Details.map((x: Detail_QuickSaleOnlineOrder) => {
                   let index = this.indexDbStorage.findIndex(y => y.Id == x.ProductId && y.UOMId == x.UOMId);
 
@@ -1656,20 +1659,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     return data.Id;
   }
 
-  onChangeQuantity(event: any, item: any){
-    let index = this.quickOrderModel?.Details?.findIndex(x => x.ProductId == item.ProductId && x.UOMId == item.UOMId);
+  onChangeQuantity(event: any, item: any, index: number){debugger
+    let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
 
-    if(event && Number(index) >= 0) {
-        this.quickOrderModel.Details[Number(index)].Quantity = Number(event);
+    if(exsit) { 
+      if(event && Number(event) > 0) {
+          this.quickOrderModel.Details[Number(index)].Quantity = Number(event);
+      } else {
+        this.quickOrderModel.Details[Number(index)].Quantity = 1;
+        this.quickOrderModel.Details[Number(index)] = {...this.quickOrderModel.Details[Number(index)]};
+      }
+
+      this.calcTotal();
+      this.coDAmount();
     }
-
-    if(!event && Number(index) >= 0) {
-      this.quickOrderModel.Details[Number(index)].Quantity = 1;
-      this.quickOrderModel.Details[Number(index)] = {...this.quickOrderModel.Details[Number(index)]};
-    }
-
-    this.calcTotal();
-    this.coDAmount();
   }
 
   onCreateFastSaleOrder(order: QuickSaleOnlineOrderModel, type?: string) {
@@ -1842,6 +1845,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   onInputKeyupSuggestion(event: any) {
+    let keyCode = event?.keyupEvent?.keyCode;
+    if(keyCode && !((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90))) return;
+
     if(!TDSHelperString.hasValueString(this.suggestText)) return;
 
     this.suggestData = this.suggestService.suggest(this.suggestText)
@@ -2033,5 +2039,42 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     this.quickOrderModel.Address = street;
     this._street = street as any;
+  }
+
+  onCopyProduct(x: Detail_QuickSaleOnlineOrder, index: number) {
+    let items = this.quickOrderModel?.Details || [];
+
+    let item = {
+        Factor: x.Factor,
+        Price: x.Price,
+        ProductId: x.ProductId,
+        Note: null,
+        ProductName: x.ProductName,
+        ProductNameGet: x.ProductNameGet,
+        ProductCode: x.ProductCode,
+        Quantity: x.Quantity,
+        UOMId: x.UOMId,
+        UOMName: x.UOMName,
+        ImageUrl: x.ImageUrl
+    } as Detail_QuickSaleOnlineOrder;
+
+    const insert = (arr: string | any[], index: number, ...newItems: any[]) => [
+      // part of the array before the specified index
+      ...arr.slice(0, index + 1),
+      // inserted items
+      ...newItems,
+      // part of the array after the specified index
+      ...arr.slice(index + 1)
+    ];
+
+    let datas = insert(items, index++, item) || [];
+
+    if (datas) {
+      this.quickOrderModel.Details = [...datas];
+    }
+
+    this.calcTotal();
+    this.coDAmount();
+    this.cdRef.detectChanges();
   }
 }

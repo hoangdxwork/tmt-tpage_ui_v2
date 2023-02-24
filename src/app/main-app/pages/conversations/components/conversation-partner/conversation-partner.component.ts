@@ -657,6 +657,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
   }
 
   onInputKeyupSuggestion(event: any) {
+    let keyCode = event?.keyupEvent?.keyCode;
+    if(keyCode && !((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90))) return;
+
     if(!TDSHelperString.hasValueString(this.suggestText)) return;
 
     this.suggestData = this.suggestService.suggest(this.suggestText)
