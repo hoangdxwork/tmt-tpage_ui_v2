@@ -1,3 +1,4 @@
+import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, Input, OnInit } from '@angular/core';
 import { DeletedOrderDTO } from '@app/dto/order/order-deletedHistories.dto';
@@ -17,6 +18,7 @@ export class TableDeletedOrderComponent implements OnInit {
 
   pageSize = 20;
   pageIndex = 1;
+  searchText: string = '';
   isLoading: boolean = false;
   count: number = 1;
   checked = false;
@@ -38,22 +40,31 @@ export class TableDeletedOrderComponent implements OnInit {
 
   loadDeletedOrder(liveCampaignId: string, skip: number, take: number) {
     this.isLoading = true;
-    this.saleOnline_OrderService.getOrderDeteledHistoriesV1(liveCampaignId, skip, take).pipe(takeUntil(this.destroy$)).subscribe({
-        next: res => {
-          this.lstDeletedOrder = res.Orders;
-          this.count = res.TotalCount;
+    this.saleOnline_OrderService.getOrderDeteledHistoriesV1(liveCampaignId, skip, take, this.searchText).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          if(!res) return;
+
+          this.lstDeletedOrder = [...res.Orders || []];
+          this.count = res.TotalCount || 0;
 
           this.isLoading = false;
         }, 
-        error: error => {
-          this.isLoading = false
+        error: (error: any) => {
+          this.isLoading = false;
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
         }
     });
   }
 
+  onSearch(data: TDSSafeAny) {
+    this.pageIndex = 1;
+    this.searchText = TDSHelperString.stripSpecialChars(data?.value?.trim());
+    this.loadDeletedOrder(this.liveCampaignId, this.pageIndex, this.pageSize);
+  }
+
   refreshData() {
     this.pageIndex = 1;
+    this.searchText = '';
     this.loadDeletedOrder(this.liveCampaignId, this.pageIndex, this.pageSize);
   }
 

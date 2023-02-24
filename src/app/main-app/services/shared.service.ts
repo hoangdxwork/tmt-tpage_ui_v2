@@ -207,4 +207,22 @@ export class SharedService extends BaseSevice {
 
     return this.apiService.getData(api, null);
   }
+
+  fbGetShareds(uid: string, objectId: string, teamId: number) {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/facebook/getshareds?uid=${uid}&objectId=${objectId}&teamId=${teamId}&isCookie=true`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData(api, null);
+  }
+
+  getSimpleShareds(objectId: string) {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/api/facebook/getsimpleshareds?postId=${objectId}`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData(api, null);
+  }
 }

@@ -282,9 +282,15 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
-  getOrderDeteledHistoriesV1(liveCampaignId: string, skip: number, take: number): Observable<DeletedOrderHistoriesDTO> {
+  getOrderDeteledHistoriesV1(liveCampaignId: string, skip: number, take: number, q: string): Observable<DeletedOrderHistoriesDTO> {
+    let url = `${this._BASE_URL}/${this.baseRestApi}/getorderdeteledhistories?liveCampaignId=${liveCampaignId}&skip=${skip}&take=${take}`;
+
+    if(TDSHelperString.hasValueString(q)) {
+      url += `&q=${q}`
+    }
+
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/getorderdeteledhistories?liveCampaignId=${liveCampaignId}&skip=${skip}&take=${take}`,
+      url: url,
       method: CoreApiMethodType.get,
     }
 

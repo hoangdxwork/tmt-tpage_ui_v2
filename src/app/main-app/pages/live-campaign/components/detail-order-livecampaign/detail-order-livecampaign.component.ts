@@ -1,3 +1,4 @@
+import { TableDeletedOrderComponent } from './../table-deleted-order/table-deleted-order.component';
 import { FilterOptionsComponent } from './../../../order/components/filter-options/filter-options.component';
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { SaleOnlineStatusModelDto, SaleOnlineStatusValueDto } from "@app/dto/saleonlineorder/sale-online-order.dto";
@@ -17,6 +18,7 @@ import { TableAllOrderComponent } from "../table-all-order/table-all-order.compo
 
 export class DetailOrderLiveCampaignComponent implements OnInit {
   @ViewChild(TableAllOrderComponent) tableAllOrderComponent!: TableAllOrderComponent;
+  @ViewChild(TableDeletedOrderComponent) tableDeletedOrderComponent!: TableDeletedOrderComponent;
   @ViewChild(FilterOptionsComponent) filterOptions!: FilterOptionsComponent;
   @Input() liveCampaignId!: string;
 
@@ -90,6 +92,7 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
 
   selectedIndexChange(event: number) {
     this.currentTab = event;
+    this.innerText = '';
   }
 
   onCreateQuicklyFS() {
@@ -105,7 +108,12 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
   }
 
   onSearch(data: TDSSafeAny) {
-    this.tableAllOrderComponent.onSearch(data);
+    switch(this.currentTab) {
+      case 0: this.tableAllOrderComponent.onSearch(data);
+        break;
+      case 1: this.tableDeletedOrderComponent.onSearch(data);
+        break;
+    }
   }
 
   onLoadOption(event: any) {
@@ -119,7 +127,12 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
 
   onClearFilterSearch() {
     this.innerText = '';
-    this.tableAllOrderComponent.onClearFilterSearch();
+    switch(this.currentTab) {
+      case 0: this.tableAllOrderComponent.onClearFilterSearch();
+        break;
+      case 1: this.tableDeletedOrderComponent.refreshData();
+        break;
+    }
   }
 
 }

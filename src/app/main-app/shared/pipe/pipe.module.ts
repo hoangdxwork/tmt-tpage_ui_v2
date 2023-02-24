@@ -1,3 +1,4 @@
+import { GetDeletedByNamePipe } from './get-deletedBy-name.pipe';
 import { GetChannelAvatarPipe } from './get-channel-avatar.pipe';
 import { GetTeamIconPipe } from './get-team-icon.pipe';
 import { ReportOverviewPipe } from './reportOverview.pipe';
@@ -128,6 +129,7 @@ const cmp = [
   IndexTextContentOrderPipe,
   SizeAvatarPipe,
   DictSourcePipe,
+  GetDeletedByNamePipe
 ]
 
 @NgModule({

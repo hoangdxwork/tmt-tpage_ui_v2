@@ -71,7 +71,7 @@ export class SocketOnEventService {
             break;
 
           case ChatmoniSocketEventName.chatomniOnMessage:
-            let tshopTiktokCmt = socketData?.Message?.ChannelId 
+            let tshopTiktokCmt = socketData?.Message?.ChannelId
               && (socketData?.Message?.MessageType == ChatomniMessageType.TShopComment
               || socketData?.Message?.MessageType == ChatomniMessageType.UnofficialTikTokChat);
 
@@ -87,15 +87,15 @@ export class SocketOnEventService {
             break;
 
           case ChatmoniSocketEventName.chatomniCreatePost:
-              switch (socketData?.Data?.ChannelType) { 
+              switch (socketData?.Data?.ChannelType) {
 
                 case ChatomniChannelType.TShop:
                   channelId = socketData?.Data?.Data?.ShopId;
-                break; 
+                break;
 
                 case ChatomniChannelType.UnofficialTikTok:
                   channelId = socketData?.Data?.Data?.owner?.id;
-                break; 
+                break;
               }
             break;
 
@@ -145,7 +145,8 @@ export class SocketOnEventService {
               || socketData.EventName == ChatmoniSocketEventName.onCreatedSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onUpdateSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order
-              || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout;
+              || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout
+              || socketData.eventName == ChatmoniSocketEventName.facebookShareds;
 
           if(existLive) existTeam = true;
           if (!existTeam) return;
@@ -232,7 +233,7 @@ export class SocketOnEventService {
               let notificationPostLiveDisconnected = this.preparePostLiveDisconnected(socketData, team);
               this.publishSocketEvent(notificationPostLiveDisconnected, socketData, team);
             break;
-            
+
           }
         },
         error: (error: any) => {
@@ -376,7 +377,7 @@ export class SocketOnEventService {
     let createPost = {...socketData} as SocketioChatomniCreatePostDto;
     let notification = {} as SocketEventNotificationDto;
 
-    switch (socketData.Data.ChannelType) { 
+    switch (socketData.Data.ChannelType) {
         case ChatomniChannelType.TShop:
           notification = {
             Title: `TShop: <span class="font-semibold">${team?.Name || 'Kênh TShop'}</span> vừa tạo bài viết mới` ,
