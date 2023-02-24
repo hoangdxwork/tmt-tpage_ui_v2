@@ -1258,6 +1258,7 @@ export class EditOrderV2Component implements OnInit {
     }
 
     this.calcTotal();
+    this.coDAmount();
     this.cdRef.detectChanges();
   }
 }
