@@ -518,4 +518,47 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   ngOnDestroy(): void {
     this.destroyTimer();
   }
+
+  fbGetShareds() {
+    let objectId = this.data.ObjectId;
+    if(!objectId) {
+      this.message.error('Không tìm thấy ObjectId');
+      return;
+    }
+
+    let teamId = this.team.Id;
+    if(!teamId) {
+      this.message.error('Không tìm thấy TeamId');
+      return;
+    }
+
+    let uid = this.team.ChannelId || this.team.Facebook_ASUserId;
+    if(!uid) {
+      this.message.error('Không tìm thấy uid');
+      return;
+    }
+
+    this.isLoading = true;
+    this.sharedService.fbGetShareds(uid, objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+
+        // let extensionKey = 'tpos_chrome_ext_id';
+        // let extension = localStorage.getItem(extensionKey);
+        // if(!extension) {
+        //   this.message.error('Vui lòng tải và cấu hình TPOS.VN Extensions');
+        //   return;
+        // }
+
+        // let uri = `chrome-extension://${extensionKey}/index.html#/options/facebook/sharing-debugger?objectId=${objectId}`;
+        // window.open(uri, '_blank');
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message);
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      }
+    })
+  }
 }
