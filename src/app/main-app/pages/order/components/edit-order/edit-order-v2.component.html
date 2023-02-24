@@ -250,11 +250,18 @@
                     </td>
                     <td> {{ data.Price * data.Quantity | numberCustom  }} </td>
                     <td>
-                      <button tds-button-icon color="secondary" size="sm" (click)="onRemoveProduct(data, index)">
-                        <span class="flex items-center text-neutral-1-500">
-                          <i class="tdsi-trash-fill"></i>
-                        </span>
-                      </button>
+                      <div class="flex gap-x-2">
+                        <button tds-button-icon color="secondary" size="sm" (click)="onCopyProduct(data, index)">
+                          <span class="flex items-center text-neutral-1-500">
+                            <i class="tdsi-copy-fill"></i>
+                          </span>
+                        </button>
+                        <button tds-button-icon color="secondary" size="sm" (click)="onRemoveProduct(data, index)">
+                          <span class="flex items-center text-neutral-1-500">
+                            <i class="tdsi-trash-fill"></i>
+                          </span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   <tr>
