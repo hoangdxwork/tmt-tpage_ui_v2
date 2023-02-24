@@ -52,5 +52,16 @@
         </div>
       </div>
     </div>
+
+    <div *ngIf="currentTab == 1">
+      <tds-form-field class="w-[400px]">
+        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [(ngModel)]="innerText"
+        [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
+        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+        <span tdsSuffix class="cursor-pointer rounded-lg" title="Xóa tìm kiếm" (click)="onClearFilterSearch()" *ngIf="innerText">
+          <i class="text-neutral-1-500 tdsi-close-fill"></i>
+        </span>
+      </tds-form-field>
+    </div>
   </ng-template>
 </div>
