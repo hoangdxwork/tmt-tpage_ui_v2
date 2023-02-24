@@ -25,6 +25,7 @@ export interface DeletedOrderDTO {
   UserId: string;
   UserName: string;
   Details: DeletedOrderDetail[];
+  DeletedBy?: any;
 }
 
 export interface DeletedOrderHistoriesDTO {
