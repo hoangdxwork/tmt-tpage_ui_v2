@@ -1659,7 +1659,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     return data.Id;
   }
 
-  onChangeQuantity(event: any, item: any, index: number){debugger
+  onChangeQuantity(event: any, item: any, index: number){
     let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
 
     if(exsit) { 
