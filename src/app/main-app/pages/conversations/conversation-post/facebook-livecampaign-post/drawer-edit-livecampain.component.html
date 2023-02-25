@@ -157,7 +157,7 @@
                                 <div class="mb-1 inline-block w-full">
                                     <div class="flex-auto flex flex-col gap-y-1">
                                         <div class="w-full flex gap-x-2 justify-between items-center">
-                                            <span class="font-semibold text-[13px] w-full laptop:max-w-[100px] tablet:max-w-[100px] truncate mr-2">
+                                            <span class="font-semibold text-[13px] w-full truncate">
                                                 <span *ngIf="data.Tags?.length > 0" tds-popover [popoverContent]="popoverTag" popoverPlacement="topLeft"
                                                   tds-tooltip="{{ data.ProductNameGet || data.ProductName}}"  tooltipPlacement="bottomLeft">
                                                   {{ data.ProductNameGet || data.ProductName }}
@@ -168,28 +168,32 @@
                                             </span>
 
                                             <!-- Thao tác -->
-                                            <div class="text-center flex justify-end items-center gap-x-1 w-1/4">
+                                            <div class="text-center flex justify-end items-center gap-x-1 flex-auto">
                                                 <div *ngIf="!isEditDetails[data.Id]">
                                                     <tds-checkbox size="sm" tds-tooltip="Bật/tắt sản phẩm" [(ngModel)]="data.IsActive" (change)="onChecked($event, data)"></tds-checkbox>
                                                 </div>
 
-                                                <button *ngIf="!isEditDetails[data.Id]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Chỉnh sửa" (click)="onEditDetails(data)">
-                                                    <i class="tdsi-edit-fill"></i>
+                                                <!-- <button class="!h-[26px] !w-[26px]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Phản hồi bình luận bài viết" (click)="onShowModalComment(data)">
+                                                    <i class="tdsi-send-fill text-body-2 leading-none"></i>
+                                                </button> -->
+
+                                                <button class="!h-[26px] !w-[26px]" *ngIf="!isEditDetails[data.Id]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Chỉnh sửa" (click)="onEditDetails(data)">
+                                                    <i class="tdsi-edit-fill text-body-2 leading-none"></i>
                                                 </button>
 
-                                                <button *ngIf="!isEditDetails[data.Id]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Xóa" (click)="removeDetail(data)">
-                                                    <i class="tdsi-trash-fill"></i>
+                                                <button class="!h-[26px] !w-[26px]" *ngIf="!isEditDetails[data.Id]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Xóa" (click)="removeDetail(data)">
+                                                    <i class="tdsi-trash-fill text-body-2 leading-none"></i>
                                                 </button>
 
-                                                <button *ngIf="isEditDetails[data.Id]" tds-button-icon size="sm" color="primary" tds-tooltip="Áp dụng" (click)="onSaveDetails(data)">
+                                                <button class="!h-[26px] !w-[26px]" *ngIf="isEditDetails[data.Id]" tds-button-icon size="sm" color="primary" tds-tooltip="Áp dụng" (click)="onSaveDetails(data)">
                                                     <span class="flex items-center">
-                                                        <i class="tdsi-tick-fill"></i>
+                                                        <i class="tdsi-tick-fill text-body-2 leading-none"></i>
                                                     </span>
                                                 </button>
 
-                                                <button *ngIf="isEditDetails[data.Id]" tds-button-icon size="sm" color="secondary" tds-tooltip="Bỏ chỉnh sửa" (click)="onCloseDetail(data)">
+                                                <button class="!h-[26px] !w-[26px]" *ngIf="isEditDetails[data.Id]" tds-button-icon size="sm" color="secondary" tds-tooltip="Bỏ chỉnh sửa" (click)="onCloseDetail(data)">
                                                     <span class="flex items-center">
-                                                        <i class="tdsi-close-fill"></i>
+                                                        <i class="tdsi-close-fill text-body-2 leading-none"></i>
                                                     </span>
                                                 </button>
                                             </div>

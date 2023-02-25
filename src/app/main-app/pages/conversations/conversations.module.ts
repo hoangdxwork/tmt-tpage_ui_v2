@@ -154,6 +154,7 @@ import { ProductTemplateFacade } from '@app/services/facades/product-template.fa
 import { CurrentConversationItemV3Component } from './components/current-conversation-item/current-conversation-item-v3.component';
 import { TDSAlertModule } from "tds-ui/alert";
 import { SuggestAddressService } from '@app/services/suggest-address.service';
+import { ModalSendCommentComponent } from './components/modal-send-comment/modal-send-comment.component';
 
 const SERVICES = [
   ConversationFacebookState,
@@ -274,6 +275,7 @@ const FACADES = [
     TiktokCommentComponent,
     ObjectTiktokPostComponent,
     CurrentConversationItemV3Component,
+    ModalSendCommentComponent,
   ],
 
   imports: [

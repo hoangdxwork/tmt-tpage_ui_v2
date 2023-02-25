@@ -161,12 +161,12 @@
       </ng-template>
 
       <ng-template #extraTemplate>
-        <button tds-button-icon color="custom" [tds-tooltip]="isSearch ? 'Hủy tìm kiếm' : 'Tìm kiếm tin nhắn'" (click)="showSearchInput()" [ngClass]="deviceToken ? '' : 'hidden'"
+        <button tds-button-icon color="custom" [tds-tooltip]="isSearch ? 'Hủy tìm kiếm' : 'Tìm kiếm tin nhắn'" (click)="showSearchInput()"
           class="text-neutral-1-500 border-0 border-transparent ring-0 ring-transparent bg-transparent hover:text-neutral-1-500 hover:bg-neutral-3-50 focus:text-neutral-1-500 focus:bg-neutral-3-50 mr-2">
           <i [class]="isSearch ? 'tdsi-error-fill' : 'tdsi-search-fill'"></i>
         </button>
 
-        <button tds-button-icon color="custom" tds-tooltip="Cài đặt nhận tin" (click)="modalGetNotifications()" [ngClass]="deviceToken ? '' : 'hidden'"
+        <button tds-button-icon color="custom" tds-tooltip="Cài đặt nhận tin" (click)="modalGetNotifications()"
           class="text-neutral-1-500 border-0 border-transparent ring-0 ring-transparent bg-transparent hover:text-neutral-1-500 hover:bg-neutral-3-50 focus:text-neutral-1-500 focus:bg-neutral-3-50">
           <i class="tdsi-gear-2-fill"></i>
         </button>

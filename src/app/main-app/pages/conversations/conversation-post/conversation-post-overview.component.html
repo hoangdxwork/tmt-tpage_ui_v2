@@ -337,7 +337,7 @@
             <tds-drawer [visible]="visibleDrawerEditLive" [width]="widthConversation" [placement]="'left'" [bodyStyle]="{ 'overflow':'hidden', 'display':'flex', 'flex-direction':'column', 'padding':0 }"
                 [closeIcon]="closeTmp" [mask]="false" [title]="header">
                 <ng-container *tdsDrawerContent>
-                    <drawer-edit-livecampaign [visibleDrawerEditLive]="visibleDrawerEditLive" [liveCampaignId]="data.LiveCampaignId"></drawer-edit-livecampaign>
+                    <drawer-edit-livecampaign [objectId]="data.ObjectId" [visibleDrawerEditLive]="visibleDrawerEditLive" [liveCampaignId]="data.LiveCampaignId"></drawer-edit-livecampaign>
                 </ng-container>
             </tds-drawer>
             <ng-template #header>

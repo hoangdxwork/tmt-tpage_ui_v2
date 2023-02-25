@@ -1,0 +1,16 @@
+<tds-spin [spinning]="isLoading">
+  <div class="rounded-xl text-body-2 text-neutral-1-900">
+    <!-- Trang gửi tin nhắn facbook -->
+    <div class="flex flex-col gap-y-4">
+      <tds-form-field>
+        <tds-label>Nội dung</tds-label>
+        <textarea tdsInput [tdsAutosize]="{ minRows: 4, maxRows: 20 }" spellcheck="false" class="resize-none no-scrollbar" [(ngModel)]="innerText" [tdsInputDebounce]="700"
+          (inputKeyup)="checkIncludes($event)" placeholder="Nhập nội dung"></textarea>
+      </tds-form-field>
+    </div>
+  </div>
+</tds-spin>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button class="mr-2 min-w-[100px]" type="button" color="secondary" (click)="onClose()">Đóng</button>
+  <button tds-button class="mr-2 min-w-[100px]" type="button" color="primary"(click)="onSend()">Gửi</button>
+</div>

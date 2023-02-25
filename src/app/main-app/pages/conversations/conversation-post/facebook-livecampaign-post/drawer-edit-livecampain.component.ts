@@ -30,6 +30,7 @@ import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { LiveCampaigntAvailableToBuyDto, LiveCampaigntPendingCheckoutDto } from '@app/dto/socket-io/livecampaign-checkout.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { VirtualScrollerComponent } from 'ngx-virtual-scroller';
+import { ModalSendCommentComponent } from '../../components/modal-send-comment/modal-send-comment.component';
 
 @Component({
   selector: 'drawer-edit-livecampaign',
@@ -46,6 +47,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
   @Input() liveCampaignId: any;
   @Input() visibleDrawerEditLive!: boolean;
+  @Input() objectId!: string;
   @ViewChild('innerText') viewChildInnerText!: ElementRef;
   @ViewChild(VirtualScrollerComponent) virtualScroller!: VirtualScrollerComponent;
 
@@ -1195,5 +1197,19 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
           this.cdRef.detectChanges();
       }
     })
+  }
+
+  onShowModalComment(item: ReportLiveCampaignDetailDTO) {
+      this.modal.create({
+        title: 'Thao tác bình luận Facebook',
+        content: ModalSendCommentComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          data: item,
+          orderTags: this.orderTags,
+          objectId: this.objectId
+        }
+      });
   }
 }

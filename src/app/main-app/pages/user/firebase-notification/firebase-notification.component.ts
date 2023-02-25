@@ -387,7 +387,19 @@ export class FirebaseNotificationComponent implements OnInit {
 
   showSearchInput() {
     this.isSearch = !this.isSearch;
-    this.loadData();
+    if(this.isSearch) {
+      this.loadData();
+    } else {
+      switch(this.selectedIndex) {
+        case 0:
+          let params = { type: "other" };
+          this.loadData(params);
+          break;
+        case 1:
+          this.loadData();
+          break;
+      }
+    }
   }
 
   onSearch(event: any) {
