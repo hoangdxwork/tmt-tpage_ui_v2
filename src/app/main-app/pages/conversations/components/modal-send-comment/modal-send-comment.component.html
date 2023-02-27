@@ -2,8 +2,10 @@
   <!-- Trang gửi tin nhắn facbook -->
   <div class="flex flex-col gap-y-4">
       <tds-label>Nội dung gửi:</tds-label>
-      <input class="min-h-[200px] max-h-[400px] px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1 invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500 disabled:shadow-none"
-         [(ngModel)]="comment" placeholder="Nhập nội dung" [ngModelOptions]="{standalone: true}">
+      <textarea spellcheck="false" [ngStyle]="{'height.px': heightText}" 
+          class="px-3 py-2 resize-none no-scrollbar bg-white border shadow-sm border-slate-300 placeholder-slate-400 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 focus:outline-none focus:border-primary-1 focus:ring-primary-3 block w-full rounded-md sm:text-sm focus:ring-1 disabled:shadow-none"
+          [(ngModel)]="comment" placeholder="Nhập nội dung" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeComment($event)">
+      </textarea>
   </div>
 </div>
 

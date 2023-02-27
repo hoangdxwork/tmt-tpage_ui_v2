@@ -12,7 +12,7 @@ import { TDSConfigService } from 'tds-ui/core/config';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ModalGetNotificationComponent } from '../components/modal-get-notification/modal-get-notification.component';
 // socket noti
 import { SocketStorageNotificationService } from '@app/services/socket-io/socket-config-notification.service';
@@ -387,31 +387,37 @@ export class FirebaseNotificationComponent implements OnInit {
 
   showSearchInput() {
     this.isSearch = !this.isSearch;
-    if(this.isSearch) {
-      this.loadData();
-    } else {
-      switch(this.selectedIndex) {
-        case 0:
-          let params = { type: "other" };
-          this.loadData(params);
-          break;
-        case 1:
-          this.loadData();
-          break;
-      }
+    if(!this.isSearch && TDSHelperString.hasValueString(this.searchText)) {
+      this.onClearFilterSearch();
     }
   }
 
   onSearch(event: any) {
-    let params = {
-      q: event.value
+    if(!TDSHelperString.hasValueString( event.value)) return;
+    
+    let params = { q: event.value } as TDSSafeAny;
+    switch(this.selectedIndex) {
+      case 0:
+        params.type = "other"
+        this.loadData(params);
+        break;
+      case 1:
+        this.loadData(params);
+        break;
     }
-
-    this.loadData(params);
   }
 
   onClearFilterSearch() {
     this.searchText = '';
-    this.loadData();
+    let params = { } as TDSSafeAny;
+    switch(this.selectedIndex) {
+      case 0:
+        params.type = "other"
+        this.loadData(params);
+        break;
+      case 1:
+        this.loadData();
+        break;
+    }
   }
 }

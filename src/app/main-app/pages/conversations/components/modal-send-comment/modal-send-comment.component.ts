@@ -25,6 +25,7 @@ export class ModalSendCommentComponent implements OnInit {
   comment: string = '';
   isLoading: boolean = false;
   currentTeam!: CRMTeamDTO | null;
+  heightText: number = 100;
 
   constructor(private chatomniCommentService: ChatomniCommentService,
     private crmTeamService: CRMTeamService,
@@ -90,5 +91,25 @@ export class ModalSendCommentComponent implements OnInit {
     model.ObjectId = this.objectId;
 
     return model;
+  }
+
+  onChangeComment(event: TDSSafeAny) {
+      if(!TDSHelperString.hasValueString(event)) {
+        this.heightText = 100;
+        return;
+      }
+
+      let newHeight = this.calcHeight(event);
+      
+      if(newHeight < 100 || newHeight > 300) return;
+
+      this.heightText = newHeight;
+  }
+
+  calcHeight(value: string) {
+      let numberOfLineBreaks = (value.match(/\n/g) || []).length;
+      // min-height + lines x line-height + padding + border
+      let newHeight = 20 + numberOfLineBreaks * 20 + 12 + 2;
+      return newHeight;
   }
 }
