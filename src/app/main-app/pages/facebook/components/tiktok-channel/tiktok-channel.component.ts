@@ -198,6 +198,10 @@ export class TiktokChannelComponent implements OnInit {
     this.idShowUpdateTiktok = id;
   }
 
+  onClosePopover() {
+    this.idShowUpdateTiktok = -1;
+  }
+
   onSavePopover(id: number) {
     if(this.isLoading) return;
 
@@ -209,18 +213,16 @@ export class TiktokChannelComponent implements OnInit {
     this.isLoading = true;
 
     this.tiktokService.refreshUnofficialTiktok(id, this.sessionIdRefresh).pipe(takeUntil(this.destroy$)).subscribe({
-      next: res => {
-        this.loadData();
-        this.idShowUpdateTiktok = -1;
-      },
-      error: error => {
-        this.isLoading = false;
-        this.message.error(error?.error?.message);
-      }
-    })
-  }
+        next: (res: TDSSafeAny) => {
+            this.idShowUpdateTiktok = -1;
+            this.loadData();
 
-  onClosePopover() {
-    this.idShowUpdateTiktok = -1;
+            this.message.success('Cập nhật thông tin tài khoản thành công');
+        },
+        error: (error: TDSSafeAny) => {
+            this.isLoading = false;
+            this.message.error(error?.error?.message);
+        }
+      })
   }
 }
