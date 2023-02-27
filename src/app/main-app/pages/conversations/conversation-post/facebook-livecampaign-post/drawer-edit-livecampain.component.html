@@ -173,9 +173,9 @@
                                                     <tds-checkbox size="sm" tds-tooltip="Bật/tắt sản phẩm" [(ngModel)]="data.IsActive" (change)="onChecked($event, data)"></tds-checkbox>
                                                 </div>
 
-                                                <!-- <button class="!h-[26px] !w-[26px]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Phản hồi bình luận bài viết" (click)="onShowModalComment(data)">
+                                                <button class="!h-[26px] !w-[26px]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Phản hồi bình luận bài viết" (click)="onShowModalComment(data)">
                                                     <i class="tdsi-send-fill text-body-2 leading-none"></i>
-                                                </button> -->
+                                                </button>
 
                                                 <button class="!h-[26px] !w-[26px]" *ngIf="!isEditDetails[data.Id]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Chỉnh sửa" (click)="onEditDetails(data)">
                                                     <i class="tdsi-edit-fill text-body-2 leading-none"></i>

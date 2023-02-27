@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <tds-spin [spinning]="isProcessing || isRefreshing " class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full pt-1">
+        <tds-spin [spinning]="isProcessing || isRefreshing || isLoadingUpdate" class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full pt-1">
             <!-- Danh sách bài viết -->
             <virtual-scroller #scroll *ngIf="lstObjects && lstObjects.length > 0;"
                 [items]="lstObjects" class="tds-custom-scroll w-full h-full"

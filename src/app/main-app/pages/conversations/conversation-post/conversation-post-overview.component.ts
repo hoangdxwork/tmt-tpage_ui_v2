@@ -499,7 +499,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
               this.isRescanAutoOrder = false;
               this.message.success('Đã kích hoạt áp dụng ngay cho những bình luận đã có');
               this.cdRef.detectChanges();
-          }, 3 * 10 * 1000);
+          }, 2 * 10 * 1000);
       },
       error: error => {
           this.isRescanAutoOrder = false;
