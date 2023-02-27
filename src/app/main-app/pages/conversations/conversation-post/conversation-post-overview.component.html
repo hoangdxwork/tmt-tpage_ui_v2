@@ -281,7 +281,6 @@
                                         <img src="../../../assets/imagesv2/conversation/love-circle.svg" width="20px" height="20px"
                                             class="rounded-full z-40 -ml-2">
                                     </div>
-                                    <span> {{data.CountReaction || 0}} </span>
                                 </div>
                                 <div class="flex gap-x-3 flex-auto justify-end items-center">
                                     <tds-form-field class="flex-auto">
@@ -291,7 +290,7 @@
 
                                     <div class="flex gap-x-2 text-caption-1 desktop:text-body-2">
                                         <span class="flex-auto"> {{data.CountComment || 0}} bình luận </span>
-                                        <span class="flex-auto mr-3" (click)="fbGetShareds()"> {{(data.Data | facebookType).count_shares || 0}} lượt chia sẻ </span>
+                                        <span class="flex-auto mr-3" (click)="fbGetShareds()"> {{data.CountReaction || 0}} lượt chia sẻ </span>
                                     </div>
                                 </div>
                             </div>
