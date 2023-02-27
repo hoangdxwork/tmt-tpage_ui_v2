@@ -597,7 +597,7 @@ export class PostOrderConfigComponent implements OnInit, AfterViewInit {
               x.Product?.ProductId == item.Product?.ProductId && x.Product?.UOMId == item.Product?.UOMId);
 
           if(findIndex >= 0) {
-              this.notificationService.error('Gán sản phẩm thất bại', `Mẫu số chốt đơn ${findIndex + 1} đã tồn tại sản phẩm này`);
+              this.notificationService.error('Gán sản phẩm thất bại', `Mẫu chốt đơn số ${findIndex + 1} đã tồn tại sản phẩm này`);
           } else {
               this.dataModel.TextContentToOrders[index] = {...item};
           }

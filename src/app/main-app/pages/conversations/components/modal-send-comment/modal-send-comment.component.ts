@@ -1,3 +1,4 @@
+import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { TDSModalRef } from 'tds-ui/modal';
 import { ChatomniReplyCommentModelDto } from './../../../../dto/conversation-all/chatomni/chatomni-comment.dto';
 import { TDSMessageService } from 'tds-ui/message';
@@ -29,7 +30,8 @@ export class ModalSendCommentComponent implements OnInit {
     private crmTeamService: CRMTeamService,
     private destroy$: TDSDestroyService,
     private message: TDSMessageService,
-    private modalRef: TDSModalRef) { }
+    private modalRef: TDSModalRef,
+    private conversationPostEvent: ConversationPostEvent) { }
 
   ngOnInit(): void {
     this.innerText = this.setinnerText();
@@ -44,12 +46,12 @@ export class ModalSendCommentComponent implements OnInit {
   setinnerText() {
     let mess = '';
     if(this.data && this.data.ProductName) {
-      mess = mess + `Tên sản phẩm là: ${this.data.ProductNameGet || this.data.ProductName}`
+      mess = mess + `Tên sản phẩm: ${this.data.ProductNameGet || this.data.ProductName}`
     }
     if(this.orderTags && this.orderTags[this.data.ProductId + '_' + this.data.UOMId] && this.orderTags[this.data.ProductId + '_' + this.data.UOMId].length > 0) {
       let tags =  this.orderTags[this.data.ProductId + '_' + this.data.UOMId].toString();
       tags = TDSHelperString.replaceAll(tags, ",", ", ");
-      mess = mess + `\nMã chốt đơn là: ${tags}`
+      mess = mess + `\nMã chốt đơn: ${tags}`
     }
 
     return mess;
@@ -62,7 +64,10 @@ export class ModalSendCommentComponent implements OnInit {
   onSend() {
     let model = this.prepareModelComment(this.innerText);
     this.chatomniCommentService.commentHandle(this.currentTeam!.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
+      next: (res: any[]) => {
+        if(res && res.length > 0) {
+          this.conversationPostEvent.resReplyCommentPost$.emit(res);
+        }
         this.onClose();
       },
       error: error => {

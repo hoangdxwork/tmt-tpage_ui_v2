@@ -173,29 +173,25 @@
                                                     <tds-checkbox size="sm" tds-tooltip="Bật/tắt sản phẩm" [(ngModel)]="data.IsActive" (change)="onChecked($event, data)"></tds-checkbox>
                                                 </div>
 
-                                                <button class="!h-[26px] !w-[26px]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Phản hồi bình luận bài viết" (click)="onShowModalComment(data)">
+                                                <span class="h-[20px] w-[20px] text-neutral-1-500 cursor-pointer" tds-tooltip="Phản hồi bình luận bài viết" (click)="onShowModalComment(data)">
                                                     <i class="tdsi-send-fill text-body-2 leading-none"></i>
-                                                </button>
+                                                </span>
 
-                                                <button class="!h-[26px] !w-[26px]" *ngIf="!isEditDetails[data.Id]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Chỉnh sửa" (click)="onEditDetails(data)">
+                                                <span class="h-[20px] w-[20px] text-neutral-1-500 cursor-pointer"  *ngIf="!isEditDetails[data.Id]" tds-tooltip="Chỉnh sửa" (click)="onEditDetails(data)">
                                                     <i class="tdsi-edit-fill text-body-2 leading-none"></i>
-                                                </button>
+                                                </span>
 
-                                                <button class="!h-[26px] !w-[26px]" *ngIf="!isEditDetails[data.Id]" tds-button-flat-icon [size]="'sm'" color="secondary" tds-tooltip="Xóa" (click)="removeDetail(data)">
+                                                <span class="h-[20px] w-[20px] text-neutral-1-500 cursor-pointer"  *ngIf="!isEditDetails[data.Id]" tds-tooltip="Xóa" (click)="removeDetail(data)">
                                                     <i class="tdsi-trash-fill text-body-2 leading-none"></i>
-                                                </button>
+                                                </span>
 
-                                                <button class="!h-[26px] !w-[26px]" *ngIf="isEditDetails[data.Id]" tds-button-icon size="sm" color="primary" tds-tooltip="Áp dụng" (click)="onSaveDetails(data)">
-                                                    <span class="flex items-center">
-                                                        <i class="tdsi-tick-fill text-body-2 leading-none"></i>
-                                                    </span>
-                                                </button>
+                                                <span class="h-[20px] w-[20px] flex items-center justify-center border rounded-md bg-primary-1 text-white" *ngIf="isEditDetails[data.Id]" tds-tooltip="Áp dụng" (click)="onSaveDetails(data)">
+                                                    <i class="tdsi-tick-fill text-body-2 leading-none"></i>
+                                                </span>
 
-                                                <button class="!h-[26px] !w-[26px]" *ngIf="isEditDetails[data.Id]" tds-button-icon size="sm" color="secondary" tds-tooltip="Bỏ chỉnh sửa" (click)="onCloseDetail(data)">
-                                                    <span class="flex items-center">
-                                                        <i class="tdsi-close-fill text-body-2 leading-none"></i>
-                                                    </span>
-                                                </button>
+                                                <span class="h-[20px] w-[20px] flex items-center justify-center border rounded-md text-neutral-1-500" *ngIf="isEditDetails[data.Id]" tds-tooltip="Bỏ chỉnh sửa" (click)="onCloseDetail(data)">
+                                                    <i class="tdsi-close-fill text-body-2 leading-none"></i>
+                                                </span>
                                             </div>
                                         </div>
 

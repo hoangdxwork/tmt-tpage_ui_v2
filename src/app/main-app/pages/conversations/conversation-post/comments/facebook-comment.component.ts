@@ -132,7 +132,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
     private chatomniConversationFacade: ChatomniConversationFacade,
     private chatomniSendMessageService: ChatomniSendMessageService,
     private chatomniMessageFacade: ChatomniMessageFacade,
-    private crmTagService: CRMTagService) {
+    private crmTagService: CRMTagService,
+    private conversationPostEvent: ConversationPostEvent) {
   }
 
   ngOnInit() {
@@ -156,6 +157,20 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
           this.cdRef.detectChanges();
       }
     });
+
+    this.conversationPostEvent.resReplyCommentPost$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny[]) => {
+        res.map(item=> {
+          let data = {
+            Data: {
+              Message: item
+            }
+          }
+          this.setCommentRealtime(data);
+        })
+
+      }
+    })
   }
 
   loadOrderPartnerbylLivecampaign() {

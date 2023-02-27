@@ -48,6 +48,38 @@
                           hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                       <i class="tdsi-eye-close-fill text-xl leading-none"></i>
                     </button> -->
+
+                    <button tds-button-icon color="custom" tds-tooltip="Cập nhật thông tin tài khoản" tds-popover  popoverTrigger="click" [popoverVisible]="idShowUpdateTiktok == team.Id" (click)="onOpenPopover(team.Id)"
+                      popoverTrigger="click" [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate" [popoverAutoClose]="false" [popoverBackdrop]="true"
+                      class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
+                          hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+                      <i class="tdsi-reload-fill text-xl leading-none"></i>
+                    </button>
+
+                    <!-- Cập nhật thông tin tài khoản -->
+                    <ng-template #contentTemplate>
+                      <div class="w-[304px]">
+                          <tds-form-field>
+                            <tds-label>sessionId</tds-label>
+                            <input tdsInput autocomplete="off" placeholder="Nhập sessionId" [(ngModel)]="sessionIdRefresh"/>
+                          </tds-form-field>
+                      </div>
+                    </ng-template>
+
+                    <ng-template #footerTemplate>
+                      <div class="flex justify-end pt-2 text-body-2">
+                          <button tds-button color="secondary" class="mr-2" size="sm" (click)="onClosePopover()">
+                          <span class="flex items-center">
+                              Đóng
+                          </span>
+                          </button>
+                          <button tds-button size="sm" color="primary" (click)="onSavePopover(team.Id)">
+                          <span class="flex items-center">
+                              Cập nhật
+                          </span>
+                          </button>
+                      </div>
+                    </ng-template>
   
                     <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" (click)="unconnectTeam(team)"
                       class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
