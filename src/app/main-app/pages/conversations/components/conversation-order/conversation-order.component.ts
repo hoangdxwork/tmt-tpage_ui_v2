@@ -992,9 +992,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     fs_model.CompanyId = this.companyCurrents?.CompanyId;
     fs_model.FormAction = order.FormAction;
 
-    //TODO cập nhật id list price
-    // let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
-    // fs_model.PriceListId = priceListItems?.Id || 0;
+    //TODO Id bảng giá
+    let priceListItems = this.productIndexDBService.getLocalStoragePriceListItems() as StoragePriceListItemsDto;
+    fs_model.PriceListId = priceListItems?.Id || 0;
 
     // TODO check cấu hình ghi chú in
     fs_model.Comment = '';
@@ -1612,7 +1612,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             if(!res) return;
             this.indexDbStorage = [...res?.cacheDbStorage || []];
 
-            let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
+            let priceListItems = this.productIndexDBService.getLocalStoragePriceListItems() as StoragePriceListItemsDto;
             if(priceListItems && priceListItems.Value) {
                 this.indexDbStorage?.map((x: DataPouchDBDTO) => {
                     if(x.SaleOK && ! x.IsDiscount) {
@@ -1662,7 +1662,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   onChangeQuantity(event: any, item: any, index: number){
     let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
 
-    if(exsit) { 
+    if(exsit) {
       if(event && Number(event) > 0) {
           this.quickOrderModel.Details[Number(index)].Quantity = Number(event);
       } else {
