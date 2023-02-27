@@ -146,7 +146,7 @@ export class SocketOnEventService {
               || socketData.EventName == ChatmoniSocketEventName.onUpdateSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout
-              || socketData.eventName == ChatmoniSocketEventName.facebookShareds;
+              || socketData.EventName == ChatmoniSocketEventName.facebookShareds;
 
           if(existLive) existTeam = true;
           if (!existTeam) return;
@@ -232,6 +232,11 @@ export class SocketOnEventService {
             case ChatmoniSocketEventName.chatomniPostLiveDisconnected:
               let notificationPostLiveDisconnected = this.preparePostLiveDisconnected(socketData, team);
               this.publishSocketEvent(notificationPostLiveDisconnected, socketData, team);
+            break;
+
+            // Lượt chia sẻ bài viết facebook
+            case ChatmoniSocketEventName.facebookShareds:
+              this.publishSocketEvent(null, socketData, null);
             break;
 
           }
