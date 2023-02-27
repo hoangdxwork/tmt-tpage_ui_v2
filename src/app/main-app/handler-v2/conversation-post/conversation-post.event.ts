@@ -1,3 +1,4 @@
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { EventEmitter, Injectable } from "@angular/core";
 import { ChatomniObjectsItemDto } from "@app/dto/conversation-all/chatomni/chatomni-objects.dto";
 
@@ -15,4 +16,7 @@ export class ConversationPostEvent{
     // TODO: Đếm số comment được realtime trả về
     public countRealtimeMessage$: EventEmitter<boolean> = new EventEmitter();
     public pushCountRealtimeToView$: EventEmitter<ChatomniObjectsItemDto> = new EventEmitter();
+
+    // TODO comment phản hồi bình luận bài viết 
+    public resReplyCommentPost$: EventEmitter<TDSSafeAny> = new EventEmitter();
 }
