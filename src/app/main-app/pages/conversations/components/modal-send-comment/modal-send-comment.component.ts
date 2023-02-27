@@ -8,7 +8,6 @@ import { CRMTeamService } from './../../../../services/crm-team.service';
 import { CRMTeamDTO } from './../../../../dto/team/team.dto';
 import { ChatomniCommentService } from './../../../../services/chatomni-service/chatomni-comment.service';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
-import { FormGroup } from '@angular/forms';
 import { ReportLiveCampaignDetailDTO } from './../../../../dto/live-campaign/report-livecampain-overview.dto';
 import { Component, OnInit, Input } from '@angular/core';
 
@@ -18,11 +17,12 @@ import { Component, OnInit, Input } from '@angular/core';
   providers: [TDSDestroyService]
 })
 export class ModalSendCommentComponent implements OnInit {
+
   @Input() data !: ReportLiveCampaignDetailDTO;
   @Input() orderTags : { [key: string] : string[] } = {};
   @Input() objectId !: string;
 
-  innerText!: string
+  comment: string = '';
   isLoading: boolean = false;
   currentTeam!: CRMTeamDTO | null;
 
@@ -34,8 +34,10 @@ export class ModalSendCommentComponent implements OnInit {
     private conversationPostEvent: ConversationPostEvent) { }
 
   ngOnInit(): void {
-    this.innerText = this.setinnerText();
-    
+    if(this.data && this.data.ProductId) {
+      this.comment = this.setInnerText();
+    }
+
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         this.currentTeam = res;
@@ -43,34 +45,36 @@ export class ModalSendCommentComponent implements OnInit {
     });
   }
 
-  setinnerText() {
-    let mess = '';
+  setInnerText() {
+    let msg = '';
     if(this.data && this.data.ProductName) {
-      mess = mess + `Tên sản phẩm: ${this.data.ProductNameGet || this.data.ProductName}`
+      msg = msg + `Tên sản phẩm: ${this.data.ProductNameGet || this.data.ProductName}`
     }
     if(this.orderTags && this.orderTags[this.data.ProductId + '_' + this.data.UOMId] && this.orderTags[this.data.ProductId + '_' + this.data.UOMId].length > 0) {
       let tags =  this.orderTags[this.data.ProductId + '_' + this.data.UOMId].toString();
       tags = TDSHelperString.replaceAll(tags, ",", ", ");
-      mess = mess + `\nMã chốt đơn: ${tags}`
+      msg = msg + `\nMã chốt đơn: ${tags}`
     }
 
-    return mess;
+    return msg;
   }
 
-  checkIncludes(event: TDSSafeAny) {{
-
-  }}
-  
   onSend() {
-    let model = this.prepareModelComment(this.innerText);
+    let model = this.prepareModelComment(this.comment);
+    this.isLoading = true;
     this.chatomniCommentService.commentHandle(this.currentTeam!.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any[]) => {
+
         if(res && res.length > 0) {
-          this.conversationPostEvent.resReplyCommentPost$.emit(res);
+          this.conversationPostEvent.onChangeReplyCommentPost$.emit(res);
         }
+
         this.onClose();
+        this.message.success('Thao tác thành công');
+        this.isLoading = false;
       },
       error: error => {
+        this.isLoading = false;
         this.message.error(error?.error?.message);
       }
     })
@@ -83,7 +87,7 @@ export class ModalSendCommentComponent implements OnInit {
   prepareModelComment(message: string): any {
     const model = {} as any;
     model.Message = message;
-    model.ObjectId = this.objectId
+    model.ObjectId = this.objectId;
 
     return model;
   }

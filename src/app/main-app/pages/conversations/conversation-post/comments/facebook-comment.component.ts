@@ -158,17 +158,16 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
-    this.conversationPostEvent.resReplyCommentPost$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.conversationPostEvent.onChangeReplyCommentPost$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny[]) => {
-        res.map(item=> {
-          let data = {
+        res.map((item:any) => {
+          let model = {
             Data: {
               Message: item
             }
           }
-          this.setCommentRealtime(data);
+          this.setCommentRealtime(model);
         })
-
       }
     })
   }

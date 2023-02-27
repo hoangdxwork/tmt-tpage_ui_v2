@@ -17,6 +17,6 @@ export class ConversationPostEvent{
     public countRealtimeMessage$: EventEmitter<boolean> = new EventEmitter();
     public pushCountRealtimeToView$: EventEmitter<ChatomniObjectsItemDto> = new EventEmitter();
 
-    // TODO comment phản hồi bình luận bài viết 
-    public resReplyCommentPost$: EventEmitter<TDSSafeAny> = new EventEmitter();
+    // TODO comment phản hồi bình luận bài viết
+    public onChangeReplyCommentPost$: EventEmitter<TDSSafeAny> = new EventEmitter();
 }
