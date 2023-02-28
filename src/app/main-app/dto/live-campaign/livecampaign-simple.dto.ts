@@ -94,6 +94,7 @@ export interface LiveCampaignSimpleDto {
   MaxAmountDepositRequired: number;
   EnableQuantityHandling: boolean;
   IsAssignToUserNotAllowed?: any;
+  IsApplyQuantityLiveCampaign?: any;
   SumQtyInCart: number;
   SumQtyWaitCheckOut: number;
   SumQtyCheckOut: number;
