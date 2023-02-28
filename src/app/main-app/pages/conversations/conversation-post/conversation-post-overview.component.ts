@@ -96,8 +96,6 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   isRescanAutoOrder: boolean = false;
   rescanAutoOrderTimer: TDSSafeAny;
 
-  listShares: GetSharedDto[] = [];
-
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
     private modalService: TDSModalService,
@@ -132,7 +130,6 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
       }
 
-      this.loadFbShareds();
       this.cdRef.detectChanges();
     }
 
@@ -212,7 +209,6 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     if (changes["data"] && !changes["data"].firstChange) {
       this.data = {...changes["data"].currentValue};
       this.innerText.nativeElement.value = '';
-      this.loadFbShareds();
 
       delete this.keyWords;
       this.cdRef.detectChanges();
@@ -562,8 +558,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     })
   }
 
-  loadFbShareds() {
-    this.listShares = [];
+  fbGetShareds() {
     if(this.team && this.team.Type ==  CRMTeamType._Facebook) {
       let objectId = this.data.ObjectId;
       if(!objectId) {
@@ -586,8 +581,22 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       this.isLoading = true;
       this.sharedService.fbGetShareds(uid, objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: GetSharedDto[]) => {
-          this.listShares = [...res || []];
           this.data.CountReaction = res?.length || 0;
+          if(res && res.length > 0) {
+            const modal = this.modalService.create({
+              title: `Danh sách lượt chia sẻ (${res.length})`,
+              content: ModalGetSharedComponent,
+              size: "lg",
+              bodyStyle: {
+                padding: '0px'
+              },
+              viewContainerRef: this.viewContainerRef,
+              componentParams:{
+                lstShares: res
+              }
+            });
+          }
+
           this.isLoading = false;
           this.cdRef.detectChanges();
 
@@ -607,23 +616,6 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
           this.cdRef.detectChanges();
         }
       })
-    }
-  }
-
-  fbGetShareds() {
-    if(this.listShares && this.listShares.length > 0) {
-      const modal = this.modalService.create({
-        title: `Danh sách chia sẻ (${this.listShares.length})`,
-        content: ModalGetSharedComponent,
-        size: "lg",
-        bodyStyle: {
-          padding: '0px'
-        },
-        viewContainerRef: this.viewContainerRef,
-        componentParams:{
-          lstShares: this.listShares
-        }
-      });
     }
   }
 }
