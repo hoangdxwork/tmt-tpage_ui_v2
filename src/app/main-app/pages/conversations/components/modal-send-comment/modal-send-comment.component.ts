@@ -61,6 +61,13 @@ export class ModalSendCommentComponent implements OnInit {
   }
 
   onSend() {
+    if(this.isLoading) return;
+
+    if(!TDSHelperString.hasValueString(this.comment)) {
+      this.message.error("Vui lòng nhập nội dung bình luận");
+      return;
+    }
+
     let model = this.prepareModelComment(this.comment);
     this.isLoading = true;
     this.chatomniCommentService.commentHandle(this.currentTeam!.Id, model).pipe(takeUntil(this.destroy$)).subscribe({
