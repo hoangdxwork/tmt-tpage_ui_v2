@@ -1,3 +1,4 @@
+import { GetSharedDto } from './../dto/conversation/post/get-shared.dto';
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
@@ -214,7 +215,7 @@ export class SharedService extends BaseSevice {
       method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData(api, null);
+    return this.apiService.getData<GetSharedDto[]>(api, null);
   }
 
   getSimpleShareds(objectId: string) {
@@ -225,4 +226,5 @@ export class SharedService extends BaseSevice {
 
     return this.apiService.getData(api, null);
   }
+  
 }

@@ -1,3 +1,5 @@
+import { GetSharedDto } from './../../../dto/conversation/post/get-shared.dto';
+import { ModalGetSharedComponent } from './../components/modal-get-shared/modal-get-shared.component';
 import { ChatomniDataTShopPostDto } from './../../../dto/conversation-all/chatomni/chatomni-tshop-post.dto';
 import { OverviewLiveCampaignComponent } from '../../../shared/overview-live-campaign/overview-live-campaign.component';
 import { SharedService } from '../../../services/shared.service';
@@ -94,6 +96,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   isRescanAutoOrder: boolean = false;
   rescanAutoOrderTimer: TDSSafeAny;
 
+  listShares: GetSharedDto[] = [];
+
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
     private modalService: TDSModalService,
@@ -127,6 +131,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       } else {
         this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
       }
+
+      this.loadFbShareds();
       this.cdRef.detectChanges();
     }
 
@@ -206,6 +212,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     if (changes["data"] && !changes["data"].firstChange) {
       this.data = {...changes["data"].currentValue};
       this.innerText.nativeElement.value = '';
+      this.loadFbShareds();
 
       delete this.keyWords;
       this.cdRef.detectChanges();
@@ -547,7 +554,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     let objectId = this.data.ObjectId;
     this.sharedService.getSimpleShareds(objectId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        console.log(res);
+        
       },
       error: (err: any) => {
         this.message.error(err?.error?.message);
@@ -555,7 +562,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     })
   }
 
-  fbGetShareds() {
+  loadFbShareds() {
+    this.listShares = [];
     if(this.team && this.team.Type ==  CRMTeamType._Facebook) {
       let objectId = this.data.ObjectId;
       if(!objectId) {
@@ -577,7 +585,9 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
       this.isLoading = true;
       this.sharedService.fbGetShareds(uid, objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (data: any) => {
+        next: (res: GetSharedDto[]) => {
+          this.listShares = [...res || []];
+          this.data.CountReaction = res?.length || 0;
           this.isLoading = false;
           this.cdRef.detectChanges();
 
@@ -598,6 +608,22 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         }
       })
     }
+  }
 
+  fbGetShareds() {
+    if(this.listShares && this.listShares.length > 0) {
+      const modal = this.modalService.create({
+        title: `Danh sách chia sẻ (${this.listShares.length})`,
+        content: ModalGetSharedComponent,
+        size: "lg",
+        bodyStyle: {
+          padding: '0px'
+        },
+        viewContainerRef: this.viewContainerRef,
+        componentParams:{
+          lstShares: this.listShares
+        }
+      });
+    }
   }
 }
