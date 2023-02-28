@@ -196,7 +196,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
               let exist = fbShared && this.data && fbShared.ObjectId == this.data.ObjectId && fbShared.ChannelId == fbShared.ChannelId && this.team?.Type ==  CRMTeamType._Facebook;
               if(exist) {
                   this.data.CountReaction = fbShared.TotalShareds || 0;
-                  // this.loadSimpleShareds();
+                  this.loadSimpleShareds();
               }
               break;
             default: break;
@@ -550,7 +550,20 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     let objectId = this.data.ObjectId;
     this.sharedService.getSimpleShareds(objectId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        
+        if(res && res.length > 0) {
+          const modal = this.modalService.create({
+            title: `Danh sách lượt chia sẻ (${res.length})`,
+            content: ModalGetSharedComponent,
+            size: "lg",
+            bodyStyle: {
+              padding: '0px'
+            },
+            viewContainerRef: this.viewContainerRef,
+            componentParams:{
+              lstShares: res
+            }
+          });
+        }
       },
       error: (err: any) => {
         this.message.error(err?.error?.message);
@@ -581,22 +594,6 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       this.isLoading = true;
       this.sharedService.fbGetShareds(uid, objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: GetSharedDto[]) => {
-          this.data.CountReaction = res?.length || 0;
-          if(res && res.length > 0) {
-            const modal = this.modalService.create({
-              title: `Danh sách lượt chia sẻ (${res.length})`,
-              content: ModalGetSharedComponent,
-              size: "lg",
-              bodyStyle: {
-                padding: '0px'
-              },
-              viewContainerRef: this.viewContainerRef,
-              componentParams:{
-                lstShares: res
-              }
-            });
-          }
-
           this.isLoading = false;
           this.cdRef.detectChanges();
 
