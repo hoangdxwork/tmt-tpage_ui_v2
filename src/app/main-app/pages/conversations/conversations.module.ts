@@ -1,3 +1,4 @@
+import { ModalGetSharedComponent } from './components/modal-get-shared/modal-get-shared.component';
 import { PrepareUpdateTShopByLiveCampaign } from './../../handler-v2/conversation-post/prepare-tshop-post.handler';
 import { DrawerAddProductComponent } from './conversation-post/facebook-livecampaign-post/drawer-add-product.component';
 import { ConversationPostEvent } from './../../handler-v2/conversation-post/conversation-post.event';
@@ -276,6 +277,7 @@ const FACADES = [
     ObjectTiktokPostComponent,
     CurrentConversationItemV3Component,
     ModalSendCommentComponent,
+    ModalGetSharedComponent
   ],
 
   imports: [
