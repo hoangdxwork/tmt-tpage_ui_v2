@@ -506,7 +506,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         size: 'xl',
         componentParams: {
             page_id: this.pageId,
-            psid: data.ConversationId,
+            userId: data.ConversationId,
         }
     });
 

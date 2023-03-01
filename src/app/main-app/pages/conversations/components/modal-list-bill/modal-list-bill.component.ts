@@ -1,3 +1,5 @@
+import { AddTemplateMessageWithInvoiceDto } from '@app/dto/crm-activityv2/addtemplate-message-v2.dto';
+import { CRMActivityV2Service } from './../../../../services/crm-activity-v2.service';
 import { AccountRegisterPaymentService } from './../../../../services/account-register-payment.service';
 import { AccountJournalPaymentDTO } from './../../../../dto/register-payment/register-payment.dto';
 import { NgxVirtualScrollerDto } from './../../../../dto/conversation-all/ngx-scroll/ngx-virtual-scroll.dto';
@@ -24,7 +26,7 @@ import { CRMTeamDTO } from '@app/dto/team/team.dto';
 })
 export class ModalListBillComponent implements OnInit {
   @Input() page_id!: string;
-  @Input() psid!: string;
+  @Input() userId!: string;
   @Output()
   public onFSOrderSelected = new EventEmitter<any>();
   @Output()
@@ -62,7 +64,8 @@ export class ModalListBillComponent implements OnInit {
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
     private teamService: CRMTeamService,
-    private registerPaymentService: AccountRegisterPaymentService
+    private registerPaymentService: AccountRegisterPaymentService,
+    private crmActivityV2Service: CRMActivityV2Service
     ) { }
 
   ngOnInit(): void {
@@ -91,7 +94,7 @@ export class ModalListBillComponent implements OnInit {
     this.pageCurrent = 1;
     let team = this.teamService.getCurrentTeam() as CRMTeamDTO;
 
-    this.partnerService.checkInfo_v2(team.Id, this.psid).pipe(takeUntil(this.destroy$)).subscribe((res) => {
+    this.partnerService.checkInfo_v2(team.Id, this.userId).pipe(takeUntil(this.destroy$)).subscribe((res) => {
       if (res.Data && res.Data["Id"]) {
         this.partnerId = res.Data["Id"];
         this.nextData();
@@ -295,6 +298,50 @@ export class ModalListBillComponent implements OnInit {
     if(Number(index) >= 0) {
         delete this.lstBillofPartner[Number(index)].PaymentMethod;
     }
+  }
+
+  onSendInvoice(item: BillofPartnerDTO){
+    if(this.isLoading) return;
+
+    if(!this.page_id) {
+      this.message.error('Không tìm thấy pageId');
+      return 
+    }
+
+    if(!this.userId) {
+      this.message.error('Không tìm thấy userId');
+      return
+    }
+    
+    let model = this.prepareModelInvoice(item);
+
+    this.isLoading = true;
+
+    this.crmActivityV2Service.addTemplateMessageWithInvoice(this.page_id, model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res : TDSSafeAny) => {
+        this.isLoading = false;
+        this.message.success('Gửi hóa đơn thành công');
+      },
+      error: (error: TDSSafeAny) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message);
+      }
+    })
+
+  }
+
+  prepareModelInvoice(item: BillofPartnerDTO) {
+    let model = {
+      message: "",
+      page_id: this.page_id,
+      to_id: this.userId , // UserId
+      comment_id: null,
+      fs_order: {
+          Id: item.Id, // Id hóa đơn
+          Note: item.Comment
+      }
+    } as AddTemplateMessageWithInvoiceDto
+    return model;
   }
 
   trackByIndex(_: number, data: any): number {
