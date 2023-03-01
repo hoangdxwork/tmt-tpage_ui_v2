@@ -2048,7 +2048,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         Factor: x.Factor,
         Price: x.Price,
         ProductId: x.ProductId,
-        Note: null,
+        Note: x.Note,
         ProductName: x.ProductName,
         ProductNameGet: x.ProductNameGet,
         ProductCode: x.ProductCode,
