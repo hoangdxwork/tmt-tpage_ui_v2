@@ -1,3 +1,4 @@
+import { FilterTeamDropdownComponent } from './components/filter-options/filter-team-dropdown.component';
 import { ChatomniConversationFacade } from './../../services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationService } from './../../services/conversation/conversation.service';
 import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
@@ -151,7 +152,8 @@ const SERVICES = [
     OverviewOrderBypartnerComponent,
     EditOrderV2Component,
     ConvertCustomersComponent,
-    ModalOrderDeletedComponent
+    ModalOrderDeletedComponent,
+    FilterTeamDropdownComponent
   ],
   imports: [
     CommonModule,
