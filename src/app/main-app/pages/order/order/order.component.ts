@@ -617,7 +617,8 @@ export class OrderComponent implements OnInit, AfterViewInit {
       },
       LiveCampaignId: null,
       HasTelephone: null,
-      PriorityStatus: null
+      PriorityStatus: null,
+      TeamId: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);

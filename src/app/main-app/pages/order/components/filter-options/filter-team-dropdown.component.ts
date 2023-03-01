@@ -1,7 +1,7 @@
 import { CRMTeamDTO } from './../../../../dto/team/team.dto';
 import { CRMTeamService } from './../../../../services/crm-team.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
   providers: [TDSDestroyService]
 })
 
-export class FilterTeamDropdownComponent implements OnInit {
+export class FilterTeamDropdownComponent implements OnInit, OnChanges {
 
   data$!: Observable<Array<CRMTeamDTO> | null>;
   currentTeam!: CRMTeamDTO | null;
@@ -30,6 +30,13 @@ export class FilterTeamDropdownComponent implements OnInit {
     this.loadCurrentTeam();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes["currentTeamId"] && !changes["currentTeamId"].firstChange) {
+      this.currentTeamId = changes["currentTeamId"].currentValue;
+      this.loadCurrentTeam();
+    }
+  }
+
   loadListTeam() {
     this.data$ = this.crmTeamService.onChangeListFaceBook();
   }
@@ -41,6 +48,7 @@ export class FilterTeamDropdownComponent implements OnInit {
         this.currentTeam = team;
       }
     } else {
+      this.currentTeam = null;
       this.crmTeamService.removeCacheFilterTeam();
     }
   }

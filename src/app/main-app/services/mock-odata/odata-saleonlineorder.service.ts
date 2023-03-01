@@ -18,7 +18,7 @@ export interface FilterObjSOOrderModel {
     EndDate: Date
   },
   LiveCampaignId: string | any,
-  TeamId?: string | any,
+  TeamId: string | any,
   HasTelephone: boolean | any,
   PriorityStatus: string | any
 }
