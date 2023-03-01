@@ -1,3 +1,4 @@
+import { CRMActivityV2Service } from './../../services/crm-activity-v2.service';
 import { ModalGetSharedComponent } from './components/modal-get-shared/modal-get-shared.component';
 import { PrepareUpdateTShopByLiveCampaign } from './../../handler-v2/conversation-post/prepare-tshop-post.handler';
 import { DrawerAddProductComponent } from './conversation-post/facebook-livecampaign-post/drawer-add-product.component';
@@ -210,7 +211,8 @@ const SERVICES = [
   PrepareAddCampaignHandler,
   CsOrder_FromConversationHandler,
   ConversationPostEvent,
-  SuggestAddressService
+  SuggestAddressService,
+  CRMActivityV2Service
 ]
 
 const FACADES = [

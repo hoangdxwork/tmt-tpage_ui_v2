@@ -4,7 +4,7 @@ export interface AddTemplateMessageWithInvoiceDto {
   message: string;
   page_id: string;
   to_id: string;
-  comment_id: string;
+  comment_id: string | null;
   fs_order: {
     Id: number,
     Note: string
@@ -15,7 +15,7 @@ export interface AddTemplateMessageWithProductDto {
   message: string;
   page_id: string;
   to_id: string;
-  comment_id: string;
+  comment_id: string | null;
   product: {
     Id: number,
     Name: string,
