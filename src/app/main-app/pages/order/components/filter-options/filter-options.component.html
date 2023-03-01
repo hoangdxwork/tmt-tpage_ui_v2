@@ -3,7 +3,7 @@
   <span class="flex items-center">
       <i class="tdsi-filter-2-line text-lg text-neutral-1-500 leading-none"></i>
   </span>
-  <span *ngIf="checkActive() && isActive" class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[-11px] right-[-6px]" style="font-size: 22px"></span>
+  <span *ngIf="isActive" class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[-11px] right-[-6px]" style="font-size: 22px"></span>
 </button>
 <tds-dropdown-menu #menu="tdsDropdownMenu">
   <div class="max-w-[420px] p-4" *ngIf="filterObj">
@@ -77,7 +77,7 @@
     <div class="w-full mb-4">
       <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">CHỌN KÊNH</p>
       <div class="w-full">
-        <filter-team-dropdown [currentTeamId]="filterObj?.TeamId || null" [visible]="isDropdownTeamVisible" (tdsClickItem)="onChangeTeams($event)"></filter-team-dropdown>
+        <filter-team-dropdown [currentTeamId]="selectTeamId" [visible]="isDropdownTeamVisible" (tdsClickItem)="onChangeTeams($event)"></filter-team-dropdown>
       </div>
     </div>
 

@@ -68,7 +68,8 @@ export class TableAllOrderComponent implements OnInit {
     },
     LiveCampaignId: null,
     HasTelephone: null,
-    PriorityStatus: null
+    PriorityStatus: null,
+    TeamId: null
   }
 
   public lstDataTag: Array<TDSSafeAny> = [];
@@ -240,7 +241,8 @@ export class TableAllOrderComponent implements OnInit {
       DateRange: {} as any,
       LiveCampaignId: null,
       HasTelephone: null,
-      PriorityStatus: null
+      PriorityStatus: null,
+      TeamId: null
     }
 
     this.onRefreshData.emit(true);
