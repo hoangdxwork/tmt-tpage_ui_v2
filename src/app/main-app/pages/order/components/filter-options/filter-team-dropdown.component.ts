@@ -15,7 +15,7 @@ export class FilterTeamDropdownComponent implements OnInit {
   data$!: Observable<Array<CRMTeamDTO> | null>;
   currentTeam!: CRMTeamDTO | null;
 
-  @Output() readonly tdsClickItem = new EventEmitter<CRMTeamDTO>();
+  @Output() readonly tdsClickItem = new EventEmitter<CRMTeamDTO | null>();
   @Output() isRefresh = new EventEmitter<boolean>();
   @Input() currentTeamId!: number | null;
   @Input() visible: boolean = false;
@@ -60,6 +60,8 @@ export class FilterTeamDropdownComponent implements OnInit {
   onRemove() {
     this.currentTeam = null;
     this.visible = false;
+    this.crmTeamService.removeCacheFilterTeam();
+    this.tdsClickItem.emit(null);
   }
 
   onRefresh(){
