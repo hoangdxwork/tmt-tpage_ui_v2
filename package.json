@@ -39,7 +39,7 @@
     "guid-typescript": "^1.0.9",
     "ngx-quill": "^16.2.1",
     "ngx-virtual-scroller": "^4.0.3",
-    "omnichannel": "file:lib/omnichannel-1.2.3-rc.tgz",
+    "omnichannel": "file:lib/omnichannel-1.2.4-rc.tgz",
     "quill": "^1.3.7",
     "quill-mention": "^3.1.0",
     "socket.io-client": "^4.5.1",
