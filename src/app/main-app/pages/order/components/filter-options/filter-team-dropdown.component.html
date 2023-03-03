@@ -52,9 +52,9 @@
 </div>
 
 <tds-dropdown-menu #dropdownTeam="tdsDropdownMenu">
-    <div class="w-[322px] py-1 max-h-[332px] overflow-hidden overflow-y-auto tds-panel-scroll">
-        <ng-container *ngIf="data$ | async as data">
-            <tds-collapse [expandIconPosition]="'right'" [bordered]="false">
+    <div class="flex flex-auto py-1 max-h-[332px] overflow-hidden overflow-y-auto tds-panel-scroll">
+        <ng-container *ngIf="data$ | async as data" class="w-full">
+            <tds-collapse [expandIconPosition]="'right'" [bordered]="false" [classList]="'flex flex-auto flex-col'">
                 <ng-template ngFor let-item [ngForOf]="data" let-i="index" let-last="last">
                     <tds-collapse-panel [header]="headerTpl" [active]="true" [disabled]="false"
                         [expandedIcon]="'tdsi-arrow-up-line'" [tdsClass]="last ? '' :'p-0 pb-2 border-b-2 border-neutral-2-50'">
