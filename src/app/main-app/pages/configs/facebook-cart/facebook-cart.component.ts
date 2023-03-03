@@ -42,9 +42,9 @@ export class FacebookCartComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadListTeam();
     this.loadData();
     this.loadAccountJournal();
-    this.loadListTeam();
   }
 
   createForm() {
