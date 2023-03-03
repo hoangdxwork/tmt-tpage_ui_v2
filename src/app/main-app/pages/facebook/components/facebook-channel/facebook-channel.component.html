@@ -17,23 +17,23 @@
                       <tds-avatar *ngIf="team?.OwnerAvatar || team?.ChannelAvatar" [tdsSrc]="team | getChannelAvatar" [size]="64" class="fb-avatar"></tds-avatar>
                       <tpage-avatar-facebook *ngIf="!(team?.OwnerAvatar || team?.ChannelAvatar)" [size]="'xl'" [fbid]="team?.OwnerId || team?.ChannelId" [token]="team?.ChannelToken"></tpage-avatar-facebook>
                     </div>
-                    <div class="absolute right-0 bottom-0" *ngIf="team.Active">
+                    <div class="absolute right-0 bottom-0" *ngIf="team?.Active">
                       <!-- TODO: hiện icon dưới avatar -->
-                      <span *ngIf="team.Type == 'Facebook'">
+                      <span *ngIf="team?.Type == 'Facebook'">
                         <img src="../../../assets/imagesv2/facebook/icon-facebook.svg">
                       </span>
 
                     </div>
                   </div>
                   <div class="flex flex-col gap-1">
-                    <div class="text-title-1 font-sans font-semibold"> {{ team.Name }} </div>
+                    <div class="text-title-1 font-sans font-semibold"> {{ team?.Name }} </div>
 
                     <!--TODO: Kết nối trang -->
                     <div>
                       <div class="flex gap-x-2 items-center">
                         <span class="text-caption-2 text-neutral-1-400">Tài khoản</span>
                         <span class="text-caption-2 font-semibold"
-                          [ngClass]="team.Active ? 'text-primary-1' : 'text-error-400'">{{ team.Active ? 'Đã kết nối' : 'Chưa kết nối' }}</span>
+                          [ngClass]="team?.Active ? 'text-primary-1' : 'text-error-400'">{{ team?.Active ? 'Đã kết nối' : 'Chưa kết nối' }}</span>
                       </div>
                     </div>
                   </div>
@@ -44,6 +44,12 @@
                         hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                     <i class="tdsi-eye-close-fill text-xl leading-none"></i>
                   </button> -->
+
+                  <button tds-button-icon color="custom" tds-tooltip="Kiểm tra token" (click)="checkPermission(team.OwnerToken)"
+                    class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
+                        hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+                    <i class="tdsi-search-line text-xl leading-none"></i>
+                  </button>
 
                   <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
                           bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1"
@@ -76,16 +82,22 @@
                       </div>
                     </div>
                     <div class="flex flex-col gap-1.5 justify-center">
-                      <div class="text-neutral-1-900 font-sans font-semibold text-body-2">{{ child.Name }}</div>
+                      <div class="text-neutral-1-900 font-sans font-semibold text-body-2">{{ child?.Name }}</div>
                       <div class="flex gap-2 items-center">
-                        <div class="text-primary-1 text-sm" [ngClass]=" child.Active ? 'tdsi-success-fill' : 'tdsi-break-link-fill' "></div>
-                        <div class="text-body-2 text-neutral-1-900 font-regular">{{ child.Active ? 'Đã kết nối' : 'Chưa kết nối' }}</div>
+                        <div class="text-primary-1 text-sm" [ngClass]=" child?.Active ? 'tdsi-success-fill' : 'tdsi-break-link-fill' "></div>
+                        <div class="text-body-2 text-neutral-1-900 font-regular">{{ child?.Active ? 'Đã kết nối' : 'Chưa kết nối' }}</div>
                       </div>
                     </div>
                   </div>
 
                   <!-- TODO: button đã kết nối -->
                   <div *ngIf="child.Active" class="flex items-center">
+                    <button tds-button-icon color="custom" tds-tooltip="Kiểm tra token" (click)="checkPermission(child?.ChannelToken)"
+                      class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
+                          hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+                      <i class="tdsi-search-line text-xl leading-none"></i>
+                    </button>
+
                     <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
                           bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1"
                            *ngIf="child?.OwnerId == me?.id"
