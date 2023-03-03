@@ -1,5 +1,5 @@
 import { CRMTeamService } from './../../../services/crm-team.service';
-import { TDSHelperObject } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { FormGroup, FormBuilder } from '@angular/forms';
@@ -9,6 +9,7 @@ import { Subject, takeUntil, finalize } from 'rxjs';
 import { GeneralConfigService } from 'src/app/main-app/services/general-config.service';
 import { ConfigFacebookCartDTO } from 'src/app/main-app/dto/configs/facebook-cart/config-facebook-cart.dto';
 import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.service';
+import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'facebook-cart',
@@ -25,7 +26,8 @@ export class FacebookCartComponent implements OnInit {
   isLoading: boolean = false;
   dataModel!: ConfigFacebookCartDTO;
   teamShopCart!: CRMTeamDTO;
-  currentTeam!: CRMTeamDTO | null;
+
+  lstTeamFacebook: CRMTeamDTO[] = [];
 
   lstAccountJournal: any[] = [];
   accountJournalItem: any;
@@ -35,14 +37,14 @@ export class FacebookCartComponent implements OnInit {
     private message: TDSMessageService,
     private productShopCartService: ProductShopCartService,
     private destroy$: TDSDestroyService,
-    private crmService: CRMTeamService) {
+    private crmTeamService: CRMTeamService) {
       this.createForm();
   }
 
   ngOnInit(): void {
     this.loadData();
     this.loadAccountJournal();
-
+    this.loadListTeam();
   }
 
   createForm() {
@@ -66,6 +68,7 @@ export class FacebookCartComponent implements OnInit {
 
       AccountJournalId: [null],
       AccountJournal: [null],
+      CurrentTeam: [null]
     })
   }
 
@@ -87,6 +90,12 @@ export class FacebookCartComponent implements OnInit {
             this.message.error(err?.error?.message);
           }
       })
+    }
+    
+    if(data.ChannelId) {
+      let item = this.lstTeamFacebook.filter((x: CRMTeamDTO) => x.ChannelId == data.ChannelId)[0];
+
+      this._form.controls['CurrentTeam'].setValue(item || null);
     }
 
     if(data.IsApplyConfig == true) {
@@ -155,6 +164,20 @@ export class FacebookCartComponent implements OnInit {
         this.message.error(err?.error?.message);
       }
     })
+  }
+
+  loadListTeam() {
+    this.crmTeamService.onChangeListFaceBook().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: Array<CRMTeamDTO> | null) => {
+            if(res && res.length > 0) {
+                res.map((x: CRMTeamDTO) => {
+                    if(x.Type == CRMTeamType._Facebook) {
+                        this.lstTeamFacebook = [...(x.Childs || [])];
+                    }
+                })
+            }
+        }
+    });
   }
 
   applyConfig(event: boolean){
@@ -266,10 +289,6 @@ export class FacebookCartComponent implements OnInit {
     })
   }
 
-  onChangeTeams(data: CRMTeamDTO | null): any {
-      this.currentTeam = data;
-  }
-
   prepareModel() {
     let formModel = this._form.value;
 
@@ -302,8 +321,8 @@ export class FacebookCartComponent implements OnInit {
         IsShopCart: formModel.IsShopCart as boolean,
         AccountJournalId: formModel.AccountJournalId,
         AccountJournal: formModel.AccountJournal,
-        ChannelId: this.currentTeam?.ChannelId,
-        ChannelName: this.currentTeam?.Name
+        ChannelId: formModel.CurrentTeam?.ChannelId,
+        ChannelName: formModel.CurrentTeam?.Name
 
     } as ConfigFacebookCartDTO
 

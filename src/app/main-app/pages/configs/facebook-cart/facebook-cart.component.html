@@ -36,7 +36,7 @@
               <tds-form-field class="w-2/3">
                 <tds-label>Chọn phương thức thanh toán</tds-label>
                 <tds-select valueField="Id" textField="Name" placeholder='Chọn phương thức thanh toán'
-                  disabledField="isActive" formControlName="AccountJournal" [required]='true'
+                  disabledField="isActive" formControlName="AccountJournal" [required]='true' [backdrop]="true"
                   [data]="lstAccountJournal" [allowClear]="true" (ngModelChange)="onChangeAccountJournal($event)">
                 </tds-select>
               </tds-form-field>
@@ -50,10 +50,16 @@
               </div>
             </div>
 
-            <span class="text-title-1 font-semibold pt-6">Cấu hình page mặc định</span>
-
-            <div class="w-1/3 pt-2">
-                <filter-team-dropdown [isConfigs]="true" (tdsClickItem)="onChangeTeams($event)"></filter-team-dropdown>
+            <!-- Cấu hình page mặc định -->
+            <div class="w-1/3">
+                <tds-form-field>
+                    <tds-label> Cấu hình page mặc định </tds-label>
+                    <tds-select
+                        valueField="Id" textField="Name" [allowClear]="true" [valuePrimitive]="false"
+                        placeholder='Chọn page mặc định' formControlName="CurrentTeam" [backdrop]="true"
+                        [data]="lstTeamFacebook" >
+                    </tds-select>
+                </tds-form-field>
             </div>
 
             <!-- Cho phép mua thêm -->
