@@ -42,7 +42,6 @@ export class FacebookCartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadListTeam();
     this.loadData();
     this.loadAccountJournal();
   }
@@ -90,12 +89,6 @@ export class FacebookCartComponent implements OnInit {
             this.message.error(err?.error?.message);
           }
       })
-    }
-    
-    if(data.ChannelId) {
-      let item = this.lstTeamFacebook.filter((x: CRMTeamDTO) => x.ChannelId == data.ChannelId)[0];
-
-      this._form.controls['CurrentTeam'].setValue(item || null);
     }
 
     if(data.IsApplyConfig == true) {
@@ -146,6 +139,7 @@ export class FacebookCartComponent implements OnInit {
       next:(res: any) => {
         this.dataModel = res;
         this.updateForm(res);
+        this.loadListTeam(res);
         this.isLoading = false;
       },
       error:(err) => {
@@ -166,13 +160,19 @@ export class FacebookCartComponent implements OnInit {
     })
   }
 
-  loadListTeam() {
+  loadListTeam(data: ConfigFacebookCartDTO) {
     this.crmTeamService.onChangeListFaceBook().pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: Array<CRMTeamDTO> | null) => {
             if(res && res.length > 0) {
                 res.map((x: CRMTeamDTO) => {
                     if(x.Type == CRMTeamType._Facebook) {
                         this.lstTeamFacebook = [...(x.Childs || [])];
+
+                        if(data.ChannelId) {
+                          let item = this.lstTeamFacebook.filter((x: CRMTeamDTO) => x.ChannelId == data.ChannelId)[0];
+
+                          this._form.controls['CurrentTeam'].setValue(item || null);
+                        }
                     }
                 })
             }

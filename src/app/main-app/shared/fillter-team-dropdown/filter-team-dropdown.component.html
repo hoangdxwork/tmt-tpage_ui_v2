@@ -56,7 +56,7 @@
         <ng-container *ngIf="data$ | async as data" class="w-full">
             <tds-collapse [expandIconPosition]="'right'" [bordered]="false" [classList]="'flex flex-auto flex-col'">
                 <ng-template ngFor let-item [ngForOf]="data" let-i="index" let-last="last">
-                    <tds-collapse-panel *ngIf="isConfigs ? (item.Type == 'Facebook'? true: false) : true" [header]="headerTpl" [active]="true" [disabled]="false"
+                    <tds-collapse-panel [header]="headerTpl" [active]="true" [disabled]="false"
                         [expandedIcon]="'tdsi-arrow-up-line'" [tdsClass]="last ? '' :'p-0 pb-2 border-b-2 border-neutral-2-50'">
                         <ng-template #headerTpl>
                             <div class="w-full flex items-center justify-center ">

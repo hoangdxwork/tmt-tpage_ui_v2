@@ -1,4 +1,3 @@
-import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -18,12 +17,11 @@ export class FilterTeamDropdownComponent implements OnInit, OnChanges {
 
   @Output() readonly tdsClickItem = new EventEmitter<CRMTeamDTO | null>();
   @Output() isRefresh = new EventEmitter<boolean>();
-  @Input() currentTeamId!: number | TDSSafeAny;
+  @Input() currentTeamId!: number | null;
   @Input() visible: boolean = false;
   @Input() showAvatar: boolean = false;
   @Input() isRefreshing: boolean = false;
   @Input() disableRefresh: boolean = true;
-  @Input() isConfigs: boolean = false;
 
   constructor(private crmTeamService: CRMTeamService) {}
 
