@@ -75,9 +75,8 @@
                   <!-- COD -->
                   <tds-label>Tiền thu hộ</tds-label>
                   <tds-form-field class="col-span-2 w-full">
-                    <tds-input-number [min]="0" [step]="1000"  tds-tooltip tooltipTitle="{{ data.COD | numberCustom }}" [formatter]="numberWithCommas" [parser]="parserComas"
-                      [(ngModel)]="data.COD" [ngModelOptions]="{standalone: true}">
-                    </tds-input-number>
+                    <input tdsInput tds-tooltip tooltipTitle="{{ data.COD | numberCustom }}" 
+                      [ngModel]="data.COD | numberCustom" [ngModelOptions]="{standalone: true}" [readonly]="true"/>
                   </tds-form-field>
                   <!-- Tiền cọc -->
                   <tds-label>Tiền cọc</tds-label>
