@@ -1,5 +1,5 @@
-import { CRMTeamDTO } from './../../../../dto/team/team.dto';
-import { CRMTeamService } from './../../../../services/crm-team.service';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
+import { CRMTeamService } from '@app/services/crm-team.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs';
