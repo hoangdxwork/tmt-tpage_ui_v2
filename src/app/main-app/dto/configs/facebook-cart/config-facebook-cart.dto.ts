@@ -15,4 +15,6 @@ export interface ConfigFacebookCartDTO {
   IsShopCart: boolean;// Hiển thị thông tin sản phẩm giỏ hàng
   AccountJournalId: any;
   AccountJournal: any;
+  ChannelId: string;
+  ChannelName: string;
 }

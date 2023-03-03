@@ -50,6 +50,12 @@
               </div>
             </div>
 
+            <span class="text-title-1 font-semibold pt-6">Cấu hình page mặc định</span>
+
+            <div class="w-1/3 pt-2">
+                <filter-team-dropdown [isConfigs]="true" (tdsClickItem)="onChangeTeams($event)"></filter-team-dropdown>
+            </div>
+
             <!-- Cho phép mua thêm -->
             <div class="flex flex-row items-center pt-4">
               <tds-switch size="md" formControlName="IsBuyMore"></tds-switch>

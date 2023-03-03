@@ -1,3 +1,4 @@
+import { CRMTeamService } from './../../../services/crm-team.service';
 import { TDSHelperObject } from 'tds-ui/shared/utility';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
@@ -24,6 +25,7 @@ export class FacebookCartComponent implements OnInit {
   isLoading: boolean = false;
   dataModel!: ConfigFacebookCartDTO;
   teamShopCart!: CRMTeamDTO;
+  currentTeam!: CRMTeamDTO | null;
 
   lstAccountJournal: any[] = [];
   accountJournalItem: any;
@@ -32,13 +34,15 @@ export class FacebookCartComponent implements OnInit {
     private generalConfigService: GeneralConfigService,
     private message: TDSMessageService,
     private productShopCartService: ProductShopCartService,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private crmService: CRMTeamService) {
       this.createForm();
   }
 
   ngOnInit(): void {
     this.loadData();
     this.loadAccountJournal();
+
   }
 
   createForm() {
@@ -262,6 +266,10 @@ export class FacebookCartComponent implements OnInit {
     })
   }
 
+  onChangeTeams(data: CRMTeamDTO | null): any {
+      this.currentTeam = data;
+  }
+
   prepareModel() {
     let formModel = this._form.value;
 
@@ -294,6 +302,8 @@ export class FacebookCartComponent implements OnInit {
         IsShopCart: formModel.IsShopCart as boolean,
         AccountJournalId: formModel.AccountJournalId,
         AccountJournal: formModel.AccountJournal,
+        ChannelId: this.currentTeam?.ChannelId,
+        ChannelName: this.currentTeam?.Name
 
     } as ConfigFacebookCartDTO
 
