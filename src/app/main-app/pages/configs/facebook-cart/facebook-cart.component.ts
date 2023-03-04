@@ -67,7 +67,7 @@ export class FacebookCartComponent implements OnInit {
 
       AccountJournalId: [null],
       AccountJournal: [null],
-      CurrentTeam: [null]
+      // CurrentTeam: [null]
     })
   }
 
@@ -139,7 +139,7 @@ export class FacebookCartComponent implements OnInit {
       next:(res: any) => {
         this.dataModel = res;
         this.updateForm(res);
-        this.loadListTeam(res);
+        // this.loadListTeam(res);
         this.isLoading = false;
       },
       error:(err) => {
@@ -321,8 +321,8 @@ export class FacebookCartComponent implements OnInit {
         IsShopCart: formModel.IsShopCart as boolean,
         AccountJournalId: formModel.AccountJournalId,
         AccountJournal: formModel.AccountJournal,
-        ChannelId: formModel.CurrentTeam?.ChannelId,
-        ChannelName: formModel.CurrentTeam?.Name
+        // ChannelId: formModel.CurrentTeam?.ChannelId,
+        // ChannelName: formModel.CurrentTeam?.Name
 
     } as ConfigFacebookCartDTO
 
