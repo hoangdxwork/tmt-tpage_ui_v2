@@ -31,6 +31,7 @@ import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatom
 import { ConversationPostEvent } from '@app/handler-v2/conversation-post/conversation-post.event';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { SuggestAddressDto, SuggestAddressService } from '@app/services/suggest-address.service';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 @Component({
     selector: 'conversation-partner',
@@ -97,6 +98,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     private cdRef: ChangeDetectorRef,
     private postEvent: ConversationPostEvent,
     private chatomniConversationFacade: ChatomniConversationFacade,
+    private chatomniCommentFacade: ChatomniCommentFacade,
     private csPartner_SuggestionHandler: CsPartner_SuggestionHandler,
     private csPartner_PrepareModelHandler: CsPartner_PrepareModelHandler,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -209,6 +211,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
                   let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(obs.value, this.partner);
                   this.partner = partner;
                   this.mappingAddress(this.partner);
+                  this.suggestText = this.partner.Street;
                   this.cdRef.detectChanges();
                 }
               break;
@@ -379,6 +382,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
             // TODO: cập nhật thông tin trạng thái cho conversation-all, tds-conversation
             this.partnerService.changeStatusFromPartner$.emit(status);
 
+            if(this.conversationInfo && this.conversationInfo.Partner) {
+              this.conversationInfo.Partner.StatusText = event.text;
+              this.conversationInfo.Partner.StatusStyle = event.value;
+              this.chatomniCommentFacade.onSyncPartnerTimeStamp$.emit(this.conversationInfo);
+            }
+
             this.isLoading = false;
             this.cdRef.detectChanges();
         },
@@ -501,11 +510,18 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
       this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (info: ChatomniConversationInfoDto) => {
-              this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
-              this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
+
+            if((this.partner?.Id == 0 || this.partner?.Id == null) && info.Partner) {
+              this.partner = info.Partner;
+              this.cdRef.detectChanges();
+            }
+
+            this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
+            this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
+            this.chatomniCommentFacade.onSyncPartnerTimeStamp$.emit(info);
           },
           error: (error: any) => {
-              this.message.error(error?.error?.message);
+            this.message.error(error?.error?.message);
           }
       })
     }, 350);
@@ -586,6 +602,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
         if(result){
             this.partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(result.value, this.partner)};
             this.mappingAddress(this.partner);
+            this.suggestText = this.partner.Street;
+
             if(result.type == 'confirm') {
                 this.updatePartner(result.type);
             }
