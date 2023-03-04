@@ -70,6 +70,7 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 import { SuggestAddressDto, SuggestAddressService } from '@app/services/suggest-address.service';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 @Component({
   selector: 'conversation-order',
@@ -202,6 +203,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     private sharedService: SharedService,
     private suggestService: SuggestAddressService,
     private chatomniConversationService: ChatomniConversationService,
+    private chatomniCommentFacade: ChatomniCommentFacade,
     private ngZone: NgZone,
     private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
@@ -242,8 +244,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes["conversationInfo"] && !changes["conversationInfo"].firstChange) {
-        let x = {...changes["conversationInfo"].currentValue};
-        this.loadData(x);
+      let x = {...changes["conversationInfo"].currentValue};
+      this.loadData(x);
     }
   }
 
@@ -868,6 +870,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             }
 
             this.mappingAddress(res);
+            this.suggestText = this.quickOrderModel.Address;
             this.disableSyncOrder = true;
 
             this.prepareResponseSaleOnline(res, type);
@@ -1494,6 +1497,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             let data = {...this.csOrder_SuggestionHandler.onLoadSuggestion(result.value, this.quickOrderModel)};
             this.quickOrderModel = {...data};
             this.mappingAddress(this.quickOrderModel);
+            this.suggestText = this.quickOrderModel.Address;
 
             if(result.type == 'confirm') {
               this.updateOrder(result.type);
@@ -1799,6 +1803,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           next: (info: ChatomniConversationInfoDto) => {
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
               this.chatomniConversationFacade.onSyncConversationPartner$.emit(info);
+              this.chatomniCommentFacade.onSyncPartnerTimeStamp$.emit(info);
 
               if(type == 'FastSaleOrder') {
                   this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
