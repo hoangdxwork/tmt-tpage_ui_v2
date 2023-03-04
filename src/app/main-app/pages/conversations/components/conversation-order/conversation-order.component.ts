@@ -870,7 +870,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             }
 
             this.mappingAddress(res);
-            this.suggestText = this.quickOrderModel.Address;
+            this.suggestText = res.Address;
             this.disableSyncOrder = true;
 
             this.prepareResponseSaleOnline(res, type);
