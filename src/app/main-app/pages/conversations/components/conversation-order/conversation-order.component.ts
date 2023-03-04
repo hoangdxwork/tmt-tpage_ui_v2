@@ -262,7 +262,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
               if(!exit1) break;
               // TODO: cập nhật mã đơn hàng sau khi tạo đơn hàng
-              this.conversationOrderFacade.hasValueOrderCode$.emit(fbCreated?.Data?.Code);
+              let orderCode = fbCreated?.Data?.Code;
+              if(fbCreated?.Data?.SessionIndex > 0) {
+                orderCode = `${fbCreated?.Data?.SessionIndex}. ${fbCreated?.Data?.Code}`;
+              }
+              this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
             break;
 
             case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
@@ -1691,7 +1695,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   onQuickSaleOnlineOrder(order: QuickSaleOnlineOrderModel, type?: string) {
-    this.conversationOrderFacade.hasValueOrderCode$.emit(order.Code);
+    let orderCode = order.Code;
+    if(order.SessionIndex > 0) {
+      orderCode = `${order.SessionIndex}. ${order.Code}`;
+    }
+    this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
 
     let csid = order.Facebook_ASUserId;
     this.onSyncConversationPartner(csid);

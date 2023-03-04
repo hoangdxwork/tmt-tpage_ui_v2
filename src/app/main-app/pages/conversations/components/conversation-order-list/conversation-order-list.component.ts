@@ -136,7 +136,6 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     if(changes['data'] && !changes['data'].firstChange) {
         this.currentPost = changes['data'].currentValue;
         this.refreshData();
-        
     }
   }
 
