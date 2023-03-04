@@ -411,6 +411,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
           // TODO: cập nhật mã đơn hàng
           this.orderCode = info?.Order?.Code;
+          if(info?.Order?.SessionIndex > 0) {
+            this.orderCode = `${info?.Order?.SessionIndex}. ${info?.Order?.Code}`;
+          }
           this.cdRef.markForCheck();
       }
     })
@@ -567,6 +570,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
                   if(this.conversationInfo && this.conversationInfo.Order) {
                       this.orderCode = this.conversationInfo.Order.Code;
+                      if(this.conversationInfo.Order.SessionIndex > 0) {
+                        this.orderCode = `${this.conversationInfo.Order.SessionIndex}. ${this.conversationInfo.Order.Code}`;
+                      }
                   } else {
                       delete this.orderCode;
                   }

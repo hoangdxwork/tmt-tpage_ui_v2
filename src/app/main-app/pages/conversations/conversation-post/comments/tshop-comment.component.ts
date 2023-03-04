@@ -315,6 +315,10 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
       code: model.Data.Code
     };
 
+    if(item.index > 0) {
+      item.code = `${item.index}. ${item.code}`;
+    }
+
     let exist = this.commentOrders[model.Data.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data.Facebook_ASUserId]).length > 0;
     if(exist) {
         let orders = this.commentOrders[model.Data.Facebook_ASUserId] as any[];
