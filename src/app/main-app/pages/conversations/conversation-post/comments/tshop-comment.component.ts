@@ -474,43 +474,7 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
       size: 'xl',
       componentParams: {
         pageId: this.team?.ChannelId,
-      }
-    });
-
-    modal.componentInstance?.onSendProduct.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: TDSSafeAny)=>{
-        if(res){
-            this.onProductSelected(res, item);
-            modal.destroy(null);
-        }
-      }
-    })
-  }
-
-  onProductSelected(event: any, item: ChatomniDataItemDto) {
-    let model = {
-      product: {
-        Id: event.Id,
-        Name: event.Name,
-        Picture: event.Picture,
-        Price: event.Price,
-      }
-    };
-
-  this.activityMatchingService.addTemplateMessageV3(this.team?.Id, item.UserId, model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          item.Data.is_reply = false;
-          this.isReplyingComment = false;
-
-          this.message.success('Gửi tin thành công');
-          this.cdRef.detectChanges();
-      },
-      error: error => {
-          item.Data.is_reply = false;
-          this.isReplyingComment = false;
-
-          this.message.error(error.error?.message);
-          this.cdRef.detectChanges();
+        userId: item?.UserId
       }
     });
   }
