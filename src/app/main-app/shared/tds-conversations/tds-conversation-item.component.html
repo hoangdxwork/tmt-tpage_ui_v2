@@ -1,98 +1,8 @@
 <div *ngIf="dataItem && team" class="px-2 desktop:text-body-2 text-caption-2">
 	<!--Lọc theo Messages-->
-	<div *ngIf="dataItem.Type == 11" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}" [ngClass]="dataItem.IsShowAvatar? '!mt-0': '!my-0.5'">
+	<div *ngIf="dataItem.Type == 11" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}" [ngClass]="dataItem.IsShowAvatar? '!mt-0': '!my-0.5'">     
 
-      <!-- webhook_attachments template sản phẩm -->
-      <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
-          (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
-          <div *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
-              <div *ngIf="wb.type == 'template' && wb.payload" class="w-full overflow-x-hidden">
-                <div *ngIf=" wb.payload.template_type == 'generic'" class="w-full flex justify-end items-center relative">
-                  <div id="scroll-product{{dataItem.Data.id}}" class="max-w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
-                    <div *ngFor="let item of wb?.payload?.elements">
-                      <div #itemProduct class="snap-start shrink-0">
-                        <tds-card class="bg-white w-[260px] h-full rounded-xl" (click)="detail()">
-                          <div *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture" class="relative">
-                            <img src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)" class="w-full h-[192px] object-cover">
-                          </div>
-                          <ng-template #noPicture>
-                            <img src="../assets/imagesv2/errorPic.svg" alt="" class="w-full h-[192px] rounded-md p-4">
-                          </ng-template>
-                          <tds-card-content class="px-4 py-3 w-full flex flex-col gap-y-1">
-                            <span class="desktop:text-caption-1 text-[11px] font-semibold text-left w-full truncate" tooltipPlacement="topLeft" tds-tooltip="{{ item?.title }}">{{ item?.title }}</span>
-                            <span class="desktop:text-caption-1 text-[11px] text-neutral-1-400 text-left">{{ item?.subtitle || "---" }}</span>
-                          </tds-card-content>
-                        </tds-card>
-                      </div>
-                    </div>
-                  </div>
-                  <div [ngClass]="wb?.payload?.elements?.length > 2 ? 'flex' : 'hidden'" class="w-[85%] h-[40px] px-2 justify-between items-center absolute z-1">
-                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="previous(dataItem.Data.id)">
-                      <i class="tdsi-arrow-left-line text-neutral-1-400"></i>
-                    </button>
-                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="next(dataItem.Data.id)">
-                      <i class="tdsi-arrow-right-line text-neutral-1-400"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div *ngIf="wb.payload.template_type == 'receipt'" class="w-full flex justify-end py-2">
-                  <div class="px-4 py-2 bg-primary-1 text-white rounded-l-xl rounded-t-xl">
-                    Hóa đơn của bạn  👇
-                  </div>
-                </div>
-
-                <div *ngIf="wb.payload.template_type == 'receipt'" class="w-full flex justify-end desktop:text-body-2 text-caption-2">
-                  <div class="flex flex-col w-[50%]">
-                    <div class="bg-neutral-3-50 rounded-t-xl px-4 py-2 flex justify-between items-center">
-                      <span class="text-neutral-1-600">Xác nhận đơn đặt hàng</span>
-                      <span class="desktop:text-title-1 text-caption-1 font-semibold">{{ wb?.payload?.recipient_name || "N/A"}}</span>
-                    </div>
-                    <div class="w-full bg-white px-4 rounded-b-xl">
-                      <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col w-full items-start">
-                        <div class="flex flex-col gap-3 w-full">
-                          <div class="flex w-full gap-x-2.5" *ngFor="let item of wb?.payload?.elements">
-                            <img *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture" src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px]">
-                            <ng-template #noPicture>
-                              <img src="../assets/imagesv2/errorPic.svg" alt="" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] p-4">
-                            </ng-template>
-
-                            <div class="flex flex-col flex-auto gap-y-1 items-start desktop:text-body-2 text-caption-2">
-                              <div class="font-semibold text-left w-full truncate" tooltipPlacement="topLeft" tds-tooltip="{{ item?.title }}">{{ item?.title || "---" }}</div>
-                              <div class="flex gap-x-2">
-                                <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{ item?.quantity || '___' }}</span></span>
-                                <span>-</span>
-                                <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{ item?.price || '___' | numberCustom }}</span></span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="mt-4 flex w-full">
-                          <span *ngIf="wb?.payload?.order_number != null && wb?.payload?.order_number != 'Unknown'" class="flex flex-col w-1/2 text-left">
-                            <span class="desktop:text-caption-1 text-[11px]">Mã đơn hàng</span>
-                            <a *ngIf="wb?.payload?.url == null" class="mt-1 text-body-2 text-primary-1 font-semibold">{{ wb?.payload?.order_number }}</a>
-                            <a *ngIf="wb?.payload?.url != null" class="mt-1 text-body-2 text-primary-1 font-semibold" href="{{wb?.payload?.url}}">{{ wb?.payload?.order_number }}</a>
-                          </span>
-                          <div class="flex flex-col w-1/2 text-left">
-                            <span class="text-neutral-1-600 desktop:text-caption-1 text-[11px]">Đã thanh toán bằng</span>
-                            <span class="mt-1 text-body-2">{{ wb?.payload?.payment_method || '---' }}</span>
-                          </div>
-                        </div>
-                        <span class="mt-2 text-neutral-1-600 desktop:text-caption-1 text-[11px]">Địa chỉ giao hàng</span>
-                        <span class="mt-1 text-body-2 text-left">{{ wb?.payload?.address?.street_1 || '---' }}</span>
-                      </div>
-                      <div class="py-2 flex justify-between items-center">
-                        <span class="text-neutral-1-600 desktop:text-body-2 text-caption-2 font-semibold">Tổng tiền</span>
-                        <span class="text-title-1 font-semibold">{{ wb?.payload?.summary?.subtotal || 0 | numberCustom }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-          </div>
-      </div>
-
-      <div class="chat-body w-full" [ngClass]="dataItem.IsShowAvatar? '': '!my-2 pl-9'">
+      <div class="chat-body w-full" [ngClass]="dataItem.IsShowAvatar || dataItem.IsOwner ? '': '!my-2 pl-9'">
           <div *ngIf="!dataItem.IsOwner " class="mr-2 flex flex-col justify-end">
 
             <div *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookType)">
@@ -102,8 +12,123 @@
             </div>
           </div>
 
+          <!-- webhook_attachments template sản phẩm -->
+          <div class="max-w-[80%] flex justify-end items-end" *ngIf="dataItem.Type == 11 && (dataItem.Data | facebookDataCs) &&
+            (dataItem.Data | facebookDataCs).webhook_attachments && (dataItem.Data | facebookDataCs).webhook_attachments.length > 0">
+            <div class="max-w-full" *ngFor="let wb of (dataItem.Data | facebookDataCs).webhook_attachments">
+              <div *ngIf="wb.type == 'template' && wb.payload" class="w-full flex flex-col overflow-x-hidden">
+                
+                <div *ngIf="wb.payload.template_type == 'generic'" class="w-full flex justify-end items-center relative">
+                  <div id="scroll-product{{dataItem.Data.id}}"
+                    class="flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
+                    <div *ngFor="let item of wb?.payload?.elements">
+                      <div #itemProduct class="snap-start shrink-0">
+                        <tds-card class="bg-white w-[260px] h-full rounded-xl" (click)="detail()">
+                          <div *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture" class="relative">
+                            <img src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)"
+                              class="w-full h-[192px] object-cover">
+                          </div>
+                          <ng-template #noPicture>
+                            <img src="../assets/imagesv2/errorPic.svg" alt="" class="w-full h-[192px] rounded-md p-4">
+                          </ng-template>
+                          <tds-card-content class="px-4 py-3 w-full flex flex-col gap-y-1">
+                            <span class="desktop:text-caption-1 text-[11px] font-semibold text-left w-full truncate"
+                              tooltipPlacement="topLeft" tds-tooltip="{{ item?.title }}">{{ item?.title }}</span>
+                            <span class="desktop:text-caption-1 text-[11px] text-neutral-1-400 text-left">{{ item?.subtitle
+                              || "---" }}</span>
+                          </tds-card-content>
+                        </tds-card>
+                      </div>
+                    </div>
+                  </div>
+                  <div [ngClass]="wb?.payload?.elements?.length > 2 ? 'flex' : 'hidden'"
+                    class="w-full h-[40px] px-2 justify-between items-center absolute z-1">
+                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="previous(dataItem.Data.id)">
+                      <i class="tdsi-arrow-left-line text-neutral-1-400"></i>
+                    </button>
+                    <button tds-button-icon color="secondary" rounded="!rounded-full" (click)="next(dataItem.Data.id)">
+                      <i class="tdsi-arrow-right-line text-neutral-1-400"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div *ngIf="(dataItem.MessageFormatted || dataItem.Message)" class="pt-0.5 w-full flex justify-end items-center relative">
+                  <div class="px-4 py-2 bg-primary-1 text-white rounded-l-xl rounded-t-xl {{dataItem.Error ? '!bg-[#7ECA8F]' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
+                    <div class="text-left hidden" [innerHtml]="(dataItem.MessageFormatted || dataItem.Message) | jsonPayload | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
+                    <div showMore [isMessageItem]="true" [length]="640" [text]="dataItem.MessageFormatted || dataItem.Message" [searchText]="searchText" class="text-left" ></div>
+                  </div>
+                </div>
+
+                <div *ngIf="wb.payload.template_type == 'receipt'" class="w-full flex justify-end py-2">
+                  <div class="px-4 py-2 bg-primary-1 text-white rounded-l-xl rounded-t-xl">
+                    Hóa đơn của bạn 👇
+                  </div>
+                </div>
+
+                <div *ngIf="wb.payload.template_type == 'receipt'"
+                  class="w-full flex justify-end desktop:text-body-2 text-caption-2">
+                  <div class="flex flex-col w-full">
+                    <div class="bg-neutral-3-50 rounded-t-xl px-4 py-2 flex justify-between items-center">
+                      <span class="text-neutral-1-600">Xác nhận đơn đặt hàng</span>
+                      <span class="desktop:text-title-1 text-caption-1 font-semibold">{{ wb?.payload?.recipient_name ||
+                        "N/A"}}</span>
+                    </div>
+                    <div class="w-full bg-white px-4 rounded-b-xl">
+                      <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col w-full items-start">
+                        <div class="flex flex-col gap-3 w-full">
+                          <div class="flex w-full gap-x-2.5" *ngFor="let item of wb?.payload?.elements">
+                            <img *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture"
+                              src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)"
+                              class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] object-cover">
+                            <ng-template #noPicture>
+                              <img src="../assets/imagesv2/errorPic.svg" alt=""
+                                class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] p-4">
+                            </ng-template>
+
+                            <div class="flex flex-col flex-auto gap-y-1 items-start desktop:text-body-2 text-caption-2">
+                              <div class="font-semibold text-left w-full truncate" tooltipPlacement="topLeft"
+                                tds-tooltip="{{ item?.title }}">{{ item?.title || "---" }}</div>
+                              <div class="flex gap-x-2">
+                                <span class="text-neutral-1-600">Số lượng: <span class="text-primary-2 font-semibold">{{
+                                    item?.quantity || '___' }}</span></span>
+                                <span>-</span>
+                                <span class="text-neutral-1-600">Đơn giá: <span class="text-primary-2 font-semibold">{{
+                                    item?.price || '___' | numberCustom }}</span></span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="mt-4 flex w-full">
+                          <span *ngIf="wb?.payload?.order_number != null && wb?.payload?.order_number != 'Unknown'"
+                            class="flex flex-col w-1/2 text-left">
+                            <span class="desktop:text-caption-1 text-[11px]">Mã đơn hàng</span>
+                            <a *ngIf="wb?.payload?.url == null" class="mt-1 text-body-2 text-primary-1 font-semibold">{{
+                              wb?.payload?.order_number }}</a>
+                            <a *ngIf="wb?.payload?.url != null" class="mt-1 text-body-2 text-primary-1 font-semibold"
+                              href="{{wb?.payload?.url}}">{{ wb?.payload?.order_number }}</a>
+                          </span>
+                          <div class="flex flex-col w-1/2 text-left">
+                            <span class="text-neutral-1-600 desktop:text-caption-1 text-[11px]">Thanh toán bằng</span>
+                            <span class="mt-1 text-body-2">{{ wb?.payload?.payment_method || '---' }}</span>
+                          </div>
+                        </div>
+                        <span class="mt-2 text-neutral-1-600 desktop:text-caption-1 text-[11px]">Địa chỉ giao hàng</span>
+                        <span class="mt-1 text-body-2 text-left">{{ wb?.payload?.address?.street_1 || '---' }}</span>
+                      </div>
+                      <div class="py-2 flex justify-between items-center">
+                        <span class="text-neutral-1-600 desktop:text-body-2 text-caption-2 font-semibold">Tổng tiền</span>
+                        <span class="text-title-1 font-semibold">{{ wb?.payload?.summary?.subtotal || 0 | numberCustom
+                          }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Tin nhắn văn bản -->
-          <div *ngIf="dataItem.MessageFormatted || dataItem.Message" class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
+          <div *ngIf="(dataItem.MessageFormatted || dataItem.Message) && (((dataItem.Data | facebookDataCs)?.webhook_attachments || []).length == 0) "class="message-inner {{dataItem.Error ? 'error' : ''}}" tds-tooltip tooltipTitle="{{dataItem.ChannelCreatedTime | date:'dd'}}/{{dataItem.ChannelCreatedTime | date:'MM'}} {{dataItem.ChannelCreatedTime | date:'HH:mm'}}">
             <div class="text-left hidden" [innerHtml]="(dataItem.MessageFormatted || dataItem.Message) | jsonPayload | formatIconLike | bbcodeConvert | safeHtml" #contentMessage></div>
             <div showMore [isMessageItem]="true" [length]="640" [text]="dataItem.MessageFormatted || dataItem.Message" [searchText]="searchText" class="text-left" ></div>
           </div>

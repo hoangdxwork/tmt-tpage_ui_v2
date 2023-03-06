@@ -1,4 +1,6 @@
-import { AfterViewInit, ElementRef, Input, OnDestroy, Output, ViewChild, EventEmitter } from '@angular/core';
+import { AddTemplateMessageWithProductDto } from '@app/dto/crm-activityv2/addtemplate-message-v2.dto';
+import { CRMActivityV2Service } from './../../../../services/crm-activity-v2.service';
+import { AfterViewInit, ElementRef, Input, OnDestroy, Output, ViewChild, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
 import { fromEvent, Observable, Subject } from 'rxjs';
@@ -19,7 +21,7 @@ export class ProductPagefbComponent implements OnInit, AfterViewInit, OnDestroy 
 
   @ViewChild('innerText') innerText!: ElementRef;
   @Input() pageId: any;
-  @Output() onSendProduct = new EventEmitter<TDSSafeAny>();
+  @Input() userId!: string;
 
   lstOfData: any[] = [];
   destroy$ = new Subject<void>();
@@ -42,11 +44,12 @@ export class ProductPagefbComponent implements OnInit, AfterViewInit, OnDestroy 
 
   constructor( private odataProductService: OdataProductService,
     private message: TDSMessageService,
-    private modal: TDSModalRef) {
+    private modal: TDSModalRef,
+    private crmActivityV2Service: CRMActivityV2Service,
+    private cdRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-   this.pageId;
   }
 
   loadData(pageSize: number, pageIndex: number) {
@@ -58,6 +61,8 @@ export class ProductPagefbComponent implements OnInit, AfterViewInit, OnDestroy 
       next: (res: any) => {
           this.count = res['@odata.count'] as number;
           this.lstOfData = [...res.value];
+
+          this.cdRef.detectChanges();
       },
       error: (error: any) => {
           this.message.error(`${error?.error?.message}`);
@@ -127,6 +132,18 @@ export class ProductPagefbComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   onPushItem(item: any) {
+    if(this.isLoading) return;
+
+    if(!this.pageId) {
+      this.message.error('Không tìm thấy pageId');
+      return 
+    }
+
+    if(!this.userId) {
+      this.message.error('Không tìm thấy userId');
+      return
+    }
+
     let getLSTProduct = JSON.parse(localStorage.getItem("ListProduct") || "{}");
 
     if (getLSTProduct == null) {
@@ -148,15 +165,48 @@ export class ProductPagefbComponent implements OnInit, AfterViewInit, OnDestroy 
       }
       localStorage.setItem("ListProduct", JSON.stringify(getLSTProduct));
     }
+    
+    let model = this.prepareModelProduct(item);
+
+    this.isLoading = true;
+
+    this.crmActivityV2Service.addTemplateMessageWithProduct(this.pageId, model).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res : TDSSafeAny) => {
+        this.isLoading = false;
+        this.message.success('Gửi sản phẩm thành công');
+
+        this.cdRef.detectChanges();
+      },
+      error: (error: TDSSafeAny) => {
+        this.isLoading = false;
+        this.message.error(error?.error?.message);
+
+        this.cdRef.detectChanges();
+      }
+    })
+  }
+
+  prepareModelProduct(item: TDSSafeAny) {
+    let msg = '';
+    if(item.Name && item.ListPrice){
+      let price = item.ListPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      msg = `Đã gửi một sản phẩm: ${item.Name} (Đơn giá: ${price}).`;
+    }
 
     let model = {
-      Id: item.Id,
-      Name: item.Name,
-      Picture: item.ImageUrl,
-      Price: item.Price,
-    } as any;
-
-    this.onSendProduct.emit(model)
+      message: msg,
+      page_id: this.pageId,
+      to_id: this.userId , // UserId
+      comment_id: null,
+      product: {
+          Id: item.Id, // Id hóa đơn
+          Name: item.Name,
+          Description: item.Description,
+          Picture: item.ImageUrl,
+          Price: item.Price
+      }
+    } as AddTemplateMessageWithProductDto
+    return model;
   }
 
   refreshData() {
