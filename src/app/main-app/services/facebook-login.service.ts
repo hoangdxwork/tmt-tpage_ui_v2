@@ -159,7 +159,8 @@ export class FacebookLoginService {
 
               subscriber.complete();
             });
-          }, {scope:"pages_show_list, pages_messaging, pages_manage_metadata, pages_read_engagement"});
+          },
+          { scope: 'email, public_profile, user_posts, user_videos, manage_pages, publish_pages, pages_messaging, pages_messaging, pages_messaging_subscriptions, pages_read_engagement, pages_read_user_content, pages_manage_engagement, pages_manage_metadata, pages_show_list' });
         });
       }, error => {
         console.log(error)
