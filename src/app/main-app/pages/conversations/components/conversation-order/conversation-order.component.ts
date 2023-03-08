@@ -1,3 +1,4 @@
+import { TransportConfigsDto } from './../../../../dto/configs/transport-config.dto';
 import { InventoryChangeType, StoragePriceListItemsDto } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
@@ -183,6 +184,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   lstDistrict: Array<SuggestDistrictsDTO> = [];
   lstWard: Array<SuggestWardsDTO> = [];
 
+  lstTransport: TransportConfigsDto[] = [];
+  feeShipValue: number = 0;
   isConfigProduct: boolean = false;
 
   constructor(private message: TDSMessageService,
@@ -232,6 +235,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     this.loadSaleConfig();
     this.loadSaleOnineSettingConfig();
+    this.loadTransport();
     this.loadUsers();
     this.loadUserLogged();
     this.loadCurrentCompany();
@@ -569,14 +573,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             }, this.saleModel);
 
             this.saleModel = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
-
             this.calcTotal();
             this.coDAmount();
 
             this.loadConfigProvider(this.saleModel);
-
             this.handleIsEqualAmountInsurance();
             this.prepareCalcFeeButton();
+            this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
           }
 
           this.isLoading = false;
@@ -694,11 +697,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     })
   }
 
+  loadTransport() {
+    this.sharedService.setTransportConfigs();
+    this.sharedService.getTransportConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) =>{
+        this.lstTransport = [...res?.value || []];
+      }
+    })
+  }
+
   loadDeliveryCarrier(){
     this.deliveryCarrierService.setDeliveryCarrier();
     this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
-        this.lstCarrier = [...res.value];
+        this.lstCarrier = [...res?.value || []];
       },
       error: error =>{
         this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -734,13 +746,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.saleModel.Carrier = event;
     this.saleModel.CarrierId = event?.Id;
 
-    //TODO: Cập nhật giá trị ship mặc định
+    // TODO: Cập nhật giá trị ship mặc định
     let deliveryPrice = event?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
     if(this.saleModel.DeliveryPrice != deliveryPrice) {
         this.saleModel.DeliveryPrice = deliveryPrice;
         this.coDAmount();
     }
-
+    
+    
     this.saleModel.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
@@ -752,8 +765,19 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         this.calcFee();
     }
 
+    this.setFeeShipFromTransport(this.saleModel?.Ship_Receiver?.City?.code, this.saleModel?.Ship_Receiver?.District?.code, event?.DeliveryType);
     this.prepareCalcFeeButton();
     this.cdRef.detectChanges();
+  }
+
+  setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
+    if(this.saleModel) {
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
+      if(feeShip > 0) {
+        this.saleModel.DeliveryPrice = feeShip;
+        this.coDAmount();
+      }
+    }
   }
 
   onEditPartner() {
@@ -1502,10 +1526,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             this.quickOrderModel = {...data};
             this.mappingAddress(this.quickOrderModel);
             this.suggestText = this.quickOrderModel.Address;
-
+            
             if(result.type == 'confirm') {
               this.updateOrder(result.type);
             }
+            this.setFeeShipFromTransport(data.CityCode, data.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
         }
         this.cdRef.detectChanges();
       }
@@ -1911,7 +1936,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       if(event.DistrictCode) {
         this.loadWards(event.DistrictCode);
       }
-
+      this.setFeeShipFromTransport(event.CityCode, event.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+      
       this.cdRef.detectChanges();
     }
   }
