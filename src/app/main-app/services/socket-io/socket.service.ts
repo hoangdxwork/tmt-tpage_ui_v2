@@ -16,8 +16,6 @@ export class SocketService {
   isConnectedSocket$ = new EventEmitter<boolean>();
 
   socket!: Socket;
-  retryNoti: number = 1;
-  establishedConnected = true;
   isInitialized: boolean = false;
 
   constructor(private notificationService: TDSNotificationService,
@@ -54,18 +52,7 @@ export class SocketService {
 
     this.socket.on("connect_error", (err) => {
       console.log(`connect_error due to ${err.message}`);
-
-      if (this.retryNoti == 1) {
-        this.notificationService.error(
-          'Kết nối socket-io xảy ra lỗi',
-          `${err.message}`,
-          { placement: 'bottomLeft' })
-      }
-
-      this.establishedConnected = false;
-      this.retryNoti++;
     });
-
   }
 
   getSocketId = () => this.socket.id;
