@@ -1,6 +1,5 @@
 import { TransportConfigsDto } from './../../../dto/configs/transport-config.dto';
 import { Message } from './../../../../lib/consts/message.const';
-import { ShipReceiver } from './../../../dto/partner/change-partner-pricelist.dto';
 import { DeliveryCarrierV2Service } from './../../../services/delivery-carrier-v2.service';
 import { SuggestAddressService } from './../../../services/suggest-address.service';
 import { Validators } from '@angular/forms';
@@ -591,17 +590,22 @@ export class AddBillComponent implements OnInit {
             if(Number(this.id) == 0 || !this.id) {
               this.mappingDataAddress(data);
             }
+
+            let ship_Receiver = this._form.controls['Ship_Receiver'].value;
+            if(ship_Receiver && !ship_Receiver.City?.code) {
+              this.mappingDataAddress(data);
+            }
           }
 
           if(type != '_LOADBILL') {
-              this.calcTotal();
-              this.coDAmount();
+            this.calcTotal();
+            this.coDAmount();
           }
 
           let shipReceiver = this._form.controls["Ship_Receiver"].value;
           let carrier = this._form.controls['Carrier'].value;
           this.setFeeShipFromTransport(shipReceiver?.City?.code,  shipReceiver?.District?.code, carrier?.DeliveryType);
-          
+
           this.isLoading = false;
       },
       error: (error: any) => {
@@ -1378,11 +1382,26 @@ export class AddBillComponent implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
-    if(!cityCode || !deliveryType) return;
-    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
-    if(feeShip > 0) {
-      this._form.controls["DeliveryPrice"].setValue(feeShip);
-      this.coDAmount();
+    if(cityCode && deliveryType) {
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
+      if(feeShip > 0) {
+        this._form.controls["DeliveryPrice"].setValue(feeShip);
+        this.coDAmount();
+      } else {
+        let carrier = this._form.controls["Carrier"].value;
+        if(carrier && carrier.Id) {
+          let deliveryPrice = carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+          this._form.controls["DeliveryPrice"].setValue(deliveryPrice);
+          this.coDAmount();
+        }
+      }
+    } else {
+      let carrier = this._form.controls["Carrier"].value;
+      if(carrier && carrier.Id) {
+        let deliveryPrice = carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+        this._form.controls["DeliveryPrice"].setValue(deliveryPrice);
+        this.coDAmount();
+      }
     }
   }
 
