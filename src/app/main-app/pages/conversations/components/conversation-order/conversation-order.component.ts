@@ -771,6 +771,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
+    if(!cityCode || !deliveryType) return;
+    
     if(this.saleModel) {
       let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
       if(feeShip > 0) {

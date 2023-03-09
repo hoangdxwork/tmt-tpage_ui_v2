@@ -34,7 +34,7 @@ export class SharedService extends BaseSevice {
   getsaleconfig: any;
   private readonly _getsaleconfigSubject$ = new ReplaySubject<any>();
 
-  transportsConfigs!: TransportConfigsDto[];
+  transportsConfigs: any;
   private readonly _getTransportsConfigsSubject$ = new ReplaySubject<any>();
 
   saleOnlineSettings: any;
