@@ -152,7 +152,7 @@
                             </td>
                             <td class="border-r" [tdsLeft]="true">{{ data.NameGet }}</td>
                             <td class="border-r">{{ data.UOMName }}</td>
-                            <td class="border-r" [align]="'right'">{{ (data.Price | numberCustom) || 0 }} đ</td>
+                            <td class="border-r" [align]="'right'">{{ (data.ListPrice | numberCustom) || 0 }} đ</td>
 
                             <td class="border-r" [align]="'right'">
                                 {{ (data?.ShopQuantity | numberCustom) || 0 }}

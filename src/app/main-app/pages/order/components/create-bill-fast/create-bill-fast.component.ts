@@ -1,3 +1,5 @@
+import { TransportConfigsDto } from './../../../../dto/configs/transport-config.dto';
+import { SharedService } from '@app/services/shared.service';
 import { Observable } from 'rxjs';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { RegisterPayment } from './../../../../dto/fastsaleorder/register-payment';
@@ -36,6 +38,7 @@ export class CreateBillFastComponent implements OnInit {
   isLoading: boolean = false;
   isPrint: boolean = false;
   isPrintShip: boolean = false;
+  lstTransport: TransportConfigsDto[] = [];
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
@@ -61,6 +64,7 @@ export class CreateBillFastComponent implements OnInit {
     private destroy$: TDSDestroyService,
     private fastSaleOrderService: FastSaleOrderService,
     private carrierService: DeliveryCarrierV2Service,
+    private sharedService: SharedService,
     private printerService: PrinterService) {
       this.createForm();
   }
@@ -68,9 +72,10 @@ export class CreateBillFastComponent implements OnInit {
   ngOnInit(): void {
     if(TDSHelperArray.hasListValue(this.lstData)) {
       this.loadDeliveryCarrier();
+      this.loadTransport();
 
       this.updateAmountTotal(this.lstData);
-      this.lstData.forEach((x, i) =>{
+      this.lstData.map((x, i) => {
         this.checkPartnerInfo(x.Partner, i);
       });
     }
@@ -88,20 +93,41 @@ export class CreateBillFastComponent implements OnInit {
     })
   }
 
+  loadTransport() {
+    this.sharedService.setTransportConfigs();
+    this.sharedService.getTransportConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) =>{
+        this.lstTransport = [...res?.value || []];
+        this.lstData.map((x, i) => {
+          this.setFeeShipFromTransport(x.Partner?.CityCode, x. Partner?.DistrictCode, x.Carrier?.DeliveryType, i);
+        })
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.mesage);
+      }
+    })
+  }
+
   onChangeCarrier(carrier: CarrierListOrderDTO, index: number) {
     if(TDSHelperObject.hasValue(carrier)){
       this.lstData[index].CarrierId = carrier.Id;
       this.lstData[index].CarrierName = carrier.Name;
+      this.lstData[index].Carrier = carrier;
       this.lstData[index].CarrierDeliveryType = carrier.DeliveryType;
       this.lstData[index].DeliveryPrice = carrier.Config_DefaultFee || 0;
       this.lstData[index].ShipWeight = carrier.Config_DefaultWeight || 100;
     }else{
       this.lstData[index].CarrierId = null as any;
       this.lstData[index].CarrierName = null as any;
+      this.lstData[index].Carrier = null as any;
       this.lstData[index].CarrierDeliveryType = null as any;
       this.lstData[index].DeliveryPrice = 0;
       this.lstData[index].ShipWeight = 100;
     }
+
+    let deliveryType = this.lstData[index].Carrier?.DeliveryType;
+    let partner = this.lstData[index].Partner;
+    this.setFeeShipFromTransport(partner?.CityCode, partner?.DistrictCode, deliveryType, index);
   }
 
   createForm() {
@@ -141,12 +167,8 @@ export class CreateBillFastComponent implements OnInit {
   }
 
   changeCarrierAll() {
-    this.lstData.forEach(item => {
-      item.Carrier = this.carrier;
-      item.CarrierId = this.carrier.Id;
-      item.CarrierName = this.carrier.Name;
-      item.DeliveryPrice = this.carrier.Config_DefaultFee || 0;
-      item.ShipWeight = this.carrier.Config_DefaultWeight || 100;
+    this.lstData.map((x,i) => {
+      this.onChangeCarrier(this.carrier, i);
     });
   }
 
@@ -192,6 +214,8 @@ export class CreateBillFastComponent implements OnInit {
         };
 
         this.lstData[index].Partner = Object.assign(this.lstData[index].Partner, partner);
+        let deliveryType = this.lstData[index].Carrier?.DeliveryType;
+        this.setFeeShipFromTransport(partner?.CityCode, partner?.DistrictCode, deliveryType, index);
       }
     });
   }
@@ -340,5 +364,14 @@ export class CreateBillFastComponent implements OnInit {
 
   onCancel() {
     this.modalRef.destroy(null);
+  }
+
+  setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {
+    if(!cityCode || !deliveryType) return;
+    
+    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
+      if(feeShip > 0 && index > -1) {
+        this.lstData[index].DeliveryPrice = feeShip;
+      }
   }
 }
