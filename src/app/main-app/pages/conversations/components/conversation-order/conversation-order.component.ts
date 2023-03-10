@@ -1856,10 +1856,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.suggestCopy = null;
   }
 
-  onSearchSuggestion(text: string) {
-    this.suggestText = text || null;
-  }
-
   onInputKeyupSuggestion(event: any) {
     let keyCode = event?.keyupEvent?.keyCode;
     if(keyCode && !((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90) || keyCode == 17)) return;
@@ -1879,7 +1875,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     this.suggestTimer = setTimeout(() => {
         this.suggestText = this.suggestCopy;
-    }, 25);
+
+        this.cdRef.detectChanges();
+    }, 50);
     let data = event.value;
 
     if(data) {
