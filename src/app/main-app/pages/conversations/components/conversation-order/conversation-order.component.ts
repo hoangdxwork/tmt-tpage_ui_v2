@@ -7,7 +7,7 @@ import { ProductTemplateUOMLineService } from './../../../../services/product-te
 import { ChangeDetectionStrategy, ChangeDetectorRef, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { takeUntil, pipe, Observable, map, BehaviorSubject } from 'rxjs';
+import { takeUntil, pipe, Observable, map, BehaviorSubject, finalize } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -175,6 +175,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   isSuggestion: boolean = false;
   suggestCopy: any;
   suggestTimer: TDSSafeAny;
+  isLoadingAddress: boolean = false;
 
   private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
   private districtSubject = new BehaviorSubject<SuggestDistrictsDTO[]>([]);
@@ -1864,9 +1865,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.suggestCopy = this.suggestText;
 
     if(!TDSHelperString.hasValueString(this.suggestText)) return;
-
+    
+    this.isLoadingAddress = true;
     this.suggestData = this.suggestService.suggest(this.suggestText)
-      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
+      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])), finalize(() => this.isLoadingAddress = false));
   }
 
   onSelectSuggestion(event: any) {

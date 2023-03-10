@@ -77,6 +77,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
   suggestCopy: any;
   isSuggestion: boolean = false;
   suggestTimer: TDSSafeAny;
+  isLoadingAddress: boolean = false;
 
   private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
   private districtSubject = new BehaviorSubject<SuggestDistrictsDTO[]>([]);
@@ -677,8 +678,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
 
     if(!TDSHelperString.hasValueString(this.suggestText)) return;
 
+    this.isLoadingAddress = true;
     this.suggestData = this.suggestService.suggest(this.suggestText)
-      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
+      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])), finalize(() => this.isLoadingAddress = false));
   }
 
   onSelectSuggestion(event: any) {
