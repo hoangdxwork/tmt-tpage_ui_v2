@@ -74,7 +74,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
 
   suggestData: Observable<any> = new Observable<any>();
   suggestText: any;
+  suggestCopy: any;
   isSuggestion: boolean = false;
+  suggestTimer: TDSSafeAny;
+  isLoadingAddress: boolean = false;
 
   private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
   private districtSubject = new BehaviorSubject<SuggestDistrictsDTO[]>([]);
@@ -481,6 +484,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
           this.isEditPartner = false;
           this.isLoading = false;
           this.suggestText = res.Street;
+          this.suggestCopy = res.Street;
           this.isSuggestion = false;
 
           delete this.tempPartner;
@@ -514,6 +518,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
   destroyTimer() {
     if(this.onSyncTimer) {
       clearTimeout(this.onSyncTimer);
+    }
+    if (this.suggestTimer) {
+      clearTimeout(this.suggestTimer);
     }
   }
 
@@ -578,6 +585,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
         _street: this.partner.Street || '',
         isSelectAddress: true,
         isSelectAddressConversation: true,
+        innerText: this.suggestText
       }
     });
 
@@ -585,6 +593,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
       next: (result: any) => {
         if(result){
             this.partner = {...this.csPartner_SuggestionHandler.onLoadSuggestion(result.value, this.partner)};
+            this.suggestText = result.value?.Address;
+            this.suggestCopy = result.value?.Address;
+
             this.mappingAddress(this.partner);
             if(result.type == 'confirm') {
                 this.updatePartner(result.type);
@@ -649,87 +660,103 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     delete this.tempPartner;
 
     this.suggestText = null;
+    this.suggestCopy = null;
     this.isSuggestion = false;
   }
 
-  onSearchSuggestion(text: string) {
-    this.suggestText = text || null;
+  closeSearchAddress() {
+    this.suggestText = null;
+    this.suggestCopy = null;
   }
 
   onInputKeyupSuggestion(event: any) {
     let keyCode = event?.keyupEvent?.keyCode;
-    if(keyCode && !((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90))) return;
+    if(keyCode && !((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90) || keyCode == 17)) return;
+
+    this.suggestText = event?.value || null;
+    this.suggestCopy = this.suggestText;
 
     if(!TDSHelperString.hasValueString(this.suggestText)) return;
 
+    this.isLoadingAddress = true;
     this.suggestData = this.suggestService.suggest(this.suggestText)
-      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
+      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])), finalize(() => this.isLoadingAddress = false));
   }
 
-  onSelectSuggestion(event: SuggestAddressDto) {
-    if(event) {
-      this.isSuggestion = true;
-      this.partner.Street = event.Address;
-      this._street = event.Address;
+  onSelectSuggestion(event: any) {
+    this.suggestText = null;
+    this.destroyTimer();
 
-      this.partner.CityCode = event.CityCode;
-      this.partner.CityName = event.CityName;
+    this.suggestTimer = setTimeout(() => {
+        this.suggestText = this.suggestCopy;
+
+        this.cdRef.detectChanges();
+    }, 50);
+    let data = event.value;
+
+    if(data) {
+      this.isSuggestion = true;
+      this.partner.Street = data.Address;
+      this._street = data.Address;
+
+      this.partner.CityCode = data.CityCode;
+      this.partner.CityName = data.CityName;
       this.partner.City = {
-        code: event.CityCode,
-        name: event.CityName
+        code: data.CityCode,
+        name: data.CityName
       }
 
       this._cities = {
-        code: event.CityCode,
-        name: event.CityName
+        code: data.CityCode,
+        name: data.CityName
       }
 
       if(this.lstCity && this.lstCity.length == 0) {
         this.loadCity();
       }
 
-      this.partner.DistrictCode = event.DistrictCode;
-      this.partner.DistrictName = event.DistrictName;
+      this.partner.DistrictCode = data.DistrictCode;
+      this.partner.DistrictName = data.DistrictName;
       this.partner.District = {
-        code: event.DistrictCode,
-        name: event.DistrictName,
-        cityName: event.CityCode,
-        cityCode: event.CityName
+        code: data.DistrictCode,
+        name: data.DistrictName,
+        cityName: data.CityCode,
+        cityCode: data.CityName
       }
 
       this._districts = {
-        code: event.DistrictCode,
-        name: event.DistrictName,
-        cityCode: event.CityCode,
-        cityName: event.CityName
+        code: data.DistrictCode,
+        name: data.DistrictName,
+        cityCode: data.CityCode,
+        cityName: data.CityName
       }
 
-      if(event.CityCode) {
-        this.loadDistricts(event.CityCode);
+      if(data.CityCode) {
+        this.loadDistricts(data.CityCode);
       }
 
-      this.partner.WardCode = event.WardCode;
-      this.partner.WardName = event.WardName;
+      this.partner.WardCode = data.WardCode;
+      this.partner.WardName = data.WardName;
       this.partner.Ward = {
-        code: event.WardCode,
-        name: event.WardName,
-        cityCode: event.CityCode,
-        cityName: event.CityName,
-        districtCode: event.DistrictCode,
-        districtName: event.DistrictName
+        code: data.WardCode,
+        name: data.WardName,
+        cityCode: data.CityCode,
+        cityName: data.CityName,
+        districtCode: data.DistrictCode,
+        districtName: data.DistrictName
       }
 
       this._wards = {
-        code: event.WardCode,
-        name: event.WardName,
-        cityName: event.CityCode,
-        cityCode: event.CityName,
-        districtCode: event.DistrictCode,
-        districtName: event.DistrictName
+        code: data.WardCode,
+        name: data.WardName,
+        cityName: data.CityCode,
+        cityCode: data.CityName,
+        districtCode: data.DistrictCode,
+        districtName: data.DistrictName
       }
 
-      if(event.DistrictCode) {
-        this.loadWards(event.DistrictCode);
+      if(data.DistrictCode) {
+        this.loadWards(data.DistrictCode);
       }
 
       this.cdRef.detectChanges();

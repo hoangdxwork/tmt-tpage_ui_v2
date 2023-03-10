@@ -7,7 +7,7 @@ import { ProductTemplateUOMLineService } from './../../../../services/product-te
 import { ChangeDetectionStrategy, ChangeDetectorRef, NgZone, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { SaleOnlineSettingDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { takeUntil, pipe, Observable, map, BehaviorSubject } from 'rxjs';
+import { takeUntil, pipe, Observable, map, BehaviorSubject, finalize } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -173,6 +173,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   suggestData: Observable<any> = new Observable<any>();
   suggestText: any;
   isSuggestion: boolean = false;
+  suggestCopy: any;
+  suggestTimer: TDSSafeAny;
+  isLoadingAddress: boolean = false;
 
   private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
   private districtSubject = new BehaviorSubject<SuggestDistrictsDTO[]>([]);
@@ -1484,7 +1487,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           _wards: this._wards,
           _street: this.quickOrderModel.Address,
           isSelectAddress: true,
-          isSelectAddressConversation: true
+          isSelectAddressConversation: true,
+          innerText: this.suggestText,
         }
       });
 
@@ -1493,6 +1497,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         if(result){
             let data = {...this.csOrder_SuggestionHandler.onLoadSuggestion(result.value, this.quickOrderModel)};
             this.quickOrderModel = {...data};
+            this.suggestText = result.value?.Address;
+            this.suggestCopy = result.value?.Address;
+
             this.mappingAddress(this.quickOrderModel);
 
             if(result.type == 'confirm') {
@@ -1525,6 +1532,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.commentPost = null as any;
     this.disableSyncOrder = false;
     this.suggestText = null;
+    this.suggestCopy = null;
     this.isSuggestion = false;
   }
 
@@ -1659,7 +1667,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     return data.Id;
   }
 
-  onChangeQuantity(event: any, item: any, index: number){debugger
+  onChangeQuantity(event: any, item: any, index: number){
     let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
 
     if(exsit) { 
@@ -1750,6 +1758,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.isEditPartner = false;
     this.isSuggestion = false;
     this.suggestText = order.Address;
+    this.suggestCopy = order.Address;
 
     if(this.isEnableCreateOrder) {
         this.onCreateFastSaleOrder(this.quickOrderModel, type);
@@ -1826,6 +1835,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     if (this.syncTimer) {
       clearTimeout(this.syncTimer);
     }
+    if (this.suggestTimer) {
+      clearTimeout(this.suggestTimer);
+    }
   }
 
   checkSelectNote() {
@@ -1840,63 +1852,78 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.destroyTimer();
   }
 
-  onSearchSuggestion(text: string) {
-    this.suggestText = text || null;
+  closeSearchAddress() {
+    this.suggestText = null;
+    this.suggestCopy = null;
   }
 
   onInputKeyupSuggestion(event: any) {
     let keyCode = event?.keyupEvent?.keyCode;
-    if(keyCode && !((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90))) return;
+    if(keyCode && !((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90) || keyCode == 17)) return;
+
+    this.suggestText = event?.value || null;
+    this.suggestCopy = this.suggestText;
 
     if(!TDSHelperString.hasValueString(this.suggestText)) return;
-
+    
+    this.isLoadingAddress = true;
     this.suggestData = this.suggestService.suggest(this.suggestText)
-      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])));
+      .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])), finalize(() => this.isLoadingAddress = false));
   }
 
-  onSelectSuggestion(event: SuggestAddressDto) {
-    if(event) {
-      this.isSuggestion = true;
-      this.quickOrderModel.Address = event.Address;
-      this._street = event.Address;
+  onSelectSuggestion(event: any) {
+    this.suggestText = null;
+    this.destroyTimer();
 
-      this.quickOrderModel.CityCode = event.CityCode;
-      this.quickOrderModel.CityName = event.CityName;
+    this.suggestTimer = setTimeout(() => {
+        this.suggestText = this.suggestCopy;
+
+        this.cdRef.detectChanges();
+    }, 50);
+    let data = event.value;
+
+    if(data) {
+      this.isSuggestion = true;
+      this.quickOrderModel.Address = data.Address;
+      this._street = data.Address;
+
+      this.quickOrderModel.CityCode = data.CityCode;
+      this.quickOrderModel.CityName = data.CityName;
       this._cities = {
-        code: event.CityCode,
-        name: event.CityName
+        code: data.CityCode,
+        name: data.CityName
       }
 
       if(this.lstCity && this.lstCity.length == 0) {
         this.loadCity();
       }
 
-      this.quickOrderModel.DistrictCode = event.DistrictCode;
-      this.quickOrderModel.DistrictName = event.DistrictName;
+      this.quickOrderModel.DistrictCode = data.DistrictCode;
+      this.quickOrderModel.DistrictName = data.DistrictName;
       this._districts = {
-        code: event.DistrictCode,
-        name: event.DistrictName,
-        cityCode: event.CityCode,
-        cityName: event.CityName
+        code: data.DistrictCode,
+        name: data.DistrictName,
+        cityCode: data.CityCode,
+        cityName: data.CityName
       }
 
-      if(event.CityCode) {
-        this.loadDistricts(event.CityCode);
+      if(data.CityCode) {
+        this.loadDistricts(data.CityCode);
       }
 
-      this.quickOrderModel.WardCode = event.WardCode;
-      this.quickOrderModel.WardName = event.WardName;
+      this.quickOrderModel.WardCode = data.WardCode;
+      this.quickOrderModel.WardName = data.WardName;
       this._wards = {
-        code: event.WardCode,
-        name: event.WardName,
-        cityName: event.CityCode,
-        cityCode: event.CityName,
-        districtCode: event.DistrictCode,
-        districtName: event.DistrictName
+        code: data.WardCode,
+        name: data.WardName,
+        cityName: data.CityCode,
+        cityCode: data.CityName,
+        districtCode: data.DistrictCode,
+        districtName: data.DistrictName
       }
 
-      if(event.DistrictCode) {
-        this.loadWards(event.DistrictCode);
+      if(data.DistrictCode) {
+        this.loadWards(data.DistrictCode);
       }
 
       this.cdRef.detectChanges();
