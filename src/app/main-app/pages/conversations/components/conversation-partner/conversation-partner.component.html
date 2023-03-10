@@ -376,6 +376,11 @@
                                         {{ option.Address }}
                                     </div>
                                 </tds-auto-option>
+                                <tds-auto-option class="h-[256px]" *ngIf="isLoadingAddress">
+                                  <div class="w-full h-full justify-self-center pt-[110px]">
+                                    <tds-spin></tds-spin>
+                                  </div>
+                                </tds-auto-option>
                             </tds-autocomplete>
                   
                           </div>
