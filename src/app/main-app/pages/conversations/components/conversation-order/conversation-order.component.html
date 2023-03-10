@@ -80,27 +80,32 @@
                             <span *ngIf="!isEditPartner" class="text-neutral-1-900 font-regular font-sans desktop:text-body-2 laptop:text-caption-1 text-caption-1">{{ quickOrderModel.Address || 'Chưa có địa chỉ' }}</span>
 
                             <div *ngIf="isEditPartner" class="w-full flex gap-x-2">
-                                <!-- <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
-                                    <input tdsInput autocomplete="off" placeholder="Địa chỉ"
-                                        class="desktop:text-body-2 laptop:text-caption-1 text-caption-1"
-                                        [size]="reponsiveDesktop ? 'md' : 'sm'"
-                                        [(ngModel)]="quickOrderModel.Address" [ngModelOptions]="{ standalone: true }"/>
-                                </tds-form-field> -->
 
-                                <tds-select valueField="Address" textField="Address"
-                                    placeholder='Nhập địa chỉ cần tìm' disabledField="isActive"
-                                    [data]="suggestData | async" [allowClear]="true" [valuePrimitive]="false"
-                                    [autoClearSearchValue]="true" [serverSearch]="true" 
-                                    [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}"
-                                    [tdsInputDebounce]="750" 
-                                    (inputKeyup)="onInputKeyupSuggestion($event)"
-                                    (onSearch)="onSearchSuggestion($event)" 
-                                    (selectChange)="onSelectSuggestion($event)">
-
-                                    <ng-template tds-option-tmp let-label='label' let-item="item" let-value='value' let-selected="selected">
-                                        <a [ngClass]="{'text-primary-1':selected}"> {{item.Address}} </a>
-                                    </ng-template>
-                                </tds-select>
+                                <div class="flex flex-col w-full">
+                                    <!-- search input -->
+                                    <div class="w-full flex gap-x-2">
+                                      <tds-form-field class="w-full">
+                                        <input class="placeholder-neutral-1-400" placeholder="Tìm kiếm địa chỉ" tdsInput
+                                            [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="300" 
+                                            (inputKeyup)="onInputKeyupSuggestion($event)" [tdsAutocomplete]="addressComplete"/>
+                                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+                                        <span tdsSuffix (click)="closeSearchAddress()">
+                                            <i class="tdsi-close-fill text-neutral-1-500 text-base" *ngIf="suggestText && suggestText != ''"></i>
+                                        </span>
+                                      </tds-form-field>
+                            
+                                      <tds-autocomplete #addressComplete (selectionChange)="onSelectSuggestion($event)">  
+                                          <tds-auto-option *ngFor="let option of (suggestData | async)"
+                                              [label]="option.Address" [value]="option">
+                                              <div class="flex w-full justify-between items-center">
+                                                  {{ option.Address }}
+                                              </div>
+                                          </tds-auto-option>
+                                      </tds-autocomplete>
+                            
+                                    </div>
+                                </div>
+                            
                                 <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip tooltipPlacement="topRight" [tooltipTitle]="quickOrderModel.Address ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'">
                                     <span class="flex items-center">
                                       <i class="tdsi-location-fill"></i>
