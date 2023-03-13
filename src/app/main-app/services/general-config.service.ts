@@ -47,7 +47,7 @@ export class GeneralConfigService extends BaseSevice {
 
   getAccountJournal(): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/odata/AccountJournal/OdataService.GetAccountJournalList?%24count=true`,
+      url: `${this._BASE_URL}/odata/AccountJournal/OdataService.GetAccountJournalList?&%24top=50&%24filter=(contains(Type%2C%27cash%27)+or+contains(Type%2C%27bank%27))&%24count=true`,
       method: CoreApiMethodType.get,
     }
 
