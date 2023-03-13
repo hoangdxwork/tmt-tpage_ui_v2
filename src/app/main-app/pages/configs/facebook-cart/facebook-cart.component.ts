@@ -128,6 +128,7 @@ export class FacebookCartComponent implements OnInit {
       }
     } else {
       this.accountJournalItem = null;
+      this._form.controls['AccountJournalId'].setValue(null);
     }
   }
 
