@@ -1,5 +1,5 @@
+import { TransportConfigsDto } from './../../../dto/configs/transport-config.dto';
 import { Message } from './../../../../lib/consts/message.const';
-import { ShipReceiver } from './../../../dto/partner/change-partner-pricelist.dto';
 import { DeliveryCarrierV2Service } from './../../../services/delivery-carrier-v2.service';
 import { SuggestAddressService } from './../../../services/suggest-address.service';
 import { Validators } from '@angular/forms';
@@ -141,7 +141,7 @@ export class AddBillComponent implements OnInit {
   isEnableCalcFee: boolean = false;
   focusField: string = '';
 
-  numberWithCommas =(value:TDSSafeAny) =>{
+  numberWithCommas =(value:TDSSafeAny) => {
     if(value != null)
     {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -149,7 +149,7 @@ export class AddBillComponent implements OnInit {
     return value;
   } ;
 
-  parserComas = (value: TDSSafeAny) =>{
+  parserComas = (value: TDSSafeAny) => {
     if(value != null)
     {
       return TDSHelperString.replaceAll(value,'.','');
@@ -157,6 +157,7 @@ export class AddBillComponent implements OnInit {
     return value;
   };
 
+  lstTransport: TransportConfigsDto[] = [];
   iscaclFeeAship: boolean = false;
   typePrint: string = '';
 
@@ -243,6 +244,7 @@ export class AddBillComponent implements OnInit {
 
     this.loadCity();
     this.loadSaleConfig();
+    this.loadTransport();
     this.loadDeliveryCarrier();
     this.lstPaymentJournals = this.loadPaymentJournals();
     this.lstPrices = this.loadListPrice();
@@ -588,12 +590,21 @@ export class AddBillComponent implements OnInit {
             if(Number(this.id) == 0 || !this.id) {
               this.mappingDataAddress(data);
             }
+
+            let ship_Receiver = this._form.controls['Ship_Receiver'].value;
+            if(ship_Receiver && !ship_Receiver.City?.code) {
+              this.mappingDataAddress(data);
+            }
           }
 
           if(type != '_LOADBILL') {
-              this.calcTotal();
-              this.coDAmount();
+            this.calcTotal();
+            this.coDAmount();
           }
+
+          let shipReceiver = this._form.controls["Ship_Receiver"].value;
+          let carrier = this._form.controls['Carrier'].value;
+          this.setFeeShipFromTransport(shipReceiver?.City?.code,  shipReceiver?.District?.code, carrier?.DeliveryType);
 
           this.isLoading = false;
       },
@@ -1361,6 +1372,39 @@ export class AddBillComponent implements OnInit {
     }
   }
 
+  loadTransport() {
+    this.sharedService.setTransportConfigs();
+    this.sharedService.getTransportConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) =>{
+        this.lstTransport = [...res?.value || []];
+      }
+    })
+  }
+
+  setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
+    if(cityCode && deliveryType) {
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
+      if(feeShip > 0) {
+        this._form.controls["DeliveryPrice"].setValue(feeShip);
+        this.coDAmount();
+      } else {
+        let carrier = this._form.controls["Carrier"].value;
+        if(carrier && carrier.Id) {
+          let deliveryPrice = carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+          this._form.controls["DeliveryPrice"].setValue(deliveryPrice);
+          this.coDAmount();
+        }
+      }
+    } else {
+      let carrier = this._form.controls["Carrier"].value;
+      if(carrier && carrier.Id) {
+        let deliveryPrice = carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+        this._form.controls["DeliveryPrice"].setValue(deliveryPrice);
+        this.coDAmount();
+      }
+    }
+  }
+
   sendToShipper(data: FastSaleOrder_DefaultDTOV2) {
     let model = { id: this.id };
     this.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$)).subscribe({
@@ -1540,6 +1584,9 @@ export class AddBillComponent implements OnInit {
     if(event) {
         this.calcFee();
     }
+
+    let shipReceiver = this._form.controls["Ship_Receiver"].value;
+    this.setFeeShipFromTransport(shipReceiver?.City?.code, shipReceiver?.District?.code, event.DeliveryType);
   }
 
   prepareCalcFeeButton() {
@@ -1686,6 +1733,9 @@ export class AddBillComponent implements OnInit {
 
           this.prepareSuggestionsBill.onLoadSuggestion(this._form, result);
           this.innerText = result.Address;
+
+          let carrier = this._form.controls['Carrier'].value;
+          this.setFeeShipFromTransport(result.CityCode, result.DistrictCode, carrier?.DeliveryType);
         }
       }
     })
@@ -1770,6 +1820,8 @@ export class AddBillComponent implements OnInit {
     } as any;
 
     this.setAddress(item);
+    let carrier = this._form.controls['Carrier'].value;
+    this.setFeeShipFromTransport(item.CityCode, item.DistrictCode, carrier?.DeliveryType);
   }
 
   changeDistrict(district: SuggestDistrictsDTO) {
@@ -1800,6 +1852,8 @@ export class AddBillComponent implements OnInit {
     } as any;
 
     this.setAddress(item);
+    let carrier = this._form.controls['Carrier'].value;
+    this.setFeeShipFromTransport(item.CityCode, item.DistrictCode, carrier?.DeliveryType);
   }
 
   changeWard(ward: SuggestWardsDTO) {

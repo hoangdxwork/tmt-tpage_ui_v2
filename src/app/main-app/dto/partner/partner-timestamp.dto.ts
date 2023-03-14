@@ -23,5 +23,5 @@ export interface Data {
 export interface PartnerTimeStampDto {
   Next?: any;
   Last: number;
-  Data: PartnerTimeStampItemDto;
+  Data: any;
 }

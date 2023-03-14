@@ -131,6 +131,7 @@ export class EditLiveCampaignComponent implements OnInit {
       IsEnableAuto: [false],
       EnableQuantityHandling: [true],
       IsAssignToUserNotAllowed: [true],
+      IsApplyQuantityLiveCampaign: [false],
       IsShift: [false],
       Facebook_UserId: [null],
       Facebook_UserName: [null],

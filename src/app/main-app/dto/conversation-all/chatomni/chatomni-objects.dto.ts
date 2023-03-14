@@ -24,6 +24,7 @@ export interface ChatomniObjectsItemDto {
   LiveCampaign?: ChatomniLiveCampaignDto;
   StatusLive?: any; // 1 đang live
   ParentId?: any;
+  IsOwner?: boolean;
 }
 
 export interface ChatomniObjectsDto {

@@ -1,3 +1,4 @@
+import { TransportConfigsDto } from './../../../../dto/configs/transport-config.dto';
 import { InventoryChangeType, StoragePriceListItemsDto } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
@@ -70,6 +71,7 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 import { SuggestAddressDto, SuggestAddressService } from '@app/services/suggest-address.service';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 @Component({
   selector: 'conversation-order',
@@ -185,6 +187,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   lstDistrict: Array<SuggestDistrictsDTO> = [];
   lstWard: Array<SuggestWardsDTO> = [];
 
+  lstTransport: TransportConfigsDto[] = [];
+  feeShipValue: number = 0;
   isConfigProduct: boolean = false;
 
   constructor(private message: TDSMessageService,
@@ -205,6 +209,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     private sharedService: SharedService,
     private suggestService: SuggestAddressService,
     private chatomniConversationService: ChatomniConversationService,
+    private chatomniCommentFacade: ChatomniCommentFacade,
     private ngZone: NgZone,
     private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
@@ -233,6 +238,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     this.loadSaleConfig();
     this.loadSaleOnineSettingConfig();
+    this.loadTransport();
     this.loadUsers();
     this.loadUserLogged();
     this.loadCurrentCompany();
@@ -245,8 +251,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes["conversationInfo"] && !changes["conversationInfo"].firstChange) {
-        let x = {...changes["conversationInfo"].currentValue};
-        this.loadData(x);
+      let x = {...changes["conversationInfo"].currentValue};
+      this.loadData(x);
     }
   }
 
@@ -263,7 +269,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
               if(!exit1) break;
               // TODO: cập nhật mã đơn hàng sau khi tạo đơn hàng
-              this.conversationOrderFacade.hasValueOrderCode$.emit(fbCreated?.Data?.Code);
+              let orderCode = fbCreated?.Data?.Code;
+              if(fbCreated?.Data?.SessionIndex > 0) {
+                orderCode = `${fbCreated?.Data?.SessionIndex}. ${fbCreated?.Data?.Code}`;
+              }
+              this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
             break;
 
             case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
@@ -566,14 +576,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             }, this.saleModel);
 
             this.saleModel = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
-
             this.calcTotal();
             this.coDAmount();
 
             this.loadConfigProvider(this.saleModel);
-
             this.handleIsEqualAmountInsurance();
             this.prepareCalcFeeButton();
+            this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
           }
 
           this.isLoading = false;
@@ -691,11 +700,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     })
   }
 
+  loadTransport() {
+    this.sharedService.setTransportConfigs();
+    this.sharedService.getTransportConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) =>{
+        this.lstTransport = [...res?.value || []];
+      }
+    })
+  }
+
   loadDeliveryCarrier(){
     this.deliveryCarrierService.setDeliveryCarrier();
     this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
-        this.lstCarrier = [...res.value];
+        this.lstCarrier = [...res?.value || []];
       },
       error: error =>{
         this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -731,13 +749,14 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.saleModel.Carrier = event;
     this.saleModel.CarrierId = event?.Id;
 
-    //TODO: Cập nhật giá trị ship mặc định
+    // TODO: Cập nhật giá trị ship mặc định
     let deliveryPrice = event?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
     if(this.saleModel.DeliveryPrice != deliveryPrice) {
         this.saleModel.DeliveryPrice = deliveryPrice;
         this.coDAmount();
     }
-
+    
+    
     this.saleModel.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
@@ -749,8 +768,21 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         this.calcFee();
     }
 
+    this.setFeeShipFromTransport(this.saleModel?.Ship_Receiver?.City?.code, this.saleModel?.Ship_Receiver?.District?.code, event?.DeliveryType);
     this.prepareCalcFeeButton();
     this.cdRef.detectChanges();
+  }
+
+  setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
+    if(!cityCode || !deliveryType) return;
+    
+    if(this.saleModel) {
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
+      if(feeShip > 0) {
+        this.saleModel.DeliveryPrice = feeShip;
+        this.coDAmount();
+      }
+    }
   }
 
   onEditPartner() {
@@ -871,6 +903,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             }
 
             this.mappingAddress(res);
+            this.suggestText = res.Address;
             this.disableSyncOrder = true;
 
             this.prepareResponseSaleOnline(res, type);
@@ -995,9 +1028,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     fs_model.CompanyId = this.companyCurrents?.CompanyId;
     fs_model.FormAction = order.FormAction;
 
-    //TODO cập nhật id list price
-    // let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
-    // fs_model.PriceListId = priceListItems?.Id || 0;
+    //TODO Id bảng giá
+    let priceListItems = this.productIndexDBService.getLocalStoragePriceListItems() as StoragePriceListItemsDto;
+    fs_model.PriceListId = priceListItems?.Id || 0;
 
     // TODO check cấu hình ghi chú in
     fs_model.Comment = '';
@@ -1501,10 +1534,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             this.suggestCopy = result.value?.Address;
 
             this.mappingAddress(this.quickOrderModel);
-
+            this.suggestText = this.quickOrderModel.Address;
+            
             if(result.type == 'confirm') {
               this.updateOrder(result.type);
             }
+            this.setFeeShipFromTransport(data.CityCode, data.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
         }
         this.cdRef.detectChanges();
       }
@@ -1620,7 +1655,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             if(!res) return;
             this.indexDbStorage = [...res?.cacheDbStorage || []];
 
-            let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
+            let priceListItems = this.productIndexDBService.getLocalStoragePriceListItems() as StoragePriceListItemsDto;
             if(priceListItems && priceListItems.Value) {
                 this.indexDbStorage?.map((x: DataPouchDBDTO) => {
                     if(x.SaleOK && ! x.IsDiscount) {
@@ -1670,7 +1705,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   onChangeQuantity(event: any, item: any, index: number){
     let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
 
-    if(exsit) { 
+    if(exsit) {
       if(event && Number(event) > 0) {
           this.quickOrderModel.Details[Number(index)].Quantity = Number(event);
       } else {
@@ -1695,7 +1730,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   onQuickSaleOnlineOrder(order: QuickSaleOnlineOrderModel, type?: string) {
-    this.conversationOrderFacade.hasValueOrderCode$.emit(order.Code);
+    let orderCode = order.Code;
+    if(order.SessionIndex > 0) {
+      orderCode = `${order.SessionIndex}. ${order.Code}`;
+    }
+    this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
 
     let csid = order.Facebook_ASUserId;
     this.onSyncConversationPartner(csid);
@@ -1808,6 +1847,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           next: (info: ChatomniConversationInfoDto) => {
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
               this.chatomniConversationFacade.onSyncConversationPartner$.emit(info);
+              this.chatomniCommentFacade.onSyncPartnerTimeStamp$.emit(info);
 
               if(type == 'FastSaleOrder') {
                   this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
@@ -1925,7 +1965,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       if(data.DistrictCode) {
         this.loadWards(data.DistrictCode);
       }
-
+      this.setFeeShipFromTransport(event.CityCode, event.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+      
       this.cdRef.detectChanges();
     }
   }
@@ -2075,7 +2116,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         Factor: x.Factor,
         Price: x.Price,
         ProductId: x.ProductId,
-        Note: null,
+        Note: x.Note,
         ProductName: x.ProductName,
         ProductNameGet: x.ProductNameGet,
         ProductCode: x.ProductCode,

@@ -1,3 +1,4 @@
+import { TransportConfigsDto } from './../../../../dto/configs/transport-config.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { DeliveryCarrierV2Service } from 'src/app/main-app/services/delivery-carrier-v2.service';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
@@ -69,7 +70,6 @@ export class EditOrderV2Component implements OnInit {
 
   @Input() dataItem!: QuickSaleOnlineOrderModel;
 
-  _form!: FormGroup;
   dataSuggestion!: DataSuggestionDTO;
   userInit!: UserInitDTO;
   lstComment: CommentsOfOrderDTO[] = [];
@@ -148,6 +148,7 @@ export class EditOrderV2Component implements OnInit {
   isEqualAmountInsurance: boolean = false;
   delivery_calcfee = ["fixed", "base_on_rule", "VNPost"];
   isEnableCalcFee: boolean = false;
+  lstTransport: TransportConfigsDto[] = [];
 
   constructor(private modal: TDSModalService,
     private cdRef: ChangeDetectorRef,
@@ -191,6 +192,7 @@ export class EditOrderV2Component implements OnInit {
       this.loadUser();
       this.loadPartnerStatus();
       this.loadSaleConfig();
+      this.loadTransport();
       this.productIndexDB();
     }
 
@@ -277,6 +279,7 @@ export class EditOrderV2Component implements OnInit {
 
             this.handleIsEqualAmountInsurance();
             this.prepareCalcFeeButton();
+            this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
           }
           this.isLoading = false;
       },
@@ -321,6 +324,18 @@ export class EditOrderV2Component implements OnInit {
         this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
       }
     });
+  }
+
+  loadTransport() {
+    this.sharedService.setTransportConfigs();
+    this.sharedService.getTransportConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) =>{
+        this.lstTransport = [...res?.value || []];
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.mesage);
+      }
+    })
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
@@ -566,6 +581,7 @@ export class EditOrderV2Component implements OnInit {
     }
 
     this.prepareCalcFeeButton();
+    this.setFeeShipFromTransport(this.quickOrderModel?.CityCode, this.quickOrderModel?.DistrictCode , this.saleModel?.Carrier?.DeliveryType);
   }
 
   calcFee() {
@@ -1136,8 +1152,10 @@ export class EditOrderV2Component implements OnInit {
       next: (result: ResultCheckAddressDTO) => {
         if(result){
           this.onLoadSuggestion(result);
+          this.mappingAddress(this.quickOrderModel);
+
           this.innerText = result.Address;
-          this.quickOrderModel.Address = result.Address;
+          this.setFeeShipFromTransport(this.quickOrderModel?.CityCode, this.quickOrderModel?.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
         }
       }
     })
@@ -1232,7 +1250,7 @@ export class EditOrderV2Component implements OnInit {
         Factor: x.Factor,
         Price: x.Price,
         ProductId: x.ProductId,
-        Note: null,
+        Note: x.Note,
         ProductName: x.ProductName,
         ProductNameGet: x.ProductNameGet,
         ProductCode: x.ProductCode,
@@ -1260,5 +1278,15 @@ export class EditOrderV2Component implements OnInit {
     this.calcTotal();
     this.coDAmount();
     this.cdRef.detectChanges();
+  }
+
+  setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
+    if(!cityCode || !deliveryType) return;
+    
+    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
+      if(feeShip > 0) {
+        this.saleModel.DeliveryPrice = feeShip;
+        this.coDAmount();
+      }
   }
 }

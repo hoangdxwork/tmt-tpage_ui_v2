@@ -12,12 +12,21 @@ export class DictSourcePipe implements PipeTransform {
     if(!source) return '';
 
     switch (source) {
-      case 'FacebookComment':
+      case 'FacebookComment': 
+      case 'TShopComment': 
+      case 'UnofficialTikTokComment':
         return 'Bình luận';
-      case 'FacebookMessage':
+
+      case 'FacebookMessage': 
+      case 'TShopConversation': 
+      case 'UnofficialTikTokConversation':
         return 'Tin nhắn';
-      case 'FacebookBot':
+
+      case 'FacebookBot': 
+      case 'TShopBot': 
+      case 'UnofficialTikTokBot':
         return 'Tự động';
+        
       default:
         return '';
     }

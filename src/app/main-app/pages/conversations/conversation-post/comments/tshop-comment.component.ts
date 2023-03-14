@@ -152,7 +152,28 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
         this.isLoadingInsertFromPost = false;
         this.cdRef.detectChanges();
       }
-    })
+    });
+
+    this.chatomniCommentFacade.onChangePartnerTimeStamp$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+        if(data && data.length > 0 && this.partnerDict && Object.keys(this.partnerDict).length > 0) {
+          let teamId = data[0];
+
+          if(this.team && this.team.Id == teamId) {
+            let userId = data[1];
+            let status = data[2];
+
+            if(this.partnerDict[userId] && Object.keys(this.partnerDict[userId]).length > 0) {
+              this.partnerDict[userId] = status;
+              this.cdRef.detectChanges();
+            } else {
+              this.partnerDict[userId] = status;
+              this.cdRef.detectChanges();
+            }
+          }
+        }
+      }
+    });
   }
 
   loadOrderPartnerbylLivecampaign() {
@@ -293,6 +314,10 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
       index: model.Data.SessionIndex,
       code: model.Data.Code
     };
+
+    if(item.index > 0) {
+      item.code = `${item.index}. ${item.code}`;
+    }
 
     let exist = this.commentOrders[model.Data.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data.Facebook_ASUserId]).length > 0;
     if(exist) {
@@ -449,43 +474,7 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
       size: 'xl',
       componentParams: {
         pageId: this.team?.ChannelId,
-      }
-    });
-
-    modal.componentInstance?.onSendProduct.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: TDSSafeAny)=>{
-        if(res){
-            this.onProductSelected(res, item);
-            modal.destroy(null);
-        }
-      }
-    })
-  }
-
-  onProductSelected(event: any, item: ChatomniDataItemDto) {
-    let model = {
-      product: {
-        Id: event.Id,
-        Name: event.Name,
-        Picture: event.Picture,
-        Price: event.Price,
-      }
-    };
-
-  this.activityMatchingService.addTemplateMessageV3(this.team?.Id, item.UserId, model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          item.Data.is_reply = false;
-          this.isReplyingComment = false;
-
-          this.message.success('Gửi tin thành công');
-          this.cdRef.detectChanges();
-      },
-      error: error => {
-          item.Data.is_reply = false;
-          this.isReplyingComment = false;
-
-          this.message.error(error.error?.message);
-          this.cdRef.detectChanges();
+        userId: item?.UserId
       }
     });
   }

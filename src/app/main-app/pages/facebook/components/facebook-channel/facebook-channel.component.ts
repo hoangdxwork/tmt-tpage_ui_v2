@@ -237,6 +237,31 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
     })
   }
 
+  checkPermission(accessToken: any) {
+    this.isLoading = true;
+    this.facebookService.checkPermission(accessToken).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res && res.IsValid) {
+          this.notification.success('Thông báo', 'Token hợp lệ');
+        }
+
+        if(res && !res.IsValid && res.ErrorMessage) {
+          let message = ``;
+          res.ErrorMessage.forEach((x: any) => {
+            message += `<li class="text-info-500 font-semibold">${x}</li>`;
+          })
+          this.notification.error(`<span class="text-error-400">Token thiếu quyền</span>`, `<ul>${message}</ul>`);
+        }
+
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        this.message.error(err.error?.message || 'Token không hợp lệ');
+      }
+    })
+  }
+
   unconnectTeam(data: CRMTeamDTO, event: TDSSafeAny): void {
     event.preventDefault();
     event.stopImmediatePropagation();

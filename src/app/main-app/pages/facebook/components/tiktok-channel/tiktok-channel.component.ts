@@ -212,7 +212,7 @@ export class TiktokChannelComponent implements OnInit {
 
     this.isLoading = true;
 
-    this.tiktokService.refreshUnofficialTiktok(id, this.sessionIdRefresh).pipe(takeUntil(this.destroy$)).subscribe({
+    this.tiktokService.refreshUnofficialTiktok(id, this.sessionIdRefresh.trim()).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: TDSSafeAny) => {
             this.idShowUpdateTiktok = -1;
             this.loadData();

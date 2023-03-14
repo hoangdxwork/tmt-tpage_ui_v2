@@ -61,10 +61,14 @@ export class FirebaseRegisterService extends BaseSevice {
 
   // TODO: danh sách thông báo
   notifications(params?: any): Observable<any>{
-
     let url = `${this._BASE_URL}/${this.prefix}/`;
+
     if(params){
-      url = `${url}?cursor=${params}`;
+      let queryString = Object.keys(params).map(key => {
+        return key + '=' + params[key]
+      }).join('&');
+
+      url += `?${queryString}`;
     }
 
     const api: CoreAPIDTO = {

@@ -3,7 +3,7 @@
     <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex">
         <tds-tab title="Thông tin" clsContent="p-4 border-t border-neutral-2-200" >
           <div class="w-full h-full grid grid-cols-2 gap-y-4 gap-x-8">
-            <div class="grid grid-cols-3 gap-y-4 gap-x-3">
+            <div class="grid grid-cols-3 gap-y-4 gap-x-3 h-fit">
               <tds-label [tdsRequired]="true">Tên chiến dịch</tds-label>
               <tds-form-field class="col-span-2 w-full">
                   <input tdsInput placeholder="Nhập tên chiến dịch" [required]='true' formControlName="Name" />
@@ -114,6 +114,13 @@
                 <div class="flex justify-between gap-x-3">
                   <tds-label>Không cho phép gán nhân viên vào cuộc hội thoại</tds-label>
                   <tds-checkbox formControlName="IsAssignToUserNotAllowed"></tds-checkbox>
+                </div>
+              </div>
+
+              <div class="col-span-3 w-full grid grid-cols-2 gap-x-6">
+                <div class="flex justify-between gap-x-3">
+                  <tds-label>Chỉ chốt theo số lượng trong chiến dịch</tds-label>
+                  <tds-checkbox formControlName="IsApplyQuantityLiveCampaign"></tds-checkbox>
                 </div>
               </div>
 

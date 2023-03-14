@@ -336,65 +336,11 @@ export class TShopConversationItemComponent implements OnInit, OnChanges  {
       size: 'xl',
       componentParams: {
         pageId: this.team.ChannelId,
+        userId: this.dataItem.UserId
       }
     });
-
-    modal.componentInstance?.onSendProduct.subscribe({
-      next: (res: TDSSafeAny)=>{
-        if(res){
-            this.onProductSelected(res);
-            modal.destroy(null);
-        }
-      }
-    })
   }
-
-  //chưa có dữ liệu chưa test lại
-  onProductSelected(event :any) {
-    if(event && event.Id){
-      let model = {
-        product: {
-          Id: event.Id,
-          Name: event.Name,
-          Picture: event.Picture,
-          Price: event.Price,
-        }
-      };
-
-      this.activityMatchingService.addTemplateMessageV3(this.team?.Id, this.dataItem.UserId, model)
-        .pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res: any) => {
-            if(TDSHelperArray.hasListValue(res)){
-              res.forEach((x: ResponseAddMessCommentDtoV2, i: number) => {
-                x["Status"] = ChatomniStatus.Done;
-
-              let data = this.omniMessageFacade.mappingChatomniDataItemDtoV2(x);
-
-              if(i == res.length - 1){
-                let itemLast = {...data}
-
-                let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.csid ,itemLast, x.MessageType);
-                //TODO: Đẩy qua conversation-all-v2
-                this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
-              }
-            });
-          }
-
-          this.messageModel = null;
-          this.isReply = false;
-          this.isReplyingComment = false;
-          this.tdsMessage.success('Gửi sản phẩm thành công');
-
-          this.cdRef.markForCheck();
-          },
-          error: error => {
-            this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
-            this.cdRef.markForCheck();
-          }
-      });
-    }
-  }
-
+  
   onIconShowButtonSelected(event: any) {
     if (!this.message) {
       this.message = event.emoji.native;

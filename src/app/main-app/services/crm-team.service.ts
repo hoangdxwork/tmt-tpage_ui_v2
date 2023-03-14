@@ -18,6 +18,7 @@ export class CRMTeamService extends BaseSevice {
   table: string = "CRMTeam";
   baseRestApi: string = "rest/v1.0/crmteam";
   private readonly __keyCacheTeamId = 'nearestTeamId';
+  private readonly __keyCacheFilterTeam = 'filterOrderByTeam';
 
   private readonly listFaceBook$ = new ReplaySubject<Array<CRMTeamDTO> | null>(1);
   private readonly currentTeam$ = new ReplaySubject<CRMTeamDTO | null>(1);
@@ -349,4 +350,20 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
+  setCacheFilterTeam(data: CRMTeamDTO) {
+    localStorage.setItem(this.__keyCacheFilterTeam, JSON.stringify(data));
+  }
+
+  getCacheFilterTeam() {
+    let item = localStorage.getItem(this.__keyCacheFilterTeam);
+    if(item) {
+      return JSON.parse(item) as CRMTeamDTO;
+    } else {
+      return null;
+    }
+  }
+
+  removeCacheFilterTeam() {
+    localStorage.removeItem(this.__keyCacheFilterTeam);
+  }
 }

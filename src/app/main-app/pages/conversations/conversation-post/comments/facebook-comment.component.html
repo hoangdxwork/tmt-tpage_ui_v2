@@ -165,7 +165,7 @@
                                   </span>
                               </div>
 
-                              <div class="flex-auto" #contentMessage showMore [length]="100" [text]="((item.MessageFormatted || item.Message) | formatIconLike | bbcodeConvert )"></div>
+                              <div class="flex-auto" #contentMessage showMore [isMessageItem]="true" [length]="100" [text]="((item.MessageFormatted || item.Message) | formatIconLike | bbcodeConvert )"></div>
                           </div>
 
                           <!-- hình ảnh đính kèm -->
@@ -178,7 +178,7 @@
 
                           <!-- thao tác -->
                           <div class="flex items-center pt-3">                           
-                              <button *ngIf="!isShowModal && !item.ParentId" [disabled]="item.Status == 40" [loading]="isLoadingInsertFromPost" [loadingTemplate]="'Tạo đơn hàng'" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
+                            <button *ngIf="!isShowModal && !item.ParentId && !item.IsOwner" [disabled]="item.Status == 40" [loading]="isLoadingInsertFromPost" [loadingTemplate]="'Tạo đơn hàng'" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
                               <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
                                   tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" tds-tooltip>
                                   <span class="flex items-center justify-center">
@@ -481,7 +481,7 @@
 																					</span>
 																			</div>
 
-                                      <div #contentMessage showMore [length]="100" [text]="((child.MessageFormatted || child.Message) | formatIconLike | bbcodeConvert )"></div>
+                                      <div #contentMessage showMore [isMessageItem]="true" [length]="100" [text]="((child.MessageFormatted || child.Message) | formatIconLike | bbcodeConvert )"></div>
                                   </div>
 
                                   <!-- hình ảnh đính kèm -->
