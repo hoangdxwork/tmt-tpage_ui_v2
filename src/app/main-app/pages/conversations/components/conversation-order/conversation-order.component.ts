@@ -774,15 +774,18 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
-    if(!cityCode || !deliveryType) return;
-    
     if(this.saleModel) {
       let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
       if(feeShip > 0) {
         this.saleModel.DeliveryPrice = feeShip;
         this.coDAmount();
+      } else {
+        let deliveryPrice = this.saleModel?.Carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+        this.saleModel.DeliveryPrice = deliveryPrice;
+        this.coDAmount();
       }
     }
+    this.cdRef.detectChanges();
   }
 
   onEditPartner() {

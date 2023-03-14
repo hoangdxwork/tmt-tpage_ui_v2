@@ -3,7 +3,7 @@ import { GetSharedDto } from './../dto/conversation/post/get-shared.dto';
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
-import { TDSHelperObject, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSSafeAny, TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 import { CompanyCurrentDTO } from '../dto/configs/company-current.dto';
 import { ODataStockWarehouseDTO } from '../dto/setting/stock-warehouse.dto';
 import { BaseSevice } from './base.service';
@@ -124,18 +124,16 @@ export class SharedService extends BaseSevice {
   }
 
   setFeeShip(cityCode: any, districtCode: any, deliveryType: any, lstTransport: TransportConfigsDto[]) {
-    let exist1 = lstTransport.filter(x => x.ProvinceId == cityCode && this.checkProviders(x.Providers, deliveryType));
+    let exist1 = lstTransport.filter(x => x.ProvinceId == cityCode && this.checkProviders(x.Providers, deliveryType)) as any;
+    if(exist1 && exist1.length == 0) return 0;
+ 
+    let exist2 = exist1.filter((x: any) => TDSHelperString.hasValueString(x.DistrictId)) as any;
+    if(exist2 && exist2.length == 0) return exist1[0].FeeShip;
 
-    if(exist1 && exist1.length > 0) {
-      let exist2 = exist1.filter(x => x.DistrictId && districtCode == x.DistrictId);
-      if(exist2 && exist2.length > 0) {
-        return exist2[0].FeeShip;
-      } else {
-        return exist1[0].FeeShip;
-      }
-    } else { 
-      return 0;
-    }
+    let exist3 = exist2.filter((x: any) => districtCode == x.DistrictId) as any;
+    if(exist3 && exist3.length == 0) return 0;
+   
+    return exist3[0].FeeShip;
   }
 
   checkProviders(providers: string, deliveryType: string) {
