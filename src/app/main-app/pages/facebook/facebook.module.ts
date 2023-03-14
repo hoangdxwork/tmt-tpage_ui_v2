@@ -1,3 +1,4 @@
+import { TDSPopoverModule } from 'tds-ui/popover';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -74,7 +75,8 @@ const SERVICES = [
     TDSToolTipModule,
     TDSTabsModule,
     TDSEmptyModule,
-    TDSFilterStatusModule
+    TDSFilterStatusModule,
+    TDSPopoverModule
   ],
   providers: [
     ...SERVICES,
