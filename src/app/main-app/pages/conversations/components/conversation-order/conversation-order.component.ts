@@ -729,6 +729,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     if(!event && this.saleModel) {
       this.saleModel.Carrier = null;
       this.saleModel.CarrierId = null;
+      this.saleModel.DeliveryPrice = 0;
+      this.coDAmount();
       return;
     }
 
@@ -755,8 +757,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         this.saleModel.DeliveryPrice = deliveryPrice;
         this.coDAmount();
     }
-    
-    
+
+
     this.saleModel.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
     if (TDSHelperString.hasValueString(event?.ExtrasText)) {
@@ -768,7 +770,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         this.calcFee();
     }
 
-    this.setFeeShipFromTransport(this.saleModel?.Ship_Receiver?.City?.code, this.saleModel?.Ship_Receiver?.District?.code, event?.DeliveryType);
+    this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, event?.DeliveryType);
     this.prepareCalcFeeButton();
     this.cdRef.detectChanges();
   }
@@ -1538,7 +1540,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
             this.mappingAddress(this.quickOrderModel);
             this.suggestText = this.quickOrderModel.Address;
-            
+
             if(result.type == 'confirm') {
               this.updateOrder(result.type);
             }
@@ -1908,7 +1910,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.suggestCopy = this.suggestText;
 
     if(!TDSHelperString.hasValueString(this.suggestText)) return;
-    
+
     this.isLoadingAddress = true;
     this.suggestData = this.suggestService.suggest(this.suggestText)
       .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])), finalize(() => this.isLoadingAddress = false));
@@ -1968,8 +1970,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       if(data.DistrictCode) {
         this.loadWards(data.DistrictCode);
       }
+
       this.setFeeShipFromTransport(event.CityCode, event.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
-      
       this.cdRef.detectChanges();
     }
   }
