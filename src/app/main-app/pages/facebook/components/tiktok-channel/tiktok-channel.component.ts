@@ -31,6 +31,9 @@ export class TiktokChannelComponent implements OnInit {
   isUserTShopConnectChannel: boolean = false;
   tShopAuthentication!: string;
 
+  idShowUpdateTiktok: TDSSafeAny;
+  sessionIdRefresh!: string;
+
   constructor(private tiktokService: TiktokService,
     private crmTeamService: CRMTeamService,
     private destroy$: TDSDestroyService,
@@ -188,5 +191,38 @@ export class TiktokChannelComponent implements OnInit {
         this.message.error(`${error?.error?.message}` || 'Kết nối tài khoản xảy ra lỗi');
       }
     })
+  }
+
+  onOpenPopover(id: number) {
+    this.sessionIdRefresh = '';
+    this.idShowUpdateTiktok = id;
+  }
+
+  onClosePopover() {
+    this.idShowUpdateTiktok = -1;
+  }
+
+  onSavePopover(id: number) {
+    if(this.isLoading) return;
+
+    if(!TDSHelperString.hasValueString(this.sessionIdRefresh)) {
+      this.message.error("Vui lòng nhập sessionId");
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.tiktokService.refreshUnofficialTiktok(id, this.sessionIdRefresh).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: TDSSafeAny) => {
+            this.idShowUpdateTiktok = -1;
+            this.loadData();
+
+            this.message.success('Cập nhật thông tin tài khoản thành công');
+        },
+        error: (error: TDSSafeAny) => {
+            this.isLoading = false;
+            this.message.error(error?.error?.message);
+        }
+      })
   }
 }

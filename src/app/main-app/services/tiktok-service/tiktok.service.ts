@@ -49,6 +49,15 @@ export class TiktokService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  refreshUnofficialTiktok(id: any, sessionId: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/${id}/refreshunofficialtiktok?sessionId=${sessionId}`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
   setCacheLoginUser(cacheData: TiktokUserDto) {
     let model = {
       data: cacheData,
