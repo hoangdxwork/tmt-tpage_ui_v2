@@ -26,6 +26,8 @@ export class DetailProductComponent implements OnInit {
   isVisible = false;
   expandSet = new Set<number | undefined>();
 
+  selected: number = 0;
+
   filterObj: any = {
     searchText: '',
     isOnlyProductCancel: false
