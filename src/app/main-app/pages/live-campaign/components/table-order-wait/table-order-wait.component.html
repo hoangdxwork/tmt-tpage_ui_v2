@@ -10,6 +10,8 @@
     (queryParams)="onQueryParamsChange($event)">
     <thead>
       <tr>
+        <th width="42px" [(checked)]="checked" [indeterminate]="indeterminate"
+                (checkedChange)="onAllChecked($event)"></th>
         <th [width]="'200px'">Mã đơn hàng</th>
         <th [width]="'200px'">Tên khách hàng</th>
         <th [width]="'200px'" class="text-center">Số lượng sản phẩm</th>
@@ -20,6 +22,8 @@
     </thead>
     <tbody>
       <tr *ngFor="let data of table.data">
+        <!-- Checked -->
+        <td [checked]="setOfCheckedId.has(data.OrderCode)" (checkedChange)="onItemChecked(data.OrderCode, $event)"></td>
         <td>{{ data.OrderCode }}</td>
         <td>{{ data.PartnerName }}</td>
         <td class="text-center">{{ data.TotalQuantity }}</td>
