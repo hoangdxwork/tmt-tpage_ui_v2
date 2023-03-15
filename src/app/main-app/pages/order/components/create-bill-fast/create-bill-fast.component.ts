@@ -366,12 +366,16 @@ export class CreateBillFastComponent implements OnInit {
     this.modalRef.destroy(null);
   }
 
-  setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {
-    if(!cityCode || !deliveryType) return;
-    
+  setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {  
     let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
-      if(feeShip > 0 && index > -1) {
-        this.lstData[index].DeliveryPrice = feeShip;
-      }
+
+    if(feeShip > 0 && index > -1) {
+      this.lstData[index].DeliveryPrice = feeShip;
+    }
+
+    if(feeShip == 0 && index > -1) {
+      let deliveryPrice = this.lstData[index]?.Carrier?.Config_DefaultFee || 0;
+      this.lstData[index].DeliveryPrice = deliveryPrice;
+    }
   }
 }

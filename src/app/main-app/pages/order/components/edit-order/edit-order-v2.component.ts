@@ -1281,12 +1281,15 @@ export class EditOrderV2Component implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
-    if(!cityCode || !deliveryType) return;
-    
-    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
-      if(feeShip > 0) {
-        this.saleModel.DeliveryPrice = feeShip;
-        this.coDAmount();
-      }
+    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);debugger
+    if(feeShip > 0) {
+      this.saleModel.DeliveryPrice = feeShip;
+      this.coDAmount();
+    }
+
+    if(feeShip == 0) {
+      this.saleModel.DeliveryPrice = this.saleModel?.Carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+      this.coDAmount();
+    }
   }
 }
