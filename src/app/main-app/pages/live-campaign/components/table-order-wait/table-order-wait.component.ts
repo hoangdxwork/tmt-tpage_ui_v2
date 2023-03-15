@@ -10,6 +10,7 @@ import { TDSTagStatusType } from 'tds-ui/tag';
 import { Observable, Subject } from 'rxjs';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { OrderPrintService } from '@app/services/print/order-print.service';
+import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 
 @Component({
   selector: 'table-order-wait',
@@ -39,6 +40,7 @@ export class TableOrderWaitComponent implements OnInit {
     private modal: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private liveCampaignService: LiveCampaignService,
+    private saleOnline_OrderService: SaleOnline_OrderService,
     private orderPrintService: OrderPrintService,
     private cdr: ChangeDetectorRef,
   ) { }
@@ -52,6 +54,8 @@ export class TableOrderWaitComponent implements OnInit {
     this.getViewData(params).subscribe(res=>{
       this.count = res['@odata.count'] as number;
       this.lstOfData = [...res.value];
+      console.log(res.value);
+
 
       this.setOfCheckedId = new Set<string>();
       this.checked = false;
@@ -101,7 +105,7 @@ export class TableOrderWaitComponent implements OnInit {
   }
 
   onAllChecked(value: boolean): void {
-    this.lstOfData.forEach(item => this.updateCheckedSet(item.OrderCode, value));
+    this.lstOfData.forEach(item => this.updateCheckedSet(item.OrderId, value));
     this.refreshCheckedStatus();
   }
 
@@ -114,8 +118,8 @@ export class TableOrderWaitComponent implements OnInit {
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.lstOfData.every(item => this.setOfCheckedId.has(item.OrderCode));
-    this.indeterminate = this.lstOfData.some(item => this.setOfCheckedId.has(item.OrderCode)) && !this.checked;
+    this.checked = this.lstOfData.every(item => this.setOfCheckedId.has(item.OrderId));
+    this.indeterminate = this.lstOfData.some(item => this.setOfCheckedId.has(item.OrderId)) && !this.checked;
   }
 
 
@@ -125,22 +129,35 @@ export class TableOrderWaitComponent implements OnInit {
     }
 
     this.isLoading = true;
-    let ids = [...this.setOfCheckedId];
 
-    if(ids.length == 0) {
-      this.message.error('Vui lòng chọn tối thiểu 1 sản phẩm!');
-      this.isLoading = false;
-    } else {
-      let datas = this.lstOfData.filter(x => ids.includes(x.OrderCode));
-
-      if(TDSHelperArray.hasListValue(datas)) {
-        datas.forEach(x => {
-            this.orderPrintService.printIpFromOrder(x);
+    if(this.checkValueEmpty() == 1) {
+      let ids = [...this.setOfCheckedId];
+      ids.map((x: string) => {
+        this.saleOnline_OrderService.getById(x).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
+            if (res) {
+              this.orderPrintService.printIpFromOrder(res);
+            }
             this.isLoading = false;
-        });
-      }
+          },
+          error: (error: any) => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'In đơn hàng đã xảy ra lỗi');
+          }
+        })
+      })
     }
   }
+
+  checkValueEmpty() {
+    let ids = [...this.setOfCheckedId];
+    if (ids.length == 0) {
+      this.message.error('Vui lòng chọn tối thiểu một dòng!');
+      return 0;
+    }
+    return 1;
+  }
+
 
 
   ngOnDestroy(): void {

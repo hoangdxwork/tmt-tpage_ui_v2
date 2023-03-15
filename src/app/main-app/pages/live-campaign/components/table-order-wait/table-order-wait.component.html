@@ -23,7 +23,7 @@
     <tbody>
       <tr *ngFor="let data of table.data">
         <!-- Checked -->
-        <td [checked]="setOfCheckedId.has(data.OrderCode)" (checkedChange)="onItemChecked(data.OrderCode, $event)"></td>
+        <td [checked]="setOfCheckedId.has(data.OrderId)" (checkedChange)="onItemChecked(data.OrderId, $event)"></td>
         <td>{{ data.OrderCode }}</td>
         <td>{{ data.PartnerName }}</td>
         <td class="text-center">{{ data.TotalQuantity }}</td>
