@@ -1390,6 +1390,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this._districts = x._districts;
     this._wards = x._wards;
     this._street = x._street;
+
+    this.loadDistricts(x._cities?.code);
+    this.loadWards(x._districts?.code);
   }
 
   plus(item: Detail_QuickSaleOnlineOrder, index: number) {
@@ -1952,9 +1955,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         cityName: data.CityName
       }
 
-      if(data.CityCode) {
-        this.loadDistricts(data.CityCode);
-      }
+      this.loadDistricts(data?.CityCode);
 
       this.quickOrderModel.WardCode = data.WardCode;
       this.quickOrderModel.WardName = data.WardName;
@@ -1967,9 +1968,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         districtName: data.DistrictName
       }
 
-      if(data.DistrictCode) {
-        this.loadWards(data.DistrictCode);
-      }
+      this.loadWards(data?.DistrictCode);
 
       this.setFeeShipFromTransport(event.CityCode, event.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
       this.cdRef.detectChanges();
@@ -1989,6 +1988,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   loadDistricts(code: string) {
     this.lstDistrict = [];
+    if(!code) return;
+
     this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstDistrict = [...res];
@@ -1999,6 +2000,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   loadWards(code: string) {
     this.lstWard = [];
+    if(!code) return;
+    
     this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstWard = [...res];

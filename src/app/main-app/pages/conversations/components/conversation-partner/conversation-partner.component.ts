@@ -586,6 +586,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     this._districts = data._districts;
     this._wards = data._wards;
     this._street = data._street;
+
+    this.loadDistricts(data._cities?.code);
+    this.loadWards(data._districts?.code);
   }
 
   showModalSuggestAddress(){
