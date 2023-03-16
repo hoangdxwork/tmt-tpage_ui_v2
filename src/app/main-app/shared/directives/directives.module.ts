@@ -11,11 +11,13 @@ import { YiAutoScrollDirective } from "./yi-auto-scroll.directive";
 import { YuriAvatarDirective } from "./yuri-avatar.directive";
 import { CsLoadingPartnerDirective } from './cs-loading-partner.directive';
 import { CsLoadingConversationDirective } from './cs-loading-conversation.directive';
+import { ShowMoreDirectiveV2 } from './show-more-v2.directive';
 
 const DIRECTIVES = [
   YiAutoScrollDirective,
   YuriAvatarDirective,
   ShowMoreDirective,
+  ShowMoreDirectiveV2,
   CsLoadingObjectDirective,
   CsLoadingPostDirective,
   CsLoadingPartnerDirective,
