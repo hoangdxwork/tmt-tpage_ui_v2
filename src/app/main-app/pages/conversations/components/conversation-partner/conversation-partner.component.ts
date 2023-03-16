@@ -365,12 +365,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
   }
 
   selectStatus(event: StatusDTO) {
-    if(this.partner?.Id && event) {
+    if(this.partner && this.partner.Id && event) {
       let data = {
-          status: `${event.value}_${event.text}`
+        status: `${event.value}_${event.text}`
       }
-      this.isLoading = true;
 
+      this.isLoading = true;
       this.partnerService.updateStatus(this.partner.Id, data).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
             this.message.success('Cập nhật trạng thái khách hàng thành công');
@@ -410,7 +410,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     }
     else return '#28A745';
   }
-
 
   onBlockPhone() {
     let phone = this.partner?.Phone;
