@@ -67,13 +67,13 @@ export class ChatomniCommentFacade extends BaseSevice  {
           }
 
           this.partnerDict[team.Id].Data[userId] = {
-            i: data.Partner.Id || data.Conversation?.PartnerId,
-            c: data.Partner.Ref || this.partnerDict[team.Id].Data[userId].c,
-            p: (data.Partner.Phone || data.Order?.TelePhone || data.Conversation?.HasPhone == true) ? true : false,
-            a: (data.Partner.Street || data.Order?.Address || data.Conversation?.HasAddress == true) ? true : false,
+            i: data.Conversation?.PartnerId || data.Partner?.Id,
+            c: data.Partner?.Ref || this.partnerDict[team.Id].Data[userId].c,
+            p: (data.Partner?.Phone || data.Order?.TelePhone || data.Conversation?.HasPhone == true) ? true : false,
+            a: (data.Partner?.Street || data.Order?.Address || data.Conversation?.HasAddress == true) ? true : false,
             s: JSON.stringify((this.partnerDict[team.Id].Data[userId].Status)),
-            st: data.Partner.StatusText,
-            ss: TDSHelperString.hasValueString(data.Partner.StatusStyle) ? data.Partner.StatusStyle : '#5cb85c',
+            st: data.Partner?.StatusText,
+            ss: TDSHelperString.hasValueString(data.Partner?.StatusStyle) ? data.Partner.StatusStyle : '#5cb85c',
             t: []
           } as any;
 
@@ -96,7 +96,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
 
           let status = {} as any;
           if(this.lstPartnerStatus && this.lstPartnerStatus.length > 0) {
-            status = this.lstPartnerStatus.filter((x: any) => x.text == data.Partner.StatusText)[0];
+            status = this.lstPartnerStatus.filter((x: any) => x.text == data.Partner?.StatusText)[0];
             this.partnerDict[team.Id].Data[userId].ss = status.value;
 
             this.cacheApi.setItem(_key, this.partnerDict[team.Id]);
@@ -106,7 +106,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
             this.commonService.getPartnerStatus().subscribe({
               next: (res: StatusDTO[]) => {
                 this.lstPartnerStatus = [...res] as any;
-                status = this.lstPartnerStatus.filter((x: any) => x.text == data.Partner.StatusText)[0] as any;
+                status = this.lstPartnerStatus.filter((x: any) => x.text == data.Partner?.StatusText)[0] as any;
 
                 this.partnerDict[team.Id].Data[userId].ss = status.value;
                 this.cacheApi.setItem(_key, this.partnerDict[team.Id]);
