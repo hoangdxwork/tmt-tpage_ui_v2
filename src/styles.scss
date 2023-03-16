@@ -132,10 +132,11 @@ tbody td div, tbody td p, tbody td span, tbody td a, tbody td div div span{
 
 .cs-item div span.see-more {
     overflow: hidden;
+    text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
-    max-width: 195px;
+    max-width: 190px;
 }
 
 .cs-item .whitespace-normal {
