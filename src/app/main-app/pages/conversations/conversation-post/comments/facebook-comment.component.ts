@@ -299,7 +299,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
     if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId) && this.dataSource.Extras && this.dataSource.Extras.Childs && this.dataSource.Extras.Childs[itemNewComment.ParentId]) {
         let index = this.dataSource.Extras.Childs[itemNewComment.ParentId].findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
-        if(Number(index) >= 0) return;
+        let indexVs = this.vsSocketImports.findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
+        if(Number(index) >= 0 || Number(indexVs) >= 0) return;
     }
 
     if(this.vsStartIndex <= 1) {
