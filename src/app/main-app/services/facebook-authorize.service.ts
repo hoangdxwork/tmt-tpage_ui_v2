@@ -61,15 +61,10 @@ export class FacebookAuthorizeService extends BaseSevice {
       return new Observable((observer: TDSSafeAny) => {
         this.facebookLoginService.getLoginStatus().subscribe({
           next: (data: FacebookAuthResponse) => {
-            if (data.status === 'connected') {
               observer.next(data);
               observer.complete();
-            } else {
-              observer.next();
-              observer.complete();
-            }
           },
-          error: (error) => {
+          error: (error: any) => {
             observer.next(error);
             observer.complete();
           }

@@ -118,10 +118,7 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
           if (this.data && this.data.length > 0) {
             this.sortByFbLogin(me.id);
           }
-        } else {
-          this.message.error('Không tìm thấy thông tin facebook này');
         }
-
         this.cdRef.detectChanges();
       },
       error: (error) => {
@@ -134,23 +131,39 @@ export class FacebookChannelComponent extends TpageBaseComponent implements OnIn
   loadData() {
     this.isLoading = true;
     this.crmTeamService.getAllChannels().pipe(takeUntil(this.destroy$)).subscribe( {
-        next: (teams: CRMTeamDTO[]) => {
-          this.data = teams?.filter((x: any) => x.Type == CRMTeamType._Facebook);
+      next: (teams: CRMTeamDTO[] | any[]) => {
+        this.data = teams?.filter((x: any) => x.Type == CRMTeamType._Facebook);
 
-          if(this.me) {
-            this.sortByFbLogin(this.me.id);
-            this.isLoading = false;
-          } else {
-            this.fbGetMe();
-          }
-
-          this.cdRef.detectChanges();
-        },
-        error: (error) => {
+        if(this.me && this.userFBAuth) {
+          this.sortByFbLogin(this.me.id);
           this.isLoading = false;
-          this.cdRef.detectChanges();
+        } else {
+          this.loadFbLoginStatus();
         }
-      })
+
+        this.cdRef.detectChanges();
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      }
+    })
+  }
+
+  loadFbLoginStatus() {
+    this.facebookAuthorizeService.fbLoginStatus().subscribe({
+      next: (data: FacebookAuthResponse | any) => {
+        if(data && data.status === 'connected') {
+          this.userFBAuth = data.authResponse;
+          this.getMe();
+        } else {
+          console.log(data);
+        }
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    })
   }
 
   sortByFbLogin(userId: string) {

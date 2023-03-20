@@ -95,13 +95,11 @@ export class FacebookLoginService {
             try {
               FB.getLoginStatus((response: FacebookAuthResponse) => {
                 this.ngZone.run(() => {
-
                   if (response.authResponse) {
                     subscriber.next(response);
                   } else {
                     subscriber.error(response);
                   }
-
                   subscriber.complete();
                 });
               });
