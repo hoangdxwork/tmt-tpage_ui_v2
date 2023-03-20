@@ -275,12 +275,13 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
   setCommentRealtime(response: SocketEventSubjectDto) {
     let itemNewComment = {...this.chatomniConversationFacade.preapreCommentTshopOnEventSocket(response.Data)};
     let index = this.dataSource.Items.findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
+    let indexVs = this.vsSocketImports.findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
 
     // TODO: đang search bình luận thì không push dữ liệu vào
     if(TDSHelperString.isString(this.innerText) && TDSHelperString.hasValueString(this.innerText)) return;
 
     // TODO: nếu res phản hồi bình luận tra về trước, không add comment con vào danh sách
-    if(Number(index) >= 0) return;
+    if(Number(index) >= 0 || Number(indexVs) >= 0) return;
 
     // TODO: nếu là comment child thì cũng push thẳng xóa parentId
     if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
