@@ -1,3 +1,4 @@
+import { TDSNotificationService } from 'tds-ui/notification';
 import { DOCUMENT } from '@angular/common';
 import { EventEmitter, Inject, Injectable, Output } from '@angular/core';
 import { TAuthService } from '@core/services/auth.service';
@@ -24,8 +25,11 @@ export class SocketService  extends BaseSevice {
   socket!: Socket;
   isInitialized: boolean = false;
 
+  isConnectError: number = 0;
+
   constructor(private apiService: TCommonService,
     private authService: TAuthService,
+    private notificationService: TDSNotificationService,
     @Inject(DOCUMENT) private document: Document) {
     super(apiService);
 
@@ -70,10 +74,21 @@ export class SocketService  extends BaseSevice {
     this.socket.on("connect", () => {
       console.log("Connected to socket.io server");
       this.isConnectedSocket$.emit(true);
+
+      if(this.isConnectError == 1) {
+        this.notificationService.info('Kết nối Realtime', 'Socket.io đã được kết nối lại!', { duration: 10 * 1000 });
+        this.isConnectError = 0;
+      }
+
     });
 
     this.socket.on("connect_error", (err) => {
       console.log(`connect_error due to ${err.message}`);
+
+      if(this.isConnectError == 0) {
+        this.notificationService.error('Kết nối Realtime', 'Socket.io đã xảy ra lỗi', { duration: 10 * 1000 });
+        this.isConnectError = 1;
+      }
     });
   }
 
