@@ -12,6 +12,7 @@ import { environment } from 'src/environments/environment';
 })
 
 export class FacebookAuthorizeService extends BaseSevice {
+
     prefix: string = "";
     table: string = "";
     baseRestApi: string = "";
@@ -19,7 +20,6 @@ export class FacebookAuthorizeService extends BaseSevice {
     constructor(private apiService: TCommonService,
         private facebookLoginService: FacebookLoginService) {
         super(apiService);
-
         this.init().subscribe();
     }
 
