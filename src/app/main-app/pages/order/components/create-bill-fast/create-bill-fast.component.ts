@@ -366,8 +366,8 @@ export class CreateBillFastComponent implements OnInit {
     this.modalRef.destroy(null);
   }
 
-  setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {  
-    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
+  setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {
+    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
 
     if(feeShip > 0 && index > -1) {
       this.lstData[index].DeliveryPrice = feeShip;

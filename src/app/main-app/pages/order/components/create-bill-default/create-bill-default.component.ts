@@ -60,7 +60,7 @@ export class CreateBillDefaultComponent implements OnInit {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -423,7 +423,7 @@ export class CreateBillDefaultComponent implements OnInit {
       this.message.error(Message.Bill.ErrorEmptyCarrier);
       return false;
     }
-    
+
     let hasError = false;
     this.lstLine.forEach((x, i) => {
       if(!x.CarrierId){
@@ -443,11 +443,11 @@ export class CreateBillDefaultComponent implements OnInit {
     if(this.isLoading){
       return;
     }
-    
+
     if (!this.checkCarrier()) {
       return;
     }
-    
+
     if (!this.lstLine || this.lstLine.length == 0) {
       this.message.error(Message.EmptyData);
       return;
@@ -536,7 +536,7 @@ export class CreateBillDefaultComponent implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {
-    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
+    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
     if(feeShip > 0 && index > -1) {
       this.lstLine[index].ShipAmount = feeShip;
       this.coDAmount();

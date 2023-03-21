@@ -1383,7 +1383,7 @@ export class AddBillComponent implements OnInit {
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
     if(cityCode && deliveryType) {
-      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
       if(feeShip > 0) {
         this._form.controls["DeliveryPrice"].setValue(feeShip);
         this.coDAmount();
