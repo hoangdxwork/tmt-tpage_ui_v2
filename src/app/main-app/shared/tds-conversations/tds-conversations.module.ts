@@ -47,6 +47,8 @@ import { TDSConversationItemComponent } from './tds-conversation-item.component'
 import { ExtrasConversationItemComponent } from './extras-item/extras-conversation-item.component';
 import { TiktokConversationItemComponent } from './tiktok-conversation-item.component';
 import { TShopConversationItemComponent } from './tshop-conversation-item.component';
+import { SharesDetailModalComponent } from './shares-detail-modal/shares-detail-modal.component';
+import { TDSTableModule } from 'tds-ui/table';
 
 const CMP =[
   TDSConversationsComponent,
@@ -55,7 +57,8 @@ const CMP =[
   ShowItemImageComponent,
   ExtrasConversationItemComponent,
   TiktokConversationItemComponent,
-  TShopConversationItemComponent
+  TShopConversationItemComponent,
+  SharesDetailModalComponent
 ]
 
 @NgModule({
@@ -97,7 +100,8 @@ const CMP =[
     TDSMessageModule,
     PickerModule,
     EmojiModule,
-    TDSAutocompleteModule
+    TDSAutocompleteModule,
+    TDSTableModule,
   ],
   exports:[
     ...CMP
