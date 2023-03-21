@@ -156,6 +156,8 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
 
   loadDistricts(code: string) {
     this.lstDistrict = [];
+    if(code && TDSHelperString.hasValueString(code)) return;
+    
     this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res: any) => {
@@ -167,6 +169,8 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
 
   loadWards(code: string) {
     this.lstWard = [];
+    if(code && TDSHelperString.hasValueString(code)) return;
+    
     this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res: any) => {

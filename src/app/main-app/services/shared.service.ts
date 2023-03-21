@@ -126,7 +126,9 @@ export class SharedService extends BaseSevice {
   setFeeShip(cityCode: any, districtCode: any, lstTransport: TransportConfigsDto[], deliveryType: any) {
     let exist1: any = [];
 
-    if(TDSHelperString.hasValueString(deliveryType)) {
+    if(!cityCode) return 0;
+
+    if(deliveryType && TDSHelperString.hasValueString(deliveryType)) {
       exist1 = lstTransport.filter(x => x.ProvinceId == cityCode && this.checkProviders(x.Providers, deliveryType)) as any;
     } else {
       exist1 = lstTransport.filter(x => x.ProvinceId == cityCode) as any;

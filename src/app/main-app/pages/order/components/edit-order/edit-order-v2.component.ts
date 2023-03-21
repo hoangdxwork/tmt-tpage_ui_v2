@@ -542,6 +542,7 @@ export class EditOrderV2Component implements OnInit {
     if(!event && this.saleModel) {
       this.saleModel.Carrier = null;
       this.saleModel.CarrierId = null;
+      this.setFeeShipFromTransport(this.quickOrderModel?.CityCode, this.quickOrderModel?.DistrictCode, null);
       return;
     }
 
@@ -1281,15 +1282,18 @@ export class EditOrderV2Component implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
-    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);debugger
-    if(feeShip > 0) {
-      this.saleModel.DeliveryPrice = feeShip;
-      this.coDAmount();
-    }
+    if(this.saleModel) {
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
 
-    if(feeShip == 0) {
-      this.saleModel.DeliveryPrice = this.saleModel?.Carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
-      this.coDAmount();
+      if(feeShip > 0) {
+        this.saleModel.DeliveryPrice = feeShip;
+        this.coDAmount();
+      }
+
+      if(feeShip == 0) {
+        this.saleModel.DeliveryPrice = this.saleModel?.Carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+        this.coDAmount();
+      }
     }
   }
 }

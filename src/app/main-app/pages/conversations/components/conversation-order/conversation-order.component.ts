@@ -778,7 +778,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
     if(this.saleModel) {
-      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
       if(feeShip > 0) {
         this.saleModel.DeliveryPrice = feeShip;
         this.coDAmount();
@@ -1548,7 +1548,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             if(result.type == 'confirm') {
               this.updateOrder(result.type);
             }
-            this.setFeeShipFromTransport(data.CityCode, data.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+            this.setFeeShipFromTransport(data.CityCode, data.DistrictCode, this.saleModel?.Carrier?.DeliveryType || null);
         }
         this.cdRef.detectChanges();
       }
@@ -1989,7 +1989,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   loadDistricts(code: string) {
     this.lstDistrict = [];
-    if(!code) return;
+    if(code && TDSHelperString.hasValueString(code)) return;
 
     this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
@@ -2001,7 +2001,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   loadWards(code: string) {
     this.lstWard = [];
-    if(!code) return;
+    if(code && TDSHelperString.hasValueString(code)) return;
 
     this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {

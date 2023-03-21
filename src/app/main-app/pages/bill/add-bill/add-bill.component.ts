@@ -1382,14 +1382,14 @@ export class AddBillComponent implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
-    if(cityCode && deliveryType) {
-      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
+    if(cityCode) {
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
       if(feeShip > 0) {
         this._form.controls["DeliveryPrice"].setValue(feeShip);
         this.coDAmount();
       } else {
         let carrier = this._form.controls["Carrier"].value;
-        if(carrier && carrier.Id) {
+        if(!carrier || carrier && carrier.Id) {
           let deliveryPrice = carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
           this._form.controls["DeliveryPrice"].setValue(deliveryPrice);
           this.coDAmount();
@@ -1397,7 +1397,7 @@ export class AddBillComponent implements OnInit {
       }
     } else {
       let carrier = this._form.controls["Carrier"].value;
-      if(carrier && carrier.Id) {
+      if(!carrier || carrier && carrier.Id) {
         let deliveryPrice = carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
         this._form.controls["DeliveryPrice"].setValue(deliveryPrice);
         this.coDAmount();
@@ -1546,6 +1546,8 @@ export class AddBillComponent implements OnInit {
 
     if(!event) {
       this._form.controls['CarrierId'].setValue(null);
+      let shipReceiver = this._form.controls["Ship_Receiver"].value;
+      this.setFeeShipFromTransport(shipReceiver?.City?.code, shipReceiver?.District?.code, null);
       return;
     }
 
@@ -1778,6 +1780,9 @@ export class AddBillComponent implements OnInit {
   }
 
   loadDistricts(code: string) {
+    this.lstDistrict = [];
+    if(code && TDSHelperString.hasValueString(code)) return;
+
     this.suggestService.getDistrict(code).subscribe((res: any) => {
         this.lstDistrict = [...res];
         this.districtSubject.next(res);
@@ -1785,6 +1790,9 @@ export class AddBillComponent implements OnInit {
   }
 
   loadWards(code: string) {
+    this.lstWard = [];
+    if(code && TDSHelperString.hasValueString(code)) return;
+
     this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.lstWard = [...res];
         this.wardSubject.next(res);
