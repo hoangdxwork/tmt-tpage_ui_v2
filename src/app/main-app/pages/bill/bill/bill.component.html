@@ -291,7 +291,9 @@
                 </td>
                 <td *ngIf="isHidden('CreateByName')" class="border-r">
                   <div class="w-full">
-                    <span [ngClass]="data.Source == 'SHOPAPP'? 'text-info-400' : ''">{{data.Source == 'SHOPAPP'? 'Tạo từ giỏ hàng' : data.CreateByName}}</span>
+                    <span [ngClass]="(data.Source | createBillSourcePipe) ? 'text-info-400' : ''">
+                        {{data.Source | createBillSourcePipe : data.CreateByName: true}}
+                    </span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('CRMTeamName')" class="border-r">
