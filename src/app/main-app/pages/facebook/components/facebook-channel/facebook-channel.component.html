@@ -91,7 +91,7 @@
                       <i class="tdsi-search-line text-xl leading-none"></i>
                     </button>
 
-                    <button *ngIf="child?.OwnerId == me?.id" (click)="refreshTokenChild($event, team, child)" type="button" tds-button color="custom" rounded="!rounded-full"
+                    <button *ngIf="child?.OwnerId == me?.id" (click)="refreshTokenChild($event, child)" type="button" tds-button color="custom" rounded="!rounded-full"
                       class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4 bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
                       <span class="flex items-center">
                         <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
