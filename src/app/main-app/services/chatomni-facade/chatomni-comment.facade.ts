@@ -97,20 +97,23 @@ export class ChatomniCommentFacade extends BaseSevice  {
           let status = {} as any;
           if(this.lstPartnerStatus && this.lstPartnerStatus.length > 0) {
             status = this.lstPartnerStatus.filter((x: any) => x.text == data.Partner?.StatusText)[0];
-            this.partnerDict[team.Id].Data[userId].ss = status.value;
+            if(status) {
+              this.partnerDict[team.Id].Data[userId].ss = status.value;
+              this.cacheApi.setItem(_key, this.partnerDict[team.Id]);
+              this.onChangePartnerTimeStamp$.emit([team.Id, userId, this.partnerDict[team.Id].Data[userId]]);
+            }
 
-            this.cacheApi.setItem(_key, this.partnerDict[team.Id]);
-            this.onChangePartnerTimeStamp$.emit([team.Id, userId, this.partnerDict[team.Id].Data[userId]]);
           } else {
             this.commonService.setPartnerStatus();
             this.commonService.getPartnerStatus().subscribe({
               next: (res: StatusDTO[]) => {
                 this.lstPartnerStatus = [...res] as any;
                 status = this.lstPartnerStatus.filter((x: any) => x.text == data.Partner?.StatusText)[0] as any;
-
-                this.partnerDict[team.Id].Data[userId].ss = status.value;
-                this.cacheApi.setItem(_key, this.partnerDict[team.Id]);
-                this.onChangePartnerTimeStamp$.emit([team.Id, userId, this.partnerDict[team.Id].Data[userId]]);
+                if(status) {
+                  this.partnerDict[team.Id].Data[userId].ss = status.value;
+                  this.cacheApi.setItem(_key, this.partnerDict[team.Id]);
+                  this.onChangePartnerTimeStamp$.emit([team.Id, userId, this.partnerDict[team.Id].Data[userId]]);
+                }
               },
               error: (err: any) => {
                 this.cacheApi.setItem(_key, this.partnerDict[team.Id]);
