@@ -1,3 +1,4 @@
+import { TDSHelperString } from 'tds-ui/shared/utility';
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
@@ -30,6 +31,45 @@ export class DictSourcePipe implements PipeTransform {
       default:
         return '';
     }
+  }
+
+}
+
+@Pipe({
+  name: 'createBillSourcePipe'
+})
+
+export class CreateBillSourcePipe implements PipeTransform {
+
+  constructor(){}
+
+  transform(source: string | undefined, createByName?: string, isString?: boolean): any {
+
+    if(isString) {
+
+      if(!source) return (createByName || '');
+
+      switch (source) {
+
+        case 'SHOPAPP':
+          return 'Tạo từ giỏ hàng';
+  
+        default:
+          return (createByName || '');
+      }
+    }
+
+    if(!source) return false;
+
+    switch (source) {
+
+      case 'SHOPAPP':
+        return true;
+
+      default:
+        return false;
+    }
+    
   }
 
 }
