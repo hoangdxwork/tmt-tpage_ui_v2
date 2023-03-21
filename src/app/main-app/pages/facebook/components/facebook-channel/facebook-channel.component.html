@@ -13,16 +13,17 @@
               <div class="flex w-full h-full justify-between items-center pr-4">
                 <div class="flex gap-4 items-center">
                   <div class="relative">
+
                     <div class="h-[70px] w-[70px] rounded-full bg-white border border-info-500 flex items-center justify-center">
                       <tds-avatar *ngIf="team?.OwnerAvatar || team?.ChannelAvatar" [tdsSrc]="team | getChannelAvatar" [size]="64" class="fb-avatar"></tds-avatar>
                       <tpage-avatar-facebook *ngIf="!(team?.OwnerAvatar || team?.ChannelAvatar)" [size]="'xl'" [fbid]="team?.OwnerId || team?.ChannelId" [token]="team?.ChannelToken"></tpage-avatar-facebook>
                     </div>
+
                     <div class="absolute right-0 bottom-0" *ngIf="team?.Active">
                       <!-- TODO: hiện icon dưới avatar -->
                       <span *ngIf="team?.Type == 'Facebook'">
                         <img src="../../../assets/imagesv2/facebook/icon-facebook.svg">
                       </span>
-
                     </div>
                   </div>
                   <div class="flex flex-col gap-1">
@@ -38,31 +39,22 @@
                     </div>
                   </div>
                 </div>
-                <div class="flex gap-x-3 items-center">
-                  <!-- <button tds-button-icon color="custom" tds-tooltip="Ẩn trang kết nối"
-                    class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                        hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
-                    <i class="tdsi-eye-close-fill text-xl leading-none"></i>
-                  </button> -->
 
-                  <button tds-button-icon color="custom" tds-tooltip="Kiểm tra token" (click)="checkPermission(team.OwnerToken)"
-                    class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                        hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+                <div class="flex gap-x-3 items-center">
+                  <button type="button" tds-button-icon color="custom" tds-tooltip="Kiểm tra token" (click)="checkPermission(team.OwnerToken)"
+                    class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                     <i class="tdsi-search-line text-xl leading-none"></i>
                   </button>
 
-                  <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                          bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1"
-                          *ngIf="team.OwnerId == me?.id"
-                          (click)="refreshPageTokenOwner($event, team)">
-                      <span class="flex items-center">
-                        <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
-                      </span>
+                  <button *ngIf="team && me && team.OwnerId == me.id" (click)="refreshTokenOwner($event, team)" type="button" tds-button color="custom" rounded="!rounded-full"
+                    class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4 bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
+                    <span class="flex items-center">
+                      <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
+                    </span>
                   </button>
 
-                  <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" (click)="unconnectTeam(team, $event)"
-                    class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                        hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+                  <button (click)="unconnectTeam(team, $event)" type="button" tds-button-icon color="custom" tds-tooltip="Hủy kết nối"
+                    class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                     <i class="tdsi-break-link-fill text-xl leading-none"></i>
                   </button>
                 </div>
@@ -74,6 +66,7 @@
               <div *ngIf="team.Childs" class="px-4 grid grid-cols-1 divide-y">
                 <div *ngFor="let child of team.Childs" class="flex justify-between items-center px-10 py-4">
                   <div class="flex gap-4 items-center">
+
                     <div class="relative">
                       <tpage-avatar-facebook [fbid]="child?.ChannelId" [token]="child?.ChannelToken" [size]="'lg'">
                       </tpage-avatar-facebook>
@@ -81,6 +74,7 @@
                         <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
                       </div>
                     </div>
+
                     <div class="flex flex-col gap-1.5 justify-center">
                       <div class="text-neutral-1-900 font-sans font-semibold text-body-2">{{ child?.Name }}</div>
                       <div class="flex gap-2 items-center">
@@ -92,32 +86,29 @@
 
                   <!-- TODO: button đã kết nối -->
                   <div *ngIf="child.Active" class="flex items-center">
-                    <button tds-button-icon color="custom" tds-tooltip="Kiểm tra token" (click)="checkPermission(child?.ChannelToken)"
-                      class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
-                          hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
+                    <button (click)="checkPermission(child?.ChannelToken)" type="button" tds-button-icon color="custom" tds-tooltip="Kiểm tra token"
+                      class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                       <i class="tdsi-search-line text-xl leading-none"></i>
                     </button>
 
-                    <button tds-button color="custom" rounded="!rounded-full" class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4
-                          bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1"
-                           *ngIf="child?.OwnerId == me?.id"
-                          (click)="refreshPageTokenChild($event, team, child)">
+                    <button *ngIf="child?.OwnerId == me?.id" (click)="refreshTokenChild($event, team, child)" type="button" tds-button color="custom" rounded="!rounded-full"
+                      class="text-primary-1 hover:text-primary-2 focus:ring-2 focus:ring-primary-1/20 border-primary-4 bg-primary-4 hover:bg-primary-4 focus:bg-primary-4 focus:border-primary-1">
                       <span class="flex items-center">
                         <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
                       </span>
                     </button>
-                    <button tds-button color="custom" (click)="unconnectTeam(child, $event)" rounded="!rounded-full"
-                      class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
-                          focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
+
+                    <button (click)="unconnectTeam(child, $event)"  type="button" tds-button color="custom" rounded="!rounded-full"
+                      class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
                       <span class="flex items-center">
-                        <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i>Hủy kết nối
+                        <i class="tdsi-break-link-fill text-xl leading-none mr-2"></i> Hủy kết nối
                       </span>
                     </button>
                   </div>
 
                   <!--TODO: button chưa kết nối -->
                   <div *ngIf="!child.Active" class="flex items-center">
-                    <button tds-button color="primary" (click)="showModalAddPage(child)">
+                    <button type="button" tds-button color="primary" (click)="showModalAddPage(child)">
                       <span class="flex items-center">
                         <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối
                       </span>
@@ -132,7 +123,7 @@
                   <ng-template #contentTpl>
                     <div class="flex flex-col items-center justify-center gap-y-2">
                       <span class="text-neutral-1-400 text-body-2 font-normal">Tài khoản chưa có trang Facebook nào</span>
-                      <button tds-button color="primary" (click)="verifyConnect(team)">
+                      <button (click)="verifyConnect(team)" type="button" tds-button color="primary" >
                         <span class="flex items-center">
                           <i class="tdsi-link-fill text-lg leading-none mr-2"></i>Kết nối trang
                         </span>
@@ -144,8 +135,9 @@
             </div>
           </tds-collapse-panel>
         </tds-collapse>
+
         <!--TODO Page chưa kết nối -->
-        <div class="p-4 border-t border-neutral-2-100" *ngIf="team.Childs && team.Childs.length > 0">
+        <div *ngIf="team.Childs && team.Childs.length > 0" class="p-4 border-t border-neutral-2-100">
           <span class="cursor-pointer text-success-400 text-xs" (click)="verifyConnect(team)">Xem thêm Page chưa kết nối</span>
         </div>
       </div>
@@ -157,12 +149,13 @@
         <div class="bg-white rounded-xl p-4 flex flex-col">
           <span class="text-header-2 font-semibold text-neutral-1-900">Kết nối tài khoản</span>
           <div class="mt-4 w-full h-[254px] rounded-xl">
-            <img src="/assets/imagesv2/facebook/facebook-img.svg" alt="">
+             <img src="/assets/imagesv2/facebook/facebook-img.svg" alt="">
           </div>
-          <span class="mt-4 text-body-2 font-regular text-neutral-1-900 text-center px-6">
-            Kết nối tài khoản Facebook của bạn để đồng bộ tin nhắn, bình luận, bài viết về TPage</span>
-          <button tds-button color="custom" (click)="facebookSignIn()" class="w-full mt-4 text-white focus:ring-2 focus:ring-secondary-1/20 border-secondary-1
-            bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:border-secondary-1">
+
+          <span class="mt-4 text-body-2 font-regular text-neutral-1-900 text-center px-6"> Kết nối tài khoản Facebook của bạn để đồng bộ tin nhắn, bình luận, bài viết về TPage</span>
+
+          <button (click)="facebookSignIn()" type="button" tds-button color="custom"
+            class="w-full mt-4 text-white focus:ring-2 focus:ring-secondary-1/20 border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:border-secondary-1">
             <span class="flex items-center">
               <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Kết nối với tài khoản Facebook
             </span>
@@ -173,14 +166,14 @@
       <ng-template #userLoggedFacebook>
         <div class="bg-white rounded-xl p-4 pt-10 flex flex-col items-center">
           <div>
-            <img class="text-white avatar-fb w-[132px] h-[132px] rounded-full" [src]="me?.picture?.data.url"
-              [ngClass]="'border-3 border-white ring-2 ring-primary-1'">
+            <img class="text-white avatar-fb w-[132px] h-[132px] rounded-full" [src]="me?.picture?.data.url" [ngClass]="'border-3 border-white ring-2 ring-primary-1'">
           </div>
           <span class="mt-4 text-header-1 font-semibold text-neutral-1-900">{{ me?.name }}</span>
           <span class="mt-2 text-body-2 text-neutral-1-400">tmt30.tpos.vn</span>
 
-          <div class="mt-6 text-title-1 font-semibold text-success-400"
-            *ngIf="loginTeam != null && loginTeam?.Childs && loginTeam?.Childs?.length != 0">Số trang Facebook đang quản lí</div>
+          <div *ngIf="loginTeam != null && loginTeam?.Childs && loginTeam?.Childs?.length != 0" class="mt-6 text-title-1 font-semibold text-success-400" >
+            Số trang Facebook đang quản lí
+          </div>
 
           <tpage-avatar-group-facebook *ngIf="loginTeam?.Childs">
             <tpage-avatar-facebook *ngFor="let child of loginTeam?.Childs || []; let i=index"
@@ -188,9 +181,9 @@
             </tpage-avatar-facebook>
           </tpage-avatar-group-facebook>
 
-          <button tds-button color="secondary" class="w-full mt-6" (click)="facebookSignOut()">
+          <button type="button" tds-button color="secondary" class="w-full mt-6" (click)="facebookSignOut()">
             <span class="flex items-center">
-              <i class="tdsi-log-out-fill text-lg text-neutral-1-500 leading-none mr-2"></i>Đăng xuất
+              <i class="tdsi-log-out-fill text-lg text-neutral-1-500 leading-none mr-2"></i> Đăng xuất
             </span>
           </button>
         </div>
@@ -198,10 +191,9 @@
 
       <!--TODO: thêm tài khoản vào danh sách -->
       <div class="pt-4" *ngIf="loginTeam == null && me != null" (click)="onFacebookConnected()">
-        <button tds-button class="w-full" color="primary">Thêm vào TPage</button>
+          <button type="button" tds-button class="w-full" color="primary">Thêm vào TPage</button>
       </div>
     </div>
-
   </div>
 
   <!--TODO Empty -->
@@ -217,11 +209,10 @@
         </ng-template>
 
         <ng-template #footerTpl>
-          <button tds-button color="custom" class="text-white focus:ring-2 focus:ring-secondary-1/20 border-secondary-1
-            bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:border-secondary-1 mt-3"
-            (click)="facebookSignIn()">
+          <button (click)="facebookSignIn()" type="button" tds-button color="custom"
+            class="text-white focus:ring-2 focus:ring-secondary-1/20 border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1 focus:border-secondary-1 mt-3">
             <span class="flex items-center">
-              <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Kết nối với tài khoản Facebook
+              <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i> Kết nối với tài khoản Facebook
             </span>
           </button>
         </ng-template>

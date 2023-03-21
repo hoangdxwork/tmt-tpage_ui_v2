@@ -142,7 +142,7 @@ export class FacebookLoginService {
   }
 
   getMe(): Observable<FacebookUser> {
-    return this.api(`me`, FacebookApiMethod.Get, { 'fields': 'id,name,picture' }) as Observable<FacebookUser>;
+    return this.api(`me`, FacebookApiMethod.Get, {'fields': 'id, name, picture'}) as Observable<FacebookUser>;
   }
 
   login(options?: FacebookLoginOptions): Observable<FacebookAuth> {
@@ -158,6 +158,7 @@ export class FacebookLoginService {
                 } else {
                   subscriber.error(response);
                 }
+
                 subscriber.complete();
               });
             },
