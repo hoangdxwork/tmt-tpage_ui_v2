@@ -241,7 +241,7 @@ export class CreateBillDefaultComponent implements OnInit {
     item.ShipAmount = event?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
     item.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
-    this.setFeeShipFromTransport(item?.Partner?.CityCode, item?.Partner?.DistrictCode, event?.DeliveryType, index);
+    this.setFeeShipFromTransport(item?.Partner?.CityCode, item?.Partner?.DistrictCode, event?.DeliveryType || null, index);
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO, index: number) {
@@ -536,7 +536,7 @@ export class CreateBillDefaultComponent implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {
-    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
+    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
     if(feeShip > 0 && index > -1) {
       this.lstLine[index].ShipAmount = feeShip;
       this.coDAmount();

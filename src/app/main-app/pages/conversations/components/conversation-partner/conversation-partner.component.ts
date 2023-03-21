@@ -796,6 +796,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
 
   loadDistricts(code: string) {
     this.lstDistrict = [];
+    if(!TDSHelperString.hasValueString(code)) return;
+
     this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstDistrict = [...res];
@@ -806,6 +808,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
 
   loadWards(code: string) {
     this.lstWard = [];
+    if(!TDSHelperString.hasValueString(code)) return;
+    
     this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstWard = [...res];

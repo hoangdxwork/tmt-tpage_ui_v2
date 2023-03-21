@@ -125,7 +125,7 @@ export class CreateBillFastComponent implements OnInit {
       this.lstData[index].ShipWeight = 100;
     }
 
-    let deliveryType = this.lstData[index].Carrier?.DeliveryType;
+    let deliveryType = this.lstData[index].Carrier?.DeliveryType || null;
     let partner = this.lstData[index].Partner;
     this.setFeeShipFromTransport(partner?.CityCode, partner?.DistrictCode, deliveryType, index);
   }
@@ -367,7 +367,7 @@ export class CreateBillFastComponent implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {
-    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
+    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
 
     if(feeShip > 0 && index > -1) {
       this.lstData[index].DeliveryPrice = feeShip;
