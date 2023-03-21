@@ -731,7 +731,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       this.saleModel.CarrierId = null;
       this.saleModel.DeliveryPrice = 0;
 
-      this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, null);\
+      this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, null);
       this.coDAmount();
       return;
     }
