@@ -89,7 +89,7 @@ export class CRMTeamService extends BaseSevice {
           this.onUpdateListFaceBook(null);
           this.onUpdateTeam(null);
         }
-      }, 
+      },
       error: (error) => {
         this.onUpdateListFaceBook(null);
         this.onUpdateTeam(null);
@@ -341,9 +341,9 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  patchCRMTeamToken(pageId: number, data: any): Observable<any> {
+  patchCRMTeamToken(teamId: number, data: any): Observable<any> {
     let api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/odata/CRMTeam(${pageId})`,
+      url: `${this._BASE_URL}/odata/CRMTeam(${teamId})`,
       method: CoreApiMethodType.patch
     }
 
