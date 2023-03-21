@@ -123,22 +123,30 @@ export class SharedService extends BaseSevice {
     return this._getTransportsConfigsSubject$.asObservable();
   }
 
-  setFeeShip(cityCode: any, districtCode: any, deliveryType: any, lstTransport: TransportConfigsDto[]) {
-    let exist1 = lstTransport.filter(x => x.ProvinceId == cityCode && this.checkProviders(x.Providers, deliveryType)) as any;
+  setFeeShip(cityCode: any, districtCode: any, lstTransport: TransportConfigsDto[], deliveryType: any) {
+    let exist1: any = [];
+
+    if(TDSHelperString.hasValueString(deliveryType)) {
+      exist1 = lstTransport.filter(x => x.ProvinceId == cityCode && this.checkProviders(x.Providers, deliveryType)) as any;
+    } else {
+      exist1 = lstTransport.filter(x => x.ProvinceId == cityCode) as any;
+    }
+
     if(exist1 && exist1.length == 0) return 0;
- 
+
     let exist2 = exist1.filter((x: any) => TDSHelperString.hasValueString(x.DistrictId)) as any;
     if(exist2 && exist2.length == 0) return exist1[0].FeeShip;
 
     let exist3 = exist2.filter((x: any) => districtCode == x.DistrictId) as any;
     if(exist3 && exist3.length == 0) return 0;
-   
+
     return exist3[0].FeeShip;
   }
 
   checkProviders(providers: string, deliveryType: string) {
     if(!providers) return false;
-    let lstProviders = JSON.parse(providers);
+    let lstProviders = JSON.parse(providers) as any[];
+    if(lstProviders.length == 0) return true;
     return lstProviders.includes(deliveryType);
   }
 
@@ -275,5 +283,5 @@ export class SharedService extends BaseSevice {
 
     return this.apiService.getData(api, null);
   }
-  
+
 }

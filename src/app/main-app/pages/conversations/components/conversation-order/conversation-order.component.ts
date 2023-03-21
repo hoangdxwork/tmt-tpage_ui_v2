@@ -777,7 +777,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
     if(this.saleModel) {
-      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, deliveryType, this.lstTransport);
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
       if(feeShip > 0) {
         this.saleModel.DeliveryPrice = feeShip;
         this.coDAmount();
@@ -1925,9 +1925,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     this.suggestTimer = setTimeout(() => {
         this.suggestText = this.suggestCopy;
-
         this.cdRef.detectChanges();
     }, 50);
+
     let data = event.value;
 
     if(data) {
@@ -1970,7 +1970,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
       this.loadWards(data?.DistrictCode);
 
-      this.setFeeShipFromTransport(event.CityCode, event.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+      this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
       this.cdRef.detectChanges();
     }
   }
@@ -2001,7 +2001,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   loadWards(code: string) {
     this.lstWard = [];
     if(!code) return;
-    
+
     this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstWard = [...res];
