@@ -46,14 +46,15 @@ export class FacebookGraphService extends BaseSevice {
   }
 
   getGraphFacebookPage(accessToken: any): Observable<any> {
-    return this.fb.api(`me/accounts?fields=id,name,link,picture,access_token&limit=500&access_token=${accessToken}`, {})
-        .pipe((res: any) => {
-            return res;
-        });
+      const api: CoreAPIDTO = {
+        url: `https://graph.facebook.com/me/accounts?fields=id,name,link,picture,access_token&limit=500&access_token=${accessToken}`,
+        method: CoreApiMethodType.get,
+      }
+      return this.apiService.getData<any>(api,null);
   }
 
-  getGraphFacebookGroup(ownerId: any): Observable<any> {
-    return this.fb.api(`${ownerId}?fields=id,name,picture`, {})
+  getGraphFacebookGroup(chanelId: any): Observable<any> {
+    return this.fb.api(`${chanelId}?fields=id,name,picture`, {})
         .pipe((res: any) => {
             return res;
         });
