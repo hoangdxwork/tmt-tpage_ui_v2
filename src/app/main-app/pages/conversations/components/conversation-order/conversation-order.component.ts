@@ -730,6 +730,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       this.saleModel.Carrier = null;
       this.saleModel.CarrierId = null;
       this.saleModel.DeliveryPrice = 0;
+
+      this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, null);\
       this.coDAmount();
       return;
     }
@@ -757,7 +759,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         this.saleModel.DeliveryPrice = deliveryPrice;
         this.coDAmount();
     }
-
 
     this.saleModel.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
 
