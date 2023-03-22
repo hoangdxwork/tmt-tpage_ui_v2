@@ -1,7 +1,7 @@
 import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { ChatomniChannelType } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { SocketioChatomniCreatePostDto } from './../../dto/socket-io/chatomni-create-post.dto';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny, TDSHelperObject } from 'tds-ui/shared/utility';
 import { Injectable } from "@angular/core";
 import { ChatomniFacebookDataDto, ChatomniMessageType, ChatomniTShopDataDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 import { SocketioOnMessageDto } from "@app/dto/socket-io/chatomni-on-message.dto";
@@ -43,10 +43,10 @@ export class SocketOnEventService {
 
     this.socketService.isConnectedSocket$.subscribe({
       next: (res: any) => {
-          if (res && !this.isRegisteredEvent) {
-              this.initialize();
-              this.isRegisteredEvent = true;
-          }
+        if (res && !this.isRegisteredEvent) {
+            this.initialize();
+            this.isRegisteredEvent = true;
+        }
       }
     });
   }
@@ -146,7 +146,7 @@ export class SocketOnEventService {
               || socketData.EventName == ChatmoniSocketEventName.onUpdateSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.onDeleteSaleOnline_Order
               || socketData.EventName == ChatmoniSocketEventName.livecampaign_CartCheckout
-              || socketData.eventName == ChatmoniSocketEventName.facebookShareds;
+              || socketData.EventName == ChatmoniSocketEventName.facebookShareds;
 
           if(existLive) existTeam = true;
           if (!existTeam) return;
@@ -155,7 +155,7 @@ export class SocketOnEventService {
             // TODO: thông báo tin nhắn, comment
             case ChatmoniSocketEventName.chatomniOnMessage:
                 let notificationMessage = this.prepareOnMessage(socketData, team);
-                this.publishSocketEvent(notificationMessage, socketData, team); //SocketioOnMessageDto
+                this.publishSocketEvent(notificationMessage, socketData, team);//SocketioOnMessageDto
             break;
 
             // TODO: cập nhật tin nhắn lỗi
@@ -234,6 +234,11 @@ export class SocketOnEventService {
               this.publishSocketEvent(notificationPostLiveDisconnected, socketData, team);
             break;
 
+            // Lượt chia sẻ bài viết facebook
+            case ChatmoniSocketEventName.facebookShareds:
+              this.publishSocketEvent(null, socketData, null);
+            break;
+
           }
         },
         error: (error: any) => {
@@ -276,11 +281,12 @@ export class SocketOnEventService {
       case ChatomniMessageType.FacebookComment:
         let fbComment = {...socketData.Message?.Data} as ChatomniFacebookDataDto;
         model = {
-            Title: `Facebook: <span class="font-semibold"> ${socketData.Conversation?.Name || 'Người dùng Facebook'} </span> vừa bình luận`,
-            Message: `${socketData.Message?.Message}`,
-            Attachments: fbComment?.attachments,
-            Url: `/conversation/comment?teamId=${team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
+          Title: `Facebook: <span class="font-semibold"> ${socketData.Conversation?.Name || 'Người dùng Facebook'} </span> vừa bình luận`,
+          Message: `${socketData.Message?.Message}`,
+          Attachments: fbComment?.attachments,
+          Url: `/conversation/comment?teamId=${team?.Id}&type=comment&csid=${socketData.Conversation?.UserId}`
         };
+
         break;
 
       case ChatomniMessageType.TShopMessage:

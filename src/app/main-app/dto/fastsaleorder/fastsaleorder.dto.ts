@@ -431,6 +431,7 @@ export interface FastSaleOrderDTO {
   PartnerPhone: string;
   LiveCampaignId: string;
   LiveCampaignName: string;
+  Source?: string;
 }
 
 export interface FastSaleOrderModelDTO {

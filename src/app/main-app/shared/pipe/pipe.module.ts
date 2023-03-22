@@ -1,3 +1,4 @@
+import { CountSharedPipe } from './count-shared.pipe';
 import { GetDeletedByNamePipe } from './get-deletedBy-name.pipe';
 import { GetChannelAvatarPipe } from './get-channel-avatar.pipe';
 import { GetTeamIconPipe } from './get-team-icon.pipe';
@@ -52,7 +53,7 @@ import { FirebaseSubscribedPipe } from './firebase-subscribed.pipe';
 import { GetSocketNamePipe, CheckSocketTeamTypePipe } from './get-socket-name.pipe';
 import { ImageLazyLoadPipe } from './image-lazy-load.pipe';
 import { GetImageLiveCampaignPipe } from './get-image-livecampaign.pipe';
-import { DictSourcePipe } from './dict-source.pipe';
+import { DictSourcePipe, CreateBillSourcePipe } from './dict-source.pipe';
 
 const cmp = [
   PrettyjsonPipe,
@@ -129,7 +130,9 @@ const cmp = [
   IndexTextContentOrderPipe,
   SizeAvatarPipe,
   DictSourcePipe,
-  GetDeletedByNamePipe
+  GetDeletedByNamePipe,
+  CountSharedPipe,
+  CreateBillSourcePipe
 ]
 
 @NgModule({

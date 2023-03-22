@@ -29,18 +29,18 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
   datePicker: any[] = [addDays(new Date(), -30), new Date()];
   lstTags: Array<TDSSafeAny> = [];
   selectTags: Array<TDSSafeAny> = [];
-  selectTeams: TDSSafeAny;
   selectCampaign: TDSSafeAny;
   selectPriorityStatus: TDSSafeAny;
+  selectTeamId: TDSSafeAny;
 
   lstPriorityStatus: Array<TDSSafeAny> = [];
   listStatus: Array<TDSSafeAny> = [];
-  lstTeams!: Observable<AllFacebookChildTO[]>;
   lstCampaign!: LiveCampaignModel[];
   lstDefaultStatus: Array<TabNavsDTO> = [];
 
   isActive: boolean = false;
   isVisible: boolean = false;
+  isDropdownTeamVisible: boolean = false;
 
   constructor(
     private cdr : ChangeDetectorRef,
@@ -50,7 +50,6 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.lstTeams = this.loadAllFacebookChilds();
     this.loadLiveCampaign();
     this.loadPriorityStatus();
   }
@@ -59,9 +58,11 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
     if(changes["filterObj"] && !changes["filterObj"].firstChange) {
       this.filterObj = {...changes["filterObj"].currentValue};
       this.selectTags = this.filterObj?.Tags || [];
-      this.selectTeams = this.filterObj?.TeamId;
       this.selectPriorityStatus = this.filterObj?.PriorityStatus;
       this.selectCampaign = this.filterObj?.LiveCampaignId;
+      this.selectTeamId = this.filterObj?.TeamId;
+
+      this.checkActive();
     }
   }
 
@@ -113,7 +114,7 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
   }
 
   onChangeTeams(event: any) {
-    this.filterObj!.TeamId = event;
+    this.filterObj!.TeamId = event?.Id || null;
   }
 
   onChangeCampaign(event: any) {
@@ -179,26 +180,17 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
       }
     }
 
-    this.isActive = true;
+    this.checkActive();
     this.onLoadOption.emit(this.filterObj);
     this.closeMenu();
-  }
-
-  checkActive(): boolean {
-    let exist = TDSHelperArray.hasListValue(this.filterObj?.Tags) || TDSHelperArray.hasListValue(this.filterObj?.StatusTexts);
-    if(exist) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   onCancel() {
     this.datePicker = [addDays(new Date(), -30), new Date()];
     this.selectTags = [];
-    this.selectTeams = null;
     this.selectCampaign = null;
     this.selectPriorityStatus = null;
+    this.selectTeamId = null;
 
     this.filterObj = {
       Tags: [],
@@ -210,10 +202,12 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
       },
       LiveCampaignId: null,
       HasTelephone: null,
-      PriorityStatus: null
+      PriorityStatus: null,
+      TeamId: null
     };
 
-    this.isActive = false;
+    this.checkActive();
+    this.isDropdownTeamVisible = false;
     this.checkActiveStatus();
     this.onLoadOption.emit(this.filterObj);
     this.closeMenu();
@@ -228,6 +222,20 @@ export class FilterOptionsComponent implements OnInit, OnChanges {
       this.filterObj.PriorityStatus = event;
     } else {
       this.filterObj.PriorityStatus = null;
+    }
+  }
+
+  checkActive() {
+    let exist = this.filterObj && 
+      (TDSHelperArray.hasListValue(this.filterObj["Tags"]) || TDSHelperArray.hasListValue(this.filterObj["StatusTexts"]) 
+      || this.filterObj["HasTelephone"] || this.filterObj["LiveCampaignId"]
+      // || this.filterObj["DateRange"]?.StartDate || this.filterObj["DateRange"]?.EndDate
+      || this.filterObj["PriorityStatus"] || this.filterObj["TeamId"]);
+
+    if(exist) {
+      this.isActive = true;
+    } else {
+      this.isActive = false;
     }
   }
 }

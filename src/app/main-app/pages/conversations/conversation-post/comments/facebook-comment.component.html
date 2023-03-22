@@ -65,7 +65,7 @@
                                   <!-- Mã hóa đơn -->
                                   <div *ngIf="partnerDict && partnerDict[item.UserId] && partnerDict[item.UserId].i && !item.IsOwner" class="flex flex-auto flex-row items-center">
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
-                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1]" class="text-primary-1 font-semibold cursor-pointer hidden desktop:block" 
+                                        <span *ngIf="invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1]" class="text-primary-1 font-semibold cursor-pointer hidden desktop:block"
                                             (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1])">
                                             {{ invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Number }}
                                         </span>
@@ -79,9 +79,9 @@
                                                 class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer hidden desktop:block">
                                                 +{{invoiceDict[partnerDict[item.UserId].i].length - 1}}
                                             </span>
-    
+
                                             <span *ngIf="invoiceDict[partnerDict[item.UserId].i].length > 0" class="text-primary-1 desktop:hidden flex items-center justify-center gap-x-1 text-caption-2 leading-none font-semibold cursor-pointer" (click)="onPopoverVisible(item.Id)">
-                                                <i class="tdsi-order-fill text-body-2"></i> 
+                                                <i class="tdsi-order-fill text-body-2"></i>
                                                 <span class="pb-0.5">({{invoiceDict[partnerDict[item.UserId].i].length}})</span>
                                             </span>
                                         </div>
@@ -89,12 +89,12 @@
                                         <ng-template #invContent>
                                             <div class="flex flex-wrap min-w-[200px] max-w-[400px] max-h-[400px] tds-panel-scroll overflow-hidden overflow-y-auto">
                                                 <div *ngFor="let inv of invoiceDict[partnerDict[item.UserId].i]; let i = index">
-                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id && (i < 10 || isShowAllNumber)" 
+                                                    <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id && (i < 10 || isShowAllNumber)"
                                                         class="hover:underline decoration-primary-1 hidden desktop:block" (click)="onOpenDrawerBillDetail(inv)">
                                                         <span class="text-primary-1 font-semibold cursor-pointer text-[14px]" >{{ inv.Number || 'N/A' }}</span>
                                                         <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 2].Id" class="pr-2">,</span>
                                                     </span>
-                                                    
+
                                                     <span *ngIf="(i < 10 || isShowAllNumber)" class="hover:underline decoration-primary-1 desktop:hidden block" (click)="onOpenDrawerBillDetail(inv)">
                                                         <span class="text-primary-1 font-semibold cursor-pointer text-[14px]">{{ inv.Number || 'N/A' }}</span>
                                                         <span *ngIf="inv.Id != invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Id" class="pr-2">,</span>
@@ -157,7 +157,7 @@
                                       <i class="tdsi-trash-line text-body-1 leading-none mr-2" ></i> Đã xóa
                                   </span>
                               </div>
-                              
+
                               <!-- Thông báo Bình luận ẩn -->
                               <div *ngIf="item.Status == 30" tds-tooltip="Bình luận đã ẩn">
                                   <span class="w-[76px] overflow-hidden flex items-center text-neutral-1-600 px-2 py-1 rounded-full text-caption-1 bg-neutral-3-100">
@@ -165,7 +165,7 @@
                                   </span>
                               </div>
 
-                              <div class="flex-auto" #contentMessage showMore [length]="100" [text]="((item.MessageFormatted || item.Message) | formatIconLike | bbcodeConvert )"></div>
+                              <div class="flex-auto" #contentMessage showMore [isMessageItem]="true" [length]="90" [text]="((item.MessageFormatted || item.Message) | formatIconLike | bbcodeConvert )"></div>
                           </div>
 
                           <!-- hình ảnh đính kèm -->
@@ -177,8 +177,8 @@
                           </div>
 
                           <!-- thao tác -->
-                          <div class="flex items-center pt-3">                           
-                              <button *ngIf="!isShowModal && !item.ParentId" [disabled]="item.Status == 40" [loading]="isLoadingInsertFromPost" [loadingTemplate]="'Tạo đơn hàng'" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
+                          <div class="flex items-center pt-3">
+                            <button *ngIf="!isShowModal && !item.ParentId && !item.IsOwner" [disabled]="item.Status == 40" [loading]="isLoadingInsertFromPost" [loadingTemplate]="'Tạo đơn hàng'" type="button" tds-button color="primary" class="mr-2" size="sm" (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
                               <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
                                   tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.Data?.from!.id] : '')" tds-tooltip>
                                   <span class="flex items-center justify-center">
@@ -284,7 +284,7 @@
                                       </div>
                                   </div>
                               </div>
-                          </div>             
+                          </div>
                       </div>
 
                     <!-- Input trả lời bình luận -->
@@ -397,9 +397,9 @@
                                                         class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate cursor-pointer hidden desktop:block">
                                                         +{{invoiceDict[partnerDict[child.UserId].i].length - 1}}
                                                     </span>
-            
+
                                                     <span *ngIf="invoiceDict[partnerDict[child.UserId].i].length > 0" class="text-primary-1 desktop:hidden flex items-center justify-center gap-x-1 text-caption-2 leading-none font-semibold cursor-pointer" (click)="onPopoverVisible(child.Id)">
-                                                        <i class="tdsi-order-fill text-body-2"></i> 
+                                                        <i class="tdsi-order-fill text-body-2"></i>
                                                         <span class="pb-0.5">({{invoiceDict[partnerDict[child.UserId].i].length}})</span>
                                                     </span>
                                                 </div>
@@ -473,7 +473,7 @@
 																							<i class="tdsi-trash-line text-body-1 leading-none mr-2" ></i> Đã xóa
 																					</span>
 																			</div>
-																			
+
 																			<!-- Thông báo Bình luận ẩn -->
 																			<div *ngIf="child.Status == 30" tds-tooltip="Bình luận đã ẩn">
 																					<span class="w-[76px] overflow-hidden flex items-center text-neutral-1-600 px-2 py-1 rounded-full text-caption-1 bg-neutral-3-100">
@@ -481,7 +481,7 @@
 																					</span>
 																			</div>
 
-                                      <div #contentMessage showMore [length]="100" [text]="((child.MessageFormatted || child.Message) | formatIconLike | bbcodeConvert )"></div>
+                                      <div #contentMessage showMore [isMessageItem]="true" [length]="90" [text]="((child.MessageFormatted || child.Message) | formatIconLike | bbcodeConvert )"></div>
                                   </div>
 
                                   <!-- hình ảnh đính kèm -->

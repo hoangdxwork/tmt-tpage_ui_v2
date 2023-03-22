@@ -81,7 +81,8 @@
                         <div class="flex gap-x-2.5 items-center z-10 flex-auto pr-3 desktop:text-body-2 text-caption-1">
                             <div class="desktop:w-1/4 w-[30%] flex flex-col">
                                 <div>
-                                    <span class="text-info-500 font-semibold">#{{ order.Code || 'N/A' }}</span>
+                                    <span class="text-info-500 font-semibold">
+                                      #<span *ngIf="order.SessionIndex">{{order.SessionIndex}}. </span>{{order.Code || 'N/A' }}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-1-400 text-caption-2">{{ order.DateCreated | date:"HH:mm, dd/MM/yyyy" }}</span>
@@ -109,7 +110,7 @@
                                             <span class="text-error-400 text-caption-2" *ngIf="!order.PrintCount || order.PrintCount == 0">
                                                 Chưa in
                                             </span>
-    
+
                                             <span class="text-success-500 text-caption-2" *ngIf="order.PrintCount && order.PrintCount > 0">
                                                 Đã in: {{order.PrintCount}}
                                             </span>

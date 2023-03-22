@@ -97,4 +97,13 @@ export class FacebookService extends BaseSevice {
 
     return this.apiService.getData<any>(api,null);
   }
+
+  checkPermission(accessToken: string) {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/api/facebook/checkpermission?access_token=${accessToken}`,
+        method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<any>(api,null);
+  }
 }

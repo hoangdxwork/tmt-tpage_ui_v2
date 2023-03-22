@@ -76,6 +76,11 @@
                             </tds-dropdown-menu>
                         </div>
                         <div class="flex-auto p-2 gap-x-2 flex justify-end">
+                            <button tds-button-icon color="secondary" (click)="onSendInvoice(data)" tds-tooltip tooltipTitle="Gửi hóa đơn">
+                                <span class="flex items-center text-neutral-1-500">
+                                    <i class="tdsi-order-fill"></i>
+                                </span>
+                            </button>
                             <button tds-button-icon color="secondary" (click)="showModalSendMessage(data)" tds-tooltip tooltipTitle="Gửi mẫu facebook">
                                 <span class="flex items-center text-neutral-1-500">
                                     <i class="tdsi-facebook-2-fill"></i>

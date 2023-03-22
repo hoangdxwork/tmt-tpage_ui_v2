@@ -1,3 +1,4 @@
+import { FilterTeamDropdownComponent } from './fillter-team-dropdown/filter-team-dropdown.component';
 import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { TDSDrawerModule } from 'tds-ui/drawer';
 import { DrawerDetailBillComponent } from './drawer-detail-bill/drawer-detail-bill.component';
@@ -101,7 +102,8 @@ const cmp =[
   EditLiveCampaignPostComponent,
   AddLivecampaignPostV2Component,
   ListProductTmpV2Component,
-  TrackingRefBlankComponent
+  TrackingRefBlankComponent,
+  FilterTeamDropdownComponent
 ]
 
 const SERVICES = [

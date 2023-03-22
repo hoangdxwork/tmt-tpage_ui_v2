@@ -86,15 +86,15 @@
                                     <div class="w-full flex gap-x-2">
                                       <tds-form-field class="w-full">
                                         <input class="placeholder-neutral-1-400" placeholder="Tìm kiếm địa chỉ" tdsInput
-                                            [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="300" 
+                                            [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="300"
                                             (inputKeyup)="onInputKeyupSuggestion($event)" [tdsAutocomplete]="addressComplete"/>
                                         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                                         <span tdsSuffix (click)="closeSearchAddress()">
                                             <i class="tdsi-close-fill text-neutral-1-500 text-base" *ngIf="suggestText && suggestText != ''"></i>
                                         </span>
                                       </tds-form-field>
-                            
-                                      <tds-autocomplete #addressComplete (selectionChange)="onSelectSuggestion($event)">  
+
+                                      <tds-autocomplete #addressComplete (selectionChange)="onSelectSuggestion($event)">
                                           <tds-auto-option *ngFor="let option of (suggestData | async)"
                                               [label]="option.Address" [value]="option">
                                               <div class="flex w-full justify-between items-center">
@@ -107,10 +107,10 @@
                                             </div>
                                           </tds-auto-option>
                                       </tds-autocomplete>
-                            
+
                                     </div>
                                 </div>
-                            
+
                                 <button tds-button-icon color="primary" (click)="showModalSuggestAddress()" tds-tooltip tooltipPlacement="topRight" [tooltipTitle]="quickOrderModel.Address ? 'Kiểm tra địa chỉ' : 'Tìm kiếm địa chỉ'">
                                     <span class="flex items-center">
                                       <i class="tdsi-location-fill"></i>
@@ -324,7 +324,7 @@
                                                         {{ item.Price | numberCustom }}đ
                                                     </span>
 
-                                                    <span class="tdsi-edit-line flex text-base cursor-pointer mr-1" [tds-tooltip]="'Thêm ghi chú'" tds-popover [popoverVisible]="visibleIndex == index"
+                                                    <span class="tdsi-edit-line flex text-base cursor-pointer mr-1" [tds-tooltip]="'Sửa giá sản phẩm'" tds-popover [popoverVisible]="visibleIndex == index"
                                                         popoverTrigger="click" [popoverContent]="tmpEditPrice" [popoverAutoClose]="true" [popoverBackdrop]="true"
                                                         (popoverVisibleChange)="openPopover($event, item.Price, index)">
                                                     </span>
@@ -414,7 +414,7 @@
                                             <button type="button" (click)="onCopyProduct(item, index)">
                                                 <i class="tdsi-copy-line text-info-500 text-xl cursor-pointer" tds-tooltip="Sao chép sản phẩm" tooltipPlacement="top"></i>
                                             </button>
-    
+
                                             <button type="button" (click)="onRemoveProduct(item, index)">
                                                 <i class="tdsi-trash-line text-error-500 text-xl cursor-pointer" tds-tooltip="Xóa sản phẩm" tooltipPlacement="topRight"></i>
                                             </button>
@@ -709,7 +709,7 @@
                                         <div class="flex flex-row items-center w-full">
 
                                             <span class="mr-2">{{child.Name}}</span>
-                                            <div *ngIf="saleModel.Carrier!.DeliveryType === 'ViettelPost' && child.Id == 'XMG' && child.IsSelected == true">
+                                            <div *ngIf="saleModel.Carrier && saleModel.Carrier.DeliveryType === 'ViettelPost' && child.Id == 'XMG' && child.IsSelected == true">
                                                 <button type="button" style="border-bottom: dashed 2px #2395FF;" tds-popover
                                                     popoverTrigger="click" (click)="openPopoverShipExtraMoney(child.ExtraMoney)"
                                                     [(popoverVisible)]="visibleShipExtraMoney"
