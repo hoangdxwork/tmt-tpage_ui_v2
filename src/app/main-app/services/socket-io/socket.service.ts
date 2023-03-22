@@ -14,7 +14,7 @@ import { CoreApiMethodType } from '@core/enum';
   providedIn: 'root'
 })
 
-export class SocketService  extends BaseSevice {
+export class SocketService extends BaseSevice {
 
   prefix: string = "";
   table: string = "";
@@ -76,17 +76,16 @@ export class SocketService  extends BaseSevice {
       this.isConnectedSocket$.emit(true);
 
       if(this.isConnectError == 1) {
-        this.notificationService.info('Kết nối Realtime', 'Socket.io đã được kết nối lại!', { duration: 10 * 1000 });
+        this.notificationService.info('Kết nối Realtime', 'Socket.io đã được kết nối lại!', { duration: 10 * 1000, placement: 'bottomLeft' });
         this.isConnectError = 0;
       }
-
     });
 
     this.socket.on("connect_error", (err) => {
       console.log(`connect_error due to ${err.message}`);
 
       if(this.isConnectError == 0) {
-        this.notificationService.error('Kết nối Realtime', 'Socket.io đã xảy ra lỗi', { duration: 10 * 1000 });
+        this.notificationService.error('Kết nối Realtime', 'Socket.io đã xảy ra lỗi!', { duration: 10 * 1000, placement: 'bottomLeft' });
         this.isConnectError = 1;
       }
     });
@@ -118,5 +117,4 @@ export class SocketService  extends BaseSevice {
 
     return this.apiService.getData<any>(api, null);
   }
-
 }
