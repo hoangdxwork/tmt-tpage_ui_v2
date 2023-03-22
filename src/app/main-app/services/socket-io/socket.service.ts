@@ -49,7 +49,7 @@ export class SocketService extends BaseSevice {
   }
 
   initSocket(accessToken: any): void {
-    let hostname = 'tmt30.tpos.vn';
+    let hostname = this.document.location.hostname;
     hostname = hostname.toLowerCase();
 
     this.socket = io(environment.socketUrl, {
