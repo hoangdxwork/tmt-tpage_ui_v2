@@ -70,6 +70,7 @@ import { ChatomniConversationService } from '@app/services/chatomni-service/chat
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
 import { SuggestAddressDto, SuggestAddressService } from '@app/services/suggest-address.service';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 @Component({
   selector: 'conversation-order',
@@ -205,6 +206,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     private sharedService: SharedService,
     private suggestService: SuggestAddressService,
     private chatomniConversationService: ChatomniConversationService,
+    private chatomniCommentFacade: ChatomniCommentFacade,
     private ngZone: NgZone,
     private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
@@ -871,6 +873,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             }
 
             this.mappingAddress(res);
+            this.suggestText = res.Address;
             this.disableSyncOrder = true;
 
             this.prepareResponseSaleOnline(res, type);
@@ -1501,6 +1504,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             this.suggestCopy = result.value?.Address;
 
             this.mappingAddress(this.quickOrderModel);
+            this.suggestText = this.quickOrderModel.Address;
 
             if(result.type == 'confirm') {
               this.updateOrder(result.type);
@@ -1670,7 +1674,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   onChangeQuantity(event: any, item: any, index: number){
     let exsit = index >= 0 && this.quickOrderModel.Details[index].ProductId == item.ProductId && this.quickOrderModel.Details[index].UOMId == item.UOMId;
 
-    if(exsit) { 
+    if(exsit) {
       if(event && Number(event) > 0) {
           this.quickOrderModel.Details[Number(index)].Quantity = Number(event);
       } else {
@@ -1808,6 +1812,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           next: (info: ChatomniConversationInfoDto) => {
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
               this.chatomniConversationFacade.onSyncConversationPartner$.emit(info);
+              this.chatomniCommentFacade.onSyncPartnerTimeStamp$.emit(info);
 
               if(type == 'FastSaleOrder') {
                   this.chatomniConversationFacade.onSyncConversationOrder$.emit(info);
@@ -1865,7 +1870,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.suggestCopy = this.suggestText;
 
     if(!TDSHelperString.hasValueString(this.suggestText)) return;
-    
+
     this.isLoadingAddress = true;
     this.suggestData = this.suggestService.suggest(this.suggestText)
       .pipe(takeUntil(this.destroy$)).pipe(map(x => ([...x?.data || []])), finalize(() => this.isLoadingAddress = false));
@@ -1943,6 +1948,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   loadDistricts(code: string) {
     this.lstDistrict = [];
+    if(!TDSHelperString.hasValueString(code)) return;
+
     this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstDistrict = [...res];
@@ -1953,6 +1960,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   loadWards(code: string) {
     this.lstWard = [];
+    if(!TDSHelperString.hasValueString(code)) return;
+
     this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstWard = [...res];

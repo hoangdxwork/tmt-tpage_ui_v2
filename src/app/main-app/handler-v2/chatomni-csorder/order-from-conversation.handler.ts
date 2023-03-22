@@ -95,7 +95,6 @@ export class CsOrder_FromConversationHandler {
       }
 
       order.Telephone = order.Telephone || partner?.Phone || csInfo.Conversation?.Phone;
-      order.Address =  order.Address || partner?.Street as string;
       order.Email = order.Email || partner?.Email || csInfo.Conversation?.Email;
 
       order.PartnerId = order.PartnerId || csInfo.Partner?.Id;
@@ -107,6 +106,11 @@ export class CsOrder_FromConversationHandler {
               Id: this.userInit.Id,
               Name: this.userInit.Name
           } as any;
+      }
+
+      order.Address =  order.Address || partner?.Street as string;
+      if(!TDSHelperString.hasValueString(order.CityCode) && TDSHelperString.hasValueString(partner.City?.code || partner.CityCode)) {
+        order.Address = partner?.Street as any;
       }
 
       if(!TDSHelperString.hasValueString(order.CityCode)) {
