@@ -109,9 +109,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
       }
     });
 
-    // TODO: check trạng thái connnect socket-io
-    this.establishedConnected = this.socketService.establishedConnected;
-
     this.firebaseDevice();
     this.onEventEmitter();
   }
