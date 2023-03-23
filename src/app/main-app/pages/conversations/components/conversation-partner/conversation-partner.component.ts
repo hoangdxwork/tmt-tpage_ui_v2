@@ -848,11 +848,13 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     this.partner.DistrictName = null;
     this.partner.District = null;
     this._districts = null as any;
+    this.lstDistrict = [];
 
     this.partner.WardCode = null;
     this.partner.WardName = null;
     this.partner.Ward = null as any;
     this._wards = null as any;
+    this.lstWard = [];
 
     if(city && city.code) {
       this.partner.CityCode = city.code;
@@ -884,6 +886,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     this.partner.WardName = null;
     this.partner.Ward = null as any;
     this._wards = null as any;
+    this.lstWard = [];
 
     if(district && district.code) {
       this.partner.DistrictCode = district.code;

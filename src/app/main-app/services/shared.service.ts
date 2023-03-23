@@ -125,13 +125,10 @@ export class SharedService extends BaseSevice {
 
   setFeeShip(cityCode: any, districtCode: any, lstTransport: TransportConfigsDto[], deliveryType: any) {
     if(!TDSHelperString.hasValueString(cityCode)) return 0;
-    let exist1: any = [];
 
-    if(deliveryType && TDSHelperString.hasValueString(deliveryType)) {
-      exist1 = lstTransport.filter(x => x.ProvinceId == cityCode && this.checkProviders(x.Providers, deliveryType)) as any;
-    } else {
-      exist1 = lstTransport.filter(x => x.ProvinceId == cityCode) as any;
-    }
+    let exist1 = lstTransport.filter(x => x.ProvinceId == cityCode) as any;
+    let lstProviders = this.prepareProviders(exist1[0]?.Providers);
+    if(lstProviders.length > 0 && (!TDSHelperString.hasValueString(deliveryType) || !lstProviders.includes(deliveryType))) return 0;
 
     if(exist1 && exist1.length == 0) return 0;
 
@@ -144,11 +141,13 @@ export class SharedService extends BaseSevice {
     return exist3[0].FeeShip;
   }
 
-  checkProviders(providers: string, deliveryType: string) {
-    if(!providers) return false;
-    let lstProviders = JSON.parse(providers) as any[];
-    if(lstProviders.length == 0) return true;
-    return lstProviders.includes(deliveryType);
+  prepareProviders(providers: string) {
+    let lstProviders: string[] = [];
+    if(TDSHelperString.hasValueString(providers)) {
+      lstProviders = JSON.parse(providers) as string[];
+    } 
+
+    return lstProviders;
   }
 
   setSaleOnlineSettingConfig() {

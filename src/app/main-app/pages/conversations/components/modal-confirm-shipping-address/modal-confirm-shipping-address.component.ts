@@ -102,7 +102,7 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
       this._form.controls['Ward'].setValue(null);
     } else {
       this.lstDistricts = [];
-      this.lstWards = []
+      this.lstWards = [];
       this._form.controls['City'].setValue(null);
       this._form.controls['District'].setValue(null);
       this._form.controls['Ward'].setValue(null);
@@ -115,7 +115,7 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
       this._form.controls['District'].setValue(value);
       this._form.controls['Ward'].setValue(null);
     }else{
-      this.lstWards = []
+      this.lstWards = [];
       this._form.controls['District'].setValue(null);
       this._form.controls['Ward'].setValue(null);
     }
