@@ -14,7 +14,6 @@ export const FACEBOOK_DEFAULTS: FacebookInitParams = {
 };
 
 declare const FB: Facebook;
-
 declare const window: {
   FB?: Facebook;
 };
@@ -22,6 +21,7 @@ declare const window: {
 @Injectable({
   providedIn: 'root'
 })
+
 export class FacebookLoginService {
   sdk = new ReplaySubject<Facebook>(1);
 
@@ -30,7 +30,7 @@ export class FacebookLoginService {
   }
 
   load(locale: string = 'en_US'): Observable<Facebook> {
-    return Observable.create((subscriber: TDSSafeAny) => {
+    return new Observable((subscriber: TDSSafeAny) => {
       if (isPlatformServer(this.platformId)) {
         return;
       }
@@ -50,15 +50,16 @@ export class FacebookLoginService {
         }
 
         const script = document.createElement('script');
-
         script.id = 'facebook-jssdk';
-
         script.src = '//connect.facebook.net/' + (locale || 'en_US') + '/sdk.js';
+
+        script.async = true;
+        script.defer = true;
+        script.crossOrigin = 'anonymous';
 
         script.onload = () => {
           this.ngZone.run(() => {
             subscriber.next(FB);
-
             subscriber.complete();
           });
         };
@@ -66,16 +67,14 @@ export class FacebookLoginService {
         script.onerror = () => {
           this.ngZone.run(() => {
             subscriber.error('Facebook SDK could not be loaded.');
-
             subscriber.complete();
           });
         };
 
         document.head.appendChild(script);
       });
-    }).pipe(map((sdk: Facebook) => {
+    }).pipe(map((sdk: any) => {
       this.sdk.next(sdk);
-
       return sdk;
     }));
   }
@@ -83,167 +82,180 @@ export class FacebookLoginService {
   init(params: FacebookInitParams = {}, locale: string = 'en_US') {
     return this.load(locale).pipe<Facebook>(tap<Facebook>(sdk => {
       params = Object.assign({}, FACEBOOK_DEFAULTS, params);
-
       sdk.init(params);
-
       this.reloadRenderedElements().subscribe();
     }));
   }
 
   getLoginStatus(): Observable<TDSSafeAny> {
-    return Observable.create((subscriber: TDSSafeAny) => {
-      this.sdk.subscribe(sdk => {
-        this.ngZone.runOutsideAngular(() => {
-          try {
-            FB.getLoginStatus((response: FacebookAuthResponse) => {
-              this.ngZone.run(() => {
-                if (response.authResponse) {
-                  subscriber.next(response);
-                } else {
-                  subscriber.error(response);
-                }
-
-                subscriber.complete();
+    return new Observable((subscriber: TDSSafeAny) => {
+      this.sdk.subscribe({
+        next: (sdk: any) => {
+          this.ngZone.runOutsideAngular(() => {
+            try {
+              FB.getLoginStatus((response: FacebookAuthResponse) => {
+                this.ngZone.run(() => {
+                  if (response.authResponse) {
+                    subscriber.next(response);
+                  } else {
+                    subscriber.error(response);
+                  }
+                  subscriber.complete();
+                });
               });
-            });
-          } catch (e) {
-            subscriber.error(e);
-            subscriber.complete();
-          }
-        });
+            } catch (e) {
+              subscriber.error(e);
+              subscriber.complete();
+            }
+          });
+        }
       });
     });
   }
 
   getAuthResponse(): Observable<FacebookAuth> {
-    return Observable.create((subscriber: TDSSafeAny) => {
-      this.sdk.subscribe(sdk => {
-        this.ngZone.runOutsideAngular(() => {
-          try {
-            FB.getAuthResponse((response: FacebookAuth) => {
+    return new Observable((subscriber: TDSSafeAny) => {
+      this.sdk.subscribe({
+        next: (sdk) => {
+          this.ngZone.runOutsideAngular(() => {
+            try {
+              FB.getAuthResponse((response: FacebookAuth) => {
+                this.ngZone.run(() => {
+
+                  if (response) {
+                    subscriber.next(response);
+                  } else {
+                    subscriber.error(response);
+                  }
+
+                  subscriber.complete();
+                });
+              });
+            } catch (e) {
+              subscriber.error(e);
+              subscriber.complete();
+            }
+          });
+        }
+      });
+    });
+  }
+
+  getMe(): Observable<FacebookUser> {
+    return this.api(`me`, FacebookApiMethod.Get, {'fields': 'id, name, picture'}) as Observable<FacebookUser>;
+  }
+
+  login(options?: FacebookLoginOptions): Observable<FacebookAuth> {
+    return new Observable((subscriber: TDSSafeAny) => {
+      this.sdk.subscribe({
+        next: () => {
+          this.ngZone.runOutsideAngular(() => {
+            FB.login(response => {
               this.ngZone.run(() => {
-                if (response) {
-                  subscriber.next(response);
+
+                if (response.authResponse) {
+                  subscriber.next(response.authResponse);
                 } else {
                   subscriber.error(response);
                 }
 
                 subscriber.complete();
               });
-            });
-          } catch (e) {
-            subscriber.error(e);
-
-            subscriber.complete();
-          }
-        });
-      });
-    });
-  }
-
-  getMe(): Observable<FacebookUser> {
-    return this.api(`me`, FacebookApiMethod.Get, { 'fields': 'id,name,picture' }) as Observable<FacebookUser>;
-  }
-
-  login(options?: FacebookLoginOptions): Observable<FacebookAuth> {
-    return Observable.create((subscriber: TDSSafeAny) => {
-      this.sdk.subscribe(sdk => {
-        this.ngZone.runOutsideAngular(() => {
-          FB.login(response => {
-            this.ngZone.run(() => {
-              if (response.authResponse) {
-                subscriber.next(response.authResponse);
-              } else {
-                subscriber.error(response);
-              }
-
-              subscriber.complete();
-            });
-          }, {scope:"pages_show_list, pages_messaging, pages_manage_metadata, pages_read_engagement"});
-        });
-      }, error => {
-        console.log(error)
+            },
+            { scope: 'email, public_profile, user_posts, user_videos, manage_pages, publish_pages, pages_messaging, pages_messaging, pages_messaging_subscriptions, pages_read_engagement, pages_read_user_content, pages_manage_engagement, pages_manage_metadata, pages_show_list' });
+          });
+        },
+        error: (err: any) => {
+          console.log(err);
+        }
       });
     });
   }
 
   logout(): Observable<any> {
-    return Observable.create((subscriber: TDSSafeAny) => {
-      this.sdk.subscribe(sdk => {
-        this.ngZone.runOutsideAngular(() => {
-          try {
-            FB.logout((response: any) => {
-              this.ngZone.run(() => {
-                subscriber.next(response);
-                subscriber.complete();
+    return new Observable((subscriber: TDSSafeAny) => {
+      this.sdk.subscribe({
+        next: (sdk: any) => {
+          this.ngZone.runOutsideAngular(() => {
+            try {
+              FB.logout((response: any) => {
+                this.ngZone.run(() => {
+                  subscriber.next(response);
+                  subscriber.complete();
+                });
               });
-            });
-          } catch (e) {
-            subscriber.error(e);
-            subscriber.complete();
-          }
-        });
+            } catch (e) {
+              subscriber.error(e);
+              subscriber.complete();
+            }
+          });
+        }
       });
     });
   }
 
   api(path: string, method?: FacebookApiMethod | FacebookApiParams, params?: FacebookApiParams): Observable<any> {
-    return Observable.create((subscriber: TDSSafeAny) => {
-      this.sdk.subscribe(sdk => {
-        this.ngZone.runOutsideAngular(() => {
-          FB.api(path, method, params, (response: TDSSafeAny) => {
-            this.ngZone.run(() => {
-              if (!response || response.error) {
-                subscriber.error(response.error || 'Error occured');
-              } else {
-                subscriber.next(response);
-              }
-              subscriber.complete();
+    return new Observable((subscriber: TDSSafeAny) => {
+      this.sdk.subscribe({
+        next: (sdk: any) => {
+          this.ngZone.runOutsideAngular(() => {
+            FB.api(path, method, params, (response: TDSSafeAny) => {
+              this.ngZone.run(() => {
+                if (!response || response.error) {
+                  subscriber.error(response.error || 'Error occured');
+                } else {
+                  subscriber.next(response);
+                }
+                subscriber.complete();
+              });
             });
           });
-        });
+        }
       });
     });
   }
 
   parse(element: HTMLElement): Observable<HTMLElement> {
-    return Observable.create((subscriber: TDSSafeAny) => {
-      this.sdk.subscribe(sdk => {
-        this.ngZone.runOutsideAngular(() => {
-          sdk.XFBML.parse(element, () => {
-            this.ngZone.run(() => {
-              subscriber.next(element);
-
-              subscriber.complete();
+    return new Observable((subscriber: TDSSafeAny) => {
+      this.sdk.subscribe({
+        next: (sdk: any) => {
+          this.ngZone.runOutsideAngular(() => {
+            sdk.XFBML.parse(element, () => {
+              this.ngZone.run(() => {
+                subscriber.next(element);
+                subscriber.complete();
+              });
             });
           });
-        });
+        }
       });
     });
   }
 
   reloadRenderedElements(): Observable<HTMLElement> {
-    return Observable.create((subscriber: TDSSafeAny) => {
-      this.sdk.subscribe(sdk => {
-        const elements = document.querySelectorAll('[fb-xfbml-state="rendered"]');
+    return new Observable((subscriber: TDSSafeAny) => {
+      this.sdk.subscribe({
+        next: (sdk :any) => {
 
-        let processing = elements.length;
+          const elements = document.querySelectorAll('[fb-xfbml-state="rendered"]');
+          let processing = elements.length;
 
-        Array.from(elements).forEach((node: TDSSafeAny) => {
-          this.ngZone.runOutsideAngular(() => {
-            sdk.XFBML.parse(node.parentElement, () => {
-              this.ngZone.run(() => {
-                --processing;
+          Array.from(elements).forEach((node: TDSSafeAny) => {
+            this.ngZone.runOutsideAngular(() => {
+              sdk.XFBML.parse(node.parentElement, () => {
 
-                subscriber.next(node.parentElement);
+                this.ngZone.run(() => {
+                  --processing;
+                  subscriber.next(node.parentElement);
 
-                if (processing <= 0) {
-                  subscriber.complete();
-                }
+                  if (processing <= 0) {
+                    subscriber.complete();
+                  }
+                });
               });
             });
           });
-        });
+        }
       });
     });
   }

@@ -1,3 +1,5 @@
+import { CRMActivityV2Service } from './../../services/crm-activity-v2.service';
+import { ModalGetSharedComponent } from './components/modal-get-shared/modal-get-shared.component';
 import { PrepareUpdateTShopByLiveCampaign } from './../../handler-v2/conversation-post/prepare-tshop-post.handler';
 import { DrawerAddProductComponent } from './conversation-post/facebook-livecampaign-post/drawer-add-product.component';
 import { ConversationPostEvent } from './../../handler-v2/conversation-post/conversation-post.event';
@@ -154,6 +156,7 @@ import { ProductTemplateFacade } from '@app/services/facades/product-template.fa
 import { CurrentConversationItemV3Component } from './components/current-conversation-item/current-conversation-item-v3.component';
 import { TDSAlertModule } from "tds-ui/alert";
 import { SuggestAddressService } from '@app/services/suggest-address.service';
+import { ModalSendCommentComponent } from './components/modal-send-comment/modal-send-comment.component';
 
 const SERVICES = [
   ConversationFacebookState,
@@ -208,7 +211,8 @@ const SERVICES = [
   PrepareAddCampaignHandler,
   CsOrder_FromConversationHandler,
   ConversationPostEvent,
-  SuggestAddressService
+  SuggestAddressService,
+  CRMActivityV2Service
 ]
 
 const FACADES = [
@@ -274,6 +278,8 @@ const FACADES = [
     TiktokCommentComponent,
     ObjectTiktokPostComponent,
     CurrentConversationItemV3Component,
+    ModalSendCommentComponent,
+    ModalGetSharedComponent
   ],
 
   imports: [

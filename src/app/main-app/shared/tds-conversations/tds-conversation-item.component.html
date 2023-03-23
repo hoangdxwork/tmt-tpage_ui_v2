@@ -11,7 +11,7 @@
                   <div id="scroll-product{{dataItem.Data.id}}" class="max-w-[85%] flex gap-6 snap-x snap-mandatory overflow-x-auto no-scrollbar scroll-product">
                     <div *ngFor="let item of wb?.payload?.elements">
                       <div #itemProduct class="snap-start shrink-0">
-                        <tds-card class="bg-white w-[260px] h-full rounded-xl" (click)="detail()">
+                        <tds-card class="bg-white w-[260px] h-full rounded-xl" [ngClass]="dataItem.Error ? 'opacity-70' : ''" (click)="detail()">
                           <div *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture" class="relative">
                             <img src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)" class="w-full h-[192px] object-cover">
                           </div>
@@ -52,7 +52,7 @@
                       <div class="pt-2 pb-3 border-b border-neutral-3-200 flex flex-col w-full items-start">
                         <div class="flex flex-col gap-3 w-full">
                           <div class="flex w-full gap-x-2.5" *ngFor="let item of wb?.payload?.elements">
-                            <img *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture" src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px]">
+                            <img *ngIf="item?.image_url && !checkPostPictureError(item); else noPicture" src="{{ item.image_url }}" alt="" (error)="errorPostPicture(item)" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] object-cover">
                             <ng-template #noPicture>
                               <img src="../assets/imagesv2/errorPic.svg" alt="" class="rounded-lg bg-neutral-3-50 h-[60px] w-[60px] p-4">
                             </ng-template>

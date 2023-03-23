@@ -1,13 +1,15 @@
 import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
 import { takeUntil, finalize, Observable } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { LiveCampaignReportProductDto, ODataLiveCampaignReportProductDto } from '@app/dto/live-campaign/livecampaign-report-product.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { OrderPrintService } from '@app/services/print/order-print.service';
+import { TableOrderWaitComponent } from '../table-order-wait/table-order-wait.component';
 
 @Component({
   selector: 'detail-product',
@@ -17,10 +19,14 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 
 export class DetailProductComponent implements OnInit {
 
+  @ViewChild(TableOrderWaitComponent) orderWaitComponent!: TDSSafeAny;
+
   @Input() liveCampaignId!: string;
 
   isVisible = false;
   expandSet = new Set<number | undefined>();
+
+  selected: number = 0;
 
   filterObj: any = {
     searchText: '',
@@ -113,5 +119,9 @@ export class DetailProductComponent implements OnInit {
     this.innerText = '';
     this.filterObj.searchText = '';
     this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  prints() {
+    this.orderWaitComponent.printMulti();
   }
 }

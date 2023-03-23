@@ -18,6 +18,7 @@ export class CRMTeamService extends BaseSevice {
   table: string = "CRMTeam";
   baseRestApi: string = "rest/v1.0/crmteam";
   private readonly __keyCacheTeamId = 'nearestTeamId';
+  private readonly __keyCacheFilterTeam = 'filterOrderByTeam';
 
   private readonly listFaceBook$ = new ReplaySubject<Array<CRMTeamDTO> | null>(1);
   private readonly currentTeam$ = new ReplaySubject<CRMTeamDTO | null>(1);
@@ -88,7 +89,7 @@ export class CRMTeamService extends BaseSevice {
           this.onUpdateListFaceBook(null);
           this.onUpdateTeam(null);
         }
-      }, 
+      },
       error: (error) => {
         this.onUpdateListFaceBook(null);
         this.onUpdateTeam(null);
@@ -340,13 +341,29 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  patchCRMTeamToken(pageId: number, data: any): Observable<any> {
+  patchCRMTeamToken(teamId: number, data: any): Observable<any> {
     let api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/odata/CRMTeam(${pageId})`,
+      url: `${this._BASE_URL}/odata/CRMTeam(${teamId})`,
       method: CoreApiMethodType.patch
     }
 
     return this.apiService.getData<any>(api, data);
   }
 
+  setCacheFilterTeam(data: CRMTeamDTO) {
+    localStorage.setItem(this.__keyCacheFilterTeam, JSON.stringify(data));
+  }
+
+  getCacheFilterTeam() {
+    let item = localStorage.getItem(this.__keyCacheFilterTeam);
+    if(item) {
+      return JSON.parse(item) as CRMTeamDTO;
+    } else {
+      return null;
+    }
+  }
+
+  removeCacheFilterTeam() {
+    localStorage.removeItem(this.__keyCacheFilterTeam);
+  }
 }

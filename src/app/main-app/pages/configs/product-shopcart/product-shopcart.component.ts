@@ -1,3 +1,5 @@
+import { SearchProductOnShopCartDto } from './../../../dto/configs/product/config-product-shopcart-v2.dto';
+import { ApiShopAppv2Service } from './../../../services/api-shopapp-v2.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ConfigFacebookCartDTO } from './../../../dto/configs/facebook-cart/config-facebook-cart.dto';
 import { GeneralConfigService } from './../../../services/general-config.service';
@@ -41,13 +43,21 @@ export class ProductShopCartComponent implements OnInit {
   pageSize: number = 20;
   pageIndex: number = 1;
   count: number = 0;
-  sort: string = 'date';
+  sort: any = null;
   filterDate: string = '';
   filterPrice: string = '';
+  searchText: string = '';
+  isVisible: boolean = false;
+  isActive: boolean = false;
+  cateId: any = null;
+  lstCateg: any = [];
 
-  public filterObj: TDSSafeAny = {
-    q: ''
-  }
+  sortList: any[] = [
+    { Name: 'Ngày tạo mới nhất', Value: 'date_desc'},
+    { Name: 'Ngày tạo cũ nhất', Value: 'date'},
+    { Name: 'Giá giảm dần', Value: 'price_desc'},
+    { Name: 'Giá tăng dần', Value: 'price'}
+  ]
 
   idsModel: any = [];
   teamShopCart!: CRMTeamDTO;
@@ -56,36 +66,34 @@ export class ProductShopCartComponent implements OnInit {
   indClickQuantity: number = -1;
   currentQuantity: number = 0;
 
-  constructor(private router: Router,
-    private route: ActivatedRoute,
-    private destroy$: TDSDestroyService,
+  constructor(private destroy$: TDSDestroyService,
     private odataProductService: OdataProductService,
     private generalConfigService: GeneralConfigService,
     private message: TDSMessageService,
     private productShopCartService: ProductShopCartService,
-    private productShopCartService_v2: ProductShopCartServiceV2) {
+    private apiShopAppv2Service: ApiShopAppv2Service,
+    private productShopCartServiceV2: ProductShopCartServiceV2) {
   }
 
   ngOnInit(): void {
     this.loadConfigCart();
     this.loadInitShopCart();
+    this.loadCategoryList();
   }
 
-  loadData(pageSize: number, pageIndex: number) {
+  loadData() {
     this.lstOfData = [];
 
-    let filters = this.odataProductService.buildFilter(this.filterObj || null);
-    // let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null, this.sort);
-
-    let params = {
+    let params: SearchProductOnShopCartDto = {
       q: '',
       offset: (this.pageIndex - 1) * this.pageSize,
       limit: this.pageSize,
       sort: this.sort,
+      cate_id: this.cateId,
     }
 
     this.isLoading = true;
-    this.getViewData(params).subscribe({
+    this.apiShopAppv2Service.getProductTemplateOnShopCart(params).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
         if(res && res.Datas && TDSHelperArray.isArray(res.Datas)) {
             this.count = res.Total as number;
@@ -100,6 +108,33 @@ export class ProductShopCartComponent implements OnInit {
         this.message.error(err?.error?.message);
       }
     });
+  }
+
+  loadCategoryList() {
+    this.isLoading = true;
+    this.apiShopAppv2Service.getShopCartProductCategories().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any)=> {
+        this.lstCateg = [...res];
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message);
+      }
+    })
+  }
+
+  closeMenu(): void {
+    this.isVisible = false;
+  }
+
+  onChangeCategory(event: any) {
+    this.cateId = event;
+    this.refreshData();
+  }
+
+  onChangeSort(event: any) {
+    this.sort = event;
+    this.refreshData();
   }
 
   onExpandChange(id: number, checked: boolean): void {
@@ -118,21 +153,21 @@ export class ProductShopCartComponent implements OnInit {
         this.filterDate = 'asc';
         this.filterPrice = '';
         this.sort = 'date';
-        this.loadData(this.pageSize, this.pageIndex);
+        this.loadData();
       break;
 
       case 'asc':
         this.filterDate = 'desc';
         this.filterPrice = '';
         this.sort = 'date_desc';
-        this.loadData(this.pageSize, this.pageIndex);
+        this.loadData();
       break;
 
       case 'desc':
         this.filterDate = 'asc';
         this.filterPrice = '';
         this.sort = 'date';
-        this.loadData(this.pageSize, this.pageIndex);
+        this.loadData();
       break;
     }
 
@@ -146,21 +181,21 @@ export class ProductShopCartComponent implements OnInit {
         this.filterPrice = 'asc';
         this.filterDate = '';
         this.sort = 'price';
-        this.loadData(this.pageSize, this.pageIndex);
+        this.loadData();
       break;
 
       case 'asc':
         this.filterPrice = 'desc';
         this.filterDate = '';
         this.sort = 'price_desc';
-        this.loadData(this.pageSize, this.pageIndex);
+        this.loadData();
       break;
 
       case 'desc':
         this.filterPrice = 'asc';
         this.filterDate = '';
         this.sort = 'price';
-        this.loadData(this.pageSize, this.pageIndex);
+        this.loadData();
       break;
     }
 
@@ -194,43 +229,37 @@ export class ProductShopCartComponent implements OnInit {
     })
   }
 
-  private getViewData(params: any): Observable<OdataProductShopCartDto> {
-    return this.productShopCartService_v2.getProductTemplateOnShopCart(params).pipe(takeUntil(this.destroy$));
-  }
-
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageIndex = params.pageIndex;
     this.pageSize = params.pageSize;
-    this.loadData(params.pageSize, params.pageIndex);
+    this.loadData();
   }
 
   onSelectChange(value: number) {
     this.pageIndex = 1;
-    this.filterObj.q = '';
+    this.searchText = '';
 
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId.clear();
 
-    this.loadData(this.pageSize, this.pageIndex);
+    this.loadData();
   }
 
   onSearch(ev: TDSSafeAny) {
     this.pageIndex = 1;
-    this.filterObj.q = ev.value;
+    this.searchText = ev.value;
 
-    let filters = this.odataProductService.buildFilter(this.filterObj || null);
-    // let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null, this.sort);
-
-    let params = {
-      q: this.filterObj.q,
+    let params:SearchProductOnShopCartDto = {
+      q: this.searchText,
       offset: (this.pageIndex - 1) * this.pageSize,
       limit: this.pageSize,
-      sort: 'date_desc',
+      sort: this.sort,
+      cate_id: this.cateId
     }
     this.isLoading = true;
 
-    this.getViewData(params).subscribe({
+    this.apiShopAppv2Service.getProductTemplateOnShopCart(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if(res && res.Datas) {
             this.count = res.Total as number;
@@ -247,8 +276,8 @@ export class ProductShopCartComponent implements OnInit {
   }
 
   closeSearchProduct(){
-    this.filterObj.q = '';
-    this.loadData(this.pageSize, this.pageIndex);
+    this.searchText = '';
+    this.loadData();
   }
 
   checkValueEmpty() {
@@ -281,7 +310,7 @@ export class ProductShopCartComponent implements OnInit {
       }]
     }
 
-    this.productShopCartService_v2.updateQuantityProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productShopCartServiceV2.updateQuantityProductOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
       next:(res: any) => {
           this.isLoading = false;
           let index = this.lstOfData.findIndex(x => x.Id == data.Id && x.UOMId == data.UOMId);
@@ -302,7 +331,7 @@ export class ProductShopCartComponent implements OnInit {
 
   reload(event: boolean) {
     if(event == true) {
-      this.loadData(this.pageSize, this.pageIndex);
+      this.loadData();
     }
   }
 
@@ -329,14 +358,14 @@ export class ProductShopCartComponent implements OnInit {
 
   apiDeleteProductOnShopCart(model: any) {
     this.isLoading = true;
-    this.productShopCartService_v2.deleteProductTemplateOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
+    this.productShopCartServiceV2.deleteProductTemplateOnShopCart(model).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
           this.message.success("Xóa sản phẩm trong giỏ hàng thành công");
 
           if(this.pageIndex > 1 && this.lstOfData.length == model.Ids?.length) {
             this.pageIndex = this.pageIndex - 1;
           }
-          this.loadData(this.pageSize, this.pageIndex);
+          this.loadData();
       },
       error: (err: any) => {
           this.message.error(err?.error?.message);
@@ -347,12 +376,12 @@ export class ProductShopCartComponent implements OnInit {
 
   refreshData() {
     this.pageIndex = 1;
-    this.filterObj.q = '';
+    this.searchText = '';
 
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId.clear();
-    this.loadData(this.pageSize, this.pageIndex);
+    this.loadData();
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -378,4 +407,28 @@ export class ProductShopCartComponent implements OnInit {
     this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
 
+  onCancel() {
+    this.searchText = '';
+    this.cateId = null;
+    this.sort = null;
+    this.pageIndex = 1;
+
+    this.checkfilterActive();
+    this.loadData();
+  }
+
+  onApply() {
+    this.pageIndex = 1;
+
+    this.checkfilterActive();
+    this.loadData();
+  }
+
+  checkfilterActive() {
+    if(this.searchText == '' && this.cateId == null && this.sort == null) {
+      this.isActive = false;
+    } else {
+      this.isActive = true;
+    }
+  }
 }

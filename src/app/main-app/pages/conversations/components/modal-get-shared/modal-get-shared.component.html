@@ -1,0 +1,44 @@
+<div class="h-full w-full">
+  <tds-table #basicTable [listData]="lstShares" [loading]="isLoading" [showPagination]="false" [frontPagination]="false">
+    <thead>
+      <tr>
+        <th width="64px" class="text-center">STT</th>
+        <th width="44px">Ảnh</th>
+        <th width="180px">Tên</th>
+        <th width="180px">Id</th>
+        <th width="80px" [align]="'center'">Nhóm</th>
+        <th width="80px" [align]="'center'">Cá nhân</th>
+        <th width="80px" [align]="'center'">Tổng</th>
+        <!-- <th width="60px"></th> -->
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template ngFor let-item let-i="index" [ngForOf]="basicTable.data">
+        <tr>
+          <td class="text-center">{{ i + 1 }}</td>
+          <td>
+            <tds-avatar [tdsSrc]="item.from?.picture?.data?.url" [shape]="'square'" [size]="44" class="!rounded-10"></tds-avatar>
+          </td>
+          <td>{{ item.from?.name }}</td>
+          <td>
+            <a href="{{item.permalink_url}}" target="_blank" class="text-info-500 hover:underline">{{ item.from?.id }}</a>
+          </td>
+          <td class="text-center">{{ item | countShared:'group' }}</td>
+          <td class="text-center">{{ item | countShared:'personal' }}</td>
+          <td class="text-center">{{ (item | countShared:'group') + (item | countShared:'personal') }}</td>
+          <!-- <td>
+            <button tds-button-icon color="primary" (click)="printFacebookShares([lstShares[i]])">
+              <i class="tdsi-print-fill"></i>
+            </button>
+          </td> -->
+        </tr>
+      </ng-template>
+    </tbody>
+  </tds-table>
+</div>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button class="mr-2 w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
+  <!-- <button tds-button class="mr-2 w-[100px]" type="submit" color="info" (click)="printFacebookShares(lstShares, true)">In chia sẻ</button> -->
+  <button tds-button class="w-[100px]" type="submit" color="primary" (click)="printExcelShares()">Excel</button>
+</div>

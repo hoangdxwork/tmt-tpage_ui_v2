@@ -126,12 +126,12 @@ export class ChatomniCommentFacade extends BaseSevice  {
   }
 
   setData(id: string, value: ChatomniDataDto | null) {
-      _set(this.dataSource, [id], value);
+    _set(this.dataSource, [id], value);
   }
 
   getData(id: string) {
-      let data = _get(this.dataSource, id) || undefined;
-      return data;
+    let data = _get(this.dataSource, id) || undefined;
+    return data;
   }
 
   mappingExtrasChildsDtoV2(data: ResponseAddMessCommentDtoV2){
@@ -139,8 +139,7 @@ export class ChatomniCommentFacade extends BaseSevice  {
       Id: data.Id,
       Type: data.MessageType,
       IsOwner: data.IsOwner,
-      Data: { ...data.Data
-      } as unknown,
+      Data: { ...data.Data } as unknown,
       ChannelCreatedTime: data.ChannelCreatedTime,
       Message: data.Message,
       Status: data.Status as number,

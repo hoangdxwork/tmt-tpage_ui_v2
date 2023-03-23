@@ -72,6 +72,8 @@ export interface Partner {
     City?: any;
     District?: any;
     Ward?: any;
+    FullAddress?: any;
+    Ward_District_City?: any;
 }
 
 export interface DataErrorDefaultDTOV2 {

@@ -11,15 +11,12 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/util
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { CRMTeamService } from '../services/crm-team.service';
 import { TPageHelperService } from '../services/helper.service';
-import { SocketService } from '@app/services/socket-io/socket.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { TDSMessageService } from 'tds-ui/message';
 import { FireBaseDevice, TopicDetailDto } from '@app/dto/firebase/topics.dto';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
-import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
-import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { DOCUMENT } from '@angular/common';
 
 @Component({
@@ -48,12 +45,9 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   constructor(private auth: TAuthService,
     public crmService: CRMTeamService,
-    private socketService: SocketService,
     private activatedRoute: ActivatedRoute,
     public router: Router,
     @Inject(DOCUMENT) private document: Document,
-    private chatomniObjectService: ChatomniObjectService,
-    private chatomniConversationService: ChatomniConversationService,
     private firebaseRegisterService: FirebaseRegisterService,
     private firebaseMessagingService: FirebaseMessagingService,
     private message: TDSMessageService,

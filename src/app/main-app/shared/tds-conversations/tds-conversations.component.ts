@@ -451,39 +451,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       size: 'xl',
       componentParams: {
         pageId: this.team.ChannelId,
+        userId: this.data.UserId
       }
     });
-
-    modal.componentInstance?.onSendProduct.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: TDSSafeAny)=>{
-        if(res){
-            this.onProductSelected(res);
-        }
-      }
-    })
-  }
-
-  onProductSelected(event: any) {
-    let that= this;
-    let model = {
-      product: {
-        Id: event.Id,
-        Name: event.Name,
-        Picture: event.Picture,
-        Price: event.Price,
-      }
-    };
-
-    this.activityMatchingService.addTemplateMessageV3(this.team?.Id ,this.data?.UserId, model)
-      .pipe(takeUntil(this.destroy$)).subscribe({
-          next: (res: any) => {
-              that.message.success('Gửi thành công sản phẩm');
-              this.messageResponse(res, {} as any);
-          },
-          error: error=> {
-              this.message.error('Gửi sản phẩm thất bại');
-          }
-      })
   }
 
   onProductLast() {
@@ -506,7 +476,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         size: 'xl',
         componentParams: {
             page_id: this.pageId,
-            psid: data.ConversationId,
+            userId: data.ConversationId,
         }
     });
 

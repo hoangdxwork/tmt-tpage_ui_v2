@@ -45,4 +45,27 @@ export class FacebookGraphService extends BaseSevice {
         });
   }
 
+  getGraphFacebookPage(accessToken: any): Observable<any> {
+      const api: CoreAPIDTO = {
+        url: `https://graph.facebook.com/me/accounts?fields=id,name,link,picture,access_token&limit=500&access_token=${accessToken}`,
+        method: CoreApiMethodType.get,
+      }
+      return this.apiService.getData<any>(api,null);
+  }
+
+  getGraphFacebookGroup(chanelId: any): Observable<any> {
+    return this.fb.api(`${chanelId}?fields=id,name,picture`, {})
+        .pipe((res: any) => {
+            return res;
+        });
+  }
+
+  grapfbGetMe(accessToken: any): Observable<any> {
+    const api: CoreAPIDTO = {
+      url: `https://graph.facebook.com/me?fields=id,name,picture&access_token=${accessToken}`,
+      method: CoreApiMethodType.get,
+    }
+    return this.apiService.getData<any>(api,null);
+  }
+
 }

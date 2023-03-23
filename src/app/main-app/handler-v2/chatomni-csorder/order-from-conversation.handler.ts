@@ -103,8 +103,8 @@ export class CsOrder_FromConversationHandler {
       if(this.userInit && !order.UserId) {
           order.UserId = this.userInit.Id;
           order.User = {
-              Id: this.userInit.Id,
-              Name: this.userInit.Name
+            Id: this.userInit.Id,
+            Name: this.userInit.Name
           } as any;
       }
 
@@ -120,13 +120,14 @@ export class CsOrder_FromConversationHandler {
 
       if(!TDSHelperString.hasValueString(order.DistrictCode)) {
         order.DistrictCode = (partner?.DistrictCode || partner?.District?.code) as any;
-        order.DistrictName =  (partner?.DistrictName || partner?.District?.name) as any;
+        order.DistrictName = (partner?.DistrictName || partner?.District?.name) as any;
       }
 
       if(!TDSHelperString.hasValueString(order.WardCode)) {
         order.WardCode = (partner?.WardCode || partner?.Ward?.code) as any;
         order.WardName = (partner?.WardName || partner?.Ward?.code) as any;
       }
+
 
       order.Facebook_ASUserId = order.Facebook_ASUserId || csInfo.Conversation?.ConversationId;
       order.Facebook_UserName = order.Facebook_UserName || csInfo.Conversation?.Name;

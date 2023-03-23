@@ -12,7 +12,7 @@ import { TDSConfigService } from 'tds-ui/core/config';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ModalGetNotificationComponent } from '../components/modal-get-notification/modal-get-notification.component';
 // socket noti
 import { SocketStorageNotificationService } from '@app/services/socket-io/socket-config-notification.service';
@@ -48,9 +48,8 @@ export class FirebaseNotificationComponent implements OnInit {
   idsTopic: any[] = [];
   selectedIndex = 0;
 
-  // socket noti
-  socketData: {[key: string]: boolean} = {} as any
-  lstItems: Array<any> = [];
+  isSearch: boolean =  false;
+  searchText: string = '';
 
   constructor(private firebaseRegisterService: FirebaseRegisterService,
     private message: TDSMessageService,
@@ -73,7 +72,13 @@ export class FirebaseNotificationComponent implements OnInit {
       this.id = id;
     }
 
-    this.loadData();
+    if(this.selectedIndex == 0) {
+      let params = { type: "other" };
+        this.loadData(params);
+    } else {
+      this.loadData();
+    }
+    
     this.loadUrl();
 
     this.deviceToken = this.firebaseMessagingService.getDeviceTokenLocalStorage();
@@ -82,20 +87,6 @@ export class FirebaseNotificationComponent implements OnInit {
     this.tdsConfigService.set('message', {
       maxStack: 3
     });
-
-    // socket noti
-    let exist = this.socketStorageNotificationService.getLocalStorage();
-    if(!exist) {
-      this.socketStorageNotificationService.setLocalStorage();
-      exist = this.socketStorageNotificationService.getLocalStorage();
-    }
-
-    for(let item in exist) {
-      this.lstItems.push(item);
-    }
-
-    this.socketData = exist;
-    this.onEventEmitter();
   }
 
   loadTopics() {
@@ -130,25 +121,31 @@ export class FirebaseNotificationComponent implements OnInit {
   }
 
   loadData(params?: any) {
+    this.data = [];
+    this.dataDetail = null;
     this.isLoading = true;
+
     this.firebaseRegisterService.notifications(params).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         this.data = [...res.items];
         this.cursor = res.cursor;
 
         let item: NotificationItemDto = null as any;
-        if (TDSHelperString.hasValueString(this.id) && this.data) {
+        if (TDSHelperString.hasValueString(this.id) && this.data && this.data.length > 0) {
           let exist = this.data?.filter(x => x && x.id == this.id)[0];
           if (exist) {
             item = exist;
           }
         }
 
-        if (item == null) {
+        if (item == null && this.data && this.data.length > 0) {
           item = this.data[0];
         }
 
-        this.onDetail(item);
+        if(item != null) {
+          this.onDetail(item);
+        }
+
         this.isLoading = false;
       },
       error: (err: any) => {
@@ -166,18 +163,18 @@ export class FirebaseNotificationComponent implements OnInit {
           let paramsNoti = this.router.url.includes('firebase-notification');
 
           let item: NotificationItemDto = null as any;
-          if (TDSHelperString.hasValueString(id) && this.data) {
+          if (TDSHelperString.hasValueString(id) && this.data && this.data.length > 0) {
             let exist = this.data?.filter(x => x && x.id == id)[0];
             if (exist) {
               item = exist;
             }
           }
 
-          if (item == null && this.data) {
+          if (item == null && this.data && this.data.length > 0) {
             item = this.data[0];
           }
 
-          if (id != this.id) {
+          if (id != this.id && item != null) {
             this.onDetail(item)
           }
 
@@ -192,7 +189,7 @@ export class FirebaseNotificationComponent implements OnInit {
   onDetail(item: any) {
     this.firebaseRegisterService.notificationDetail(item?.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
-        this.dataDetail = res
+        this.dataDetail = res;
         if(item.dateRead == null) {
           this.makeRead(item);
         }
@@ -253,9 +250,9 @@ export class FirebaseNotificationComponent implements OnInit {
   }
 
   nextData(scrollerHeight?: number) {
-    if(scrollerHeight) this.isLoading = true;
-
     if (this.cursor) {
+      if(scrollerHeight) this.isLoading = true;
+
       this.firebaseRegisterService.notifications(this.cursor).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.data = [...(this.data || []), ...res.items];
@@ -376,38 +373,51 @@ export class FirebaseNotificationComponent implements OnInit {
     })
   }
 
-  // socket noti
-  onEventEmitter() {
-    this.socketStorageNotificationService.socketAllEmitter$.pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.socketData = this.socketStorageNotificationService.getLocalStorage();
-    });
-  }
-
-  change(item: any) {
-    if(item == "socket.all") {
-        let cur = this.socketData[item];
-
-        if(cur == false) {
-            for(let data in this.socketData) {
-              this.socketData[data] = false;
-            }
-        } else {
-            for(let data in this.socketData) {
-              this.socketData[data] = true;
-            }
-        }
-
-        this.socketStorageNotificationService.setLocalStorage(this.socketData);
-        this.socketStorageNotificationService.socketAllEmitter$.emit(this.socketData[item]);
-    } else {
-        if(item == ChatmoniSocketEventName.chatomniOnMessage) {
-          this.socketData[CRMTeamType._Facebook] = this.socketData[item];
-          this.socketData[CRMTeamType._TShop] = this.socketData[item];
-          this.socketData[CRMTeamType._TikTok] = this.socketData[item];
-        }
-      this.socketStorageNotificationService.setLocalStorage(this.socketData);
+  onSelectedIndexChange(event: any) {
+    switch(event) {
+      case 0:
+        let params = { type: "other" };
+        this.loadData(params);
+        break;
+      case 1:
+        this.loadData();
+        break;
     }
   }
 
+  showSearchInput() {
+    this.isSearch = !this.isSearch;
+    if(!this.isSearch && TDSHelperString.hasValueString(this.searchText)) {
+      this.onClearFilterSearch();
+    }
+  }
 
+  onSearch(event: any) {
+    if(!TDSHelperString.hasValueString( event.value)) return;
+    
+    let params = { q: event.value } as TDSSafeAny;
+    switch(this.selectedIndex) {
+      case 0:
+        params.type = "other"
+        this.loadData(params);
+        break;
+      case 1:
+        this.loadData(params);
+        break;
+    }
+  }
+
+  onClearFilterSearch() {
+    this.searchText = '';
+    let params = { } as TDSSafeAny;
+    switch(this.selectedIndex) {
+      case 0:
+        params.type = "other"
+        this.loadData(params);
+        break;
+      case 1:
+        this.loadData();
+        break;
+    }
+  }
 }

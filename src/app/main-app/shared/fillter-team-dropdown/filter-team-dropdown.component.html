@@ -1,0 +1,131 @@
+<div class="w-full flex gap-x-2 cursor-pointer border border-neutral-3-300 border-solid rounded justify-between items-center overflow-hidden">
+    <div *ngIf="!currentTeam" class="flex flex-auto overflow-hidden items-center justify-start py-1.5 hover:bg-neutral-3-50" 
+        tds-dropdown [clickHide]="false" [(visible)]="visible" [tdsDropdownMenu]="dropdownTeam" [placement]="'bottomLeft'" trigger="click">
+        <div class="font-regular text-neutral-1-400 text-body-2 flex flex-auto items-center pl-3">
+            Chọn kênh
+        </div>
+
+        <div class="text-neutral-1-900 flex items-center pr-1.5">
+            <i class="text-base leading-4 tdsi-arrow-down-line"></i>
+        </div>
+    </div>
+
+    <div *ngIf="currentTeam" class="flex flex-auto overflow-hidden items-center justify-start py-1.5 hover:bg-neutral-3-50" 
+        tds-dropdown [clickHide]="false" [(visible)]="visible" [tdsDropdownMenu]="dropdownTeam" [placement]="'bottomLeft'" trigger="click">
+        <div *ngIf="currentTeam.Type == 'Facebook' && showAvatar">
+            <tpage-avatar-facebook [fbid]="currentTeam.Facebook_PageId || currentTeam.Facebook_ASUserId || currentTeam.ChannelId"
+                [token]="currentTeam.Facebook_PageToken || currentTeam.Facebook_UserToken || currentTeam.ChannelToken" [size]="'md'">
+            </tpage-avatar-facebook>
+        </div>
+        <div *ngIf="currentTeam?.Type == 'TShop' && showAvatar">
+            <tds-avatar [tdsSrc]="currentTeam.ChannelAvatar"
+                [shape]="'circle'" [isAvatar]="true" [size]="36">
+            </tds-avatar>
+        </div>
+        <div *ngIf="currentTeam?.Type == 'UnofficialTikTok' && showAvatar">
+            <tds-avatar
+                [tdsSrc]="currentTeam.ChannelAvatar"
+                [shape]="'circle'" [isAvatar]="true" [size]="36">
+            </tds-avatar>
+        </div>
+
+        <div class="font-regular text-neutral-1-900 text-body-2 flex flex-auto items-center pl-3">
+            {{ currentTeam.Name }}
+        </div>
+
+        <div class="text-neutral-1-500 flex items-center px-1.5" (click)="onRemove()">
+            <i class="text-base leading-4 tdsi-close-fill"></i>
+        </div>
+
+        <div class="text-neutral-1-900 flex items-center px-1.5">
+            <i class="text-base leading-4 tdsi-arrow-down-line"></i>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-end pr-1.5" *ngIf="!disableRefresh">
+        <button tds-button-flat-icon color="custom" rounded="!rounded-full" tds-tooltip="Refresh"
+          class="text-neutral-1-200 bg-transparent hover:text-info-500 hover:bg-info-100 focus:text-info-500 focus:bg-info-100 focus:ring-transparent"
+          (click)="onRefresh()" [disabled]="disableRefresh">
+          <i [ngClass]="isRefreshing?'animate-spin':''" class="tdsi-reload-fill"></i>
+        </button>
+    </div>
+</div>
+
+<tds-dropdown-menu #dropdownTeam="tdsDropdownMenu">
+    <div class="flex flex-auto py-1 max-h-[332px] overflow-hidden overflow-y-auto tds-panel-scroll">
+        <ng-container *ngIf="data$ | async as data" class="w-full">
+            <tds-collapse [expandIconPosition]="'right'" [bordered]="false" [classList]="'flex flex-auto flex-col'">
+                <ng-template ngFor let-item [ngForOf]="data" let-i="index" let-last="last">
+                    <tds-collapse-panel [header]="headerTpl" [active]="true" [disabled]="false"
+                        [expandedIcon]="'tdsi-arrow-up-line'" [tdsClass]="last ? '' :'p-0 pb-2 border-b-2 border-neutral-2-50'">
+                        <ng-template #headerTpl>
+                            <div class="w-full flex items-center justify-center ">
+
+                                <div *ngIf="item.Type == 'Facebook'">
+                                    <tds-avatar [icon]="'tdsi-facebook-f-fill'" class="text-white mr-1 bg-base-blue-500"
+                                        [size]="36" [shape]="'circle'" [isAvatar]="true">
+                                    </tds-avatar>
+                                </div>
+                                <div *ngIf="item.Type == 'TShop'">
+                                    <tds-avatar [tdsSrc]="'../../../assets/imagesv2/tshop/_liveapp.svg'"
+                                        [size]="36" [shape]="'circle'" [isAvatar]="true">
+                                    </tds-avatar>
+                                </div>
+                                <div *ngIf="item.Type == 'UnofficialTikTok'">
+                                    <tds-avatar
+                                        [tdsSrc]="'../../../assets/imagesv2/tiktok/tiktok.svg'"
+                                        [size]="36" [shape]="'circle'" [isAvatar]="true">
+                                    </tds-avatar>
+                                </div>
+                                
+                                <div class="flex-auto pl-4 text-body-2 font-semibold">
+                                    {{item.Name}}
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template ngFor let-child [ngForOf]="item.Childs" let-i="index">
+                            <div class="w-full px-6 cursor-pointer" (click)="onClick($event, child)">
+                                <div class="flex items-center justify-center p-2" [ngClass]="{
+                                    'bg-neutral-3-50 rounded-full': currentTeam?.Id == child.Id}">
+                                    <div>
+                                        <tds-badge [count]="iconTemplate1">
+
+                                            <tpage-avatar-facebook *ngIf="item.Type == 'Facebook'" size="sm"
+                                                [fbid]="child.Facebook_PageId || child.Facebook_ASUserId || child.ChannelId"
+                                                [token]="child.Facebook_PageToken || child.Facebook_UserToken || child.ChannelToken">
+                                            </tpage-avatar-facebook>
+
+                                            <tds-avatar  *ngIf="item.Type == 'TShop'"
+                                                [tdsSrc]="child.ChannelAvatar" 
+                                                size="sm" [shape]="'circle'" [isAvatar]="true">
+                                            </tds-avatar>
+
+                                            <tds-avatar *ngIf="item.Type == 'UnofficialTikTok'"
+                                                [tdsSrc]="child.ChannelAvatar" 
+                                                size="sm" [shape]="'circle'" [isAvatar]="true">
+                                            </tds-avatar>
+
+                                        </tds-badge>
+                                        <ng-template #iconTemplate1>
+                                            <div class="absolute top-0 left-4   flex items-center justify-center ">
+                                                <div class="rounded-full border border-white">
+                                                    <span class="block bg-accent-3 w-2 h-2 rounded-full "></span>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                    <div class="flex-auto pl-4 text-body-2 ">
+                                        {{child.Name}}
+                                    </div>
+                                    <div *ngIf="currentTeam?.Id == child.Id">
+                                        <span class="text-xl leading-5 tdsi-success-fill text-success-400"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </tds-collapse-panel>
+                </ng-template>
+            </tds-collapse>
+        </ng-container>
+    </div>
+</tds-dropdown-menu>

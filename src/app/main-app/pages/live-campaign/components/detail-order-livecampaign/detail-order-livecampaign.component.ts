@@ -32,7 +32,8 @@ export class DetailOrderLiveCampaignComponent implements OnInit {
     },
     LiveCampaignId: null,
     HasTelephone: null,
-    PriorityStatus: null
+    PriorityStatus: null,
+    TeamId: null
   }
 
   currentTab: number = 0;

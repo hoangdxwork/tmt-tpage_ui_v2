@@ -1,3 +1,4 @@
+import { TransportConfigsDto } from './../../../../dto/configs/transport-config.dto';
 import { InventoryChangeType, StoragePriceListItemsDto } from './../../../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateFacade } from '@app/services/facades/product-template.facade';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
@@ -186,6 +187,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   lstDistrict: Array<SuggestDistrictsDTO> = [];
   lstWard: Array<SuggestWardsDTO> = [];
 
+  lstTransport: TransportConfigsDto[] = [];
+  feeShipValue: number = 0;
   isConfigProduct: boolean = false;
 
   constructor(private message: TDSMessageService,
@@ -235,6 +238,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     this.loadSaleConfig();
     this.loadSaleOnineSettingConfig();
+    this.loadTransport();
     this.loadUsers();
     this.loadUserLogged();
     this.loadCurrentCompany();
@@ -247,8 +251,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes["conversationInfo"] && !changes["conversationInfo"].firstChange) {
-        let x = {...changes["conversationInfo"].currentValue};
-        this.loadData(x);
+      let x = {...changes["conversationInfo"].currentValue};
+      this.loadData(x);
     }
   }
 
@@ -265,7 +269,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
               if(!exit1) break;
               // TODO: cập nhật mã đơn hàng sau khi tạo đơn hàng
-              this.conversationOrderFacade.hasValueOrderCode$.emit(fbCreated?.Data?.Code);
+              let orderCode = fbCreated?.Data?.Code;
+              if(fbCreated?.Data?.SessionIndex > 0) {
+                orderCode = `${fbCreated?.Data?.SessionIndex}. ${fbCreated?.Data?.Code}`;
+              }
+              this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
             break;
 
             case ChatmoniSocketEventName.onDeleteSaleOnline_Order:
@@ -530,6 +538,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
                 let csid = model.Facebook_ASUserId;
                 this.onSyncConversationPartner(csid);
+                this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
                 this.cdRef.detectChanges();
             },
             error: error => {
@@ -568,14 +577,13 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             }, this.saleModel);
 
             this.saleModel = {...this.so_PrepareFastSaleOrderHandler.so_prepareFastSaleOrder(this.saleModel, this.quickOrderModel)};
-
             this.calcTotal();
             this.coDAmount();
 
             this.loadConfigProvider(this.saleModel);
-
             this.handleIsEqualAmountInsurance();
             this.prepareCalcFeeButton();
+            this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
           }
 
           this.isLoading = false;
@@ -693,11 +701,20 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     })
   }
 
+  loadTransport() {
+    this.sharedService.setTransportConfigs();
+    this.sharedService.getTransportConfigs().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) =>{
+        this.lstTransport = [...res?.value || []];
+      }
+    })
+  }
+
   loadDeliveryCarrier(){
     this.deliveryCarrierService.setDeliveryCarrier();
     this.deliveryCarrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
-        this.lstCarrier = [...res.value];
+        this.lstCarrier = [...res?.value || []];
       },
       error: error =>{
         this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -713,6 +730,10 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     if(!event && this.saleModel) {
       this.saleModel.Carrier = null;
       this.saleModel.CarrierId = null;
+      this.saleModel.DeliveryPrice = 0;
+
+      this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, null);
+      this.coDAmount();
       return;
     }
 
@@ -733,7 +754,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.saleModel.Carrier = event;
     this.saleModel.CarrierId = event?.Id;
 
-    //TODO: Cập nhật giá trị ship mặc định
+    // TODO: Cập nhật giá trị ship mặc định
     let deliveryPrice = event?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
     if(this.saleModel.DeliveryPrice != deliveryPrice) {
         this.saleModel.DeliveryPrice = deliveryPrice;
@@ -751,7 +772,23 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         this.calcFee();
     }
 
+    this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, event?.DeliveryType);
     this.prepareCalcFeeButton();
+    this.cdRef.detectChanges();
+  }
+
+  setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
+    if(this.saleModel) {
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
+      if(feeShip > 0) {
+        this.saleModel.DeliveryPrice = feeShip;
+        this.coDAmount();
+      } else {
+        let deliveryPrice = this.saleModel?.Carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+        this.saleModel.DeliveryPrice = deliveryPrice;
+        this.coDAmount();
+      }
+    }
     this.cdRef.detectChanges();
   }
 
@@ -998,9 +1035,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     fs_model.CompanyId = this.companyCurrents?.CompanyId;
     fs_model.FormAction = order.FormAction;
 
-    //TODO cập nhật id list price
-    // let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
-    // fs_model.PriceListId = priceListItems?.Id || 0;
+    //TODO Id bảng giá
+    let priceListItems = this.productIndexDBService.getLocalStoragePriceListItems() as StoragePriceListItemsDto;
+    fs_model.PriceListId = priceListItems?.Id || 0;
 
     // TODO check cấu hình ghi chú in
     fs_model.Comment = '';
@@ -1355,6 +1392,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this._districts = x._districts;
     this._wards = x._wards;
     this._street = x._street;
+
+    this.loadDistricts(x._cities?.code);
+    this.loadWards(x._districts?.code);
   }
 
   plus(item: Detail_QuickSaleOnlineOrder, index: number) {
@@ -1508,6 +1548,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
             if(result.type == 'confirm') {
               this.updateOrder(result.type);
+            } else {
+              this.setFeeShipFromTransport(data.CityCode, data.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
             }
         }
         this.cdRef.detectChanges();
@@ -1624,7 +1666,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
             if(!res) return;
             this.indexDbStorage = [...res?.cacheDbStorage || []];
 
-            let priceListItems = this.productIndexDBService.getSessionStoragePriceListItems() as StoragePriceListItemsDto;
+            let priceListItems = this.productIndexDBService.getLocalStoragePriceListItems() as StoragePriceListItemsDto;
             if(priceListItems && priceListItems.Value) {
                 this.indexDbStorage?.map((x: DataPouchDBDTO) => {
                     if(x.SaleOK && ! x.IsDiscount) {
@@ -1699,7 +1741,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   onQuickSaleOnlineOrder(order: QuickSaleOnlineOrderModel, type?: string) {
-    this.conversationOrderFacade.hasValueOrderCode$.emit(order.Code);
+    let orderCode = order.Code;
+    if(order.SessionIndex > 0) {
+      orderCode = `${order.SessionIndex}. ${order.Code}`;
+    }
+    this.conversationOrderFacade.hasValueOrderCode$.emit(orderCode);
 
     let csid = order.Facebook_ASUserId;
     this.onSyncConversationPartner(csid);
@@ -1882,9 +1928,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     this.suggestTimer = setTimeout(() => {
         this.suggestText = this.suggestCopy;
-
         this.cdRef.detectChanges();
     }, 50);
+
     let data = event.value;
 
     if(data) {
@@ -1912,9 +1958,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         cityName: data.CityName
       }
 
-      if(data.CityCode) {
-        this.loadDistricts(data.CityCode);
-      }
+      this.loadDistricts(data?.CityCode);
 
       this.quickOrderModel.WardCode = data.WardCode;
       this.quickOrderModel.WardName = data.WardName;
@@ -1927,10 +1971,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         districtName: data.DistrictName
       }
 
-      if(data.DistrictCode) {
-        this.loadWards(data.DistrictCode);
-      }
+      this.loadWards(data?.DistrictCode);
 
+      this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
       this.cdRef.detectChanges();
     }
   }
@@ -2014,6 +2057,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       }
 
       this.loadDistricts(city.code);
+      if(this.saleModel && this.quickOrderModel) {
+        this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+      }
     }
 
     this.mappingStreet();
@@ -2040,6 +2086,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       }
 
       this.loadWards(district.code);
+      if(this.saleModel && this.quickOrderModel) {
+        this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+      }
     }
 
     this.mappingStreet();
@@ -2084,7 +2133,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
         Factor: x.Factor,
         Price: x.Price,
         ProductId: x.ProductId,
-        Note: null,
+        Note: x.Note,
         ProductName: x.ProductName,
         ProductNameGet: x.ProductNameGet,
         ProductCode: x.ProductCode,
