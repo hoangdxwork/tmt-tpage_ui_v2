@@ -108,7 +108,7 @@ export class CsOrder_FromConversationHandler {
           } as any;
       }
 
-      order.Address = order.Address || partner?.Street as string;
+      order.Address =  order.Address || partner?.Street as string;
       if(!TDSHelperString.hasValueString(order.CityCode) && TDSHelperString.hasValueString(partner.City?.code || partner.CityCode)) {
         order.Address = partner?.Street as any;
       }

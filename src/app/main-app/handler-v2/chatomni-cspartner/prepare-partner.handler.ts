@@ -85,21 +85,30 @@ export class CsPartner_PrepareModelHandler {
         FacebookASIds: item.ConversationId,
         FacebookId: partner.FacebookId || item.ConversationId,
 
-        City: partner.City?.code ? {
-            code: partner.City.code,
-            name: partner.City.name
+        City: partner?.City?.code ? {
+            code: partner?.City?.code,
+            name: partner?.City?.name
         } : null,
 
-        District: partner.District?.code ? {
-            code: partner.District.code,
-            name: partner.District.name
+        CityCode: partner?.City?.code,
+        CityName: partner?.City?.name,
+
+        District: partner?.District?.code ? {
+            code: partner?.District.code,
+            name: partner?.District.name
         } : null,
 
-        Ward: partner.Ward?.code ? {
-            code: partner.Ward.code,
-            name: partner.Ward.name
+        DistrictCode: partner?.District?.code,
+        DistrictName: partner?.District?.name,
+
+        Ward: partner?.Ward?.code ? {
+            code: partner?.Ward?.code,
+            name: partner?.Ward?.name
         } : null,
-    }
+
+        WardCode: partner?.Ward?.code,
+        WardName: partner?.Ward?.name
+    } as any;
 
     return {...model};
   }

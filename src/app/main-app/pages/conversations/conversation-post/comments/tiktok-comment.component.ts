@@ -151,7 +151,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
           this.isLoadingInsertFromPost = false;
           this.cdRef.detectChanges();
       }
-    });
+    })
 
     this.chatomniCommentFacade.onChangePartnerTimeStamp$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any) => {
@@ -174,6 +174,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
   }
+
   loadOrderPartnerbylLivecampaign() {
     if(this.data && this.data.LiveCampaignId) {
       let id = this.data.LiveCampaignId as string;

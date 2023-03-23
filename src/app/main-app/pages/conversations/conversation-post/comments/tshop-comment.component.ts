@@ -152,7 +152,7 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
         this.isLoadingInsertFromPost = false;
         this.cdRef.detectChanges();
       }
-    });
+    })
 
     this.chatomniCommentFacade.onChangePartnerTimeStamp$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any) => {

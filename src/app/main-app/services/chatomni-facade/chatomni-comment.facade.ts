@@ -26,8 +26,8 @@ export class ChatomniCommentFacade extends BaseSevice  {
   private readonly _keyCachePartnerDict = "_partnerByTimestamps";
 
   dataSource: {[id: string] : ChatomniDataDto} = {};
-  partnerDict: {[teamId: number] : PartnerTimeStampDto} = {};
-  lstPartnerStatus: any = [];
+  partnerDict: {[teamId: number] : PartnerTimeStampDto} = {} as any;
+  lstPartnerStatus: any = []
 
   public onChangePartnerTimeStamp$: EventEmitter<any> = new EventEmitter();
   public onSyncPartnerTimeStamp$: EventEmitter<any> = new EventEmitter();

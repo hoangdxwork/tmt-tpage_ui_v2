@@ -214,7 +214,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
                   let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(obs.value, this.partner);
                   this.partner = partner;
                   this.mappingAddress(this.partner);
-                  this.suggestText = this.partner.Street;
+                  this.suggestText = this.partner.Street as any;
                   this.cdRef.detectChanges();
                 }
               break;
@@ -809,7 +809,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
   loadWards(code: string) {
     this.lstWard = [];
     if(!TDSHelperString.hasValueString(code)) return;
-    
     this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstWard = [...res];
