@@ -157,6 +157,7 @@ import { CurrentConversationItemV3Component } from './components/current-convers
 import { TDSAlertModule } from "tds-ui/alert";
 import { SuggestAddressService } from '@app/services/suggest-address.service';
 import { ModalSendCommentComponent } from './components/modal-send-comment/modal-send-comment.component';
+import { GroupCommentComponent } from './conversation-post/group-comment/group-comment.component';
 
 const SERVICES = [
   ConversationFacebookState,
@@ -279,7 +280,8 @@ const FACADES = [
     ObjectTiktokPostComponent,
     CurrentConversationItemV3Component,
     ModalSendCommentComponent,
-    ModalGetSharedComponent
+    ModalGetSharedComponent,
+    GroupCommentComponent
   ],
 
   imports: [

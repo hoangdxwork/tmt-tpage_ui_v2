@@ -272,7 +272,7 @@
                     <container-element [ngSwitch]="indClickFilter" class="w-full">
 
                         <!-- lọc tất cả bình luận -->
-                        <ng-container *ngSwitchCase="0" class="w-full">
+                        <ng-container class="w-full">
                             <div class="emotion-count flex flex-row items-center flex-auto gap-x-4 justify-between w-full">
                                 <div class="flex gap-x-2">
                                     <div class="flex flex-row">
@@ -285,13 +285,13 @@
                                 <div class="flex gap-x-3 flex-auto justify-end items-center">
                                     <tds-form-field class="flex-auto">
                                         <span tdsPrefix><i class="tdsi-search-fill"></i></span>
-                                        <input tdsInput placeholder="Tìm kiếm bình luận" autocomplete="off" #innerText/>
+                                        <input size="sm" tdsInput placeholder="Tìm kiếm bình luận" autocomplete="off" #innerText/>
                                     </tds-form-field>
 
                                     <div class="flex gap-x-2 text-caption-1 desktop:text-body-2">
                                         <span class="flex-auto"> {{data.CountComment || 0}} bình luận </span>
                                         <span class="flex-auto mr-3 hover:underline hover:text-info-500 cursor-pointer" tds-tooltip="Cập nhật lượt chia sẻ"
-                                            (click)="fbGetShareds()"> {{data.CountReaction || 0}} lượt chia sẻ 
+                                            (click)="fbGetShareds()"> {{data.CountReaction || 0}} lượt chia sẻ
                                         </span>
                                     </div>
                                 </div>
@@ -327,6 +327,10 @@
                         <div *ngIf="team && team.Type == 'UnofficialTikTok'" class="h-full w-full">
                             <tiktok-comment [data]="data" [team]="team" [innerText]="keyWords"></tiktok-comment>
                         </div>
+                    </div>
+
+                    <div *ngIf="currentFilter.value === 'group'" class="h-full w-full">
+                        <group-comment [data]="data"></group-comment>
                     </div>
                 </div>
             </tds-spin>
