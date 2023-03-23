@@ -127,10 +127,17 @@ export class SharedService extends BaseSevice {
     if(!TDSHelperString.hasValueString(cityCode)) return 0;
     let exist1: any = [];
 
-    if(deliveryType && TDSHelperString.hasValueString(deliveryType)) {
-      exist1 = lstTransport.filter(x => x.ProvinceId == cityCode && this.checkProviders(x.Providers, deliveryType)) as any;
+    let filter1 = lstTransport.filter(x => x.ProvinceId == cityCode) as any;
+    let lstProviders = this.parseProviders(filter1[0]?.Providers);
+
+    if(lstProviders.length > 0){
+      if(TDSHelperString.hasValueString(deliveryType) && lstProviders.includes(deliveryType)) {
+        exist1 = filter1;
+      } else {
+        return 0;
+      }
     } else {
-      exist1 = lstTransport.filter(x => x.ProvinceId == cityCode) as any;
+      exist1 = filter1;
     }
 
     if(exist1 && exist1.length == 0) return 0;
@@ -144,11 +151,13 @@ export class SharedService extends BaseSevice {
     return exist3[0].FeeShip;
   }
 
-  checkProviders(providers: string, deliveryType: string) {
-    if(!providers) return false;
-    let lstProviders = JSON.parse(providers) as any[];
-    if(lstProviders.length == 0) return true;
-    return lstProviders.includes(deliveryType);
+  parseProviders(providers: string) {
+    let lstProviders: string[] = [];
+    if(TDSHelperString.hasValueString(providers)) {
+      lstProviders = JSON.parse(providers) as string[];
+    } 
+
+    return lstProviders;
   }
 
   setSaleOnlineSettingConfig() {

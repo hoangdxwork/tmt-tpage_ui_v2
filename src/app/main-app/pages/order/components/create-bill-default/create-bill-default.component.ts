@@ -84,7 +84,6 @@ export class CreateBillDefaultComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDeliveryCarrier();
-    this.loadTransport();
     this.loadData();
     this.loadCurrentCompany();
     this.configService.set('notification', { maxStack: 100 });
@@ -119,11 +118,10 @@ export class CreateBillDefaultComponent implements OnInit {
           // TODO: cập nhật danh sách đơn hàng
           this.lstCheckRowErrors = [];
           this.lstLine = this.lstData.Lines.map((x: TDSSafeAny) => { return this.createLines(x) });
-          this.lstLine.forEach((x, i) =>{
+          this.lstLine.map((x, i) =>{
             this.checkPartnerInfo(x.Partner, i);
           });
-
-          this.coDAmount();
+          this.loadTransport();
           this.isLoading = false;
         },
         error:(err) => {
@@ -151,8 +149,7 @@ export class CreateBillDefaultComponent implements OnInit {
       next: (res: any) =>{
         this.lstTransport = [...res?.value || []];
         this.lstLine.map((x, i) => {
-          let carrier = this.lstCarriers.find(x => x.Id == this.lstLine[i].CarrierId);
-          this.setFeeShipFromTransport(x?.Partner?.CityCode, x?.Partner?.DistrictCode, carrier?.DeliveryType, i);
+          this.setFeeShipFromTransport(x.Partner?.CityCode, x.Partner?.DistrictCode, this.carrier?.DeliveryType, i);
         })
       },
       error: (err: any) => {

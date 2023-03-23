@@ -733,7 +733,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       this.saleModel.DeliveryPrice = 0;
 
       this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, null);
-      this.coDAmount();
+      
       return;
     }
 
@@ -771,7 +771,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     if(event) {
         this.calcFee();
     }
-
+    
     this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, event?.DeliveryType);
     this.prepareCalcFeeButton();
     this.cdRef.detectChanges();
@@ -1972,7 +1972,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       }
 
       this.loadWards(data?.DistrictCode);
-
+      
       this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
       this.cdRef.detectChanges();
     }
@@ -2043,10 +2043,12 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.quickOrderModel.DistrictCode = '';
     this.quickOrderModel.DistrictName = '';
     this._districts = null as any;
+    this.lstDistrict = [];
 
     this.quickOrderModel.WardCode = '';
     this.quickOrderModel.WardName = '';
     this._wards = null as any;
+    this.lstWard = [];
 
     if(city && city.code) {
       this.quickOrderModel.CityCode = city.code;
@@ -2074,6 +2076,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.quickOrderModel.WardCode = '';
     this.quickOrderModel.WardName = '';
     this._wards = null as any;
+    this.lstWard = [];
 
     if(district && district.code) {
       this.quickOrderModel.DistrictCode = district.code;
