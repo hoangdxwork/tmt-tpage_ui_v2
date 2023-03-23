@@ -33,15 +33,6 @@ export class SocketService extends BaseSevice {
     @Inject(DOCUMENT) private document: Document) {
     super(apiService);
 
-    // this.authService.getAuthenIsLogin().subscribe({
-    //   next: (isLogin: any) => {
-    //     if (isLogin && !this.isInitialized) {
-    //       this.initSocket();
-    //       this.isInitialized = true;
-    //     }
-    //   }
-    // });
-
     this.authService.getCacheToken().subscribe({
       next: (data: any) => {
         if(data && data.access_token) {

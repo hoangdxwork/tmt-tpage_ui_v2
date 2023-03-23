@@ -152,7 +152,29 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
           this.cdRef.detectChanges();
       }
     })
+
+    this.chatomniCommentFacade.onChangePartnerTimeStamp$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data: any) => {
+        if(data && data.length > 0 && this.partnerDict && Object.keys(this.partnerDict).length > 0) {
+          let teamId = data[0];
+
+          if(this.team && this.team.Id == teamId) {
+            let userId = data[1];
+            let status = data[2];
+
+            if(this.partnerDict[userId] && Object.keys(this.partnerDict[userId]).length > 0) {
+              this.partnerDict[userId] = status;
+              this.cdRef.detectChanges();
+            } else {
+              this.partnerDict[userId] = status;
+              this.cdRef.detectChanges();
+            }
+          }
+        }
+      }
+    });
   }
+
   loadOrderPartnerbylLivecampaign() {
     if(this.data && this.data.LiveCampaignId) {
       let id = this.data.LiveCampaignId as string;
