@@ -538,6 +538,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
                 let csid = model.Facebook_ASUserId;
                 this.onSyncConversationPartner(csid);
+                this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
                 this.cdRef.detectChanges();
             },
             error: error => {
@@ -778,7 +779,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
     if(this.saleModel) {
-      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
+      let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
       if(feeShip > 0) {
         this.saleModel.DeliveryPrice = feeShip;
         this.coDAmount();
@@ -1547,8 +1548,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
             if(result.type == 'confirm') {
               this.updateOrder(result.type);
+            } else {
+              this.setFeeShipFromTransport(data.CityCode, data.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
             }
-            this.setFeeShipFromTransport(data.CityCode, data.DistrictCode, this.saleModel?.Carrier?.DeliveryType || null);
         }
         this.cdRef.detectChanges();
       }
@@ -2055,6 +2057,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       }
 
       this.loadDistricts(city.code);
+      if(this.saleModel && this.quickOrderModel) {
+        this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+      }
     }
 
     this.mappingStreet();
@@ -2081,6 +2086,9 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       }
 
       this.loadWards(district.code);
+      if(this.saleModel && this.quickOrderModel) {
+        this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+      }
     }
 
     this.mappingStreet();
