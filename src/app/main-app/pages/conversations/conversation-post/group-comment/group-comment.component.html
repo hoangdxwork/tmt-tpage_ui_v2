@@ -1,0 +1,102 @@
+<tds-spin [spinning]="isLoading"
+  class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full py-2 pl-2">
+  <virtual-scroller *ngIf="dataComment && dataComment.Items && dataComment.Items.length > 0" #scroll
+    [items]="dataComment.Items" class="tds-custom-scroll w-full h-full" [enableUnequalChildrenSizes]="true"
+    [childHeight]="118" [scrollAnimationTime]="500" [scrollThrottlingTime]="350">
+    <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex"
+      class="w-full flex gap-2.5 pb-3 pr-2">
+      <div>
+        <tpage-avatar-facebook class="cursor-pointer" [shape]="'circle'" [size]="40" [psid]="item.from?.id">
+        </tpage-avatar-facebook>
+      </div>
+      <div class="h-full w-full rounded-xl bg-white flex flex-col pb-3">
+        <div class="px-4 pt-3 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex gap-2">
+              <span class="text-body-2 font-semibold"> {{ item.from?.name || "Người dùng facebook"}} </span>
+              <span class="text-body-2 font-semibold text-info-500">#23.210900327</span>
+            </div>
+            <span class="text-caption-1 text-neutral-1-400">21/03/2022 10:40 AM</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-[26px]">
+              <div class="flex gap-2">
+
+                <button type="button" tds-button color="primary" size="sm">Tạo đơn hàng</button>
+
+                <button type="button" tds-button-icon color="custom" size="sm" tooltipTitle="Thông tin khách hàng"
+                  tooltipPlacement="top" tds-tooltip class="ring-neutral-800/20 border-neutral-3-50 bg-neutral-3-50 hover:bg-neutral-3-100
+                        focus:bg-neutral-3-50 focus:border-neutral-600">
+                  <span class="flex items-center justify-center">
+                    <i class="tdsi-information-fill text-neutral-1-400"></i>
+                  </span>
+                </button>
+
+                <button type="button" tds-button-icon color="custom" size="sm" tooltipTitle="Hội thoại tin nhắn"
+                  tooltipPlacement="top" tds-tooltip class="ring-neutral-800/20 border-neutral-3-50 bg-neutral-3-50 hover:bg-neutral-3-100
+                      focus:bg-neutral-3-50 focus:border-neutral-600">
+                  <span class="flex items-center justify-center">
+                    <i class="tdsi-messenger-fill text-neutral-1-400"></i>
+                  </span>
+                </button>
+
+                <button type="button" tds-button-icon color="custom" size="sm" tooltipTitle="In đơn hàng"
+                  tooltipPlacement="top" tds-tooltip class="ring-neutral-800/20 border-neutral-3-50 bg-neutral-3-50 hover:bg-neutral-3-100
+                      focus:bg-neutral-3-50 focus:border-neutral-600">
+                  <span class="flex items-center justify-center">
+                    <i class="tdsi-print-fill text-neutral-1-400"></i>
+                  </span>
+                </button>
+
+              </div>
+              <div class="flex gap-1.5">
+                <span class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer">
+                  <i class="tdsi-call-fill text-body-2 leading-none text-white"></i>
+                </span>
+
+                <span class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer">
+                  <i class="tdsi-pin-fill text-body-2 leading-none text-white"></i>
+                </span>
+
+                <div
+                  class="border font-semibold px-2 py-py rounded text-caption-2 bg-primary-2/20 border-primary-1 text-primary-1">
+                  Bình thường
+                </div>
+              </div>
+            </div>
+
+            <button rounded="!rounded-full" size="sm" tds-button color="custom" (click)="showComment(item?.id)" class="text-secondary-1 hover:text-secondary-2 focus:text-secondary-2
+                      bg-secondary-3 hover:bg-secondary-3 focus:bg-secondary-3
+                      border-transparent hover:border-secondary-2/40 focus:border-secondary-2/60
+                      focus:ring-2 focus:ring-secondary-2/20">
+              <span class="flex items-center text-caption-2">
+                {{ item.activities.length }} bình luận
+                <i [ngClass]="dictActiveComment[item?.id] == true ? 'tdsi-arrow-up-line' : 'tdsi-arrow-down-line' "
+                  class="text-base leading-none ml-2 text-neutral-1-500"></i>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div [ngClass]="dictActiveComment[item?.id] == true ? 'block' : 'hidden'" class="pt-3">
+          <div *ngFor="let detail of item.activities" class="flex border-t border-neutral-2-100 flex-col divide-y divide-neutral-2-100">
+            <div class="px-4 py-2 flex justify-between items-center">
+              <div class="flex flex-col gap-1 text-body-2">
+                <span class="w-full pr-4">{{ detail?.message }}</span>
+                <span class="text-neutral-1-400">{{ detail.created_time | yiDateTimeFormat }}</span>
+              </div>
+              <div>
+                <button (click)="addNote()" tds-button-outline color="secondary" size="sm" rounded="!rounded-full">
+                  <span class="flex items-center">
+                    <i class="tdsi-plus-fill text-base text-primary-1 leading-none mr-2"></i>
+                    <span class="text-caption-1 text-neutral-1-600 font-regular">Chọn ghi chú</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </virtual-scroller>
+</tds-spin>

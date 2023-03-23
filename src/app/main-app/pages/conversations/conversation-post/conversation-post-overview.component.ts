@@ -46,7 +46,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   @ViewChild('innerText') innerText!: ElementRef;
 
   orderTotal = 0;
-  indClickFilter = 0;
+  indClickFilter!: number;
   isShowFilterUser = false;
   indeterminate: boolean = false;
   checked: boolean = false;
@@ -61,7 +61,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
   filterOptions: TDSSafeAny[] = [
     { value: "all", text: "Tất cả bình luận", icon: 'tdsi-livechat-line' },
-    // { value: "group", text: "Người dùng", icon: 'tdsi-user-line' },
+    { value: "group", text: "Người dùng", icon: 'tdsi-user-line' },
     // { value: "manage", text: "Quản lí bình luận", icon: 'tdsi-eye-line' },
     // { value: "filter", text: "Tìm kiếm bình luận", icon: 'tdsi-search-fill' },
     // { value: "report", text: "Thống kê chốt đơn", icon: 'tdsi-chart-pie-line' },
@@ -394,6 +394,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   fillterAll(data: TDSSafeAny, index: number) {
     this.indClickFilter = index;
     this.facebookCommentService.onFilterSortCommentPost$.emit({ type: 'filter', data: data });
+
+    this.currentFilter = data;
   }
 
   onShowFilterUser() {
