@@ -359,9 +359,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                   this.clickReload = 0;
                   this.isLoadingUpdate = false;
 
-                  this.message.remove(this.csLoadingUpdate?.messageId);
-                  this.message.success('kết nối bài viết thành công');
-                  this.loadData();
+                  if(this.csLoadingUpdate) {
+                    this.message.remove(this.csLoadingUpdate?.messageId);
+                    this.message.success('Yêu cầu cập nhật hội thoại thành công');
+                    this.loadData();
+                  } else {
+                    this.message.success('kết nối bài viết thành công');
+                    this.loadData();
+                  }
+                  
                 }
             break;
 
@@ -374,7 +380,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                   this.isLoadingUpdate = false;
 
                   this.message.remove(this.csLoadingUpdate?.messageId);
-                  this.message.success('Không tìm thấy bài Live');
+                  this.message.info('Không tìm thấy bài live mới, Kiểm tra lại có đang thực hiện live hay không hoặc kiểm tra lại thông tin uniqueID có bị thay đổi gần đây không', { duration: 7000});
                 }
             break;
 
@@ -505,9 +511,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.isLoadingUpdate = false;
 
                 this.message.remove(this.csLoadingUpdate?.messageId);
-                this.message.success('Yêu cầu cập nhật hội thoại thành công');
+                this.message.info('Không tìm thấy bài live mới, Kiểm tra lại có đang thực hiện live hay không hoặc kiểm tra lại thông tin uniqueID có bị thay đổi gần đây không', { duration: 7000});
+
                 this.loadData();
-              }, 5 * 1000);
+              }, 15 * 1000);
           },
           error: (error: any) => {
               this.clickReload = 0;
