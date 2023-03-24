@@ -63,7 +63,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
 
   filterOptions: TDSSafeAny[] = [
     { value: "all", text: "Tất cả bình luận", icon: 'tdsi-livechat-line' },
-    { value: "group", text: "Người dùng", icon: 'tdsi-user-line' },
+    // { value: "group", text: "Người dùng", icon: 'tdsi-user-line' },
     // { value: "manage", text: "Quản lí bình luận", icon: 'tdsi-eye-line' },
     // { value: "filter", text: "Tìm kiếm bình luận", icon: 'tdsi-search-fill' },
     // { value: "report", text: "Thống kê chốt đơn", icon: 'tdsi-chart-pie-line' },
@@ -98,9 +98,9 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   isRescanAutoOrder: boolean = false;
   rescanAutoOrderTimer: TDSSafeAny;
 
-  pageSize = 10000;
-  pageIndex = 1;
-  dataComment!: FacebookPostDTO | any;
+  // pageSize = 10000;
+  // pageIndex = 1;
+  // dataComment!: FacebookPostDTO | any;
 
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
@@ -137,7 +137,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
       }
 
-      this.loadDataGroupComments();
+      // this.loadDataGroupComments();
       this.cdRef.detectChanges();
     }
 
@@ -627,20 +627,20 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   }
 
 
-  loadDataGroupComments() {
-    this.isLoading = true;
-    let params = `page=${this.pageIndex}&limit=${this.pageSize}`;
+  // loadDataGroupComments() {
+  //   this.isLoading = true;
+  //   let params = `page=${this.pageIndex}&limit=${this.pageSize}`;
 
-    this.groupCommentsService.getGroupComments(this.data.ObjectId, params).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: FacebookPostDTO) => {
-        this.dataComment = res;
-        console.log(this.dataComment);
+  //   this.groupCommentsService.getGroupComments(this.data.ObjectId, params).pipe(takeUntil(this.destroy$)).subscribe({
+  //     next: (res: FacebookPostDTO) => {
+  //       this.dataComment = res;
+  //       console.log(this.dataComment);
 
-        this.isLoading = false;
-      }, error: (err: any) => {
-        this.message.error(`${err?.error?.message}` ? `${err?.error?.message}` : "Load dữ liệu thất bại!");
-        this.isLoading = false;
-      }
-    })
-  }
+  //       this.isLoading = false;
+  //     }, error: (err: any) => {
+  //       this.message.error(`${err?.error?.message}` ? `${err?.error?.message}` : "Load dữ liệu thất bại!");
+  //       this.isLoading = false;
+  //     }
+  //   })
+  // }
 }
