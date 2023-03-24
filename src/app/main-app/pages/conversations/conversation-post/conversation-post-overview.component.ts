@@ -29,6 +29,8 @@ import { fromEvent } from 'rxjs';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { GroupCommentsService } from '@app/services/group-comment.service';
+import { FacebookPostDTO } from '@app/dto/facebook-post/facebook-post.dto';
 
 @Component({
   selector: 'conversation-post-overview',
@@ -96,6 +98,10 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   isRescanAutoOrder: boolean = false;
   rescanAutoOrderTimer: TDSSafeAny;
 
+  pageSize = 10000;
+  pageIndex = 1;
+  dataComment!: FacebookPostDTO | any;
+
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
     private modalService: TDSModalService,
@@ -108,7 +114,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService,
-    private sharedService: SharedService) {
+    private sharedService: SharedService,
+    private groupCommentsService: GroupCommentsService) {
   }
 
   ngOnInit() {
@@ -130,6 +137,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
       }
 
+      this.loadDataGroupComments();
       this.cdRef.detectChanges();
     }
 
@@ -616,5 +624,23 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         }
       })
     }
+  }
+
+
+  loadDataGroupComments() {
+    this.isLoading = true;
+    let params = `page=${this.pageIndex}&limit=${this.pageSize}`;
+
+    this.groupCommentsService.getGroupComments(this.data.ObjectId, params).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: FacebookPostDTO) => {
+        this.dataComment = res;
+        console.log(this.dataComment);
+
+        this.isLoading = false;
+      }, error: (err: any) => {
+        this.message.error(`${err?.error?.message}` ? `${err?.error?.message}` : "Load dữ liệu thất bại!");
+        this.isLoading = false;
+      }
+    })
   }
 }
