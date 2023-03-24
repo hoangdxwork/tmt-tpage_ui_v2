@@ -1,19 +1,23 @@
 <tds-spin [spinning]="isLoading"
   class="flex flex-col flex-auto overflow-hidden overflow-y-auto w-full h-full py-2 pl-2">
   <virtual-scroller *ngIf="dataComment && dataComment.Items && dataComment.Items.length > 0" #scroll
-    [items]="dataComment.Items" class="tds-custom-scroll w-full h-full" [enableUnequalChildrenSizes]="true"
+    [items]="dataComment?.Items" class="tds-custom-scroll w-full h-full" [enableUnequalChildrenSizes]="true"
     [childHeight]="118" [scrollAnimationTime]="500" [scrollThrottlingTime]="350">
     <div *ngFor="let item of scroll.viewPortItems; let i= index; trackBy: trackByIndex"
       class="w-full flex gap-2.5 pb-3 pr-2">
       <div>
-        <tpage-avatar-facebook class="cursor-pointer" [shape]="'circle'" [size]="40" [psid]="item.from?.id">
+        <tpage-avatar-facebook class="cursor-pointer"
+        [shape]="'circle'" [size]="40" [psid]="item.from?.id">
         </tpage-avatar-facebook>
+        <!-- <tpage-avatar-facebook class="cursor-pointer"
+          [shape]="'circle'" [size]="40" [psid]="item.Data?.from?.id || item.UserId" [token]="team.ChannelToken">
+        </tpage-avatar-facebook> -->
       </div>
       <div class="h-full w-full rounded-xl bg-white flex flex-col pb-3">
         <div class="px-4 pt-3 flex flex-col gap-4">
           <div class="flex items-center justify-between">
             <div class="flex gap-2">
-              <span class="text-body-2 font-semibold"> {{ item.from?.name || "Người dùng facebook"}} </span>
+              <span class="text-body-2 font-semibold"> {{ item.from?.name }} </span>
               <span class="text-body-2 font-semibold text-info-500">#23.210900327</span>
             </div>
             <span class="text-caption-1 text-neutral-1-400">21/03/2022 10:40 AM</span>
@@ -71,7 +75,7 @@
                       focus:ring-2 focus:ring-secondary-2/20">
               <span class="flex items-center text-caption-2">
                 {{ item.activities.length }} bình luận
-                <i [ngClass]="dictActiveComment[item?.id] == true ? 'tdsi-arrow-up-line' : 'tdsi-arrow-down-line' "
+                <i [ngClass]="dictActiveComment[item?.id] == true ? 'tdsi-arrow-up-line' : 'tdsi-arrow-down-line'"
                   class="text-base leading-none ml-2 text-neutral-1-500"></i>
               </span>
             </button>
@@ -86,7 +90,7 @@
                 <span class="text-neutral-1-400">{{ detail.created_time | yiDateTimeFormat }}</span>
               </div>
               <div>
-                <button (click)="addNote()" tds-button-outline color="secondary" size="sm" rounded="!rounded-full">
+                <button tds-button-outline color="secondary" size="sm" rounded="!rounded-full">
                   <span class="flex items-center">
                     <i class="tdsi-plus-fill text-base text-primary-1 leading-none mr-2"></i>
                     <span class="text-caption-1 text-neutral-1-600 font-regular">Chọn ghi chú</span>
