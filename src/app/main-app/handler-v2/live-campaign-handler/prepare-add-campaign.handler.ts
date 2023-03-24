@@ -30,6 +30,7 @@ export class PrepareAddCampaignHandler {
         model.IsEnableAuto = formValue.IsEnableAuto;
         model.EnableQuantityHandling = formValue.EnableQuantityHandling;
         model.IsAssignToUserNotAllowed = formValue.IsAssignToUserNotAllowed;
+        model.IsApplyQuantityLiveCampaign = formValue.IsApplyQuantityLiveCampaign;
         model.IsShift = formValue.IsShift;
         model.Facebook_UserId = formValue.FacebookUserId;
         model.Facebook_UserName = formValue.Facebook_UserName;
@@ -86,6 +87,7 @@ export class PrepareAddCampaignHandler {
       model.IsEnableAuto = formValue.IsEnableAuto;
       model.EnableQuantityHandling = formValue.EnableQuantityHandling;
       model.IsAssignToUserNotAllowed = formValue.IsAssignToUserNotAllowed;
+      model.IsApplyQuantityLiveCampaign = formValue.IsApplyQuantityLiveCampaign;
       model.IsShift = formValue.IsShift;
       model.Facebook_UserId = formValue.FacebookUserId;
       model.Facebook_UserName = formValue.Facebook_UserName;

@@ -1,3 +1,4 @@
+import { ApiShopAppv2Service } from './../../../../services/api-shopapp-v2.service';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ProductShopCartDto } from '@app/dto/configs/product/config-product-shopcart.dto';
 import { ProductShopCartServiceV2 } from '@app/services/shopcart/product-shopcart-v2.service';
@@ -19,6 +20,7 @@ export class ProductShopcartDetailComponent implements OnInit {
   @Output() onLoadOption = new EventEmitter<boolean>();
 
   constructor(private productShopCartService_v2: ProductShopCartServiceV2,
+    private apiShopAppv2Service: ApiShopAppv2Service,
     private destroy$: TDSDestroyService,
     private message: TDSMessageService,) { }
 
@@ -29,7 +31,7 @@ export class ProductShopcartDetailComponent implements OnInit {
   loadData() {
     if(this.id > 0) {
       this.isLoading = true;
-      this.productShopCartService_v2.getVariantByProductTemplateId(this.id).pipe(takeUntil(this.destroy$)).subscribe({
+      this.apiShopAppv2Service.getVariantByProductTemplateId(this.id).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res) => {
           this.dataExpand = res;
           this.isLoading = false;

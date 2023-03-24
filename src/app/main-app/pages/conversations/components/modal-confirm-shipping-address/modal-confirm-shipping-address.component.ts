@@ -102,7 +102,7 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
       this._form.controls['Ward'].setValue(null);
     } else {
       this.lstDistricts = [];
-      this.lstWards = []
+      this.lstWards = [];
       this._form.controls['City'].setValue(null);
       this._form.controls['District'].setValue(null);
       this._form.controls['Ward'].setValue(null);
@@ -115,7 +115,7 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
       this._form.controls['District'].setValue(value);
       this._form.controls['Ward'].setValue(null);
     }else{
-      this.lstWards = []
+      this.lstWards = [];
       this._form.controls['District'].setValue(null);
       this._form.controls['Ward'].setValue(null);
     }
@@ -167,11 +167,11 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
     model.Ship_Receiver.Phone = formModel.Phone ? formModel.Phone : formModel.Phone;
     model.Ship_Receiver.Street = formModel.Street ? formModel.Street: '';
     model.Ship_Receiver.City.code = formModel.City ? formModel.City: '';
-    model.Ship_Receiver.City.name = this.lstCities.filter((x: TDSSafeAny) => x.Code === formModel.City)[0].Name;
+    model.Ship_Receiver.City.name = this.lstCities?.filter((x: TDSSafeAny) => x.Code === formModel.City)[0].Name;
     model.Ship_Receiver.District.code = formModel.District ? formModel.District : '';
-    model.Ship_Receiver.District.name = this.lstDistricts.filter((x: TDSSafeAny) => x.Code === formModel.District)[0].Name;
+    model.Ship_Receiver.District.name = this.lstDistricts?.filter((x: TDSSafeAny) => x.Code === formModel.District)[0].Name;
     model.Ship_Receiver.Ward.code = formModel.Ward ? formModel.Ward : '';
-    model.Ship_Receiver.Ward.name = this.lstWards.filter((x: TDSSafeAny) => x.Code === formModel.Ward)[0].Name;
+    model.Ship_Receiver.Ward.name = this.lstWards?.filter((x: TDSSafeAny) => x.Code === formModel.Ward)[0].Name;
     model.DeliveryNote = formModel.Note;
 
     return model;

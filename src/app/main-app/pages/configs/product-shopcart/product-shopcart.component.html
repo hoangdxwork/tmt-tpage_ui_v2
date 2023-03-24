@@ -8,7 +8,26 @@
         </div>
         <div class="flex flex-row w-full items-center justify-between px-4 py-2.5" *ngIf="configCart?.IsShopCart">
             <div class="flex justify-start text-title-1 font-semibold">Danh sách sản phẩm</div>
-            <div class="flex flex-row items-center justify-end w-2/5">
+            <div class="flex flex-row items-center justify-end w-4/5">
+                <!-- <div class="w-1/4 flex flex-row items-center justify-between mr-2">
+                    <span class="font-semibold mr-1">Loại sản phẩm: </span>
+                    <tds-form-field class="flex flex-auto">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn sản phẩm' [(ngModel)]="cateId"
+                            [ngModelOptions]="{ standalone: true }" [data]="lstCateg" [allowClear]="true"
+                            (selectChange)="onChangeCategory($event)">
+                        </tds-select>
+                    </tds-form-field>
+                </div>
+
+                <div class="w-1/4 flex flex-row items-center justify-between mr-2">
+                    <span class="font-semibold mr-1">Sắp xếp: </span>
+                    <tds-form-field class="flex flex-auto">
+                        <tds-select valueField="Value" textField="Name" placeholder='Chọn giá trị sắp xếp'
+                            [(ngModel)]="sort" [ngModelOptions]="{ standalone: true }" [data]="sortList"
+                            [allowClear]="true" (selectChange)="onChangeSort($event)">
+                        </tds-select>
+                    </tds-form-field>
+                </div> -->
                 <tds-button-group class="mr-2">
                     <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
                         [placement]="'bottomRight'">
@@ -24,12 +43,58 @@
                         </div>
                     </tds-dropdown-menu>
                 </tds-button-group>
-                <tds-form-field class="w-2/3 mr-2">
-                    <input tdsInput class="text-neutral-1-900" [(ngModel)]="filterObj.q"
+
+                <button tds-button-icon color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="filterMenu"
+                    size="md" class="relative mr-2" tds-tooltip tooltipTitle="Lọc dữ liệu" [autoClose]="false" [(visible)]="isVisible" (tdsDropdownOutsideClick)="closeMenu()">
+                    <span class="flex items-center">
+                        <i class="tdsi-filter-2-line text-lg text-neutral-1-500 leading-none"></i>
+                    </span>
+                    <span *ngIf="isActive" class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[-11px] right-[-6px]" style="font-size: 22px"></span>
+                </button>
+
+                <tds-dropdown-menu #filterMenu="tdsDropdownMenu">
+                    <div class="max-w-[420px] min-w-[300px] p-4">
+                        <!-- category -->
+                        <div class="w-full mb-4">
+                            <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">Loại sản phẩm</p>
+                            <div class="w-full">
+                            <tds-form-field>
+                                <tds-select valueField="Id" textField="Name" [allowClear]="true"
+                                    placeholder='Chọn thẻ' [(ngModel)]="cateId" [data]="lstCateg">
+                                </tds-select>
+                            </tds-form-field>
+                            </div>
+                        </div>
+                        <!-- sort -->
+                        <div class="w-full mb-4">
+                            <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">Sắp xếp</p>
+                            <div class="w-full">
+                            <tds-form-field>
+                                <tds-select valueField="Value" textField="Name" [allowClear]="true"
+                                    placeholder='Sắp xếp' [(ngModel)]="sort" [data]="sortList">
+                                </tds-select>
+                            </tds-form-field>
+                            </div>
+                        </div>
+                        <div class="w-full flex align-center justify-between">
+                            <button tds-button color="primary" size="sm" (click)="onCancel()">
+                                <span class="flex items-center">
+                                    <i class="tdsi-close-fill text-sm leading-none mr-2"></i> Bỏ lọc
+                                </span>
+                            </button>
+                            <div class="flex items-center">
+                            <button tds-button color="secondary" size="sm"  (click)="closeMenu()">Đóng</button>
+                            <button tds-button color="primary"  class="ml-2" size="sm" (click)="onApply()">Áp dụng</button>
+                            </div>
+                        </div>
+                    </div>
+                  </tds-dropdown-menu>
+                <tds-form-field class="w-1/4">
+                    <input tdsInput class="text-neutral-1-900" [(ngModel)]="searchText"
                         [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" placeholder="Tìm kiếm sản phẩm"
                         autocomplete="off" [ngModelOptions]="{standalone: true}" />
                     <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                    <span *ngIf="filterObj.q" tdsSuffix>
+                    <span *ngIf="searchText" tdsSuffix>
                       <i class="text-neutral-1-500 tdsi-close-fill desktop:text-body-2 laptop:text-caption-1 text-caption-1 mr-2" (click)="closeSearchProduct()" ></i>
                     </span>
                 </tds-form-field>
@@ -87,7 +152,7 @@
                             </td>
                             <td class="border-r" [tdsLeft]="true">{{ data.NameGet }}</td>
                             <td class="border-r">{{ data.UOMName }}</td>
-                            <td class="border-r" [align]="'right'">{{ (data.Price | numberCustom) || 0 }} đ</td>
+                            <td class="border-r" [align]="'right'">{{ (data.ListPrice | numberCustom) || 0 }} đ</td>
 
                             <td class="border-r" [align]="'right'">
                                 {{ (data?.ShopQuantity | numberCustom) || 0 }}

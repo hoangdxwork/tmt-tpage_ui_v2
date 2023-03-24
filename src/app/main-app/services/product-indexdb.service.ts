@@ -143,14 +143,14 @@ export class ProductIndexDBService extends BaseSevice {
     return this.apiService.getData<ProductPouchDBDTO>(api, null);
   }
 
-  setSessionStoragePriceListItems(model: StoragePriceListItemsDto): any {
+  setLocalStoragePriceListItems(model: StoragePriceListItemsDto): any {
     const _keyCache = this._keyCachePriceListItems;
-    sessionStorage.setItem(_keyCache, JSON.stringify(model));
+    localStorage.setItem(_keyCache, JSON.stringify(model));
   }
 
-  getSessionStoragePriceListItems(): any {
+  getLocalStoragePriceListItems(): any {
     const _keyCache = this._keyCachePriceListItems;
-    let item = sessionStorage.getItem(_keyCache) as any;
+    let item = localStorage.getItem(_keyCache) as any;
 
     if(item) {
         return JSON.parse(item);
@@ -159,9 +159,9 @@ export class ProductIndexDBService extends BaseSevice {
     }
   }
 
-  removeSessionStoragePriceListItems() {
+  removeLocalStoragePriceListItems() {
     const _keyCache = this._keyCachePriceListItems;
-    sessionStorage.removeItem(_keyCache);
+    localStorage.removeItem(_keyCache);
   }
 
 }

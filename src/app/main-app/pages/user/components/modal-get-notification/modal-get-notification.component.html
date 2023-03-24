@@ -1,36 +1,54 @@
 <tds-spin [spinning]="isLoading" class="w-full h-full">
-  <div class="h-full w-full flex flex-auto flex-col text-body-2">
-    <div class="p-4 border-b border-neutral-2-200 flex justify-between items-center">
-      <div class="px-4 py-2 flex gap-x-4">
-        <div class="w-[120px] font-semibold"></div>
-        <div class="flex flex-col gap-y-4">
-          <tds-checkbox [(ngModel)]="checkAll" (ngModelChange)="changeCheckAll($event)">Chọn tất cả</tds-checkbox>
+  <tds-tabset class="h-full w-full" 
+    [(selectedIndex)]="selectedIndex">
+    <tds-tab title="Đăng ký nhận tin" clsContent="p-0 h-full w-full">
+      <div class="h-full w-full flex flex-auto flex-col text-body-2">
+        <div class="p-4 border-b border-neutral-2-200 flex justify-between items-center">
+          <div class="px-4 py-2 flex gap-x-4">
+            <div class="w-[120px] font-semibold"></div>
+            <div class="flex flex-col gap-y-4">
+              <tds-checkbox [(ngModel)]="checkAll" (ngModelChange)="changeCheckAll($event)">Chọn tất cả</tds-checkbox>
+            </div>
+          </div>
+          <button tds-button-outline color="error" class="min-w-[135px]" (click)="modalRemove()">
+            <span class="flex items-center">
+              <i class="tdsi-notifications-off-fill text-xl leading-none mr-2"></i>Hủy đăng kí
+            </span>
+          </button>
         </div>
-      </div>
-      <button tds-button-outline color="error" class="min-w-[135px]" (click)="modalRemove()">
-        <span class="flex items-center">
-          <i class="tdsi-notifications-off-fill text-xl leading-none mr-2"></i>Hủy đăng kí
-        </span>
-      </button>
-    </div>
-    <div class="p-4 divide-y">
-      <div class="px-4 py-2 flex gap-x-4" *ngFor="let item of topicData">
-        <div class="w-[120px] font-semibold">{{item.group}}</div>
-        <div class="flex flex-col gap-y-4">
-          <div *ngFor="let x of item.topics">
-            <tds-checkbox (ngModelChange)="onChecked($event, x)" [ngModel]="x | firebaseSubscribed: idsRegister" [ngModelOptions]="{standalone: true}"></tds-checkbox>
-            <span class="ml-2 text-body-2">{{ x.name }}</span>
+        <div class="p-4 divide-y">
+          <div class="px-4 py-2 flex gap-x-4" *ngFor="let item of topicData">
+            <div class="w-[120px] font-semibold">{{item.group}}</div>
+            <div class="flex flex-col gap-y-4">
+              <div *ngFor="let x of item.topics">
+                <tds-checkbox (ngModelChange)="onChecked($event, x)" [ngModel]="x | firebaseSubscribed: idsRegister" [ngModelOptions]="{standalone: true}"></tds-checkbox>
+                <span class="ml-2 text-body-2">{{ x.name }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </tds-tab>
+
+    <tds-tab title="Thông báo socket" clsContent="p-0 h-full w-full">
+      <div class="p-6 text-body-2 gap-y-4 h-full w-3/4 flex flex-col">
+        <div class="flex items-center" *ngFor="let item of socketItems" [ngClass]="(item | checkSocketTeamType)? 'ml-4': ''">
+          <tds-switch [(ngModel)]="this.socketData[item]"
+            [disabled]="(item != 'socket.all' && !this.socketData['socket.all']) || (!this.socketData['chatomni.on-message'] && (item | checkSocketTeamType))"
+            (ngModelChange)="change(item)" size="lg">
+          </tds-switch>
+          <span class="ml-4" [ngClass]="item == 'socket.all' ? 'font-semibold' : ''">{{ item | getSocketName }}</span>
+        </div>
+      </div>
+    </tds-tab>
+  </tds-tabset>
+  
 
   <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="cancel()">
+    <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="cancel()" *ngIf="selectedIndex != 1">
       Hủy
     </button>
-    <button tds-button type="submit" class="min-w-[100px]" color="primary" (click)="save()">
+    <button tds-button type="submit" class="min-w-[100px]" color="primary" (click)="save()" *ngIf="selectedIndex != 1">
       Lưu lại
     </button>
   </div>

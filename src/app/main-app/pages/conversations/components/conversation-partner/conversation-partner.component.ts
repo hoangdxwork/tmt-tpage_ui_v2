@@ -365,12 +365,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
   }
 
   selectStatus(event: StatusDTO) {
-    if(this.partner?.Id && event) {
+    if(this.partner && this.partner.Id && event) {
       let data = {
-          status: `${event.value}_${event.text}`
+        status: `${event.value}_${event.text}`
       }
-      this.isLoading = true;
 
+      this.isLoading = true;
       this.partnerService.updateStatus(this.partner.Id, data).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
             this.message.success('Cập nhật trạng thái khách hàng thành công');
@@ -410,7 +410,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     }
     else return '#28A745';
   }
-
 
   onBlockPhone() {
     let phone = this.partner?.Phone;
@@ -525,7 +524,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
             this.chatomniCommentFacade.onSyncPartnerTimeStamp$.emit(info);
           },
           error: (error: any) => {
-              this.message.error(error?.error?.message);
+            this.message.error(error?.error?.message);
           }
       })
     }, 350);
@@ -586,6 +585,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     this._districts = data._districts;
     this._wards = data._wards;
     this._street = data._street;
+
+    this.loadDistricts(data._cities?.code);
+    this.loadWards(data._districts?.code);
   }
 
   showModalSuggestAddress(){
@@ -807,7 +809,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
   loadWards(code: string) {
     this.lstWard = [];
     if(!TDSHelperString.hasValueString(code)) return;
-
     this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: any) => {
           this.lstWard = [...res];
@@ -847,11 +848,13 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     this.partner.DistrictName = null;
     this.partner.District = null;
     this._districts = null as any;
+    this.lstDistrict = [];
 
     this.partner.WardCode = null;
     this.partner.WardName = null;
     this.partner.Ward = null as any;
     this._wards = null as any;
+    this.lstWard = [];
 
     if(city && city.code) {
       this.partner.CityCode = city.code;
@@ -883,6 +886,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     this.partner.WardName = null;
     this.partner.Ward = null as any;
     this._wards = null as any;
+    this.lstWard = [];
 
     if(district && district.code) {
       this.partner.DistrictCode = district.code;

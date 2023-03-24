@@ -56,7 +56,7 @@ export class TpageConfigProductComponent implements OnInit {
           this.setPriceListItem();
 
           this.isLoading = false;
-      }, 
+      },
       error: error => {
           this.isLoading = false;
           this.message.error(error?.error?.message);
@@ -65,9 +65,9 @@ export class TpageConfigProductComponent implements OnInit {
   }
 
   setPriceListItem() {
-    this.priceListItems = this.productIndexDBService.getSessionStoragePriceListItems();
+    this.priceListItems = this.productIndexDBService.getLocalStoragePriceListItems();
     if(this.priceListItems && this.priceListItems.Id) {
-        let item = this.lstPrices.filter(x=> x.Id == this.priceListItems.Id)[0];
+        let item = this.lstPrices.filter((x: any) => x.Id == this.priceListItems.Id)[0];
         this._form.controls['PriceList'].setValue(item);
     } else if(this.lstPrices.length > 0){
         this._form.controls['PriceList'].setValue(this.lstPrices[0]);
@@ -95,13 +95,13 @@ export class TpageConfigProductComponent implements OnInit {
               Id: model.Id,
               Value: res
             } as StoragePriceListItemsDto;
-            this.productIndexDBService.setSessionStoragePriceListItems(item);
+            this.productIndexDBService.setLocalStoragePriceListItems(item);
 
             this.message.success(Message.Product.UpdateListPriceSuccess);
             this.onCancel(item);
             this.isLoading = false;
           }
-      }, 
+      },
       error : error => {
           this.isLoading = false;
           this.message.error(error?.error?.message);

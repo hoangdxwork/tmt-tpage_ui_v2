@@ -1,7 +1,9 @@
+import { TransportConfigsDto } from './../dto/configs/transport-config.dto';
+import { GetSharedDto } from './../dto/conversation/post/get-shared.dto';
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
-import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSSafeAny, TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 import { CompanyCurrentDTO } from '../dto/configs/company-current.dto';
 import { ODataStockWarehouseDTO } from '../dto/setting/stock-warehouse.dto';
 import { BaseSevice } from './base.service';
@@ -31,6 +33,9 @@ export class SharedService extends BaseSevice {
 
   getsaleconfig: any;
   private readonly _getsaleconfigSubject$ = new ReplaySubject<any>();
+
+  transportsConfigs: any;
+  private readonly _getTransportsConfigsSubject$ = new ReplaySubject<any>();
 
   saleOnlineSettings: any;
   private readonly _saleOnlineSettingsSubject$ = new ReplaySubject<any>();
@@ -101,6 +106,50 @@ export class SharedService extends BaseSevice {
     return this._saleOnlineSettingsSubject$.asObservable();
   }
 
+  setTransportConfigs() {
+    if(this.transportsConfigs) {
+      this._getTransportsConfigsSubject$.next(this.transportsConfigs);
+    } else {
+      this.apiTransportConfigs().subscribe({
+          next: (res: any) => {
+              this.transportsConfigs = res;
+              this._getTransportsConfigsSubject$.next(res);
+          }
+      })
+    }
+  }
+
+  getTransportConfigs() {
+    return this._getTransportsConfigsSubject$.asObservable();
+  }
+
+  setFeeShip(cityCode: any, districtCode: any, lstTransport: TransportConfigsDto[], deliveryType: any) {
+    if(!TDSHelperString.hasValueString(cityCode)) return 0;
+
+    let exist1 = lstTransport.filter(x => x.ProvinceId == cityCode) as any;
+    let lstProviders = this.prepareProviders(exist1[0]?.Providers);
+    if(lstProviders.length > 0 && (!TDSHelperString.hasValueString(deliveryType) || !lstProviders.includes(deliveryType))) return 0;
+
+    if(exist1 && exist1.length == 0) return 0;
+
+    let exist2 = exist1.filter((x: any) => TDSHelperString.hasValueString(x.DistrictId)) as any;
+    if(exist2 && exist2.length == 0) return exist1[0].FeeShip;
+
+    let exist3 = exist2.filter((x: any) => districtCode == x.DistrictId) as any;
+    if(exist3 && exist3.length == 0) return 0;
+
+    return exist3[0].FeeShip;
+  }
+
+  prepareProviders(providers: string) {
+    let lstProviders: string[] = [];
+    if(TDSHelperString.hasValueString(providers)) {
+      lstProviders = JSON.parse(providers) as string[];
+    } 
+
+    return lstProviders;
+  }
+
   setSaleOnlineSettingConfig() {
     if(TDSHelperObject.hasValue(this.saleOnlineSettings)) {
         this._saleOnlineSettingsSubject$.next(this.saleOnlineSettings);
@@ -118,6 +167,15 @@ export class SharedService extends BaseSevice {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/odata/SaleOnlineSetting`,
         method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
+  apiTransportConfigs() {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/TransportConfigs`,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<any>(api, null);
@@ -214,7 +272,7 @@ export class SharedService extends BaseSevice {
       method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData(api, null);
+    return this.apiService.getData<GetSharedDto[]>(api, null);
   }
 
   getSimpleShareds(objectId: string) {
@@ -225,4 +283,5 @@ export class SharedService extends BaseSevice {
 
     return this.apiService.getData(api, null);
   }
+
 }

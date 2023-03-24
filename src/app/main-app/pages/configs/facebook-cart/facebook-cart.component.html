@@ -1,5 +1,5 @@
 <div class="w-full h-full px-4 overflow-auto tds-custom-scroll">
-  <div class="w-full max-w-[1280px]" *ngIf="dataModel">
+  <div class="flex-auto" *ngIf="dataModel">
     <!-- CẤU HÌNH TƯƠNG TÁC TỰ ĐỘNG -->
     <tds-spin [spinning]="isLoading">
       <form [formGroup]="_form">
@@ -32,11 +32,11 @@
             </div>
 
             <!-- Phương thức thanh toán -->
-            <div *ngIf="_form.controls['IsCheckout'].value" class="w-2/3 m-4" style="padding: 20px 12px; background: #f0f0f0; border-radius: 8px;">
+            <div *ngIf="_form.controls['IsCheckout'].value" class="w-2/3 mt-4 mx-4 py-5 px-3 bg-[#f0f0f0] rounded-lg">
               <tds-form-field class="w-2/3">
                 <tds-label>Chọn phương thức thanh toán</tds-label>
                 <tds-select valueField="Id" textField="Name" placeholder='Chọn phương thức thanh toán'
-                  disabledField="isActive" formControlName="AccountJournal" [required]='true'
+                  disabledField="isActive" formControlName="AccountJournal" [required]='true' [backdrop]="true"
                   [data]="lstAccountJournal" [allowClear]="true" (ngModelChange)="onChangeAccountJournal($event)">
                 </tds-select>
               </tds-form-field>
@@ -98,7 +98,19 @@
               <span class="text-neutral-1-900 text-body-2 pl-2">Xem danh sách sản phẩm trong giỏ hàng</span>
             </div>
 
-            <span class="text-title-1 font-semibold pt-6">Cấu hình hủy đơn hàng</span>
+            <!-- Cấu hình page mặc định -->
+            <div *ngIf="_form.controls['IsShopCart'].value" class="w-2/3 m-4 py-5 px-3 rounded-lg bg-[#f0f0f0]">
+                <tds-form-field class="w-2/3">
+                    <tds-label> Cấu hình page mặc định </tds-label>
+                    <tds-select
+                        valueField="Id" textField="Name" [allowClear]="true" [valuePrimitive]="false"
+                        placeholder='Chọn page mặc định' formControlName="CurrentTeam" [backdrop]="true"
+                        [data]="lstTeamFacebook" >
+                    </tds-select>
+                </tds-form-field>
+            </div>
+
+            <span class="text-title-1 font-semibold pt-2">Cấu hình hủy đơn hàng</span>
             <!-- Cho phép hủy thanh toán (xóa đơn hàng) -->
             <div class="flex flex-row items-center pt-4">
               <tds-switch size="md" formControlName="IsCancelCheckout"></tds-switch>

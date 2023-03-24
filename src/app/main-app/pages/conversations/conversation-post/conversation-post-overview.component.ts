@@ -1,3 +1,5 @@
+import { GetSharedDto } from './../../../dto/conversation/post/get-shared.dto';
+import { ModalGetSharedComponent } from './../components/modal-get-shared/modal-get-shared.component';
 import { ChatomniDataTShopPostDto } from './../../../dto/conversation-all/chatomni/chatomni-tshop-post.dto';
 import { OverviewLiveCampaignComponent } from '../../../shared/overview-live-campaign/overview-live-campaign.component';
 import { SharedService } from '../../../services/shared.service';
@@ -25,6 +27,10 @@ import { FacebookLiveCampaignPostComponent } from './facebook-livecampaign-post/
 import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { fromEvent } from 'rxjs';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
+import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
+import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
+import { GroupCommentsService } from '@app/services/group-comment.service';
+import { FacebookPostDTO } from '@app/dto/facebook-post/facebook-post.dto';
 
 @Component({
   selector: 'conversation-post-overview',
@@ -42,7 +48,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   @ViewChild('innerText') innerText!: ElementRef;
 
   orderTotal = 0;
-  indClickFilter = 0;
+  indClickFilter!: number;
   isShowFilterUser = false;
   indeterminate: boolean = false;
   checked: boolean = false;
@@ -92,18 +98,24 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   isRescanAutoOrder: boolean = false;
   rescanAutoOrderTimer: TDSSafeAny;
 
+  // pageSize = 10000;
+  // pageIndex = 1;
+  // dataComment!: FacebookPostDTO | any;
+
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private cdRef: ChangeDetectorRef,
+    private socketOnEventService: SocketOnEventService,
     private liveCampaignService: LiveCampaignService,
     private facebookCommentService: FacebookCommentService,
     private postEvent: ConversationPostEvent,
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService,
-    private sharedService: SharedService) {
+    private sharedService: SharedService,
+    private groupCommentsService: GroupCommentsService) {
   }
 
   ngOnInit() {
@@ -124,10 +136,13 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       } else {
         this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
       }
+
+      // this.loadDataGroupComments();
       this.cdRef.detectChanges();
     }
 
     this.eventEmitter();
+    this.onEventSocket();
   }
 
   eventEmitter() {
@@ -176,6 +191,26 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
           this.cdRef.detectChanges();
       }
     })
+  }
+
+  onEventSocket() {
+    this.socketOnEventService.onEventSocket().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: SocketEventSubjectDto) => {
+          if(!res) return;
+
+          switch(res?.EventName) {
+            case ChatmoniSocketEventName.facebookShareds:
+              let fbShared = res.Data?.Data;
+              let exist = fbShared && this.data && fbShared.ObjectId == this.data.ObjectId && fbShared.ChannelId == fbShared.ChannelId && this.team?.Type ==  CRMTeamType._Facebook;
+              if(exist) {
+                  this.data.CountReaction = fbShared.TotalShareds || 0;
+                  this.loadSimpleShareds();
+              }
+              break;
+            default: break;
+          }
+        }
+      })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -367,6 +402,8 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   fillterAll(data: TDSSafeAny, index: number) {
     this.indClickFilter = index;
     this.facebookCommentService.onFilterSortCommentPost$.emit({ type: 'filter', data: data });
+
+    this.currentFilter = data;
   }
 
   onShowFilterUser() {
@@ -499,7 +536,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
               this.isRescanAutoOrder = false;
               this.message.success('Đã kích hoạt áp dụng ngay cho những bình luận đã có');
               this.cdRef.detectChanges();
-          }, 3 * 10 * 1000);
+          }, 2 * 10 * 1000);
       },
       error: error => {
           this.isRescanAutoOrder = false;
@@ -519,46 +556,91 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     this.destroyTimer();
   }
 
-  fbGetShareds() {
+  loadSimpleShareds() {
     let objectId = this.data.ObjectId;
-    if(!objectId) {
-      this.message.error('Không tìm thấy ObjectId');
-      return;
-    }
-
-    let teamId = this.team.Id;
-    if(!teamId) {
-      this.message.error('Không tìm thấy TeamId');
-      return;
-    }
-
-    let uid = this.team.ChannelId || this.team.Facebook_ASUserId;
-    if(!uid) {
-      this.message.error('Không tìm thấy uid');
-      return;
-    }
-
-    this.isLoading = true;
-    this.sharedService.fbGetShareds(uid, objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (data: any) => {
-        this.isLoading = false;
-        this.cdRef.detectChanges();
-
-        // let extensionKey = 'tpos_chrome_ext_id';
-        // let extension = localStorage.getItem(extensionKey);
-        // if(!extension) {
-        //   this.message.error('Vui lòng tải và cấu hình TPOS.VN Extensions');
-        //   return;
-        // }
-
-        // let uri = `chrome-extension://${extensionKey}/index.html#/options/facebook/sharing-debugger?objectId=${objectId}`;
-        // window.open(uri, '_blank');
+    this.sharedService.getSimpleShareds(objectId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res && res.length > 0) {
+          const modal = this.modalService.create({
+            title: `Danh sách lượt chia sẻ (${res.length})`,
+            content: ModalGetSharedComponent,
+            size: "lg",
+            bodyStyle: {
+              padding: '0px'
+            },
+            viewContainerRef: this.viewContainerRef,
+            componentParams:{
+              lstShares: res
+            }
+          });
+        }
       },
-      error: (error: any) => {
-        this.message.error(error?.error?.message);
-        this.isLoading = false;
-        this.cdRef.detectChanges();
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
       }
     })
   }
+
+  fbGetShareds() {
+    if(this.team && this.team.Type ==  CRMTeamType._Facebook) {
+      let objectId = this.data.ObjectId;
+      if(!objectId) {
+        this.message.error('Không tìm thấy ObjectId');
+        return;
+      }
+
+      let teamId = this.team.Id;
+      if(!teamId) {
+        this.message.error('Không tìm thấy TeamId');
+        return;
+      }
+
+      let uid = this.team.ChannelId || this.team.Facebook_ASUserId;
+      if(!uid) {
+        this.message.error('Không tìm thấy uid');
+        return;
+      }
+
+      this.isLoading = true;
+      this.sharedService.fbGetShareds(uid, objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: GetSharedDto[]) => {
+          this.isLoading = false;
+          this.cdRef.detectChanges();
+
+          // let extensionKey = 'tpos_chrome_ext_id';
+          // let extension = localStorage.getItem(extensionKey);
+          // if(!extension) {
+          //   this.message.error('Vui lòng tải và cấu hình TPOS.VN Extensions');
+          //   return;
+          // }
+
+          // let uri = `chrome-extension://${extensionKey}/index.html#/options/facebook/sharing-debugger?objectId=${objectId}`;
+          // window.open(uri, '_blank');
+        },
+        error: (error: any) => {
+          this.message.error(error?.error?.message);
+          this.isLoading = false;
+          this.cdRef.detectChanges();
+        }
+      })
+    }
+  }
+
+
+  // loadDataGroupComments() {
+  //   this.isLoading = true;
+  //   let params = `page=${this.pageIndex}&limit=${this.pageSize}`;
+
+  //   this.groupCommentsService.getGroupComments(this.data.ObjectId, params).pipe(takeUntil(this.destroy$)).subscribe({
+  //     next: (res: FacebookPostDTO) => {
+  //       this.dataComment = res;
+  //       console.log(this.dataComment);
+
+  //       this.isLoading = false;
+  //     }, error: (err: any) => {
+  //       this.message.error(`${err?.error?.message}` ? `${err?.error?.message}` : "Load dữ liệu thất bại!");
+  //       this.isLoading = false;
+  //     }
+  //   })
+  // }
 }

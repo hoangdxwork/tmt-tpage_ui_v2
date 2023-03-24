@@ -274,12 +274,13 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
   setCommentRealtime(response: SocketEventSubjectDto) {
     let itemNewComment = {...this.chatomniConversationFacade.preapreCommentTshopOnEventSocket(response.Data)};
     let index = this.dataSource.Items.findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
+    let indexVs = this.vsSocketImports.findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
 
     // TODO: đang search bình luận thì không push dữ liệu vào
     if(TDSHelperString.isString(this.innerText) && TDSHelperString.hasValueString(this.innerText)) return;
 
     // TODO: nếu res phản hồi bình luận tra về trước, không add comment con vào danh sách
-    if(Number(index) >= 0) return;
+    if(Number(index) >= 0 || Number(indexVs) >= 0) return;
 
     // TODO: nếu là comment child thì cũng push thẳng xóa parentId
     if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId)) {
@@ -312,6 +313,10 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
       index: model.Data.SessionIndex,
       code: model.Data.Code
     };
+
+    if(item.index > 0) {
+      item.code = `${item.index}. ${item.code}`;
+    }
 
     let exist = this.commentOrders[model.Data.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data.Facebook_ASUserId]).length > 0;
     if(exist) {
@@ -467,43 +472,7 @@ export class TiktokCommentComponent implements OnInit, OnChanges, OnDestroy {
       size: 'xl',
       componentParams: {
         pageId: this.team?.ChannelId,
-      }
-    });
-
-    modal.componentInstance?.onSendProduct.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: TDSSafeAny)=>{
-        if(res){
-            this.onProductSelected(res, item);
-            modal.destroy(null);
-        }
-      }
-    })
-  }
-
-  onProductSelected(event: any, item: ChatomniDataItemDto) {
-    let model = {
-      product: {
-        Id: event.Id,
-        Name: event.Name,
-        Picture: event.Picture,
-        Price: event.Price,
-      }
-    };
-
-  this.activityMatchingService.addTemplateMessageV3(this.team?.Id, item.UserId, model).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) => {
-          item.Data.is_reply = false;
-          this.isReplyingComment = false;
-
-          this.message.success('Gửi tin thành công');
-          this.cdRef.markForCheck();
-      },
-      error: error => {
-          item.Data.is_reply = false;
-          this.isReplyingComment = false;
-
-          this.message.error(error.error?.message);
-          this.cdRef.markForCheck();
+        userId: item?.UserId
       }
     });
   }

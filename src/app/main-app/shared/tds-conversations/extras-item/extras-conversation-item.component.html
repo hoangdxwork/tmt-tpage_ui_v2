@@ -44,19 +44,23 @@
             </span>
         </div>
         <div class="comment flex flex-row items-center">
-            <span class="comment-count  mr-4">
+            <span class="comment-count mr-4">
                 {{data.CountComment || 0}} Bình luận
             </span>
             <div class="comment-button">
-                <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Bài viết tổng quan" tooltipPlacement="bottom"
+                <button tds-button-flat-icon color="secondary" [size]="'sm'" class="mr-2" tds-tooltip tooltipTitle="Bài viết tổng quan" tooltipPlacement="bottom"
                     (click)="openModalPost(item)">
-                    <i class="tdsi-chart-pie-fill"></i>
+                    <i class="tdsi-chart-pie-line"></i>
                 </button>
-                <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Đi tới bình luận" tooltipPlacement="bottom"
+                <!-- <button tds-button-flat-icon color="secondary" [size]="'sm'" class="mr-2" tds-tooltip tooltipTitle="Xem lượt chia sẻ" tooltipPlacement="bottom"
+                    (click)="openModalShare()">
+                    <i class="tdsi-share-line"></i>
+                </button> -->
+                <button tds-button-flat-icon color="secondary" [size]="'sm'" class="mr-2" tds-tooltip tooltipTitle="Đi tới bình luận" tooltipPlacement="bottom"
                     (click)="openPost(item, 'post')">
-                    <i class="tdsi-expand-line"></i>
+                    <i class="tdsi-expand-2-line"></i>
                 </button>
-                <button tds-button-flat-icon color="secondary"  tds-tooltip tooltipTitle="Đi tới bài viết" tooltipPlacement="bottom">
+                <button tds-button-flat-icon color="secondary" [size]="'sm'" tds-tooltip tooltipTitle="Đi tới bài viết" tooltipPlacement="bottom">
                     <a [href]="(data.Data | facebookType)?.permalink_url" target="_blank">
                         <i class="tdsi-search-line"></i>
                     </a>
@@ -71,9 +75,9 @@
     <div class="post-body flex flex-row justify-between p-4">
         <div class="post-content flex flex-col">
             <div class="post-type flex flex-row items-center mb-3 desktop:gap-x-2 gap-x-1">
-                <tds-avatar 
+                <tds-avatar
                     [ngClass]="(data.Data | tshopType)?.Kind =='LIVE' ? 'bg-error-400': ' bg-base-blue-500'"
-                    
+
                     [icon]="(data.Data | tshopType)?.Kind =='LIVE' ? 'tdsi-video-camera-fill': 'tdsi-template-web-fill'"
                     [size]="24"
                     [shape]="'circle'"
@@ -111,7 +115,7 @@
                     class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
             </div>
             <ng-template #noPictureLive>
-                <div  *ngIf="checkPostPictureError(item)"> 
+                <div  *ngIf="checkPostPictureError(item)">
                     <img src="../../../assets/imagesv2/errorPic.svg" alt=""
                         class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
                 </div>

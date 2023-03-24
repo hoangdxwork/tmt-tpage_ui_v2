@@ -8,6 +8,7 @@ import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chato
 import { ChatomniDataItemDto } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from '@app/dto/team/chatomni-channel.dto';
 import { ModalPostComponent } from '@app/pages/conversations/components/modal-post/modal-post.component';
+import { SharesDetailModalComponent } from '../shares-detail-modal/shares-detail-modal.component';
 
 @Component({
   selector: 'extras-conversation-item',
@@ -51,6 +52,19 @@ export class ExtrasConversationItemComponent implements OnInit, OnChanges {
         objectId: this.data.ObjectId,
         currentTeam: this.team
       }
+    });
+  }
+
+  openModalShare() {
+    this.modalService.create({
+      title: 'Số lượt share',
+      content: SharesDetailModalComponent,
+      size: "xl",
+      bodyStyle: { padding : '0px'},
+      viewContainerRef: this.viewContainerRef,
+      // componentParams:{
+      //   data: this.data,
+      // }
     });
   }
 

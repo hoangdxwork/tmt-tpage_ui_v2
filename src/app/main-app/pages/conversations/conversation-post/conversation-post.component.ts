@@ -279,7 +279,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       next: (res: SocketEventSubjectDto) => {
         switch(res?.EventName){
             case ChatmoniSocketEventName.chatomniPostLiveEnd:
-              let exist = this.currentTeam && res.Data && res.Data.Data 
+              let exist = this.currentTeam && res.Data && res.Data.Data
                 && res.Data.Data.ShopId == this.currentTeam.ChannelId && res.Data.Data.ObjectId;
 
               if(exist) {
@@ -355,13 +355,19 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 let existPostLive = res.Data && res.Data.Data && res.Data.Data.ChannelId && res.Data.Data.ChannelId == this.currentTeam?.ChannelId;
 
                 if(existPostLive){
-                  this.destroyTimer();
+                  this.destroyTimerRefresh();
                   this.clickReload = 0;
                   this.isLoadingUpdate = false;
 
-                  this.message.remove(this.csLoadingUpdate?.messageId);
-                  this.message.success('kết nối bài viết thành công');
-                  this.loadData();
+                  if(this.csLoadingUpdate) {
+                    this.message.remove(this.csLoadingUpdate?.messageId);
+                    this.message.success('Yêu cầu cập nhật hội thoại thành công');
+                    this.loadData();
+                  } else {
+                    this.message.success('kết nối bài viết thành công');
+                    this.loadData();
+                  }
+                  
                 }
             break;
 
@@ -369,12 +375,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 let existPostNotLive = res.Data && res.Data.Data && res.Data.Data.ChannelId && res.Data.Data.ChannelId == this.currentTeam?.ChannelId;
 
                 if(existPostNotLive){
-                  this.destroyTimer();
+                  this.destroyTimerRefresh();
                   this.clickReload = 0;
                   this.isLoadingUpdate = false;
-  
+
                   this.message.remove(this.csLoadingUpdate?.messageId);
-                  this.message.success('Không tìm thấy bài Live');
+                  this.message.info('Không tìm thấy bài live mới, Kiểm tra lại có đang thực hiện live hay không hoặc kiểm tra lại thông tin uniqueID có bị thay đổi gần đây không', { duration: 7000});
                 }
             break;
 
@@ -472,10 +478,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   onRefresh(event: any) {
     this.clickReload += 1;
-    this.destroyTimer();
+    this.destroyTimerRefresh();
 
     this.queryObj = {} as any;
-    this.isRefreshing = true;
+    // this.isRefreshing = true;
     this.innerText.nativeElement.value = '';
     this.disableNextUrl = false;
     this.isFilter = false;
@@ -505,9 +511,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.isLoadingUpdate = false;
 
                 this.message.remove(this.csLoadingUpdate?.messageId);
-                this.message.success('Yêu cầu cập nhật hội thoại thành công');
+                this.message.info('Không tìm thấy bài live mới, Kiểm tra lại có đang thực hiện live hay không hoặc kiểm tra lại thông tin uniqueID có bị thay đổi gần đây không', { duration: 7000});
+
                 this.loadData();
-              }, 5 * 1000);
+              }, 15 * 1000);
           },
           error: (error: any) => {
               this.clickReload = 0;
@@ -521,6 +528,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         })
     } else {
         this.refreshTimer = setTimeout(() => {
+            this.isRefreshing = true;
             this.loadFilterDataSource();
         }, 350)
     }
@@ -943,13 +951,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     }
   }
 
-  destroyTimer() {
+  destroyTimerRefresh() {
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
-    }
-
-    if (this.nextDataTimer) {
-      clearTimeout(this.nextDataTimer);
     }
 
     if(this.refresh3Time) {
@@ -957,7 +961,14 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     }
   }
 
+  destroyTimer() {
+    if (this.nextDataTimer) {
+      clearTimeout(this.nextDataTimer);
+    }
+  }
+
   ngOnDestroy(): void {
+      this.destroyTimerRefresh();
       this.destroyTimer();
   }
 }

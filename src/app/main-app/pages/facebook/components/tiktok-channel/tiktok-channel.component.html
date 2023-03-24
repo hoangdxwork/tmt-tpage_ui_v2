@@ -48,7 +48,7 @@
                           hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                       <i class="tdsi-eye-close-fill text-xl leading-none"></i>
                     </button> -->
-                    <button tds-button-icon color="custom" tds-tooltip="Cập nhật thông tin tài khoản" tds-popover  popoverTrigger="click" [popoverVisible]="idShowUpdateTiktok == team.Id" (click)="onOpenPopover(team.Id)"
+                    <button  type="button" tds-button-icon color="custom" tds-tooltip="Cập nhật thông tin tài khoản" tds-popover  popoverTrigger="click" [popoverVisible]="idShowUpdateTiktok == team.Id" (click)="onOpenPopover(team.Id)"
                       popoverTrigger="click" [popoverFooter]="footerTemplate" [popoverContent]="contentTemplate" [popoverAutoClose]="false" [popoverBackdrop]="true"
                       class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
                           hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
@@ -67,12 +67,12 @@
 
                     <ng-template #footerTemplate>
                       <div class="flex justify-end pt-2 text-body-2">
-                          <button tds-button color="secondary" class="mr-2" size="sm" (click)="onClosePopover()">
+                          <button   type="button"tds-button color="secondary" class="mr-2" size="sm" (click)="onClosePopover()">
                           <span class="flex items-center">
                               Đóng
                           </span>
                           </button>
-                          <button tds-button size="sm" color="primary" (click)="onSavePopover(team.Id)">
+                          <button  type="button" tds-button size="sm" color="primary" (click)="onSavePopover(team.Id)">
                           <span class="flex items-center">
                               Cập nhật
                           </span>
@@ -80,7 +80,7 @@
                       </div>
                     </ng-template>
 
-                    <button tds-button-icon color="custom" tds-tooltip="Hủy kết nối" (click)="unconnectTeam(team)"
+                    <button  type="button" tds-button-icon color="custom" tds-tooltip="Hủy kết nối" (click)="unconnectTeam(team)"
                       class="text-neutral-1-500 border-transparent hover:text-neutral-1-700 bg-transparent
                           hover:bg-neutral-3-50 focus:bg-neutral-3-100 focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-neutral-1-700">
                       <i class="tdsi-break-link-fill text-xl leading-none"></i>
@@ -120,7 +120,7 @@
                           <i class="tdsi-reload-fill text-xl leading-none mr-2"></i>Làm mới Token
                         </span>
                       </button> -->
-                      <button tds-button color="custom" (click)="unconnectTeam(child)" rounded="!rounded-full"
+                      <button  type="button" tds-button color="custom" (click)="unconnectTeam(child)" rounded="!rounded-full"
                         class="text-neutral-1-500 border-transparent hover:text-error-400 bg-transparent
                             focus:ring-0 focus:ring-transparent focus:border-transparent focus:text-error-400 focus:bg-transparent">
                         <span class="flex items-center">
@@ -186,7 +186,7 @@
                   <input tdsInput autocomplete="off" placeholder="@sessionId" [(ngModel)]="sessionId"/>
                 </tds-form-field>
 
-                <button tds-button color="custom" class="text-white focus:ring-2 focus:ring-secondary-1/20 border-neutral-1-900
+                <button  type="button" tds-button color="custom" class="text-white focus:ring-2 focus:ring-secondary-1/20 border-neutral-1-900
                     bg-neutral-1-900 hover:bg-neutral-1-800 focus:bg-neutral-1-900 focus:border-neutral-1-900 mt-3"
                     (click)="tiktokSignIn()">
                     <span class="flex items-center">
@@ -204,7 +204,7 @@
               <span class="mt-4 text-header-1 font-semibold text-neutral-1-900">Xin chào, {{ userTiktokLogin?.Name }}!</span>
               <span class="mt-2 text-body-2 text-neutral-1-400">{{ userTiktokLogin?.Email }}</span>
 
-              <button tds-button color="secondary" class="w-full mt-6" (click)="tiktokSignOut()">
+              <button  type="button" tds-button color="secondary" class="w-full mt-6" (click)="tiktokSignOut()">
                 <span class="flex items-center">
                   <i class="tdsi-log-out-fill text-lg text-neutral-1-500 leading-none mr-2"></i>Đăng xuất
                 </span>
@@ -237,7 +237,7 @@
           </ng-template>
 
           <ng-template #footerTpl>
-            <button tds-button color="custom" class="text-white focus:ring-2 focus:ring-secondary-1/20 border-neutral-1-900
+            <button  type="button" tds-button color="custom" class="text-white focus:ring-2 focus:ring-secondary-1/20 border-neutral-1-900
               bg-neutral-1-900 hover:bg-neutral-1-800 focus:bg-neutral-1-900 focus:border-neutral-1-900 mt-3"
               (click)="tiktokSignIn()">
               <span class="flex items-center">

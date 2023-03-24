@@ -41,6 +41,7 @@ export class CsOrder_PrepareModelHandler {
     x.DistrictName = model.DistrictName;
     x.WardCode = model.WardCode;
     x.WardName = model.WardName;
+    x.LiveCampaignId = model.LiveCampaignId;
 
     x.Code = model.Code;
     x.CRMTeamId = model.CRMTeamId || team.Id;
@@ -362,6 +363,7 @@ export interface InsertFromMessageDto {
   Note?: any;
   CRMTeamId: number;
   FormAction?: string;
+  LiveCampaignId?: string;
 }
 
 export interface Detail_InsertFromMessageDto {

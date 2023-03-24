@@ -12,6 +12,7 @@ import { environment } from 'src/environments/environment';
 })
 
 export class FacebookAuthorizeService extends BaseSevice {
+
     prefix: string = "";
     table: string = "";
     baseRestApi: string = "";
@@ -19,7 +20,6 @@ export class FacebookAuthorizeService extends BaseSevice {
     constructor(private apiService: TCommonService,
         private facebookLoginService: FacebookLoginService) {
         super(apiService);
-
         this.init().subscribe();
     }
 
@@ -61,15 +61,10 @@ export class FacebookAuthorizeService extends BaseSevice {
       return new Observable((observer: TDSSafeAny) => {
         this.facebookLoginService.getLoginStatus().subscribe({
           next: (data: FacebookAuthResponse) => {
-            if (data.status === 'connected') {
               observer.next(data);
               observer.complete();
-            } else {
-              observer.next();
-              observer.complete();
-            }
           },
-          error: (error) => {
+          error: (error: any) => {
             observer.next(error);
             observer.complete();
           }

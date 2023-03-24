@@ -88,6 +88,12 @@ export class SortDataSourceMessagePipe implements PipeTransform {
         return x;
       }
 
+      //TODO: kiểm tra item kế item hiện tại là System
+      if(i + 1 <  data.length && data[i + 1]?.Type == ChatomniMessageType.System){
+        x.IsShowAvatar = true;
+        return x;
+      }
+
       //TODO: Kiểm tra thời gian của item kế tiếp
       if(data[i+1] && data[i+1].ChannelCreatedTime && x.ChannelCreatedTime && this.setTime(x.ChannelCreatedTime, data[i+1].ChannelCreatedTime) >= 300 ){
         x.IsShowAvatar = true;

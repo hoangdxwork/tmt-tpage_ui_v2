@@ -85,4 +85,5 @@ export interface AppTenantConfig_LimitationCacheDTO {
   Partner: number;
   /// Sản phẩm
   Product: number;
+  TiktokUser: number;
 }

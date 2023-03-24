@@ -1,4 +1,7 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { CRMTeamType } from './../../../../dto/team/chatomni-channel.dto';
+import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
+import { SocketStorageNotificationService } from './../../../../services/socket-io/socket-config-notification.service';
+import { Component, Input, OnInit } from '@angular/core';
 import { FireBaseTopicDto } from '@app/dto/firebase/topics.dto';
 import { FirebaseMessagingService } from '@app/services/firebase/firebase-messaging.service';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
@@ -18,6 +21,9 @@ export class ModalGetNotificationComponent implements OnInit {
   @Input() topicData: FireBaseTopicDto[] = [];
   @Input() idsTopic: any[] = [];
 
+  socketData: {[key: string]: boolean} = {} as any;
+  socketItems: Array<any> = [];
+  selectedIndex: number = 0;
   idsRegister: any[] = [];
   isLoading: boolean = false;
   checkAll: boolean = false;
@@ -28,11 +34,31 @@ export class ModalGetNotificationComponent implements OnInit {
     private message: TDSMessageService,
     private destroy$: TDSDestroyService,
     private afMessaging: AngularFireMessaging,
-    private firebaseRegisterService: FirebaseRegisterService) {
+    private firebaseRegisterService: FirebaseRegisterService,
+    private socketStorageNotificationService: SocketStorageNotificationService) {
   }
 
   ngOnInit(): void {
+    // socket noti
+    let exist = this.socketStorageNotificationService.getLocalStorage();
+    if(!exist) {
+      this.socketStorageNotificationService.setLocalStorage();
+      exist = this.socketStorageNotificationService.getLocalStorage();
+    }
+
+    for(let item in exist) {
+      this.socketItems.push(item);
+    }
+
+    this.socketData = exist;
     this.loadSubscribedTopics();
+    this.onEventEmitter();
+  }
+
+  onEventEmitter() {
+    this.socketStorageNotificationService.socketAllEmitter$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.socketData = this.socketStorageNotificationService.getLocalStorage();
+    });
   }
 
   loadSubscribedTopics() {
@@ -58,7 +84,7 @@ export class ModalGetNotificationComponent implements OnInit {
   }
 
   save() {
-    this.registerTopics(true)
+    this.registerTopics(true);
   }
 
   registerTopics(isMessage: boolean) {
@@ -131,4 +157,29 @@ export class ModalGetNotificationComponent implements OnInit {
       });
   }
 
+  change(item: any) {
+    if(item == "socket.all") {
+        let cur = this.socketData[item];
+
+        if(cur == false) {
+            for(let data in this.socketData) {
+              this.socketData[data] = false;
+            }
+        } else {
+            for(let data in this.socketData) {
+              this.socketData[data] = true;
+            }
+        }
+
+        this.socketStorageNotificationService.setLocalStorage(this.socketData);
+        this.socketStorageNotificationService.socketAllEmitter$.emit(this.socketData[item]);
+    } else {
+        if(item == ChatmoniSocketEventName.chatomniOnMessage) {
+          this.socketData[CRMTeamType._Facebook] = this.socketData[item];
+          this.socketData[CRMTeamType._TShop] = this.socketData[item];
+          this.socketData[CRMTeamType._TikTok] = this.socketData[item];
+        }
+      this.socketStorageNotificationService.setLocalStorage(this.socketData);
+    }
+  }
 }

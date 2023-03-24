@@ -132,7 +132,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
     private chatomniConversationFacade: ChatomniConversationFacade,
     private chatomniSendMessageService: ChatomniSendMessageService,
     private chatomniMessageFacade: ChatomniMessageFacade,
-    private crmTagService: CRMTagService) {
+    private crmTagService: CRMTagService,
+    private conversationPostEvent: ConversationPostEvent) {
   }
 
   ngOnInit() {
@@ -156,6 +157,19 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
           this.cdRef.detectChanges();
       }
     });
+
+    this.conversationPostEvent.onChangeReplyCommentPost$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny[]) => {
+        res.map((item:any) => {
+          let model = {
+            Data: {
+              Message: item
+            }
+          }
+          this.setCommentRealtime(model);
+        })
+      }
+    })
 
     this.chatomniCommentFacade.onChangePartnerTimeStamp$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any) => {
@@ -285,7 +299,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
     if(itemNewComment && TDSHelperString.hasValueString(itemNewComment.ParentId) && this.dataSource.Extras && this.dataSource.Extras.Childs && this.dataSource.Extras.Childs[itemNewComment.ParentId]) {
         let index = this.dataSource.Extras.Childs[itemNewComment.ParentId].findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
-        if(Number(index) >= 0) return;
+        let indexVs = this.vsSocketImports.findIndex((x: ChatomniDataItemDto)=> x.Id == response?.Data?.Message?.Id);
+        if(Number(index) >= 0 || Number(indexVs) >= 0) return;
     }
 
     if(this.vsStartIndex <= 1) {
@@ -308,6 +323,10 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
       index: model.Data.SessionIndex,
       code: model.Data.Code
     };
+
+    if(item.index > 0) {
+      item.code = `${item.index}. ${item.code}`;
+    }
 
     let exist = this.commentOrders && this.commentOrders[model.Data?.Facebook_ASUserId] && Object.keys(this.commentOrders[model.Data?.Facebook_ASUserId]).length > 0;
     if(exist) {
@@ -458,44 +477,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
       size: 'xl',
       componentParams: {
         pageId: this.team?.ChannelId,
+        userId: item?.UserId
       }
-    });
-
-    modal.componentInstance?.onSendProduct.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: TDSSafeAny)=>{
-        if(res){
-            this.onProductSelected(res, item);
-            modal.destroy(null);
-        }
-      }
-    })
-  }
-
-  onProductSelected(event: any, item: ChatomniDataItemDto) {
-    let model = {
-      product: {
-        Id: event.Id,
-        Name: event.Name,
-        Picture: event.Picture,
-        Price: event.Price,
-      }
-    };
-
-    this.activityMatchingService.addTemplateMessageV3(this.team?.Id, item.UserId, model).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (res: any) => {
-            item.Data.is_reply = false;
-            this.isReplyingComment = false;
-
-            this.message.success('Gửi tin thành công');
-            this.cdRef.markForCheck();
-        },
-        error: error => {
-            item.Data.is_reply = false;
-            this.isReplyingComment = false;
-
-            this.message.error(error.error?.message);
-            this.cdRef.detectChanges();
-        }
     });
   }
 
