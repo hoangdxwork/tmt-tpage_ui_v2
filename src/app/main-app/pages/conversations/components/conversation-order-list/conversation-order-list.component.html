@@ -72,66 +72,69 @@
         </div>
         <!-- danh sách đơn hàng -->
         <div class="flex flex-col justify-between w-full h-full desktop:pl-4 pl-2 pb-4 overflow-hidden" *ngIf="lstOfData.length > 0; else noData">
-            <div class="flex-auto flex flex-col desktop:gap-y-4 gap-y-2 overflow-auto tds-custom-scroll w-full pr-2">
+            <div class="flex-auto flex flex-col gap-y-2 overflow-auto tds-custom-scroll w-full pr-2">
                 <tds-collapse accordion="true" *ngFor="let order of lstOfData; let index = index" class="!rounded-xl">
                     <tds-collapse-panel [header]="headerOrder" [active]="false" (activeChange)="onActiveChange(order, $event, index)" class="!rounded-xl" [tdsClass]="'desktop:p-4 p-2'" [tdsHeaderClass]="'desktop:px-4 desktop:py-3 px-2 py-1.5'"
                         [extra]="extraTpl1">
                         <!-- Header  -->
                         <ng-template #headerOrder>
                         <div class="flex gap-x-2.5 items-center z-10 flex-auto pr-3 desktop:text-body-2 text-caption-1">
-                            <div class="desktop:w-1/4 w-[30%] flex flex-col">
-                                <div>
-                                    <span class="text-info-500 font-semibold">
-                                      #<span *ngIf="order.SessionIndex">{{order.SessionIndex}}. </span>{{order.Code || 'N/A' }}</span>
+                            <div class="w-3/4 flex flex-col gap-y-0.5">
+                                <div class="font-semibold flex gap-x-1 items-center">
+                                    <span>{{index | numericalOrder: pageSize : pageIndex}}.</span>
+                                    <span class="text-info-500">
+                                        #<span *ngIf="order.SessionIndex">{{order.SessionIndex}}. </span>{{order.Code || 'N/A' }}</span>
+                                    <span class="text-neutral-1-400 text-caption-2 font-regular">{{ order.DateCreated | date:"HH:mm, dd/MM/yyyy" }}</span>
+                                    <div *ngIf="order?.Source" class="bg-primary-3 px-2 py-0.5 rounded-full text-caption-2 italic text-primary-1">{{ order?.Source | dictSourcePipe }}</div>
                                 </div>
-                                <div>
-                                    <span class="text-neutral-1-400 text-caption-2">{{ order.DateCreated | date:"HH:mm, dd/MM/yyyy" }}</span>
-                                </div>
-                            </div>
-                            <div class="flex desktop:flex-row flex-col gap-y-1 w-1/2 items-center">
-                                <div class="desktop:w-1/2 w-full flex flex-col justify-between">
+
+                                <div class="flex gap-x-3">
+                                  <span class="">{{ order.Facebook_UserName }}</span>
+                                  <div class="flex items-center">
+                                    <button *ngIf="order.Telephone"
+                                        class="bg-success-400 rounded-md h-4 w-4 flex items-center justify-center mr-1">
+                                        <span class="flex items-center text-white">
+                                            <i class="tdsi-call-fill text-[10px] leading-[10px]"></i>
+                                        </span>
+                                    </button>
+                                    <button *ngIf="order.Address"
+                                        class="bg-orange-500 rounded-md h-4 w-4 flex items-center justify-center mr-2">
+                                        <span class="flex items-center text-white">
+                                            <i class="tdsi-location-fill text-[10px] leading-[10px]"></i>
+                                        </span>
+                                    </button>
                                     <div>
-                                        <span class="">{{ order.Facebook_UserName }}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <button *ngIf="order.Telephone"
-                                            class="bg-green-400 rounded h-4 w-4 flex items-center justify-center mr-1">
-                                            <span class="flex items-center text-white">
-                                                <i class="tdsi-call-fill text-[10px] leading-[10px]"></i>
-                                            </span>
-                                        </button>
-                                        <button *ngIf="order.Address"
-                                            class="bg-orange-500 rounded h-4 w-4 flex items-center justify-center mr-2">
-                                            <span class="flex items-center text-white">
-                                                <i class="tdsi-pin-fill text-[10px] leading-[10px]"></i>
-                                            </span>
-                                        </button>
-                                        <div>
-                                            <span class="text-error-400 text-caption-2" *ngIf="!order.PrintCount || order.PrintCount == 0">
-                                                Chưa in
-                                            </span>
+                                        <span class="text-base-red-500 text-caption-2 font-semibold" *ngIf="!order.PrintCount || order.PrintCount == 0">
+                                            Chưa in
+                                        </span>
 
-                                            <span class="text-success-500 text-caption-2" *ngIf="order.PrintCount && order.PrintCount > 0">
-                                                Đã in: {{order.PrintCount}}
-                                            </span>
-                                        </div>
+                                        <span class="text-success-500 text-caption-2 font-semibold" *ngIf="order.PrintCount && order.PrintCount > 0">
+                                            Đã in: {{order.PrintCount}}
+                                        </span>
                                     </div>
+                                  </div>
                                 </div>
-                                <div class="truncate desktop:w-1/2 w-full">
-                                    <tds-tag *ngIf="order.PriorityStatus && order.PriorityStatus != 'Undefined'" [status]='order.PriorityStatus | priorityStatusColor'>
-                                        {{order.PriorityStatus | priorityStatusName}}
-                                    </tds-tag>
-                                    <div class="font-semibold mt-1 text-caption-1">{{ order?.Source | dictSourcePipe }}</div>
+
+                                <div class="flex gap-x-1 items-center">
+                                    <span class="text-primary-1 h-4 w-4"><i class="tdsi-product-fill text-[16px] leading-none"></i></span>
+                                    <span class="text-caption-1">({{(commentOrders[order.Facebook_ASUserId]?.length || 1)}})<span class="text-neutral-1-400 ml-1">đơn hàng</span></span>
+                                    <span *ngIf="order.Details && order.Details.length > 0" class="text-caption-1">({{order.Details.length}})<span class="text-neutral-1-400 ml-1">sản phẩm</span></span>
                                 </div>
                             </div>
 
-                            <div class="w-1/5 flex justify-end gap-x-2">
-                                <tds-badge status="secondary" class="truncate laptop:text-caption-1" tds-tooltip="{{ order.StatusText }}" text="{{ order.StatusText }}"></tds-badge>
+                            <div class="w-1/4 flex flex-col justify-end gap-y-1 overflow-hidden">
+                                <div class="w-full"><tds-badge status="secondary" class="truncate !text-caption-1" tds-tooltip="{{ order.StatusText }}" text="{{ order.StatusText }}"></tds-badge></div>
+
+                                <div class="truncate w-full">
+                                  <tds-tag *ngIf="order.PriorityStatus && order.PriorityStatus != 'Undefined'" [status]='order.PriorityStatus | priorityStatusColor'>
+                                      {{order.PriorityStatus | priorityStatusName}}
+                                  </tds-tag>
+                              </div>
                             </div>
                         </div>
                         </ng-template>
                         <ng-template #extraTpl1>
-                        <div class="flex gap-x-6 items-center">
+                        <div class="flex gap-x-3 items-center">
                             <button tds-flat-button-icon (click)="onEdit(order, $event)">
                                 <span class="flex items-center" tds-tooltip="Chỉnh sửa đơn hàng">
                                     <i class="tdsi-edit-fill text-neutral-1-500"></i>
@@ -197,10 +200,10 @@
             </div>
 
             <!-- phân trang -->
-            <div class="flex items-end pt-3">
+            <div class="flex items-end pt-3 pagination-order-list">
                 <tds-pagination class="w-full" [pageSize]="pageSize" [pageIndex]="pageIndex" [total]="count"
-                    [pageSizeOptions]="[10, 20, 50, 100]" [showTotal]="rangeTemplate" [showRefresh]="true"
-                    (clickRefresh)="refreshData()" (pageSizeChange)="changePageSize($event)" (pageIndexChange)="changePageIndex($event)">
+                    [pageSizeOptions]="[10, 20, 50, 100, 200, 500, 1000]" [showTotal]="rangeTemplate" [showRefresh]="true" showSizeChanger
+                    (clickRefresh)="refreshData()" (pageSizeChange)="changePageSize($event)">
                 </tds-pagination>
 
                 <ng-template #rangeTemplate let-range="range" let-total>

@@ -1,3 +1,5 @@
+import { FacebookCommentService } from './../../../../services/facebook-comment.service';
+import { CommentOrder, CommentOrderPost } from './../../../../dto/conversation/post/comment-order-post.dto';
 import { ChatmoniSocketEventName } from './../../../../services/socket-io/soketio-event';
 import { SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { SocketEventSubjectDto } from './../../../../services/socket-io/socket-onevent.service';
@@ -78,18 +80,19 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
   countOrderNew: number = 0;
   countOrderDelete: number = 0;
   idsDeleteOrder: string[] = [];
+  commentOrders?: any = {};
 
   constructor(private chatomniObjectFacade: ChatomniObjectFacade,
     private message: TDSMessageService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
     private orderPrintService: OrderPrintService,
-    private conversationPostEvent: ConversationPostEvent,
     private modalService: TDSModalService,
     private destroy$: TDSDestroyService,
     private viewContainerRef: ViewContainerRef,
     private fastSaleOrderService: FastSaleOrderService,
     private socketOnEventService: SocketOnEventService,
+    private facebookCommentService: FacebookCommentService,
     private cdr: ChangeDetectorRef) {
   }
 
@@ -98,6 +101,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
       this.currentPost = this.data;
       this.loadData(this.pageSize, this.pageIndex);
       this.loadSummaryStatus();
+      this.loadCommentsOrderByPost();
     }
 
     this.onEventSocket();
@@ -185,6 +189,43 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     });
   }
 
+  loadCommentsOrderByPost() {
+    this.commentOrders = {};
+    this.facebookCommentService.chatomniGetCommentsOrders(this.currentTeam?.Id, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res) {
+            let comments = [...res];
+            comments.map((x: CommentOrderPost) => {
+                this.commentOrders[x.asuid] = [];
+                this.commentOrders[x.uid] = [];
+
+                //gán lại data bằng syntax
+                x.orders?.map((a: CommentOrder) => {
+                  if(a) {
+                      this.commentOrders![x.asuid].push(a);
+                  }
+                });
+
+                if (x.uid && x.uid != x.asuid) {
+                  x.orders?.map((a: any) => {
+                    if(a) {
+                        this.commentOrders[x.uid].push(a);
+                    }
+                  });
+                }
+            });
+        }
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   refreshData() {
     this.pageIndex = 1;
     this.tabIndex = 1;
@@ -198,15 +239,12 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
 
     this.loadData(this.pageSize, this.pageIndex);
     this.loadSummaryStatus();
+    this.loadCommentsOrderByPost();
   }
 
   changePageSize(pageSize:number){
     this.pageSize = pageSize;
-    this.loadData(this.pageSize, this.pageIndex);
-  }
-
-  changePageIndex(pageIndex:number){
-    this.pageIndex = pageIndex;
+    this.pageIndex = 1;
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -394,6 +432,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
               next:(x: any) =>{
                   this.loadData(this.pageSize,this.pageIndex);
                   this.loadSummaryStatus();
+                  this.loadCommentsOrderByPost();
               }
             });
           }
@@ -438,6 +477,7 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
             this.message.success(Message.DeleteSuccess);
             this.loadData(this.pageSize, this.pageIndex);
             this.loadSummaryStatus();
+            this.loadCommentsOrderByPost();
 
             // TODO: đẩy sự kiện qua conversation-order-list, comment-filter-all
             this.chatomniObjectFacade.onLoadCommentOrderByPost$.emit(true);

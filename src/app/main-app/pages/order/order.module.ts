@@ -1,3 +1,5 @@
+import { CRMActivityV2Service } from './../../services/crm-activity-v2.service';
+import { AccountRegisterPaymentService } from './../../services/account-register-payment.service';
 import { ChatomniConversationFacade } from './../../services/chatomni-facade/chatomni-conversation.facade';
 import { ConversationService } from './../../services/conversation/conversation.service';
 import { ActivityMatchingService } from './../../services/conversation/activity-matching.service';
@@ -129,7 +131,9 @@ const SERVICES = [
   ChatomniCommentFacade,
   ChatomniConversationFacade,
   ChatomniCommentService,
-  ChatomniConversationService
+  ChatomniConversationService,
+  AccountRegisterPaymentService,
+  CRMActivityV2Service
 ]
 
 @NgModule({

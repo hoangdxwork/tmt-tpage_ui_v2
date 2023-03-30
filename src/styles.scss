@@ -171,3 +171,7 @@ tbody td div, tbody td p, tbody td span, tbody td a, tbody td div div span{
   flex: 0 0 50%;
   height: auto;
 }
+
+.pagination-order-list .tds-pagination div.tds-pagination-options div.min-w-max {
+  display: none;
+}
