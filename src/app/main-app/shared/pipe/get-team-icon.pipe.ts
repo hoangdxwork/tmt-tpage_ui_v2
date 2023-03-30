@@ -45,3 +45,16 @@ export class GetTeamIconPipe implements PipeTransform {
   }
 
 }
+
+@Pipe({
+  name: 'getTeamCount'
+})
+export class GetTeamCountPipe implements PipeTransform {
+  constructor(){}
+  transform(crmTeamList: CRMTeamDTO[], type: string) {
+    if(crmTeamList && crmTeamList.length > 0) {
+      return crmTeamList.find(x => x.Type == type)?.Childs?.length || 0;
+    }
+    return 0;
+  }
+}

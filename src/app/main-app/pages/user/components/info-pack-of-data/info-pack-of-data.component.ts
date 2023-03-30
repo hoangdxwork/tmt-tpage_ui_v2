@@ -4,6 +4,10 @@ import { TDSChartOptions, TDSBarChartComponent } from 'tds-report';
 import { TenantInfoDTO, TenantUsedDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
 import { PackOfDataEnum } from 'src/app/main-app/dto/account/account.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { CRMTeamDTO } from '@app/dto/team/team.dto';
+import { TDSMessageService } from 'tds-ui/message';
+import { takeUntil } from 'rxjs';
+import { CRMTeamService } from './../../../../services/crm-team.service';
 
 @Component({
   selector: 'info-pack-of-data',
@@ -18,6 +22,7 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
   size: any = ['auto', 300];
   labelData: TDSSafeAny[] = [];
   seriesData: TDSSafeAny[] = [];
+  lstTeam: CRMTeamDTO[] = [];
 
   chartOptions = TDSChartOptions();
 
@@ -33,7 +38,9 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
   tenantLimitedCount: number = 0;
   interval: number = 0;
 
-  constructor() {}
+  constructor(private crmTeamService: CRMTeamService,
+    private destroy$: TDSDestroyService,
+    private message: TDSMessageService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes["tenantUsed"] && !changes["tenantUsed"].firstChange) {
@@ -47,6 +54,24 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
       this.buildData(this.tenantUsed);
       this.buildChart();
     }
+
+    this.loadListTeam();
+  }
+
+  loadListTeam() {
+    this.isLoading = true;
+    this.crmTeamService.getAllFacebooks().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res) {
+          this.lstTeam = res;
+        }
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message);
+      }
+    })
   }
 
   buildData(used: TenantUsedDTO) {

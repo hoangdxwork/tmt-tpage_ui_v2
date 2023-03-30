@@ -1,7 +1,7 @@
 import { CountSharedPipe } from './count-shared.pipe';
 import { GetDeletedByNamePipe } from './get-deletedBy-name.pipe';
 import { GetChannelAvatarPipe } from './get-channel-avatar.pipe';
-import { GetTeamIconPipe } from './get-team-icon.pipe';
+import { GetTeamIconPipe, GetTeamCountPipe } from './get-team-icon.pipe';
 import { ReportOverviewPipe } from './reportOverview.pipe';
 import { TruncateStringPipe } from './truncate-string.pipe';
 import { SortDataSourceMessagePipe, SortDataSourcePostPipe } from './sort-dataSource-post.pipe';
@@ -132,7 +132,8 @@ const cmp = [
   DictSourcePipe,
   GetDeletedByNamePipe,
   CountSharedPipe,
-  CreateBillSourcePipe
+  CreateBillSourcePipe,
+  GetTeamCountPipe
 ]
 
 @NgModule({
