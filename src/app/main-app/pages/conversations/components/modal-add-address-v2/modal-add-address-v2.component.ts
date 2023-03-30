@@ -36,7 +36,7 @@ export class ModalAddAddressV2Component implements OnInit {
   prepareModel() {
     let model: ResultCheckAddressDTO = {
       Address: this._street,
-      CityCode: this._cities ? this._cities.code :null,
+      CityCode: this._cities ? this._cities?.code :null,
       CityName: this._cities ? this._cities?.name : null,
       DistrictCode:  this._districts ? this._districts?.code : null,
       DistrictName: this._districts ? this._districts?.name : null,
