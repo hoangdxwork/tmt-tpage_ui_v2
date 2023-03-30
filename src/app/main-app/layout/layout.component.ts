@@ -18,6 +18,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { FireBaseDevice, TopicDetailDto } from '@app/dto/firebase/topics.dto';
 import { FirebaseRegisterService } from '@app/services/firebase/firebase-register.service';
 import { DOCUMENT } from '@angular/common';
+import { SocketService } from '@app/services/socket-io/socket.service';
 
 @Component({
   selector: 'app-layout',
@@ -36,6 +37,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   withLaptop: number = 1600;
   establishedConnected?: boolean = true;
   notiSocket!: boolean;
+  isConnectedSocket: boolean = false;
 
   @ViewChild('withLayout') viewChildWithLayout!: ElementRef;
   isDeviceToken: boolean = false;
@@ -53,6 +55,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private message: TDSMessageService,
     private resizeObserver: TDSResizeObserver,
     private destroy$: TDSDestroyService,
+    private socketService: SocketService,
     private socketStorageNotificationService: SocketStorageNotificationService,
     private sessionParamsService: SessionParamsService) {
 
@@ -113,6 +116,12 @@ export class LayoutComponent implements OnInit, AfterViewInit {
           this.notiSocket = res;
       }
     });
+
+    this.socketService.isConnectedSocket$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: boolean) => {
+        this.isConnectedSocket = res;
+      }
+    })
   }
 
   firebaseDevice() {

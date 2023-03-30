@@ -9,6 +9,7 @@ import { BaseSevice } from '../base.service';
 import { TCommonService } from '@core/services';
 import { CoreAPIDTO } from '@core/dto';
 import { CoreApiMethodType } from '@core/enum';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 
 @Injectable({
   providedIn: 'root'
@@ -33,13 +34,20 @@ export class SocketService extends BaseSevice {
     @Inject(DOCUMENT) private document: Document) {
     super(apiService);
 
-    this.authService.getCacheToken().subscribe({
-      next: (data: any) => {
-        if(data && data.access_token) {
+    this.webSocket();
+  }
+
+  webSocket() {
+    this.authService.getAuthenIsLogin().subscribe({
+      next: (isLogin: any) => {
+        if(isLogin) {
           this.apiUserinit().subscribe({
             next: (user: any) => {
               if(user && user.Id) {
-                this.initSocket(data.access_token);
+                let accessToken = this.authService.getAccessToken()?.access_token;
+                if(TDSHelperString.hasValueString(accessToken)) {
+                  this.initSocketIO(accessToken);
+                }
               }
             }
           })
@@ -48,7 +56,7 @@ export class SocketService extends BaseSevice {
     })
   }
 
-  initSocket(accessToken: any): void {
+  initSocketIO(accessToken: string): void {
     let hostname = this.document.location.hostname;
     hostname = hostname.toLowerCase();
 
@@ -76,6 +84,7 @@ export class SocketService extends BaseSevice {
       console.log(`connect_error due to ${err.message}`);
 
       if(this.isConnectError == 0) {
+        this.isConnectedSocket$.emit(false);
         this.notificationService.error('Kết nối Realtime', 'Socket.io đã xảy ra lỗi!', { duration: 10 * 1000, placement: 'bottomLeft' });
         this.isConnectError = 1;
       }
