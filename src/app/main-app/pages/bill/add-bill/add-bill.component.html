@@ -272,7 +272,7 @@
 
                     <div class="col-span-2 w-full flex flex-row gap-x-2">
                       <tds-form-field class="flex flex-auto">
-                          <tds-select valueField="Id" textField="Name" (ngModelChange)="onChangeCarrierV2($event)"
+                          <tds-select valueField="Id" textField="Name" (selectChange)="onChangeCarrierV2($event)"
                             formControlName="Carrier" placeholder='Chọn đối tác giao hàng' [valuePrimitive]="false"
                             [data]="lstCarriers" [allowClear]="true">
                           </tds-select>

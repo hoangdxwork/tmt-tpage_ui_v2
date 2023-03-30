@@ -157,7 +157,7 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
   loadDistricts(code: string) {
     this.lstDistrict = [];
     if(!TDSHelperString.hasValueString(code)) return;
-    
+
     this.suggestService.getDistrict(code).pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res: any) => {
@@ -170,7 +170,7 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
   loadWards(code: string) {
     this.lstWard = [];
     if(!TDSHelperString.hasValueString(code)) return;
-    
+
     this.suggestService.getWard(code).pipe(takeUntil(this.destroy$)).subscribe(
       {
         next: (res: any) => {
@@ -277,10 +277,11 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
     }
     this.mappingStreet();
 
+    let city = this._form.controls['City'].value as any;
     let item: ResultCheckAddressDTO = {
         Address: this._form.controls['Street'].value,
-        CityCode: district ? district.cityCode : null,
-        CityName:  district ? district.cityName : null,
+        CityCode: city ? city.code : null,
+        CityName:  city ? city.name : null,
         DistrictCode: district ? district.code : null,
         DistrictName: district ? district.name : null,
         WardCode: null,
@@ -298,12 +299,15 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
     }
     this.mappingStreet();
 
+    let city = this._form.controls['City'].value as any;
+    let district = this._form.controls['District'].value as any;
+
     let item: ResultCheckAddressDTO = {
         Address: this._form.controls['Street'].value,
-        CityCode: ward ? ward.cityCode : null,
-        CityName: ward ? ward.cityName : null,
-        DistrictCode: ward ? ward.districtCode : null,
-        DistrictName: ward ? ward.districtName : null,
+         CityCode: city ? city.code : null,
+        CityName: city ? city.name : null,
+        DistrictCode: district ? district.code : null,
+        DistrictName: district ? district.name : null,
         WardCode: ward ? ward.code : null,
         WardName: ward ? ward.name : null
     } as any;

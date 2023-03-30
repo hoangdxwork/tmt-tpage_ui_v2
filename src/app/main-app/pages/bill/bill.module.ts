@@ -1,3 +1,4 @@
+import { CRMActivityV2Service } from './../../services/crm-activity-v2.service';
 import { TDSImageModule } from 'tds-ui/image';
 import { TDSCarouselModule } from 'tds-ui/carousel';
 import { ChatomniCommentService } from './../../services/chatomni-service/chatomni-comment.service';
@@ -157,7 +158,8 @@ const SERVICES = [
   ChatomniConversationFacade,
   LiveCampaignService,
   ChatomniConversationService,
-  ChatomniCommentService
+  ChatomniCommentService,
+  CRMActivityV2Service
 ]
 
 @NgModule({

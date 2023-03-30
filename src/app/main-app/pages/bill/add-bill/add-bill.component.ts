@@ -1382,14 +1382,14 @@ export class AddBillComponent implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
-    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
+    let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
     if(feeShip > 0) {
       this._form.controls["DeliveryPrice"].setValue(feeShip);
       this.coDAmount();
     } else {
       let carrier = this._form.controls["Carrier"].value;
       let deliveryPrice = carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
-      
+
       this._form.controls["DeliveryPrice"].setValue(deliveryPrice);
       this.coDAmount();
     }
@@ -1803,8 +1803,9 @@ export class AddBillComponent implements OnInit {
       this._form.controls['Ship_Receiver'].patchValue({
         City: city
       });
-        this.loadDistricts(city.code);
+      this.loadDistricts(city.code);
     }
+
     this.mappingStreet();
 
     let item: ResultCheckAddressDTO = {

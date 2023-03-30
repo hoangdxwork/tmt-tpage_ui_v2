@@ -733,7 +733,6 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       this.saleModel.DeliveryPrice = 0;
 
       this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, null);
-      
       return;
     }
 
@@ -771,7 +770,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     if(event) {
         this.calcFee();
     }
-    
+
     this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, event?.DeliveryType);
     this.prepareCalcFeeButton();
     this.cdRef.detectChanges();
@@ -1972,7 +1971,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       }
 
       this.loadWards(data?.DistrictCode);
-      
+
       this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
       this.cdRef.detectChanges();
     }

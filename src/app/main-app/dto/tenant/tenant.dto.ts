@@ -12,6 +12,7 @@ export interface TenantUsedDTO {
   facebookUser: number;
   facebookPage: number;
   facebookGroup: number;
+  tiktokPage: number;
   fastSaleOrder: number;
   saleOnlineOrder: number;
 }

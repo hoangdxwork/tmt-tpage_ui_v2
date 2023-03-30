@@ -1,3 +1,4 @@
+import { SocketService } from '@app/services/socket-io/socket.service';
 import { OrderByCommentItemDto } from './../../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { EnumSendMessageType } from './../../../../dto/conversation-all/chatomni/chatomini-send-message.dto';
 import { CommentOrderPost, CommentOrder } from '../../../../dto/conversation/post/comment-order-post.dto';
@@ -109,6 +110,9 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
   refreshTimer: TDSSafeAny;
   dictActiveComment: {[key: string] : boolean } = {};
 
+  socketFetchCommentsTimer: TDSSafeAny;
+  socketFetchCommentsOrdersTimer: TDSSafeAny;
+
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
 
   constructor(private message: TDSMessageService,
@@ -133,7 +137,8 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
     private chatomniSendMessageService: ChatomniSendMessageService,
     private chatomniMessageFacade: ChatomniMessageFacade,
     private crmTagService: CRMTagService,
-    private conversationPostEvent: ConversationPostEvent) {
+    private conversationPostEvent: ConversationPostEvent,
+    private socketService: SocketService) {
   }
 
   ngOnInit() {
@@ -148,6 +153,7 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
     this.onEventSocket();
     this.onEventEmitter();
+    this.onCheckConnectSocketFromToken();
   }
 
   onEventEmitter() {
@@ -190,7 +196,74 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
           }
         }
       }
+    });
+
+    this.socketService.isConnectedSocket$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: boolean) => {
+        if(res) {
+          this.destroySocketFetchTimer();
+        } else {
+          this.destroySocketFetchTimer();
+          this.retryFetchComments();
+          this.retryFetchCommentsOrders();
+        }
+      }
     })
+  }
+
+  retryFetchComments() {
+    this.socketFetchCommentsTimer = setTimeout(() => {
+      this.retryFetchComments();
+    }, 3 * 1000);
+
+    if(this.socketFetchCommentsTimer && this.vsStartIndex <= 1) {
+      this.loadDataFetchComment();
+    }
+  }
+
+  retryFetchCommentsOrders() {
+    this.socketFetchCommentsOrdersTimer = setTimeout(() => {
+      this.retryFetchCommentsOrders();
+    }, 5 * 1000);
+
+    if(this.socketFetchCommentsOrdersTimer) {
+      this.loadCommentsOrderByPost();
+    }
+  }
+
+  loadDataFetchComment() {
+    let teamId = this.team?.Id;
+    if(this.data && teamId && this.data.ObjectId) {
+      this.chatomniCommentService.makeDataSource(teamId, this.data.ObjectId).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: ChatomniDataDto) => {
+
+              let items = [...(res?.Items || [])];
+              let dataSourceItems = [...(this.dataSource?.Items || [])];
+
+              items?.map((x: ChatomniDataItemDto) => {
+                let index = dataSourceItems.findIndex((y: ChatomniDataItemDto) => x.Id == y.Id && x.ObjectId == y.ObjectId);
+                let exist = Number(index) >= 0 || !this.dataSource;
+                if(exist) return;
+
+                this.dataSource.Items = [...[x], ...(this.dataSource?.Items || [])];
+                this.cdRef.detectChanges();
+              })
+          },
+          error: (error: any) => {
+              this.isLoading = false;
+              this.message.error(error?.error?.message);
+              this.cdRef.detectChanges();
+          }
+        })
+    }
+  }
+
+  onCheckConnectSocketFromToken() {
+    if(this.socketService.isConnectError == 1) {
+      this.destroySocketFetchTimer();
+      this.retryFetchComments();
+      this.retryFetchCommentsOrders();
+    }
   }
 
   loadOrderPartnerbylLivecampaign() {
@@ -951,6 +1024,15 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  destroySocketFetchTimer() {
+    if (this.socketFetchCommentsTimer) {
+      clearTimeout(this.socketFetchCommentsTimer);
+    }
+    if (this.socketFetchCommentsOrdersTimer) {
+      clearTimeout(this.socketFetchCommentsOrdersTimer);
+    }
+  }
+
   onDictActiveComment(item: any) {
     this.dictActiveComment = {};
     this.dictActiveComment[item.Id] = true;
@@ -958,5 +1040,6 @@ export class FacebookCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
       this.destroyTimer();
+      this.destroySocketFetchTimer();
   }
 }

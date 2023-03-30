@@ -65,7 +65,7 @@
                                     <div *ngIf="invoiceDict && invoiceDict[partnerDict[item.UserId].i]" class="flex flex-auto items-center gap-x-1">
                                         <span *ngIf="invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1]" class="text-primary-1 font-semibold cursor-pointer hidden desktop:block" 
                                             (click)="onOpenDrawerBillDetail(invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1])">
-                                            {{ invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Number }}
+                                            {{ invoiceDict[partnerDict[item.UserId].i][invoiceDict[partnerDict[item.UserId].i].length - 1].Number || 'N/A' }}
                                         </span>
 
                                         <div tds-popover
