@@ -65,7 +65,7 @@
                   <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác'
                     tds-tooltip [tooltipVisible]="data.Carrier ? true : false" tooltipTitle="{{ data.Carrier?.Name }}"
                     [valuePrimitive]="false" [allowClear]="true" [(ngModel)]="data.Carrier" [ngModelOptions]="{standalone: true}"
-                    [data]="lstCarriers" (ngModelChange)="onChangeCarrier($event, index)">
+                    [data]="lstCarriers" (selectChange)="onChangeCarrier($event, index)">
                   </tds-select>
                 </tds-form-field>
               </td>

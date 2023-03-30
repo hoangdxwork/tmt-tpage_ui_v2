@@ -279,7 +279,10 @@ export class EditOrderV2Component implements OnInit {
 
             this.handleIsEqualAmountInsurance();
             this.prepareCalcFeeButton();
-            this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+
+            if(this.lstTransport && this.lstTransport.length > 0) {
+              this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+            }
           }
           this.isLoading = false;
       },
@@ -542,7 +545,10 @@ export class EditOrderV2Component implements OnInit {
     if(!event && this.saleModel) {
       this.saleModel.Carrier = null;
       this.saleModel.CarrierId = null;
-      this.setFeeShipFromTransport(this.quickOrderModel?.CityCode, this.quickOrderModel?.DistrictCode, null);
+
+      if(this.lstTransport && this.lstTransport.length > 0) {
+        this.setFeeShipFromTransport(this.quickOrderModel?.CityCode, this.quickOrderModel?.DistrictCode, null);
+      }
       return;
     }
 
@@ -582,7 +588,10 @@ export class EditOrderV2Component implements OnInit {
     }
 
     this.prepareCalcFeeButton();
-    this.setFeeShipFromTransport(this.quickOrderModel?.CityCode, this.quickOrderModel?.DistrictCode , this.saleModel?.Carrier?.DeliveryType);
+
+    if(this.lstTransport && this.lstTransport.length > 0) {
+      this.setFeeShipFromTransport(this.quickOrderModel?.CityCode, this.quickOrderModel?.DistrictCode , this.saleModel?.Carrier?.DeliveryType);
+    }
   }
 
   calcFee() {
@@ -1156,7 +1165,9 @@ export class EditOrderV2Component implements OnInit {
           this.mappingAddress(this.quickOrderModel);
 
           this.innerText = result.Address;
-          this.setFeeShipFromTransport(this.quickOrderModel?.CityCode, this.quickOrderModel?.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+          if(this.lstTransport && this.lstTransport.length > 0) {
+            this.setFeeShipFromTransport(this.quickOrderModel?.CityCode, this.quickOrderModel?.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
+          }
         }
       }
     })

@@ -99,6 +99,7 @@ export interface DataErrorDefaultDTOV2 {
     WarehouseId?: any;
     Reference: string;
     Partner: Partner;
+    Carrier?: any; // không có trong dữ liệu trả về
 }
 
 export interface Extras {

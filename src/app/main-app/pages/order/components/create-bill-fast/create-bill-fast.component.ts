@@ -96,11 +96,14 @@ export class CreateBillFastComponent implements OnInit {
   loadTransport() {
     this.sharedService.setTransportConfigs();
     this.sharedService.getTransportConfigs().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) =>{
+      next: (res: any) => {
         this.lstTransport = [...res?.value || []];
-        this.lstData.map((x, i) => {
-          this.setFeeShipFromTransport(x.Partner?.CityCode, x. Partner?.DistrictCode, x.Carrier?.DeliveryType, i);
-        })
+
+        if(this.lstTransport && this.lstTransport.length > 0) {
+          this.lstData.map((x, i) => {
+            this.setFeeShipFromTransport(x.Partner?.CityCode, x. Partner?.DistrictCode, x.Carrier?.DeliveryType, i);
+          })
+        }
       },
       error: (err: any) => {
         this.message.error(err?.error?.mesage);
@@ -127,7 +130,10 @@ export class CreateBillFastComponent implements OnInit {
 
     let deliveryType = this.lstData[index].Carrier?.DeliveryType || null;
     let partner = this.lstData[index].Partner;
-    this.setFeeShipFromTransport(partner?.CityCode, partner?.DistrictCode, deliveryType, index);
+
+    if(this.lstTransport && this.lstTransport.length > 0) {
+      this.setFeeShipFromTransport(partner?.CityCode, partner?.DistrictCode, deliveryType, index);
+    }
   }
 
   createForm() {
@@ -167,9 +173,11 @@ export class CreateBillFastComponent implements OnInit {
   }
 
   changeCarrierAll() {
-    this.lstData.map((x,i) => {
-      this.onChangeCarrier(this.carrier, i);
-    });
+    if(this.carrier && this.carrier.Id) {
+      this.lstData.map((x,i) => {
+        this.onChangeCarrier(this.carrier, i);
+      });
+    }
   }
 
   onRemoveLine(index: number) {
@@ -215,7 +223,10 @@ export class CreateBillFastComponent implements OnInit {
 
         this.lstData[index].Partner = Object.assign(this.lstData[index].Partner, partner);
         let deliveryType = this.lstData[index].Carrier?.DeliveryType;
-        this.setFeeShipFromTransport(partner?.CityCode, partner?.DistrictCode, deliveryType, index);
+
+        if(this.lstTransport && this.lstTransport.length > 0) {
+          this.setFeeShipFromTransport(partner?.CityCode, partner?.DistrictCode, deliveryType, index);
+        }
       }
     });
   }
