@@ -1,5 +1,4 @@
 import { TransportConfigsDto } from './../dto/configs/transport-config.dto';
-import { GetSharedDto } from './../dto/conversation/post/get-shared.dto';
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
@@ -126,26 +125,48 @@ export class SharedService extends BaseSevice {
   setFeeShip(cityCode: any, districtCode: any, lstTransport: TransportConfigsDto[], deliveryType: any) {
     if(!TDSHelperString.hasValueString(cityCode)) return 0;
 
-    let exist1 = lstTransport.filter(x => x.ProvinceId == cityCode) as any;
-    let lstProviders = this.prepareProviders(exist1[0]?.Providers);
-    if(lstProviders.length > 0 && (!TDSHelperString.hasValueString(deliveryType) || !lstProviders.includes(deliveryType))) return 0;
+        let exist1 = lstTransport.filter(x => x.ProvinceId == cityCode);
+        if(exist1 && exist1.length == 0) return 0;
 
-    if(exist1 && exist1.length == 0) return 0;
+        if(exist1 && exist1.length > 0) {
+          let exist2 = exist1.filter(x => x.DistrictId == districtCode);
 
-    let exist2 = exist1.filter((x: any) => TDSHelperString.hasValueString(x.DistrictId)) as any;
-    if(exist2 && exist2.length == 0) return exist1[0].FeeShip;
+          if(exist2 && exist2.length == 0) {
+            let exist3 = exist1.filter(x => !TDSHelperString.hasValueString(x.DistrictId));
 
-    let exist3 = exist2.filter((x: any) => districtCode == x.DistrictId) as any;
-    if(exist3 && exist3.length == 0) return 0;
+            if(exist3 && exist3.length == 0) return 0;
+            if(this.checkProviders(exist3[0], deliveryType)) return exist3[0].FeeShip;
+            return 0;
+          };
 
-    return exist3[0].FeeShip;
+          if(exist2 && exist2.length > 0) {
+            let feeShip = 0;
+
+            exist2.map(x => {
+              if(this.checkProviders(x, deliveryType)) {
+                feeShip = x.FeeShip;
+                return;
+              };
+            });
+            return feeShip;
+          }
+
+          return 0;
+        }
+        return 0;
+  }
+
+  public checkProviders(data: TransportConfigsDto, deliveryType: any) {
+    let lstProviders = this.prepareProviders(data?.Providers);
+    if(lstProviders.length > 0 && (!TDSHelperString.hasValueString(deliveryType) || !lstProviders.includes(deliveryType))) return false;
+    return true;
   }
 
   prepareProviders(providers: string) {
     let lstProviders: string[] = [];
     if(TDSHelperString.hasValueString(providers)) {
       lstProviders = JSON.parse(providers) as string[];
-    } 
+    }
 
     return lstProviders;
   }
@@ -272,7 +293,7 @@ export class SharedService extends BaseSevice {
       method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData<GetSharedDto[]>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   getSimpleShareds(objectId: string) {
