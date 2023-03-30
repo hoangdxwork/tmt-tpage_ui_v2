@@ -29,6 +29,10 @@
                     <span *ngIf="notiSocket" class="tdsi-notification-fill" tds-tooltip tooltipTitle="Đang bật thông báo realtime"></span>
                     <span *ngIf="!notiSocket" class="tdsi-notifications-off-fill" tds-tooltip tooltipTitle="Đã tắt thông báo realtime"></span>
                 </a>
+                <a class="ml-2 text-[22px]" style="color: #fff">
+                  <span *ngIf="isConnectedSocket" style="color: #21f721" class="tdsi-wifi-fill" tds-tooltip tooltipTitle="Kết nối realtime đang hoạt động"></span>
+                  <span *ngIf="!isConnectedSocket" style="color: #f80723" class="tdsi-wifi-off-fill" tds-tooltip tooltipTitle="Mất kết nối realtime, vui lòng F5 hoặc làm mới token"></span>
+                </a>
             </div>
             <div class="inline-flex tds-header-toolbar-right items-center">
                 <div>
