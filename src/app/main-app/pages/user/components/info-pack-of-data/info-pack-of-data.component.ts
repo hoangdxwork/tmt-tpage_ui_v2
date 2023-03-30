@@ -12,7 +12,8 @@ import { CRMTeamService } from './../../../../services/crm-team.service';
 @Component({
   selector: 'info-pack-of-data',
   templateUrl: './info-pack-of-data.component.html',
-  providers: [TDSDestroyService]
+  providers: [TDSDestroyService],
+
 })
 export class InfoPackOfDataComponent implements OnInit, OnChanges {
   options: any;
@@ -44,6 +45,8 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes["tenantUsed"] && !changes["tenantUsed"].firstChange) {
+      this.tenantUsed = changes["tenantUsed"].currentValue;
+      
       this.buildData(this.tenantUsed)
       this.buildChart();
     }
@@ -54,8 +57,6 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
       this.buildData(this.tenantUsed);
       this.buildChart();
     }
-
-    this.loadListTeam();
   }
 
   loadListTeam() {
