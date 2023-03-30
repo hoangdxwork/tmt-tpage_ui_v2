@@ -83,7 +83,6 @@ export class CreateBillDefaultComponent implements OnInit {
     private configService: TDSConfigService) { }
 
   ngOnInit(): void {
-    this.loadDeliveryCarrier();
     this.loadData();
     this.loadCurrentCompany();
     this.configService.set('notification', { maxStack: 100 });
@@ -121,6 +120,8 @@ export class CreateBillDefaultComponent implements OnInit {
           this.lstLine.map((x, i) =>{
             this.checkPartnerInfo(x.Partner, i);
           });
+
+          this.loadDeliveryCarrier();
           this.loadTransport();
           this.isLoading = false;
         },
@@ -136,6 +137,13 @@ export class CreateBillDefaultComponent implements OnInit {
     this.carrierService.getDeliveryCarrier().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: TDSSafeAny) => {
         this.lstCarriers = [...res.value];
+
+        this.lstLine.map(x => {
+          let existCarrier = this.lstCarriers.find(a => a.Id == x.CarrierId);
+          if(existCarrier) {
+            x.Carrier = existCarrier;
+          }
+        })
       },
       error: error =>{
         this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -146,14 +154,17 @@ export class CreateBillDefaultComponent implements OnInit {
   loadTransport() {
     this.sharedService.setTransportConfigs();
     this.sharedService.getTransportConfigs().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res: any) =>{
+      next: (res: any) => {
         this.lstTransport = [...res?.value || []];
-        this.lstLine.map((x, i) => {
-          this.setFeeShipFromTransport(x.Partner?.CityCode, x.Partner?.DistrictCode, this.carrier?.DeliveryType, i);
-        })
+        
+        if(this.lstTransport && this.lstTransport.length > 0) {
+          this.lstLine.map((x, i) => {
+            this.setFeeShipFromTransport(x.Partner?.CityCode, x.Partner?.DistrictCode, this.carrier?.DeliveryType, i);
+          })
+        }
       },
       error: (err: any) => {
-        this.message.error(err?.error?.mesage);
+        this.message.error(err?.error?.message || Message.CanNotLoadData);
       }
     })
   }
@@ -225,20 +236,23 @@ export class CreateBillDefaultComponent implements OnInit {
   }
 
   changeCarrierAll() {
-    if (this.carrier) {
-      this.lstLine.forEach((item, i) => {
-        this.onChangeCarrier(this.carrier, item, i);
+    if (this.carrier && this.carrier.Id) {
+      this.lstLine.map((x, i) => {
+        this.onChangeCarrier(this.carrier, i);
       });
     }
   }
 
-  onChangeCarrier(event: TDSSafeAny, item: TDSSafeAny, index: number) {
-    item.CarrierId = event.Id;
-    item.CarrierName = event.Name;
-    item.ShipAmount = event?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
-    item.ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
+  onChangeCarrier(event: TDSSafeAny, index: number) {
+    this.lstLine[index].CarrierId = event.Id;
+    this.lstLine[index].CarrierName = event.Name;
+    this.lstLine[index].ShipAmount = event?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+    this.lstLine[index].ShipWeight = event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100;
+    this.lstLine[index].Carrier = event;
 
-    this.setFeeShipFromTransport(item?.Partner?.CityCode, item?.Partner?.DistrictCode, event?.DeliveryType || null, index);
+    if(this.lstTransport && this.lstTransport.length > 0) {
+      this.setFeeShipFromTransport(this.lstLine[index]?.Partner?.CityCode, this.lstLine[index]?.Partner?.DistrictCode, event?.DeliveryType || null, index);
+    }
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO, index: number) {
@@ -307,14 +321,17 @@ export class CreateBillDefaultComponent implements OnInit {
         this.lstLine[index].Partner["CityName"] = result?.City?.name ? result.City.name : null;
 
         this.lstCheckRowErrors = [];
-        this.lstLine.forEach((x, i) => {
+        this.lstLine.map((x, i) => {
           this.checkPartnerInfo(x.Partner, i);
         });
 
         let carrier = this.lstCarriers.find(x => x.Id == this.lstLine[index].CarrierId);
         let cityCode = this.lstLine[index].Partner["CityCode"];
         let districtCode = this.lstLine[index].Partner["DistrictCode"];
-        this.setFeeShipFromTransport(cityCode, districtCode, carrier?.DeliveryType, index);
+
+        if(this.lstTransport && this.lstTransport.length > 0) {
+          this.setFeeShipFromTransport(cityCode, districtCode, carrier?.DeliveryType, index);
+        }
       }
     });
   }
@@ -422,7 +439,7 @@ export class CreateBillDefaultComponent implements OnInit {
     }
 
     let hasError = false;
-    this.lstLine.forEach((x, i) => {
+    this.lstLine.map((x, i) => {
       if(!x.CarrierId){
         this.notification.error(`Lỗi`, `Dòng thứ <b class="text-info-500 font-semibold">${i + 1}</b> chưa chọn đối tác giao hàng`, { duration: 10000, pauseOnHover: true });
         hasError = true;
