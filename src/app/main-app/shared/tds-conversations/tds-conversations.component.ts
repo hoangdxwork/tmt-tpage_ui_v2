@@ -475,6 +475,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         viewContainerRef: this.viewContainerRef,
         size: 'xl',
         componentParams: {
+            team: this.team,
             page_id: this.pageId,
             userId: data.ConversationId,
         }

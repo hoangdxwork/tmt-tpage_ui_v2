@@ -25,6 +25,7 @@ import { CRMTeamDTO } from '@app/dto/team/team.dto';
   templateUrl: './modal-list-bill.component.html'
 })
 export class ModalListBillComponent implements OnInit {
+  @Input() team!: CRMTeamDTO;
   @Input() page_id!: string;
   @Input() userId!: string;
   @Output()
@@ -92,7 +93,7 @@ export class ModalListBillComponent implements OnInit {
     this.lstBillofPartner = [];
     this.datas = [];
     this.pageCurrent = 1;
-    let team = this.teamService.getCurrentTeam() as CRMTeamDTO;
+    let team = this.team as CRMTeamDTO;
 
     this.partnerService.checkInfo_v2(team.Id, this.userId).pipe(takeUntil(this.destroy$)).subscribe((res) => {
       if (res.Data && res.Data["Id"]) {

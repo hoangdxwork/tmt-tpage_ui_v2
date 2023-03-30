@@ -106,11 +106,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   refreshTimer: TDSSafeAny;
   refresh3Time: TDSSafeAny;
   nextDataTimer: TDSSafeAny;
-  isLoadingUpdate: boolean = false;
+  isLoadingRefreshListen: boolean = false;
 
   extrasChilds: { [id: string] : any[] } = {};
   clickCurrentChild: any;
-  csLoadingUpdate: TDSSafeAny;
+  csLoadingRefreshListen: TDSSafeAny;
 
   modalInfoObject: TDSSafeAny;
   postNewSocket: { [key: string] : boolean } = {};
@@ -357,17 +357,16 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 if(existPostLive){
                   this.destroyTimerRefresh();
                   this.clickReload = 0;
-                  this.isLoadingUpdate = false;
+                  this.isLoadingRefreshListen = false;
+                  let mss = 'Kết nối bài viết thành công';
 
-                  if(this.csLoadingUpdate) {
-                    this.message.remove(this.csLoadingUpdate?.messageId);
-                    this.message.success('Yêu cầu cập nhật hội thoại thành công');
-                    this.loadData();
-                  } else {
-                    this.message.success('kết nối bài viết thành công');
-                    this.loadData();
+                  if(this.csLoadingRefreshListen) {
+                    this.message.remove(this.csLoadingRefreshListen?.messageId);
+                    this.csLoadingRefreshListen = null;
+                    mss = 'Yêu cầu cập nhật hội thoại thành công';
                   }
-                  
+                  this.message.success(mss);
+                  this.loadData();
                 }
             break;
 
@@ -377,9 +376,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 if(existPostNotLive){
                   this.destroyTimerRefresh();
                   this.clickReload = 0;
-                  this.isLoadingUpdate = false;
+                  this.isLoadingRefreshListen = false;
 
-                  this.message.remove(this.csLoadingUpdate?.messageId);
+                  this.message.remove(this.csLoadingRefreshListen?.messageId);
+                  this.csLoadingRefreshListen = null;
                   this.message.info('Không tìm thấy bài live mới, Kiểm tra lại có đang thực hiện live hay không hoặc kiểm tra lại thông tin uniqueID có bị thay đổi gần đây không', { duration: 7000});
                 }
             break;
@@ -388,7 +388,13 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 let existPostLiveConnected = res.Data && res.Data.Data && res.Data.Data.ChannelId && res.Data.Data.ChannelId == this.currentTeam?.ChannelId;
 
                 if(existPostLiveConnected){
-                  this.message.warning("Server mất kết nối với TikTok");
+                  let exist = (this.lstObjects || []).filter((x: ChatomniObjectsItemDto) => x.ObjectId == res.Data.Data.ObjectId)[0];
+                  let mss = 'Server mất kết nối với TikTok';
+
+                  if(exist && exist.Description) {
+                    mss = `Server mất kết nối với bài live TikTok: ${exist.Description}`;
+                  }
+                  this.message.warning(mss);
                 }
             break;
 
@@ -497,20 +503,21 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         if(!TDSHelperString.hasValueString(ownerId)) {
             this.message.error('Không tìm thấy OwnerId, không thể kích hoạt cập nhật hội thoại');
             this.isRefreshing = false;
-            this.isLoadingUpdate = false;
+            this.isLoadingRefreshListen = false;
             return;
         }
 
-        this.isLoadingUpdate = true;
-        this.csLoadingUpdate = this.message.create('loading', `Đang cập nhật hội thoại`, { duration: 60000 });
+        this.isLoadingRefreshListen = true;
+        this.csLoadingRefreshListen = this.message.create('loading', `Đang cập nhật hội thoại`, { duration: 60000 });
 
         this.tiktokService.refreshListen(ownerId).pipe(takeUntil(this.destroy$)).subscribe({
           next: (res: any) => {
               this.refresh3Time = setTimeout(() => {
                 this.clickReload = 0;
-                this.isLoadingUpdate = false;
+                this.isLoadingRefreshListen = false;
 
-                this.message.remove(this.csLoadingUpdate?.messageId);
+                this.message.remove(this.csLoadingRefreshListen?.messageId);
+                this.csLoadingRefreshListen = null;
                 this.message.info('Không tìm thấy bài live mới, Kiểm tra lại có đang thực hiện live hay không hoặc kiểm tra lại thông tin uniqueID có bị thay đổi gần đây không', { duration: 7000});
 
                 this.loadData();
@@ -518,11 +525,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           },
           error: (error: any) => {
               this.clickReload = 0;
-              this.isLoadingUpdate = false;
+              this.isLoadingRefreshListen = false;
               this.isRefreshing = false;
               console.log(error);
 
-              this.message.remove(this.csLoadingUpdate?.messageId);
+              this.message.remove(this.csLoadingRefreshListen?.messageId);
+              this.csLoadingRefreshListen = null;
               this.message.error(error?.error?.message || 'Yêu cầu cập nhật thất bại');
           }
         })
