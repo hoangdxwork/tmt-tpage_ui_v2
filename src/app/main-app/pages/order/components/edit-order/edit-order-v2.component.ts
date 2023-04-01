@@ -136,14 +136,13 @@ export class EditOrderV2Component implements OnInit {
   };
 
   lstCarrier!: DeliveryCarrierDTOV2[];
-  lstInventory!: GetInventoryDTO;
+  lstInventory: GetInventoryDTO | any;
   lstUser!: Array<ApplicationUserDTO>;
   saleConfig!: SaleSettingConfigDto_V2;
   companyCurrents!: CompanyCurrentDTO;
   chatomniEventEmiter: any;
 
   response: any;
-  inventories: any;
 
   isEqualAmountInsurance: boolean = false;
   delivery_calcfee = ["fixed", "base_on_rule", "VNPost"];
@@ -212,20 +211,21 @@ export class EditOrderV2Component implements OnInit {
           this.productService.lstInventory = null;
           this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-                if(res) {
-                    this.inventories = {};
-                    this.inventories = res;
+
+                if(res && Object.keys(res) && Object.keys(res).length > 0) {
+                  this.lstInventory = {...res};
+                  this.cdRef.detectChanges();
                 }
 
                 if(this.response) {
-                    this.mappingProduct(this.response);
+                  this.mappingProduct(this.response);
                 }
             },
             error: (err: any) => {
-                this.message.error(err?.error?.message);
                 if(this.response) {
-                    this.mappingProduct(this.response);
+                  this.mappingProduct(this.response);
                 }
+                this.message.error(err?.error?.message);
             }
           });
         }

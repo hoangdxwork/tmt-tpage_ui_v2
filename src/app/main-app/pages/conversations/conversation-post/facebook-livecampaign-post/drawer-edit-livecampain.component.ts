@@ -65,7 +65,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   indClick: number = -1;
 
   lstVariants: DataPouchDBDTO[] = [];
-  lstInventory!: GetInventoryDTO;
+  lstInventory: GetInventoryDTO | any;
   companyCurrents!: CompanyCurrentDTO;
 
   visible: boolean = false;
@@ -106,7 +106,6 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   }
 
   response: any;
-  inventories: any;
   productIds: { [key: string]: DetailExistsDTO } = {};
   orderTags: { [key: string] : string[] } = {};
 
@@ -226,24 +225,24 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
 
         let warehouseId = this.companyCurrents?.DefaultWarehouseId;
         if(warehouseId > 0) {
-
           this.productService.lstInventory = null;
           this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-                if(res) {
-                    this.inventories = {};
-                    this.inventories = res;
-                }
 
-                if(this.response) {
-                  this.mappingProductToLive(this.response);
-                }
+              if(res && Object.keys(res) && Object.keys(res).length > 0) {
+                this.lstInventory = {...res};
+                this.cdRef.detectChanges();
+              }
+
+              if(this.response) {
+                this.mappingProductToLive(this.response);
+              }
             },
             error: (err: any) => {
-                this.message.error(err?.error?.message);
-                if(this.response) {
-                    this.mappingProductToLive(this.response);
-                }
+              if(this.response) {
+                  this.mappingProductToLive(this.response);
+              }
+              this.message.error(err?.error?.message);
             }
           });
         }
@@ -596,7 +595,7 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
     listData.map((x: DataPouchDBDTO) => {
         // TODO: kiểm tra số lượng
         const qty = (this.lstInventory && this.lstInventory[x.Id] && Number(this.lstInventory[x.Id].QtyAvailable) > 0)
-           ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
+          ? Number(this.lstInventory[x.Id].QtyAvailable) : 1;
         x.QtyAvailable = qty;
 
         // TODO: kiểm tra mã sp từ api
@@ -836,8 +835,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
         let lstItems = [] as ReportLiveCampaignDetailDTO[];
 
         items.map((x: DataPouchDBDTO) => {
-          let existQty = this.inventories && this.inventories[x.Id] && this.inventories[x.Id].QtyAvailable > 0;
-          x.QtyAvailable = existQty ? this.inventories[x.Id].QtyAvailable : 1;
+          let existQty = this.lstInventory && this.lstInventory[x.Id] && this.lstInventory[x.Id].QtyAvailable > 0;
+          x.QtyAvailable = existQty ? this.lstInventory[x.Id].QtyAvailable : 1;
 
           let item = {
               Quantity: x.QtyAvailable,

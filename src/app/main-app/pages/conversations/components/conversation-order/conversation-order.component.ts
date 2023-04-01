@@ -158,12 +158,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-  lstInventory!: GetInventoryDTO;
+  lstInventory: GetInventoryDTO | any;
   so_FacebookComments!: SaleOnline_Facebook_CommentDto[];
   saleOnlineSettings!: SaleOnlineSettingDTO;
   insertFromPostModel!: InsertFromPostDto | any;
   response: any;
-  inventories: any;
 
   disableSyncOrder: boolean = false; //dùng cho bài viết
   commentPost!: ChatomniDataItemDto; //dùng cho bài viết
@@ -425,20 +424,21 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           this.productService.lstInventory = null;
           this.productService.apiInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (res: any) => {
-                if(res) {
-                    this.inventories = {};
-                    this.inventories = res;
+
+                if(res && Object.keys(res) && Object.keys(res).length > 0) {
+                  this.lstInventory = {...res};
+                  this.cdRef.detectChanges();
                 }
 
                 if(this.response) {
-                    this.mappingProduct(this.response);
+                  this.mappingProduct(this.response);
                 }
             },
             error: (err: any) => {
-                this.message.error(err?.error?.message);
                 if(this.response) {
-                    this.mappingProduct(this.response);
+                  this.mappingProduct(this.response);
                 }
+                this.message.error(err?.error?.message);
             }
           });
         }
@@ -1094,11 +1094,11 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   mappingProduct(response: any) {
-    this.indexDbStorage = [...response.cacheDbStorage];
+    this.indexDbStorage = [...(response?.cacheDbStorage || [])];
 
     if(response.type === 'select' && response.productTmpl) {
       const product = response.productTmpl as ProductTemplateV2DTO;
-      let x!:DataPouchDBDTO;
+      let x!: DataPouchDBDTO;
 
       if(product.VariantFirstId) {
         x = this.indexDbStorage?.find((x: DataPouchDBDTO) => x.Id == product.VariantFirstId && x.UOMId == product.UOMId && x.Active) as DataPouchDBDTO;
@@ -1113,7 +1113,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
       }
 
       let data: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(x);
-      this.quickOrderModel.Details = [...this.quickOrderModel.Details, ...[data]];
+      this.quickOrderModel.Details = [...(this.quickOrderModel?.Details || []), ...[data]];
 
       this.calcTotal();
       this.coDAmount();

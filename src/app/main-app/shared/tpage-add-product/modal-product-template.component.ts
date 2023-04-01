@@ -262,7 +262,7 @@ export class ModalProductTemplateComponent implements OnInit {
             const data: SyncCreateProductTemplateDto = {
                 type: type,
                 productTmpl: product as ProductTemplateV2DTO,
-                cacheDbStorage: [...indexDB.cacheDbStorage] as DataPouchDBDTO[]
+                cacheDbStorage: [...(indexDB?.cacheDbStorage || [])] as DataPouchDBDTO[]
             };
 
             // TODO: gọi cập nhật tồn kho
