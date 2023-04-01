@@ -265,7 +265,7 @@ export class DrawerAddProductComponent implements OnInit {
             const data: SyncCreateProductTemplateDto = {
               type: type,
               productTmpl: product as ProductTemplateV2DTO,
-              cacheDbStorage: [...indexDB.cacheDbStorage]
+              cacheDbStorage: [...(indexDB?.cacheDbStorage || [])] as DataPouchDBDTO[]
             };
 
             // TODO: gọi cập nhật tồn kho
