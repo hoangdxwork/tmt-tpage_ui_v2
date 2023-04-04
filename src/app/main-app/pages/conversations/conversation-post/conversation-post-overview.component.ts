@@ -31,6 +31,7 @@ import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socke
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
 import { GroupCommentsService } from '@app/services/group-comment.service';
 import { FacebookPostDTO } from '@app/dto/facebook-post/facebook-post.dto';
+import { SharesDetailModalComponent } from '@app/shared/tds-conversations/shares-detail-modal/shares-detail-modal.component';
 
 @Component({
   selector: 'conversation-post-overview',
@@ -601,26 +602,29 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         return;
       }
 
-      this.isLoading = true;
       this.sharedService.fbGetShareds(uid, objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: GetSharedDto[]) => {
-          this.isLoading = false;
-          this.cdRef.detectChanges();
+          if(res && res.length > 0) {
+            this.data.CountReaction = res.length || 0;
 
-          // let extensionKey = 'tpos_chrome_ext_id';
-          // let extension = localStorage.getItem(extensionKey);
-          // if(!extension) {
-          //   this.message.error('Vui lòng tải và cấu hình TPOS.VN Extensions');
-          //   return;
-          // }
-
-          // let uri = `chrome-extension://${extensionKey}/index.html#/options/facebook/sharing-debugger?objectId=${objectId}`;
-          // window.open(uri, '_blank');
+            this.modalService.create({
+              title: 'Số lượt share',
+              content: SharesDetailModalComponent,
+              size: "xl",
+              bodyStyle: { padding : '0px'},
+              viewContainerRef: this.viewContainerRef,
+              componentParams:{
+                lstShared: res,
+                objectId: objectId,
+                team: this.team
+              }
+            });
+          } else {
+            this.message.info('Không có lượt chia sẻ nào');
+          }
         },
         error: (error: any) => {
           this.message.error(error?.error?.message);
-          this.isLoading = false;
-          this.cdRef.detectChanges();
         }
       })
     }

@@ -302,7 +302,7 @@ export class SharedService extends BaseSevice {
       method: CoreApiMethodType.get,
     }
 
-    return this.apiService.getData(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
 }
