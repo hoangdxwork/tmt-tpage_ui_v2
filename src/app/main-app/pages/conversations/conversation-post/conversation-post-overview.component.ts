@@ -29,8 +29,7 @@ import { fromEvent } from 'rxjs';
 import { LiveCampaignService } from '@app/services/live-campaign.service';
 import { SocketEventSubjectDto, SocketOnEventService } from '@app/services/socket-io/socket-onevent.service';
 import { ChatmoniSocketEventName } from '@app/services/socket-io/soketio-event';
-import { GroupCommentsService } from '@app/services/group-comment.service';
-import { FacebookPostDTO } from '@app/dto/facebook-post/facebook-post.dto';
+import { SharesDetailModalComponent } from '@app/shared/tds-conversations/shares-detail-modal/shares-detail-modal.component';
 
 @Component({
   selector: 'conversation-post-overview',
@@ -98,10 +97,6 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
   isRescanAutoOrder: boolean = false;
   rescanAutoOrderTimer: TDSSafeAny;
 
-  // pageSize = 10000;
-  // pageIndex = 1;
-  // dataComment!: FacebookPostDTO | any;
-
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
     private modalService: TDSModalService,
@@ -114,8 +109,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     private objectFacebookPostEvent: ObjectFacebookPostEvent,
     private message: TDSMessageService,
     private destroy$: TDSDestroyService,
-    private sharedService: SharedService,
-    private groupCommentsService: GroupCommentsService) {
+    private sharedService: SharedService) {
   }
 
   ngOnInit() {
@@ -137,7 +131,6 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         this.liveCampaignService.setLocalStorageDrawer(objectId, liveCampaignId, isOpenDrawer);
       }
 
-      // this.loadDataGroupComments();
       this.cdRef.detectChanges();
     }
 
@@ -561,7 +554,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
     this.sharedService.getSimpleShareds(objectId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: any) => {
         if(res && res.length > 0) {
-          const modal = this.modalService.create({
+          this.modalService.create({
             title: `Danh sách lượt chia sẻ (${res.length})`,
             content: ModalGetSharedComponent,
             size: "lg",
@@ -601,46 +594,32 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
         return;
       }
 
-      this.isLoading = true;
       this.sharedService.fbGetShareds(uid, objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: GetSharedDto[]) => {
-          this.isLoading = false;
-          this.cdRef.detectChanges();
+          if(res && res.length > 0) {
+            this.data.CountReaction = res.length || 0;
 
-          // let extensionKey = 'tpos_chrome_ext_id';
-          // let extension = localStorage.getItem(extensionKey);
-          // if(!extension) {
-          //   this.message.error('Vui lòng tải và cấu hình TPOS.VN Extensions');
-          //   return;
-          // }
-
-          // let uri = `chrome-extension://${extensionKey}/index.html#/options/facebook/sharing-debugger?objectId=${objectId}`;
-          // window.open(uri, '_blank');
+            this.modalService.create({
+              title: 'Số lượt share',
+              content: SharesDetailModalComponent,
+              size: "xl",
+              bodyStyle: { padding : '0px'},
+              viewContainerRef: this.viewContainerRef,
+              componentParams:{
+                lstShared: res,
+                objectId: objectId,
+                team: this.team
+              }
+            });
+          } else {
+            this.message.info('Không có lượt chia sẻ nào');
+          }
         },
         error: (error: any) => {
           this.message.error(error?.error?.message);
-          this.isLoading = false;
-          this.cdRef.detectChanges();
         }
       })
     }
   }
 
-
-  // loadDataGroupComments() {
-  //   this.isLoading = true;
-  //   let params = `page=${this.pageIndex}&limit=${this.pageSize}`;
-
-  //   this.groupCommentsService.getGroupComments(this.data.ObjectId, params).pipe(takeUntil(this.destroy$)).subscribe({
-  //     next: (res: FacebookPostDTO) => {
-  //       this.dataComment = res;
-  //       console.log(this.dataComment);
-
-  //       this.isLoading = false;
-  //     }, error: (err: any) => {
-  //       this.message.error(`${err?.error?.message}` ? `${err?.error?.message}` : "Load dữ liệu thất bại!");
-  //       this.isLoading = false;
-  //     }
-  //   })
-  // }
 }

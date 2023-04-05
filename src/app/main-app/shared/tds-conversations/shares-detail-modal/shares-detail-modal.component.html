@@ -1,70 +1,76 @@
-<div class="p-4 bg-neutral-3-50 flex flex-col gap-4">
-  <div class="flex gap-4">
-    <div class="bg-white rounded-xl flex gap-4 p-3 w-1/4">
-      <img src="./assets/imagesv2/conversation/pie-chart.svg" alt="">
-      <div class="flex flex-col gap-0.5">
-        <span class="text-header-1 font-semibold">80</span>
-        <span class="text-body-1 text-neutral-1-600 font-regular">Lượt chia sẻ</span>
+<tds-spin [spinning]="isLoading" class="w-full h-full flex">
+  <div class="p-4 bg-neutral-3-50 flex flex-col gap-4">
+    <div class="flex gap-4">
+      <div class="bg-white rounded-xl flex gap-4 p-3 w-1/4">
+        <img src="./assets/imagesv2/conversation/pie-chart.svg" alt="">
+        <div class="flex flex-col gap-0.5">
+          <span class="text-header-1 font-semibold">{{countTotal}}</span>
+          <span class="text-body-1 text-neutral-1-600 font-regular">Lượt chia sẻ</span>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl flex gap-4 p-3 w-1/4">
+        <img src="./assets/imagesv2/conversation/user-avatar.svg" alt="">
+        <div class="flex flex-col gap-0.5">
+          <span class="text-header-1 font-semibold">{{countPerson}}</span>
+          <span class="text-body-1 text-neutral-1-600 font-regular">Người chia sẻ</span>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl flex gap-4 p-3 w-1/4">
+        <img src="./assets/imagesv2/conversation/send.svg" alt="">
+        <div class="flex flex-col gap-0.5">
+          <span class="text-header-1 font-semibold">{{countSharedPersonal}}</span>
+          <span class="text-body-1 text-neutral-1-600 font-regular">Chia sẻ cá nhân</span>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl flex gap-4 p-3 w-1/4">
+        <img src="./assets/imagesv2/conversation/share.svg" alt="">
+        <div class="flex flex-col gap-0.5">
+          <span class="text-header-1 font-semibold">{{countSharedGroup}}</span>
+          <span class="text-body-1 text-neutral-1-600 font-regular">Chia sẻ nhóm</span>
+        </div>
       </div>
     </div>
-    <div class="bg-white rounded-xl flex gap-4 p-3 w-1/4">
-      <img src="./assets/imagesv2/conversation/user-avatar.svg" alt="">
-      <div class="flex flex-col gap-0.5">
-        <span class="text-header-1 font-semibold">24</span>
-        <span class="text-body-1 text-neutral-1-600 font-regular">Người chia sẻ</span>
+  
+    <div class="w-full rounded-xl bg-white">
+      <div class="p-4 text-title-1 font-semibold">
+        Chi tiết chia sẻ
       </div>
-    </div>
-    <div class="bg-white rounded-xl flex gap-4 p-3 w-1/4">
-      <img src="./assets/imagesv2/conversation/send.svg" alt="">
-      <div class="flex flex-col gap-0.5">
-        <span class="text-header-1 font-semibold">12</span>
-        <span class="text-body-1 text-neutral-1-600 font-regular">Chia sẻ cá nhân</span>
-      </div>
-    </div>
-    <div class="bg-white rounded-xl flex gap-4 p-3 w-1/4">
-      <img src="./assets/imagesv2/conversation/share.svg" alt="">
-      <div class="flex flex-col gap-0.5">
-        <span class="text-header-1 font-semibold">44</span>
-        <span class="text-body-1 text-neutral-1-600 font-regular">Chia sẻ nhóm</span>
+      <div class="w-full min-h-[240px] h-[240px] max-h-[400px]">
+        <tds-table #headerTable class="w-full h-full text-body-2" [frontPagination]="false" [showPagination]="false" [listData]="data" [scroll]="{y:'auto'}">
+          <thead>
+            <tr>
+              <th width="60px">STT</th>
+              <th>Khách hàng</th>
+              <th [align]="'center'">Chia sẻ cá nhân</th>
+              <th [align]="'center'">Chia sẻ nhóm</th>
+              <th [align]="'center'">Tổng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-neutral-2-100 hover:bg-neutral-3-50 text-neutral-1-900"
+              *ngFor="let item of headerTable.data; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>
+                <div class="flex flex-row items-center gap-x-2">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="font-semibold">{{ item.FbName }}</span>
+                    <span class="text-caption-1 text-neutral-1-700">[{{ item.FbId }}]</span>
+                  </div>
+                </div>
+              </td>
+              <td [align]="'center'">{{ item.CountSharedPersonal || 0 }}</td>
+              <td [align]="'center'">{{ item.CountSharedGroup || 0 }}</td>
+              <td [align]="'center'">{{ (item.CountSharedPersonal || 0) + (item.CountSharedGroup || 0) }}</td>
+            </tr>
+          </tbody>
+        </tds-table>
       </div>
     </div>
   </div>
-
-  <div class="w-full rounded-xl bg-white">
-    <div class="p-4 text-title-1 font-semibold">
-      Chi tiết chia sẻ
-    </div>
-    <div class="w-full min-h-[240px] h-[240px] max-h-[400px]">
-      <tds-table #headerTable class="w-full h-full text-body-2" [frontPagination]="false" [showPagination]="false" [listData]="listOfData" [scroll]="{y:'auto'}">
-        <thead>
-          <tr>
-            <th [width]="'60px'">STT</th>
-            <th>Khách hàng</th>
-            <th [align]="'center'">Chia sẻ cá nhân</th>
-            <th [align]="'center'">Chia sẻ nhóm</th>
-            <th>Tổng</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-neutral-2-100 hover:bg-neutral-3-50 text-neutral-1-900"
-            *ngFor="let data of headerTable.data">
-            <td>{{ data.numerical }}</td>
-            <td>
-              <div class="flex flex-col gap-0.5">
-                <span class="font-semibold">{{ data.name }}</span>
-                <span class="text-caption-1 text-neutral-1-700">{{ data.id }}</span>
-              </div>
-            </td>
-            <td [align]="'center'">{{ data.send }}</td>
-            <td [align]="'center'">{{ data.share }}</td>
-            <td>{{ data.total }}</td>
-          </tr>
-        </tbody>
-      </tds-table>
-    </div>
-  </div>
-</div>
+</tds-spin>
 
 <div *tdsModalFooter class="p-4 pt-8 flex justify-end items-end">
   <button (click)="onCancel()" tds-button color="secondary" class="w-[100px]">Đóng</button>
+  <!-- <button tds-button class="ml-2 w-[100px]" type="submit" color="info" (click)="printFacebookShares(true)">In chia sẻ</button>
+  <button tds-button class="ml-2 w-[100px]" type="submit" color="primary" (click)="printExcelShares()">Excel</button> -->
 </div>

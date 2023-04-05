@@ -69,8 +69,8 @@
                 </tds-error>
               </tds-form-field>
 
-              <tds-label>Mã sản phẩm:</tds-label>
-              <tds-form-field class="w-full col-span-2">
+              <tds-label *ngIf="id && lstVariants && lstVariants.length < 2">Mã sản phẩm:</tds-label>
+              <tds-form-field *ngIf="id && lstVariants && lstVariants.length < 2" class="w-full col-span-2">
                 <input tdsInput formControlName="DefaultCode" placeholder="Nhập mã sản phẩm"
                   class="text-neutral-1-900 text-body-2 font-regular" />
                 <tds-error>
@@ -78,8 +78,8 @@
                 </tds-error>
               </tds-form-field>
 
-              <tds-label>Mã vạch:</tds-label>
-              <tds-form-field class="w-full col-span-2">
+              <tds-label *ngIf="id && lstVariants && lstVariants.length < 2">Mã vạch:</tds-label>
+              <tds-form-field *ngIf="id && lstVariants && lstVariants.length < 2" class="w-full col-span-2">
                 <input tdsInput formControlName="Barcode" placeholder="Nhập mã vạch"
                   class="text-neutral-1-900 text-body-2 font-regular" />
                 <tds-error>
