@@ -323,7 +323,7 @@
     <!-- footer  -->
     <div #chatFooter class="chat-footer w-full flex flex-col px-2 pb-2">
         <div class="w-full desktop:pt-2 pt-1.5 desktop:pb-3 pb-1.5 flex items-center desktop:gap-x-2 gap-x-1">
-            <div class="flex desktop:gap-x-2.5 gap-x-1.5">
+            <div *ngIf="team && team.Type != 'UnofficialTikTok'" class="flex desktop:gap-x-2.5 gap-x-1.5">
                 <tds-avatar tds-popover [popoverContent]="popoverContentOptionSendMessages" popoverTrigger="click" *ngIf="reponsiveDesktop"
                     [popoverPlacement]="['topLeft', 'leftTop']" tds-tooltip="Tùy chọn" [size]="32"
                     class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-three-dots-horizon-fill">
@@ -388,7 +388,7 @@
                 </ng-template>
             </div>
 
-            <div class="flex-auto flex desktop:gap-2.5 gap-1.5">
+            <div *ngIf="team && team.Type != 'UnofficialTikTok'" class="flex-auto flex desktop:gap-2.5 gap-1.5">
                 <div *ngFor="let item of data.Tags | slice:0:4"
                     class="relative group desktop:text-caption-2 text-[10px] flex items-center max-w-[156px] truncate">
                     <div *ngIf="item" class="cursor-pointer w-full min-w-[70px] desktop:px-3 px-1.5 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
