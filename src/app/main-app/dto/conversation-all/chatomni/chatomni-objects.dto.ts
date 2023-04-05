@@ -12,6 +12,7 @@ export interface ChatomniObjectsItemDto {
   ObjectId: string;
   ObjectType: ChatomniObjectTypeDto;
   CountComment: number;
+  CountShare?: number;
   CountReaction: number;
   CreatedTime: Date | any;
   ChannelCreatedTime: Date | any;
