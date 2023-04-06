@@ -161,44 +161,44 @@
                         </div>
 
                         <!-- thao tác -->
-                        <div *ngIf="!item.IsOwner" class="flex items-center pt-3" >
+                        <div class="flex items-center pt-3" >
                             <button *ngIf="!isShowModal && !item.ParentId" [loading]="isLoadingInsertFromPost" [loadingTemplate]="'Tạo đơn hàng'"  type="button" tds-button color="primary" class="mr-2" size="sm"
-                                (click)="onInsertFromPost(item)">Tạo đơn hàng</button>
+                                (click)="onInsertFromPost(item)" [disabled]="item.IsOwner ? true : false">Tạo đơn hàng</button>
 
-                            <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng"
+                            <button *ngIf="!isShowModal" type="button" tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng" [disabled]="item.IsOwner ? true : false"
                                 tooltipPlacement="top" (click)="loadPartnerTab(item, commentOrders ? commentOrders[item.UserId] : '')" tds-tooltip>
                                 <span class="flex items-center justify-center">
                                     <i class="tdsi-information-fill text-neutral-1-500"></i>
                                 </span>
                             </button>
 
-                            <button *ngIf="!isShowModal && !item.ParentId && !item.IsOwner" [loading]="isLoadingiconMess" type="button" tds-button-icon color="secondary"
+                            <button *ngIf="!isShowModal && !item.ParentId" [loading]="isLoadingiconMess" type="button" tds-button-icon color="secondary" [disabled]="item.IsOwner ? true : false"
                                 class="mr-2" size="sm" tooltipTitle="Hội thoại bình luận" tooltipPlacement="top" tds-tooltip (click)="openMiniChat(item)" [loadingTemplate]="iconMess">
-                                  <span class="flex items-center justify-center">
-                                      <i class="tdsi-comment-on-fill text-neutral-1-500"></i>
-                                  </span>
-                              </button>
-                              <ng-template #iconMess>
                                 <span class="flex items-center justify-center">
                                     <i class="tdsi-comment-on-fill text-neutral-1-500"></i>
                                 </span>
-                              </ng-template>
+                            </button>
+                            <ng-template #iconMess>
+                            <span class="flex items-center justify-center">
+                                <i class="tdsi-comment-on-fill text-neutral-1-500"></i>
+                            </span>
+                            </ng-template>
 
                             <div *ngIf="childs[item.Id]">
-                                <button type="button" *ngIf="isHiddenComment[item.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, true)" class="mr-2" size="sm" tooltipTitle="Ẩn thị bài viết" tooltipPlacement="top" tds-tooltip>
+                                <button type="button" *ngIf="isHiddenComment[item.Id]" [disabled]="item.IsOwner ? true : false" tds-button-icon color="secondary" (click)="hiddenComment(item, true)" class="mr-2" size="sm" tooltipTitle="Ẩn thị bài viết" tooltipPlacement="top" tds-tooltip>
                                     <span class="flex items-center justify-center">
                                         <i class="tdsi-eye-close-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
 
-                                <button type="button" *ngIf="!isHiddenComment[item.Id]" tds-button-icon color="secondary" (click)="hiddenComment(item, false)" class="mr-2" size="sm" tooltipTitle="Hiển thị bài viết" tooltipPlacement="top" tds-tooltip>
+                                <button type="button" *ngIf="!isHiddenComment[item.Id]" [disabled]="item.IsOwner ? true : false" tds-button-icon color="secondary" (click)="hiddenComment(item, false)" class="mr-2" size="sm" tooltipTitle="Hiển thị bài viết" tooltipPlacement="top" tds-tooltip>
                                     <span class="flex items-center justify-center">
                                         <i class="tdsi-eye-line text-neutral-1-500"></i>
                                     </span>
                                 </button>
                             </div>
 
-                            <div *ngIf="partnerDict && partnerDict[item.UserId]" class="w-full flex flex-row items-center justify-between">
+                            <div *ngIf="partnerDict && partnerDict[item.UserId] && !item.IsOwner" class="w-full flex flex-row items-center justify-between">
                                 <!-- trạng thái khách hàng & mã đơn hàng -->
                                 <div class="flex items-center gap-1.5">
 
