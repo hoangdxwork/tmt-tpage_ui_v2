@@ -96,8 +96,8 @@ export class ModalSendCommentComponent implements OnInit {
       this.comment = `${this.comment}\n\n${this.setInnerText(x)}`;
     })
 
-    
-    this.onChangeComment(this.comment)
+    this.onChangeComment(this.comment);
+    this.lstVariants = [];
   }
 
   onClose() {
@@ -125,9 +125,8 @@ export class ModalSendCommentComponent implements OnInit {
 
   calcHeight(value: string) {
       let numberOfLineBreaks = (value.match(/\n/g) || []).length;
-      let numberOfBreak = (value.match(/\n\n/g) || []).length;
       // min-height + lines x line-height + padding + border
-      let newHeight = 20 + numberOfLineBreaks * 20 + 12 + 2 + numberOfBreak * 20;
+      let newHeight = 20 + numberOfLineBreaks * 20 + 12 + 2;
 
       this.heightText = newHeight;
       return newHeight;
