@@ -124,16 +124,19 @@ export class ModalSendCommentComponent implements OnInit {
       }
 
       let newHeight = this.calcHeight(event);
-      if(newHeight < 100 || newHeight > 300) return;
-      this.heightText = newHeight;
+      
+      if(newHeight < 100) return;
+      if(newHeight > 100 && newHeight < 500) {
+        this.heightText = newHeight;
+      } else {
+        this.heightText = 500;
+      }
   }
 
   calcHeight(value: string) {
       let numberOfLineBreaks = (value.match(/\n/g) || []).length;
       // min-height + lines x line-height + padding + border
       let newHeight = 20 + numberOfLineBreaks * 20 + 12 + 2;
-
-      this.heightText = newHeight;
       return newHeight;
   }
 }
