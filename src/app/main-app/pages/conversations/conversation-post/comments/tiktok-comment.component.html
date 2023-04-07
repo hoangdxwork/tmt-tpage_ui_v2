@@ -23,7 +23,7 @@
                             <div class="flex gap-x-2 items-center">
 
                                 <div class="min-w-[50px] desktop:max-w-[220px] max-w-[100px] truncate">
-                                    <label class="font-semibold cursor-pointer" *ngIf="item.Data">{{ (item.Data | tiktokDataCs)?.nickname }} </label>
+                                    <label class="font-semibold cursor-pointer" [ngClass]="item.IsOwner ? 'text-info-500' : ''" *ngIf="item.Data">{{ (item.Data | tiktokDataCs)?.nickname }} </label>
                                 </div>
 
                                 <!-- Mã đơn hàng -->
