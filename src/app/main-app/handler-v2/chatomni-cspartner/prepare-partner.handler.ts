@@ -60,7 +60,7 @@ export class CsPartner_PrepareModelHandler {
       } as any
     }
 
-    let exist = conversationInfo && conversationInfo.Order &&  conversationInfo.Order.Address && conversationInfo.Order.CityCode == partner.CityCode
+    let exist = conversationInfo && partner && conversationInfo.Order &&  conversationInfo.Order.Address && conversationInfo.Order.CityCode == partner.CityCode
         && conversationInfo.Order.DistrictCode == partner.DistrictCode && conversationInfo.Order.WardCode == partner.WardCode;
     if(exist) {
       partner.Street = conversationInfo.Order.Address;
