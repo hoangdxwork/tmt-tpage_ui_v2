@@ -48,8 +48,10 @@ export class ModalSendCommentComponent implements OnInit {
   }
 
   setInnerText(value: ReportLiveCampaignDetailDTO) {
-    let msg = '';
-    if(value && value.ProductName) {
+    if(!value) return '';
+    let msg: string = '';
+
+    if(value.ProductName || value.ProductNameGet) {
       msg = msg + `Tên sản phẩm: ${value.ProductNameGet || value.ProductName}`
     }
 
@@ -57,9 +59,12 @@ export class ModalSendCommentComponent implements OnInit {
       let tags =  this.orderTags[value.ProductId + '_' + value.UOMId].toString();
       tags = TDSHelperString.replaceAll(tags, ",", ", ");
       msg = msg + `\nMã chốt đơn: ${tags}`;
-      msg = msg + `\nGiá bán: ${value.Price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} đồng/${value.UOMName}`;
     }
 
+    if(value.Price && value.UOMName) {
+      msg = msg + `\nGiá bán: ${value.Price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} đồng/${value.UOMName}`;
+    }
+    
     return msg;
   }
 
