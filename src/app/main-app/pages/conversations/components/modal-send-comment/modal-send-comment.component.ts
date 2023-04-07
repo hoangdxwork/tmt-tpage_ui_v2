@@ -126,7 +126,7 @@ export class ModalSendCommentComponent implements OnInit {
       let newHeight = this.calcHeight(event);
       
       if(newHeight < 100) return;
-      if(newHeight > 100 && newHeight < 500) {
+      if(newHeight < 500) {
         this.heightText = newHeight;
       } else {
         this.heightText = 500;
