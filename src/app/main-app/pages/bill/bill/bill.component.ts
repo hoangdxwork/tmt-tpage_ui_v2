@@ -787,7 +787,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.indeterminate = false;
     this.setOfCheckedId.clear();
     this.filterObj.searchText = '';
-    
+
     this.loadData(this.pageSize, this.pageIndex);
     this.loadSummaryStatus();
   }

@@ -96,7 +96,7 @@ export class ModalSendCommentComponent implements OnInit {
       this.comment = `${this.comment}\n\n${this.setInnerText(x)}`;
     })
 
-    
+
     this.onChangeComment(this.comment)
   }
 
