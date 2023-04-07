@@ -92,8 +92,22 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     }
 
     if (TDSHelperObject.hasValue(printer)) {
-      printer.pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-        that.printerService.printHtml(res);
+      printer.pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isProcessing = false)).subscribe({
+        next: (res: TDSSafeAny) => {
+          that.printerService.printHtml(res);
+        },
+        error: (error: any) => {
+          let err: any;
+
+          if(typeof(error) === "string") {
+            err = JSON.parse(error) as any;
+          } else {
+            err = error;
+          }
+
+          this.isProcessing = false;
+          this.message.error(error?.error?.message);
+        }
       })
     }
   }

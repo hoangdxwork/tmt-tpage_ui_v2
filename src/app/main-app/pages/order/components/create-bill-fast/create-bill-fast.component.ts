@@ -295,10 +295,16 @@ export class CreateBillFastComponent implements OnInit {
           next:(res: TDSSafeAny) => {
             this.printerService.printHtml(res);
           },
-          error:(error: TDSSafeAny) => {
-            if(error?.error?.message) {
-              this.message.error(error?.error?.message);
+          error: (error: any) => {
+            let err: any;
+  
+            if(typeof(error) === "string") {
+              err = JSON.parse(error) as any;
+            } else {
+              err = error;
             }
+  
+            this.message.error(error?.error?.message);
           }
         });
       }
