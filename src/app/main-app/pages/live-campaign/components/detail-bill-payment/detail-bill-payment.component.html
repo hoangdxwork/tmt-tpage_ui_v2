@@ -38,6 +38,7 @@
           <th *ngIf="isHidden('AmountDeposit')" [width]="'130px'" [align]="'right'" class="border-r">Tiền cọc</th>
           <th *ngIf="isHidden('Residual')" [width]="'130px'" [align]="'right'" class="border-r">Còn nợ</th>
           <th *ngIf="isHidden('AmountTotal')" [width]="'130px'" [align]="'right'" class="border-r">Tổng tiền</th>
+          <th *ngIf="isHidden('DeliveryPrice')" [width]="'130px'" [align]="'right'" class="border-r">Phí giao hàng</th>
           <th *ngIf="isHidden('CashOnDelivery')" [width]="'130px'" [align]="'right'" class="border-r">Tiền thu hộ</th>
           <th *ngIf="isHidden('ShowState')" [width]="'130px'" class="border-r">Trạng thái</th>
           <th *ngIf="isHidden('UserName')" [width]="'150px'" class="border-r">Nhân viên</th>
@@ -143,7 +144,14 @@
             </td>
 
             <!-- Tiền cọc -->
-            <td *ngIf="isHidden('AmountDeposit')" [align]="'right'" class="border-r">{{ data.AmountDeposit || 0 | numberCustom }} đ</td>
+            <td *ngIf="isHidden('AmountDeposit')" [align]="'right'" class="border-r">
+              <p *ngIf="data.IsDeposited">{{ data.AmountDeposit || 0 | numberCustom }} đ</p>
+
+              <p *ngIf="!data.IsDeposited">0 đ</p>
+              <p (click)="showModalDeposit(data)" *ngIf="!data.IsDeposited && data.AmountDeposit > 0" class="italic text-info-500" tds-tooltip="Số tiền cần xác nhận cọc" style="text-decoration: underline">
+                {{ data.AmountDeposit || 0 | numberCustom }} đ
+              </p>
+            </td>
 
             <!-- Còn nợ -->
             <td *ngIf="isHidden('Residual')" [align]="'right'" class="border-r">{{ data.Residual || 0 | numberCustom }} đ</td>
@@ -151,8 +159,14 @@
             <!-- Tổng tiền -->
             <td *ngIf="isHidden('AmountTotal')" [align]="'right'" class="border-r">{{ data.AmountTotal || 0 | numberCustom }} đ</td>
 
+            <!-- Phí giao hàng -->
+            <td *ngIf="isHidden('DeliveryPrice')" [align]="'right'" class="border-r">{{ data.DeliveryPrice || 0 | numberCustom }} đ</td>
+
             <!-- Tiền thu hộ -->
-            <td *ngIf="isHidden('CashOnDelivery')" [align]="'right'" class="border-r">{{ data.CashOnDelivery || 0 | numberCustom }} đ</td>
+            <td *ngIf="isHidden('CashOnDelivery')" [align]="'right'" class="border-r">
+              <p *ngIf="data.IsDeposited">{{ data.CashOnDelivery || 0 | numberCustom }} đ</p>
+              <p *ngIf="!data.IsDeposited">{{ (data.CashOnDelivery || 0) + (data.AmountDeposit || 0) | numberCustom }} đ</p>
+            </td>
 
             <!-- Trạng thái -->
             <td *ngIf="isHidden('ShowState')" class="border-r">
