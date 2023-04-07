@@ -6,25 +6,25 @@ import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.ser
   selector: 'live-campaign-detail',
   templateUrl: './live-campaign-detail.component.html'
 })
+
 export class LiveCampaignDetailComponent implements OnInit {
 
-  lstMenu = ['Tổng quan', 'Thống kê theo sản phẩm', 'Tin nhắn', 'Đơn hàng', 'Hóa đơn chờ thanh toán', 'Danh sách hóa đơn'];
+  lstMenu: any = ['Tổng quan', 'Thống kê theo sản phẩm', 'Tin nhắn', 'Đơn hàng', 'Hóa đơn chờ xác nhận', 'Danh sách hóa đơn'];
   tabCurrent: number = 0;
   tabPath: string = 'report';
 
   liveCampaignId!: string;
   liveCampaignName?: string;
 
-  constructor(
-    private route: ActivatedRoute,
+  constructor(private route: ActivatedRoute,
     private router: Router,
-    private liveCampaignService: LiveCampaignService,
-  ) { }
+    private liveCampaignService: LiveCampaignService) { }
 
   ngOnInit(): void {
     this.liveCampaignId = this.route.snapshot.paramMap.get("id") || '';
 
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params: any) => {
+
       this.tabPath = params?.tab || 'report';
 
       // TODO: load route của tab hiện tại
@@ -54,8 +54,10 @@ export class LiveCampaignDetailComponent implements OnInit {
   }
 
   loadData(id: string) {
-    this.liveCampaignService.getById(id).subscribe(res => {
-      this.liveCampaignName = res?.Name;
+    this.liveCampaignService.getById(id).subscribe({
+      next: (res: any) => {
+        this.liveCampaignName = res?.Name;
+      }
     });
   }
 

@@ -1,5 +1,6 @@
+import { takeUntil } from 'rxjs';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
-import { finalize } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { AccountRegisterPaymentDTO } from 'src/app/main-app/dto/fastsaleorder/payment.dto';
@@ -13,7 +14,8 @@ import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'modal-payment',
-  templateUrl: './modal-payment.component.html'
+  templateUrl: './modal-payment.component.html',
+  providers: [TDSDestroyService]
 })
 export class ModalPaymentComponent implements OnInit {
 
@@ -30,8 +32,8 @@ export class ModalPaymentComponent implements OnInit {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     return value;
-  } ;
-  
+  };
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -40,45 +42,43 @@ export class ModalPaymentComponent implements OnInit {
     return value;
   };
 
-  constructor(
-    private message: TDSMessageService,
+  constructor(private message: TDSMessageService,
     private formBuilder: FormBuilder,
+    private destroy$: TDSDestroyService,
     private fastSaleOrderService: FastSaleOrderService,
     private accountJournalService: AccountJournalService,
     private accountRegisterPaymentService: AccountRegisterPaymentService,
-    private modalRef: TDSModalRef,
-  ) { }
+    private modalRef: TDSModalRef) {
+      this.createForm();
+   }
 
   ngOnInit(): void {
-    this.createForm()
     this.loadData(this.id);
     this.loadAccountPayment();
   }
 
   loadData(id: number[]) {
-    this.fastSaleOrderService.getRegisterPaymentV2({ids: id}).subscribe(
-      {
-        next: (res: any) => {
-          delete res['@odata.context'];
-          this.data = res;
-          this.updateForm(res);
-        },
-        error: error => {
-          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-        }
-      });
+    this.fastSaleOrderService.getRegisterPaymentV2({ ids: id}).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        delete res['@odata.context'];
+        this.data = res;
+        this.updateForm(res);
+      },
+      error: error => {
+        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+      }
+    });
   }
 
   loadAccountPayment(){
-    this.accountJournalService.getWithCompanyPayment().subscribe(
-      {
-        next:res => {
-          this.lstAccountJournal = res?.value;
-        },
-        error: (error) => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}`: 'Không tải được dữ liệu PT thanh toán')
-        }
-      })
+    this.accountJournalService.getWithCompanyPayment().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.lstAccountJournal = [...(res?.value || [])];
+      },
+      error: (error) => {
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}`: 'Không tải được dữ liệu PT thanh toán')
+      }
+    })
   }
 
   createForm() {
@@ -108,8 +108,7 @@ export class ModalPaymentComponent implements OnInit {
     this.data.Journal = data;
 
     this.isLoading = true;
-    this.accountRegisterPaymentService.onchangeJournal({model: this.data}).subscribe(
-      {
+    this.accountRegisterPaymentService.onchangeJournal({ model: this.data }).pipe(takeUntil(this.destroy$)).subscribe({
         next: res => {
           this.data.PaymentMethodId = res?.PaymentMethodId;
           this.isLoading = false;
@@ -124,22 +123,21 @@ export class ModalPaymentComponent implements OnInit {
   onSave() {
       if (!TDSHelperString.hasValueString(this._form.controls["Journal"].value)) {
         this.message.error('Phương thức không được để trống!');
-          return
+        return;
       }
       if (!TDSHelperString.hasValueString(this._form.controls["Amount"].value)) {
         this.message.error('Số tiền không được để trống!');
-          return
+          return;
       }
       if (!TDSHelperString.hasValueString(this._form.controls["PaymentDate"].value)) {
         this.message.error('Ngày thanh toán không được để trống!');
-          return
+        return;
       }
 
       this.prepareModel();
       this.isLoading = true;
 
-      this.accountRegisterPaymentService.insertV2(this.data).subscribe(
-        {
+      this.accountRegisterPaymentService.insertV2(this.data).pipe(takeUntil(this.destroy$)).subscribe({
           next: res => {
             this.createPayment(res);
           },
@@ -147,19 +145,17 @@ export class ModalPaymentComponent implements OnInit {
             this.isLoading = false;
             this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
           }
-        }
-      );
+        });
   }
 
   createPayment(data: AccountRegisterPaymentDTO) {
-    this.accountRegisterPaymentService.createPayment({id: data.Id}).subscribe(
-      {
-        next: res => {
-          this.isLoading = false
+    this.accountRegisterPaymentService.createPayment({ id: data.Id }).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          this.isLoading = false;
           this.message.success(Message.Bill.PaymentSuccess);
           this.modalRef.destroy(res);
-        }, 
-        error: error => {
+        },
+        error: (error: any) => {
           this.isLoading = false
           this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
         }

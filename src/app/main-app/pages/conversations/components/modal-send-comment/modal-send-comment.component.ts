@@ -21,11 +21,12 @@ export class ModalSendCommentComponent implements OnInit {
   @Input() data !: ReportLiveCampaignDetailDTO;
   @Input() orderTags : { [key: string] : string[] } = {};
   @Input() objectId !: string;
+  @Input() lstVariants!: ReportLiveCampaignDetailDTO[];
 
   comment: string = '';
-  isLoading: boolean = false;
   currentTeam!: CRMTeamDTO | null;
   heightText: number = 100;
+  isLoading: boolean = false;
 
   constructor(private chatomniCommentService: ChatomniCommentService,
     private crmTeamService: CRMTeamService,
@@ -36,7 +37,7 @@ export class ModalSendCommentComponent implements OnInit {
 
   ngOnInit(): void {
     if(this.data && this.data.ProductId) {
-      this.comment = this.setInnerText();
+      this.comment = this.setInnerText(this.data);
     }
 
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe({
@@ -46,15 +47,22 @@ export class ModalSendCommentComponent implements OnInit {
     });
   }
 
-  setInnerText() {
-    let msg = '';
-    if(this.data && this.data.ProductName) {
-      msg = msg + `Tên sản phẩm: ${this.data.ProductNameGet || this.data.ProductName}`
+  setInnerText(value: ReportLiveCampaignDetailDTO) {
+    if(!value) return '';
+    let msg: string = '';
+
+    if(value.ProductName || value.ProductNameGet) {
+      msg = msg + `Tên sản phẩm: ${value.ProductNameGet || value.ProductName}`
     }
-    if(this.orderTags && this.orderTags[this.data.ProductId + '_' + this.data.UOMId] && this.orderTags[this.data.ProductId + '_' + this.data.UOMId].length > 0) {
-      let tags =  this.orderTags[this.data.ProductId + '_' + this.data.UOMId].toString();
+
+    if(this.orderTags && this.orderTags[value.ProductId + '_' + value.UOMId] && this.orderTags[value.ProductId + '_' + value.UOMId].length > 0) {
+      let tags =  this.orderTags[value.ProductId + '_' + value.UOMId].toString();
       tags = TDSHelperString.replaceAll(tags, ",", ", ");
-      msg = msg + `\nMã chốt đơn: ${tags}`
+      msg = msg + `\nMã chốt đơn: ${tags}`;
+    }
+
+    if(value.Price && value.UOMName) {
+      msg = msg + `\nGiá bán: ${value.Price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} đồng/${value.UOMName}`;
     }
 
     return msg;
@@ -88,6 +96,15 @@ export class ModalSendCommentComponent implements OnInit {
     })
   }
 
+  onInputVariants() {
+    this.lstVariants.map(x => {
+      this.comment = `${this.comment}\n\n${this.setInnerText(x)}`;
+    })
+
+    this.onChangeComment(this.comment);
+    this.lstVariants = [];
+  }
+
   onClose() {
     this.modalRef.destroy();
   }
@@ -107,10 +124,13 @@ export class ModalSendCommentComponent implements OnInit {
       }
 
       let newHeight = this.calcHeight(event);
-      
-      if(newHeight < 100 || newHeight > 300) return;
 
-      this.heightText = newHeight;
+      if(newHeight < 100) return;
+      if(newHeight < 500) {
+        this.heightText = newHeight;
+      } else {
+        this.heightText = 500;
+      }
   }
 
   calcHeight(value: string) {

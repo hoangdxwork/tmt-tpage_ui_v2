@@ -316,7 +316,16 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
           that.isProcessing = false;
       },
       error: (error: any) => {
-          that.isProcessing = false;
+        let err: any;
+
+        if(typeof(error) === "string") {
+          err = JSON.parse(error) as any;
+        } else {
+          err = error;
+        }
+
+        this.isProcessing = false;
+        this.message.error(error?.error?.message);
       }
     })
   }

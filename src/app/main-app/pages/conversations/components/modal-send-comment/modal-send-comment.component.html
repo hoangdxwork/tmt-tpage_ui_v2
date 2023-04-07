@@ -10,6 +10,17 @@
 </div>
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-  <button tds-button class="mr-2 min-w-[100px]" type="button" color="secondary" [disabled]="isLoading" (click)="onClose()">Đóng</button>
-  <button tds-button class="mr-2 min-w-[100px]" type="button" color="primary" [disabled]="isLoading" (click)="onSend()">Gửi</button>
+  <div class="button-left flex flex-row items-center justify-start gap-x-2 w-1/2">
+    <button *ngIf="lstVariants && lstVariants.length > 0" tds-button class="min-w-[100px]" type="button" color="secondary" [disabled]="isLoading" 
+        (click)="onInputVariants()">Thêm biến thể ({{lstVariants.length}})</button>
+    <div *ngIf="lstVariants && lstVariants.length == 0" class="text-error-400 text-caption-1 italic">Đã thêm thông tin tất cả biến thể vào bình luận</div>
+  </div>
+  <div class="button-right flex flex-row items-center justify-end gap-x-2 w-1/2">
+    <button tds-button class="min-w-[100px]" type="button" color="secondary" [disabled]="isLoading" (click)="onClose()">Đóng</button>
+    <button tds-button color="primary" class="min-w-[100px]" type="button" [disabled]="isLoading" (click)="onSend()">
+      <span class="flex items-center">
+        <i class="tdsi-send-fill text-lg leading-none mr-2"></i>Bình luận
+      </span>
+    </button>
+  </div>
 </div>

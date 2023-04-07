@@ -202,8 +202,8 @@
             <!-- phân trang -->
             <div class="flex items-end pt-3 pagination-order-list">
                 <tds-pagination class="w-full" [pageSize]="pageSize" [pageIndex]="pageIndex" [total]="count"
-                    [pageSizeOptions]="[10, 20, 50, 100, 200, 500, 1000]" [showTotal]="rangeTemplate" [showRefresh]="true" showSizeChanger
-                    (clickRefresh)="refreshData()" (pageSizeChange)="changePageSize($event)">
+                    [pageSizeOptions]="[10, 20, 50, 100, 200]" [showTotal]="rangeTemplate" [showRefresh]="true" showSizeChanger
+                    (clickRefresh)="refreshData()" (pageSizeChange)="changePageSize($event)" (pageIndexChange)="pageIndexChange($event)">
                 </tds-pagination>
 
                 <ng-template #rangeTemplate let-range="range" let-total>
@@ -217,12 +217,6 @@
                 <div class="flex flex-col gap-4 p-4 items-center bg-white">
                     <img src="../../../assets/imagesv2/shop-empty.svg" alt="" class="mt-24 w-[110px] h-[82px]">
                     <span class="text-neutral-1-400 font-normal">Chưa có đơn hàng nào</span>
-
-                    <!-- <button type="button" tds-button color="primary" class="mt-3.5">
-                        <span class="flex items-center">
-                            <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Tạo đơn hàng
-                        </span>
-                    </button> -->
                 </div>
             </div>
         </ng-template>

@@ -597,7 +597,7 @@ export class ConversationPostOverViewComponent implements OnInit, OnChanges, Aft
       this.sharedService.fbGetShareds(uid, objectId, teamId).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: GetSharedDto[]) => {
           if(res && res.length > 0) {
-            this.data.CountReaction = res.length || 0;
+            this.data.CountShare = res.length || 0;
 
             this.modalService.create({
               title: 'Số lượt share',

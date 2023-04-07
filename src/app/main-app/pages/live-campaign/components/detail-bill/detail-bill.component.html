@@ -116,9 +116,15 @@
             <th *ngIf="isHidden('PartnerDisplayName')" [tdsLeft]="true" [width]="'160px'" class="border-r">Tên khách hàng</th>
             <th *ngIf="isHidden('TrackingRef')" [width]="'170px'" class="border-r">Mã vận đơn</th>
             <th *ngIf="isHidden('Address')" [width]="'250px'" class="border-r">Địa chỉ</th>
-            <th *ngIf="isHidden('AmountTotal')" [width]="'130px'" [align]="'right'" class="border-r">Tổng tiền</th>
-            <th *ngIf="isHidden('AmountDeposit')" [width]="'130px'" [align]="'right'" class="border-r">Đặt cọc</th>
-            <th *ngIf="isHidden('Residual')" [width]="'130px'" [align]="'right'" class="border-r">Còn nợ</th>
+
+            <th *ngIf="isHidden('AmountDeposit')" [width]="'140px'" [align]="'right'" class="border-r">Đặt cọc</th>
+
+            <th *ngIf="isHidden('AmountTotal')" [width]="'140px'" [align]="'right'" class="border-r">Tổng tiền</th>
+            <th *ngIf="isHidden('DeliveryPrice')" [width]="'140px'" [align]="'right'" class="border-r">Phí giao hàng</th>
+
+            <th *ngIf="isHidden('CashOnDelivery')" [width]="'140px'" [align]="'right'" class="border-r">Thu hộ</th>
+
+            <th *ngIf="isHidden('Residual')" [width]="'140px'" [align]="'right'" class="border-r">Còn nợ</th>
             <th *ngIf="isHidden('State')" [width]="'150px'" class="border-r">Trạng thái</th>
             <th *ngIf="isHidden('PrintDeliveryCount')" [width]="'150px'" [align]="'center'" class="border-r">Số lần in HĐ</th>
             <th *ngIf="isHidden('UserName')" [width]="'180px'" class="border-r">Nhân viên</th>
@@ -214,18 +220,48 @@
             <td *ngIf="isHidden('Address')" class="w-full border-r">
               {{ bill.Address }}
             </td>
+
+            <!-- Đặt cọc -->
+            <td *ngIf="isHidden('AmountDeposit')" [align]="'right'" class="border-r w-full">
+              <p class="w-full" *ngIf="bill.IsDeposited">
+                <span class="mr-1">{{bill.AmountDeposit || 0 | numberCustom}} đ</span>
+              </p>
+
+              <p class="w-full" *ngIf="!bill.IsDeposited && bill.AmountDeposit > 0">
+                <span class="mr-2">0 đ</span>
+              </p>
+
+              <p *ngIf="!bill.IsDeposited" class="italic text-info-500">
+                <span class="mr-2" style="text-decoration: underline"  tds-tooltip="Số tiền cần xác nhận cọc"> {{ bill.AmountDeposit || 0 | numberCustom }} đ</span>
+                <span class="w-full" *ngIf="!bill.IsDeposited" (click)="showModalDeposit(bill)" tds-tooltip="Click để xác nhận cọc">
+                  <span class="tdsi-money-2-fill text-[18px]" style="color: rgb(68, 128, 241)"></span>
+                </span>
+              </p>
+
+              <p *ngIf="!bill.IsDeposited" class="mr-1 text-error-500" style="font-size: 12px">Chưa xác nhận cọc</p>
+            </td>
+
             <!-- Tổng tiền -->
             <td *ngIf="isHidden('AmountTotal')" [align]="'right'" class="border-r">
               {{bill.AmountTotal || 0 | numberCustom}} đ
             </td>
-            <!-- Đặt cọc -->
-            <td *ngIf="isHidden('AmountDeposit')" [align]="'right'" class="border-r">
-              {{bill.AmountDeposit || 0 | numberCustom}} đ
+
+            <!-- Phí giao hàng -->
+            <td *ngIf="isHidden('DeliveryPrice')" [align]="'right'" class="border-r">
+              {{bill.DeliveryPrice || 0 | numberCustom}} đ
             </td>
+
+            <!-- Thu hộ -->
+            <td *ngIf="isHidden('CashOnDelivery')" [align]="'right'" class="border-r">
+              <p *ngIf="bill.IsDeposited">{{ bill.CashOnDelivery || 0 | numberCustom }} đ</p>
+              <p *ngIf="!bill.IsDeposited">{{ (bill.CashOnDelivery || 0) + (bill.AmountDeposit || 0) | numberCustom }} đ</p>
+            </td>
+
             <!-- Còn nợ -->
             <td *ngIf="isHidden('Residual')" [align]="'right'" class="border-r">
               {{bill.Residual || 0 | numberCustom}} đ
             </td>
+
             <!-- Trạng thái -->
             <td *ngIf="isHidden('State')" class="border-r">
               <div class="w-full">

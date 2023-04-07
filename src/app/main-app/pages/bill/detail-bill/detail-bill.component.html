@@ -163,7 +163,8 @@
                                 <span>Tiền thu hộ</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{ dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
+                                <span *ngIf="dataModel.IsDeposited" class="font-semibold">{{ dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
+                                <p *ngIf="!dataModel.IsDeposited">{{ (dataModel.CashOnDelivery || 0) + (dataModel.AmountDeposit || 0) | numberCustom }} đ</p>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">
@@ -447,14 +448,6 @@
                         </div>
                         <div class="flex gap-x-6">
                             <div class="w-1/3">
-                                <span>Giao hàng thu tiền</span>
-                            </div>
-                            <div class="w-2/3">
-                                <span class="font-semibold">{{ (dataModel.CashOnDelivery || 0) | numberCustom }} đ</span>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-6">
-                            <div class="w-1/3">
                                 <span>Đối soát GH</span>
                             </div>
                             <div class="w-2/3">
@@ -482,8 +475,27 @@
                                 <span>Tiền cọc</span>
                             </div>
                             <div class="w-2/3 flex gap-4 items-center">
-                                <span class="font-semibold">{{ (dataModel.AmountDeposit || 0) | numberCustom }} đ</span>
-                                <i tds-tooltip="Hình ảnh thanh toán" (click)="openImages()" class="tdsi-images-fill text-neutral-1-600 hover:text-primary-1 text-xl"></i>
+                              <p class="w-full" *ngIf="dataModel.IsDeposited">
+                                <span class="mr-1">{{dataModel.AmountDeposit || 0 | numberCustom}}đ </span>
+                                <span tds-tooltip="Hình ảnh thanh toán" (click)="openImages()" class="tdsi-images-fill text-neutral-1-600 hover:text-primary-1 text-xl"></span>
+                              </p>
+
+                              <div *ngIf="!dataModel.IsDeposited">
+                                <div>
+                                  <span class="mr-2" *ngIf="dataModel.AmountDeposit > 0">0 đ</span>
+                                  <span style="text-decoration: underline" class="italic text-info-500" tds-tooltip="Số tiền cần xác nhận cọc">
+                                    {{ dataModel.AmountDeposit || 0 | numberCustom }}đ
+                                  </span>
+                                </div>
+
+                                <div>
+                                  <span class="text-error-500 mr-2" style="font-size: 12px">Chưa xác nhận cọc</span>
+                                  <span (click)="showModalDeposit(dataModel)"  class="w-full" *ngIf="!dataModel.IsDeposited" tds-tooltip="Click để xác nhận cọc">
+                                    <span class="tdsi-money-2-fill text-[18px]" style="color: rgb(68, 128, 241)"></span>
+                                  </span>
+                                </div>
+
+                              </div>
                             </div>
                         </div>
                         <div class="flex gap-x-6">
@@ -539,39 +551,6 @@
                               </button>
                             </div>
                           </tds-modal>
-                        <!-- Thông tin nâng cao -->
-                        <!-- <div class="w-full">
-                            <tds-collapse accordion="true">
-                                <tds-collapse-panel header="Thông tin nâng cao" [active]="false" [expandedIcon]="'tdsi-arrow-up-line'">
-                                    <div class=" flex flex-col gap-y-4">
-                                        <div class="flex gap-x-6 items-center">
-                                            <div class="w-1/3">
-                                                <span>Người nhận</span>
-                                            </div>
-                                            <div class="w-2/3">
-                                                <span class="font-semibold">{{dataModel.Ship_Receiver?.Name}}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-x-6 items-center">
-                                            <div class="w-1/3">
-                                                <span>Điện thoại</span>
-                                            </div>
-                                            <div class="w-2/3">
-                                                <span class="font-semibold">{{dataModel.Ship_Receiver?.Phone}}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-x-6 items-center">
-                                            <div class="w-1/3">
-                                                <span>Địa chỉ</span>
-                                            </div>
-                                            <div class="w-2/3">
-                                                <span class="font-semibold">{{dataModel.Ship_Receiver?.Street}}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </tds-collapse-panel>
-                            </tds-collapse>
-                        </div> -->
                     </div>
                 </div>
                 <div class="rounded-xl bg-white p-4 flex flex-col">
@@ -597,14 +576,7 @@
                                 <span class="font-semibold">{{ dataModel.ReceiverPhone || '---'}}</span>
                             </div>
                         </div>
-                        <!-- <div class="flex gap-x-6 items-center">
-                            <div class="w-1/3">
-                                <span>Ngày giao</span>
-                            </div>
-                            <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.ReceiverDate | date:"dd-MM-yyyy HH:mm"}}</span>
-                            </div>
-                        </div> -->
+
                         <div class="flex gap-x-6">
                             <div class="w-1/3">
                                 <span>Địa chỉ giao hàng</span>

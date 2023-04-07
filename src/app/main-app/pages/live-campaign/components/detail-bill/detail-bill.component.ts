@@ -29,6 +29,7 @@ import { TDSTableQueryParams } from 'tds-ui/table';
 import { ColumnTableDTO } from '@app/dto/common/table.dto';
 import { ChatomniConversationService } from '@app/services/chatomni-service/chatomni-conversation.service';
 import { PartnerCanMergeOrdersDto } from '@app/dto/live-campaign/sale-order-livecampaign.dto';
+import { ModalConfirmedDepositComponent } from '../modal-confirmed-deposit/modal-confirmed-deposit.component';
 
 @Component({
   selector: 'detail-bill',
@@ -93,8 +94,12 @@ export class DetailBillComponent implements OnInit {
     { value: 'PartnerDisplayName', name: 'Tên khách hàng', isChecked: true },
     { value: 'TrackingRef', name: 'Mã vận đơn', isChecked: true },
     { value: 'Address', name: 'Địa chỉ', isChecked: true },
-    { value: 'AmountTotal', name: 'Tổng tiền', isChecked: true },
+
     { value: 'AmountDeposit', name: 'Đặt cọc', isChecked: true },
+    { value: 'AmountTotal', name: 'Tổng tiền', isChecked: true },
+    { value: 'DeliveryPrice', name: 'Phí giao hàng', isChecked: true },
+    { value: 'CashOnDelivery', name: 'Thu hộ', isChecked: true },
+
     { value: 'Residual', name: 'Còn nợ', isChecked: true },
     { value: 'State', name: 'Trạng thái', isChecked: true },
     { value: 'PrintDeliveryCount', name: 'Số lần in HĐ', isChecked: true },
@@ -126,7 +131,6 @@ export class DetailBillComponent implements OnInit {
     this.loadTags();
     this.loadGridConfig();
 
-    // this.loadPartnerCanMergeOrders();
     this.countPartnerCanMergeOrders();
   }
 
@@ -182,29 +186,6 @@ export class DetailBillComponent implements OnInit {
     })
   }
 
-  // loadPartnerCanMergeOrders() {
-  //   let id = this.liveCampaignId;
-  //   this.lstPartner = [];
-  //   this.isLoading = true;
-
-  //   let pageSize = 10;
-  //   let pageIndex = 1;
-
-  //   let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
-  //   this.fastSaleOrderService.getPartnerCanMergeOrders(id, params).pipe(takeUntil(this.destroy$)).subscribe({
-  //     next: (res: any) => {
-  //         delete res['@odata.context'];
-  //         // this.countPartner = res['@odata.count'];
-  //         this.lstPartner = [...(res?.value || 0)];
-  //         this.isLoading = false;
-  //     },
-  //     error: (err) => {
-  //         this.message.error(err?.error?.message || 'Đã xảy ra lỗi');
-  //         this.isLoading = false;
-  //     }
-  //   })
-  // }
-
   onLoadOption(event: any): void {
     this.tabIndex = 1;
     this.pageIndex = 1;
@@ -248,7 +229,6 @@ export class DetailBillComponent implements OnInit {
     }
 
     this.billFilterOptions.onCancel();
-    // this.loadPartnerCanMergeOrders();
     this.countPartnerCanMergeOrders();
   }
 
@@ -479,11 +459,24 @@ export class DetailBillComponent implements OnInit {
 
       if (TDSHelperObject.hasValue(obs)) {
         this.isProcessing = true;
-        obs.pipe(takeUntil(this.destroy$), finalize(() => {
-            this.isProcessing = false;
-            this.isLoading = false;
-        })).subscribe((res: TDSSafeAny) => {
+        obs.pipe(takeUntil(this.destroy$)).subscribe({next: (res: TDSSafeAny) => {
             that.printerService.printHtml(res);
+            this.isProcessing = false; 
+            this.isLoading = false;
+          },
+          error: (error: any) => {
+            let err: any;
+
+            if(typeof(error) === "string") {
+              err = JSON.parse(error) as any;
+            } else {
+              err = error;
+            }
+            
+            this.isProcessing = false; 
+            this.isLoading = false;
+            this.message.error(error?.error?.message);
+          }
         })
       }
     }
@@ -937,5 +930,25 @@ export class DetailBillComponent implements OnInit {
     this.filterObj.searchText = '';
 
     this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  showModalDeposit(data: any) {
+    let modal = this.modal.create({
+      title: 'Xác nhận tiền cọc',
+      content: ModalConfirmedDepositComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        data: data
+      }
+    });
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res) {
+          this.refreshData();
+        }
+      }
+    });
   }
 }

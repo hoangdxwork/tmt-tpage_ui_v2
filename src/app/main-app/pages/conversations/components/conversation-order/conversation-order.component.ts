@@ -536,7 +536,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
                     this.message.success('Lưu địa chỉ đơn hàng thành công');
                 }
 
-                let csid = model.Facebook_ASUserId;
+                let csid = this.conversationInfo?.Conversation?.ConversationId || model.Facebook_ASUserId;
                 this.onSyncConversationPartner(csid);
                 this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
                 this.cdRef.detectChanges();
@@ -1064,12 +1064,21 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     if (obs) {
       this.message.info('Đang thao tác in phiếu...');
-      obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+      obs.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: TDSSafeAny) => {
           this.printerService.printHtml(res);
-      }, (error: TDSSafeAny) => {
-          if(error?.error?.message) {
-              this.notification.error( 'Lỗi in phiếu', error?.error?.message);
+        },
+        error: (error: any) => {
+          let err: any;
+
+          if(typeof(error) === "string") {
+            err = JSON.parse(error) as any;
+          } else {
+            err = error;
           }
+          
+          this.message.error(error?.error?.message);
+        }
       });
     }
   }
@@ -1536,7 +1545,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
       next: (result: TDSSafeAny) => {
-        if(result){
+        if(result) {
             let data = {...this.csOrder_SuggestionHandler.onLoadSuggestion(result.value, this.quickOrderModel)};
             this.quickOrderModel = {...data};
             this.suggestText = result.value?.Address;
@@ -1855,6 +1864,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     this.syncTimer = setTimeout(() => {
       this.chatomniConversationService.getInfo(this.team.Id, csid).pipe(takeUntil(this.destroy$)).subscribe({
           next: (info: ChatomniConversationInfoDto) => {
+
               this.chatomniConversationFacade.onSyncConversationInfo$.emit(info);
               this.chatomniConversationFacade.onSyncConversationPartner$.emit(info);
               this.chatomniCommentFacade.onSyncPartnerTimeStamp$.emit(info);

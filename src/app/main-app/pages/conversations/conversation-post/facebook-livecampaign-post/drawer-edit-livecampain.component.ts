@@ -1199,6 +1199,11 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   }
 
   onShowModalComment(item: ReportLiveCampaignDetailDTO) {
+      let variants!: ReportLiveCampaignDetailDTO[];
+      if(TDSHelperString.hasValueString(item.TagWithAttributes)) {
+        variants = this.lstDetail.filter(x => x.TagWithAttributes == item.TagWithAttributes && x.ProductId != item.ProductId);
+      }
+
       this.modal.create({
         title: 'Thao tác bình luận Facebook',
         content: ModalSendCommentComponent,
@@ -1207,7 +1212,8 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
         componentParams: {
           data: item,
           orderTags: this.orderTags,
-          objectId: this.objectId
+          objectId: this.objectId,
+          lstVariants: variants
         }
       });
   }
