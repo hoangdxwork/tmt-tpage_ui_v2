@@ -60,7 +60,11 @@ export class CsPartner_PrepareModelHandler {
       } as any
     }
 
-    if(!TDSHelperString.hasValueString(partner.Street) && TDSHelperString.hasValueString(partner.FullAddress)){
+    let exist = conversationInfo && conversationInfo.Order &&  conversationInfo.Order.Address && conversationInfo.Order.CityCode == partner.CityCode
+        && conversationInfo.Order.DistrictCode == partner.DistrictCode && conversationInfo.Order.WardCode == partner.WardCode;
+    if(exist) {
+      partner.Street = conversationInfo.Order.Address;
+    } else if(!TDSHelperString.hasValueString(partner.Street) && TDSHelperString.hasValueString(partner.FullAddress)){
       partner.Street = partner.FullAddress;
     }
 

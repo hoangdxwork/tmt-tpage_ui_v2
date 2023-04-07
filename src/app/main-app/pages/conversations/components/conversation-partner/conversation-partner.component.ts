@@ -125,9 +125,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges , OnDestr
     this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ChatomniConversationInfoDto) => {
         if(res) {
-            this.loadData(res);
-            this.loadNotes(this.team.ChannelId, res.Conversation?.ConversationId);
-            this.postEvent.spinLoadingTab$.emit(false);
+          this.loadData(res);
+          this.loadNotes(this.team.ChannelId, res.Conversation?.ConversationId);
+          this.postEvent.spinLoadingTab$.emit(false);
         }
       }
     });
