@@ -13,7 +13,8 @@ import { TDSMessageService } from 'tds-ui/message';
   templateUrl: './modal-confirmed-deposit.component.html',
   providers: [ TDSDestroyService ]
 })
-export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
+
+export class ModalConfirmedDepositComponent implements OnInit {
 
   @Input() data!: FastSaleOrderModelDTO;
 
@@ -22,7 +23,7 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
 
   currentDeposit: number = 0;
 
-  numberWithCommas =(value:TDSSafeAny) =>{
+  numberWithCommas =(value:TDSSafeAny) => {
     if(value != null)
     {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -38,18 +39,13 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
     return value;
   };
 
-  constructor(
-    private modalRef: TDSModalRef,
+  constructor(private modalRef: TDSModalRef,
     private message: TDSMessageService,
     private fastSaleOrderService: FastSaleOrderService,
-    private destroy$: TDSDestroyService,
-  ) { }
-
-  ngOnChanges(changes: SimpleChanges): void {
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit(): void {
-
   }
 
   onConfirmed() {
@@ -57,16 +53,17 @@ export class ModalConfirmedDepositComponent implements OnInit, OnChanges {
       let model = this.prepareModel();
 
       this.isLoading = true;
-      this.fastSaleOrderService.listUpdateDeposit(model).pipe(takeUntil(this.destroy$)).subscribe(
-        {
-          next: res => {
+      this.fastSaleOrderService.listUpdateDeposit(model).pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: any) => {
             this.data.IsDeposited = true;
             this.message.success(Message.UpdatedSuccess);
 
             this.isConfirmed = true;
             this.isLoading = false;
-          }, 
-          error: error => {
+
+            this.onCancel();
+          },
+          error: (error: any) => {
             this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
             this.isLoading = false;
           }

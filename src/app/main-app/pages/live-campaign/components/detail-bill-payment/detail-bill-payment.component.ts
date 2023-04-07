@@ -1,7 +1,5 @@
 import { BillFilterOptionsComponent } from './../../../../shared/bill-filter-options/bill-filter-options.component';
 import { ChatomniConversationService } from './../../../../services/chatomni-service/chatomni-conversation.service';
-import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
-import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { CRMTeamService } from './../../../../services/crm-team.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
@@ -14,7 +12,7 @@ import { finalize } from 'rxjs/operators';
 import { SortEnum, THelperCacheService } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
-import { FastSaleOrderModelDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderModelDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { TagsPartnerDTO } from 'src/app/main-app/dto/partner/partner-tags.dto';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { ODataLiveCampaignBillService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-bill.service';
@@ -94,14 +92,14 @@ export class DetailBillPaymentComponent implements OnInit {
     { value: 'AmountDeposit', name: 'Tiền cọc', isChecked: true },
     { value: 'Residual', name: 'Còn nợ', isChecked: true },
     { value: 'AmountTotal', name: 'Tổng tiền', isChecked: true },
+    { value: 'DeliveryPrice', name: 'Phí giao hàng', isChecked: true },
     { value: 'CashOnDelivery', name: 'Tiền thu hộ', isChecked: true },
     { value: 'ShowState', name: 'Trạng thái', isChecked: true },
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
     { value: 'DateCreated', name: 'Ngày cập nhật', isChecked: true },
   ];
 
-  constructor(
-    private tagService: TagService,
+  constructor(private tagService: TagService,
     private message: TDSMessageService,
     private router: Router,
     private modal: TDSModalService,
@@ -112,8 +110,7 @@ export class DetailBillPaymentComponent implements OnInit {
     private cacheApi: THelperCacheService,
     private destroy$: TDSDestroyService,
     private crmTeamService: CRMTeamService,
-    private chatomniConversationService: ChatomniConversationService
-  ) { }
+    private chatomniConversationService: ChatomniConversationService) { }
 
   ngOnInit(): void {
     this.setFilter();
@@ -128,8 +125,13 @@ export class DetailBillPaymentComponent implements OnInit {
 
   loadTags(){
     let type = "fastsaleorder";
-    this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-        this.lstTags = res.value;
+    this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.lstTags = [...(res?.value || [])];
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
+      }
     });
   }
 
@@ -138,12 +140,12 @@ export class DetailBillPaymentComponent implements OnInit {
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.getViewData(params).pipe(takeUntil(this.destroy$)).subscribe({
-        next: res => {
+        next: (res: any) => {
           this.count = res['@odata.count'] as number;
-          this.lstOfData = res.value;
+          this.lstOfData = [...(res?.value || [])];
       },
-        error: error => {
-          this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+        error: (error: any) => {
+          this.message.error(error?.error?.message);
       }
     });
   }
@@ -239,12 +241,12 @@ export class DetailBillPaymentComponent implements OnInit {
       this.message.error("Vui lòng nhập tên thẻ!");
       return;
     }
+
     let model = { OrderId: id, Tags: tags };
-    this.fastSaleOrderService.assignTagFastSaleOrder(model).pipe(takeUntil(this.destroy$)).subscribe(
-      {
+    this.fastSaleOrderService.assignTagFastSaleOrder(model).pipe(takeUntil(this.destroy$)).subscribe({
         next: (res: TDSSafeAny) => {
           if(res && res.OrderId) {
-            var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+            let exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
             if(exits) {
               exits.Tags = JSON.stringify(tags)
             }
@@ -273,9 +275,11 @@ export class DetailBillPaymentComponent implements OnInit {
       }
     });
 
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(res => {
-      if(res) {
-        this.refreshData();
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res) {
+          this.refreshData();
+        }
       }
     });
   }

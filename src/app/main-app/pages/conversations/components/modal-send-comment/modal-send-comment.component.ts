@@ -64,7 +64,7 @@ export class ModalSendCommentComponent implements OnInit {
     if(value.Price && value.UOMName) {
       msg = msg + `\nGiá bán: ${value.Price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} đồng/${value.UOMName}`;
     }
-    
+
     return msg;
   }
 
@@ -124,7 +124,7 @@ export class ModalSendCommentComponent implements OnInit {
       }
 
       let newHeight = this.calcHeight(event);
-      
+
       if(newHeight < 100) return;
       if(newHeight < 500) {
         this.heightText = newHeight;

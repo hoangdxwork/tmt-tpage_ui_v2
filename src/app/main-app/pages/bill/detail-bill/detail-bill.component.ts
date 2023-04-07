@@ -16,6 +16,7 @@ import { TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utili
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { PaymentJsonBillComponent } from '../components/payment-json/payment-json-bill.component';
 import { TDSNotificationService } from 'tds-ui/notification';
+import { ModalConfirmedDepositComponent } from '@app/pages/live-campaign/components/modal-confirmed-deposit/modal-confirmed-deposit.component';
 
 @Component({
   selector: 'app-detail-bill',
@@ -48,6 +49,7 @@ export class DetailBillComponent implements OnInit{
 
   constructor(private route: ActivatedRoute,
     private router: Router,
+    private modal: TDSModalService,
     private notificationService: TDSNotificationService,
     private cRMTeamService: CRMTeamService,
     private commonService: CommonService,
@@ -501,5 +503,25 @@ export class DetailBillComponent implements OnInit{
     } else if (event.key === 'F8') {
       this.onSavePrint('confirm');
     }
+  }
+
+  showModalDeposit(data: any) {
+    let modal = this.modal.create({
+      title: 'Xác nhận tiền cọc',
+      content: ModalConfirmedDepositComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        data: data
+      }
+    });
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res) {
+          this.loadBill();
+        }
+      }
+    });
   }
 }
