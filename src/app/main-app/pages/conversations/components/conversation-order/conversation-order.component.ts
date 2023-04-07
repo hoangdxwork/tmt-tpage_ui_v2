@@ -1064,12 +1064,21 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
 
     if (obs) {
       this.message.info('Đang thao tác in phiếu...');
-      obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+      obs.pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: TDSSafeAny) => {
           this.printerService.printHtml(res);
-      }, (error: TDSSafeAny) => {
-          if(error?.error?.message) {
-              this.notification.error( 'Lỗi in phiếu', error?.error?.message);
+        },
+        error: (error: any) => {
+          let err: any;
+
+          if(typeof(error) === "string") {
+            err = JSON.parse(error) as any;
+          } else {
+            err = error;
           }
+          
+          this.message.error(error?.error?.message);
+        }
       });
     }
   }

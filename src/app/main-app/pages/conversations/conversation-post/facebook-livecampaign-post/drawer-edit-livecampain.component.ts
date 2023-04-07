@@ -1199,7 +1199,10 @@ export class DrawerEditLiveCampaignComponent implements OnInit, OnDestroy {
   }
 
   onShowModalComment(item: ReportLiveCampaignDetailDTO) {
-      let variants = this.lstDetail.filter(x => x.TagWithAttributes === item.TagWithAttributes && x.ProductId != item.ProductId && x.UOMId == item.UOMId);
+      let variants!: ReportLiveCampaignDetailDTO[];
+      if(TDSHelperString.hasValueString(item.TagWithAttributes)) {
+        variants = this.lstDetail.filter(x => x.TagWithAttributes == item.TagWithAttributes && x.ProductId != item.ProductId);
+      }
 
       this.modal.create({
         title: 'Thao tác bình luận Facebook',
