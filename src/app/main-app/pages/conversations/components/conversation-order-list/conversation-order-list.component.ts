@@ -242,9 +242,14 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
     this.loadCommentsOrderByPost();
   }
 
-  changePageSize(pageSize:number){
+  changePageSize(pageSize: number) {
     this.pageSize = pageSize;
     this.pageIndex = 1;
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  pageIndexChange(pageIndex: number) {
+    this.pageIndex = pageIndex;
     this.loadData(this.pageSize, this.pageIndex);
   }
 
