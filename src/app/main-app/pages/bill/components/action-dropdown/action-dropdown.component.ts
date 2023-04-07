@@ -213,8 +213,16 @@ export class ActionDropdownComponent implements OnInit {
               this.isProcessing = false;
           },
           error: (error: any) => {
-              this.isProcessing = false;
-              this.message.error(error?.error?.message);
+            let err: any;
+
+            if(typeof(error) === "string") {
+              err = JSON.parse(error) as any;
+            } else {
+              err = error;
+            }
+
+            this.isProcessing = false;
+            this.message.error(error?.error?.message);
           }
         })
       }

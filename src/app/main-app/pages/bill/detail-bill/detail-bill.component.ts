@@ -204,8 +204,17 @@ export class DetailBillComponent implements OnInit{
             that.printerService.printHtml(res);
             that.isProcessing = false;
         },
-        error:(err: any) => {
+        error: (error: any) => {
+          let err: any;
+
+          if(typeof(error) === "string") {
+            err = JSON.parse(error) as any;
+          } else {
+            err = error;
+          }
+
           this.isProcessing = false;
+          this.message.error(error?.error?.message);
         }
       })
     }
