@@ -51,6 +51,14 @@ export class ProductTemplateService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  getProductTemplateByIdV3(key: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/ODataService.GetDetailView?$expand=Images,ProductVariants($expand%3DUOM,Categ,UOMPO,POSCateg,AttributeValues),Importer,Distributor,Producer&companyId=undefined&warehouseId=undefined`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<ProductTemplateV2DTO>(api, null);
+  }
 
   insert(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
@@ -113,6 +121,15 @@ export class ProductTemplateService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  updateProductVariants(id:TDSSafeAny, data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/odata/ProductTemplate(${id})/ODataService.UpdateVariant`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getProductVariants(id:TDSSafeAny): Observable<TDSSafeAny> {
