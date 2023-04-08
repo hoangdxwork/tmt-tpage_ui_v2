@@ -12,7 +12,7 @@
       </ng-template>
       <div class="flex gap-x-6">
         <div>
-          <tds-avatar [tdsSrc]="dataModel?.ImageUrl" [size]="80" [isAvatar]="false" class="rounded-lg">
+          <tds-avatar [tdsSrc]="dataModel?.ImageUrl" [size]="80" [isAvatar]="false" class="rounded-lg" [shape]="'square'">
           </tds-avatar>
         </div>
         <div class="grid 2xl:grid-cols-9 gap-x-4 gap-y-4 xl:grid-cols-6 items-center">
@@ -166,27 +166,33 @@
         </div>
       </div>
       <div *ngIf="dataModel" class="pt-4">
-        <span class="text-body-1 font-semibold">*Biến thể</span>
+        <div class="text-body-1 font-semibold mb-2">*Biến thể</div>
+
         <tds-spin [spinning]="isLoading" class="pt-4">
           <tds-table #variantsTable [listData]="dataModel.ProductVariants" [showPagination]="false" class="min-h-[100px]">
             <thead>
               <tr>
-                <th width="5%" [align]="'center'">STT</th>
-                <th width="10%" [align]="'center'">Mã</th>
-                <th width="20%">Tên</th>
-                <th width="15%" [align]="'right'">Giá biến thể</th>
-                <th width="15%" [align]="'right'">Giá vốn</th>
-                <th width="10%" [align]="'center'">Số lượng</th>
-                <th width="10%" [align]="'center'">Hoạt động</th>
-                <th width="15%" [align]="'center'">Thao tác</th>
+                <th width="5%" [align]="'center'" class="border-r">STT</th>
+                <th width="10%" class="border-r">Ảnh</th>
+                <th width="10%" [align]="'center'" class="border-r">Mã</th>
+                <th width="24%"  class="border-r">Tên</th>
+                <th width="13%" [align]="'right'" class="border-r">Giá biến thể</th>
+                <th width="13%" [align]="'right'" class="border-r">Giá vốn</th>
+                <th width="10%" [align]="'center'" class="border-r">Số lượng</th>
+                <th width="10%" [align]="'center'" class="border-r">Hoạt động</th>
+                <!-- <th width="15%" [align]="'center'">Thao tác</th> -->
               </tr>
             </thead>
             <tbody>
               <ng-container *ngFor="let data of variantsTable.data; let i = index">
                 <tr>
-                  <td [align]="'center'">{{ 1 + i }}</td>
-                  <td [align]="'center'">{{ data.DefaultCode }}</td>
-                  <td>
+                  <td [align]="'center'" class="border-r">{{ 1 + i }}</td>
+                  <td [align]="'center'" class="border-r">
+                    <tds-avatar [tdsSrc]="data.ImageUrl" [size]="50" [isAvatar]="false" [shape]="'square'"></tds-avatar>
+                  </td>
+
+                  <td [align]="'center'" class="border-r">{{ data.DefaultCode }}</td>
+                  <td class="border-r">
                     <div class="flex flex-col">
                       <span>{{ data.NameGet || data.NameTemplate || data.Name }}</span>
                       <div *ngIf="data.AttributeValues.length > 0">
@@ -196,23 +202,23 @@
                       </div>
                     </div>
                   </td>
-                  <td [align]="'right'">
-                    <span>{{ data.PriceVariant | numberCustom }}</span>
+                  <td [align]="'right'" class="border-r">
+                    <span>{{ data.PriceVariant | numberCustom }}đ</span>
                   </td>
-                  <td [align]="'right'">
-                    <span>{{ data.Price || 0 | numberCustom}}</span>
+                  <td [align]="'right'" class="border-r">
+                    <span>{{ data.Price || 0 | numberCustom}}đ</span>
                   </td>
-                  <td class="text-center">
+                  <td class="text-center border-r">
                     <span>
                       {{ data.QtyAvailable | numberCustom }}
                     </span>
                   </td>
-                  <td>
+                  <td class="border-r">
                     <span class="flex items-center justify-center">
                       <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
                     </span>
                   </td>
-                  <td>
+                  <!-- <td>
                     <div class="flex flex-row items-center justify-center w-full gap-x-1">
                       <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
                         (click)="showEditVariantsModal(data)" [disabled]="variantsTable.data.length == 1">
@@ -221,7 +227,7 @@
                         </span>
                       </button>
                     </div>
-                  </td>
+                  </td> -->
                 </tr>
               </ng-container>
             </tbody>
