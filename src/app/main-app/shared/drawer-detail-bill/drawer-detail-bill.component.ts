@@ -9,9 +9,10 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { finalize, Observable, takeUntil } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { ChangeDetectorRef, Component, Input, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, OnChanges, SimpleChanges, Output, EventEmitter, ViewContainerRef } from '@angular/core';
 import { TDSHelperObject, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { Conversation_LastBillDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation-info.dto';
+import { ModalConfirmedDepositComponent } from '@app/pages/live-campaign/components/modal-confirmed-deposit/modal-confirmed-deposit.component';
 
 @Component({
   selector: 'drawer-detail-bill',
@@ -44,11 +45,13 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
   constructor(private cdRef: ChangeDetectorRef,
     private fastSaleOrderService: FastSaleOrderService,
     private destroy$: TDSDestroyService,
+    private modal: TDSModalService,
     private message: TDSMessageService,
     private cRMTeamService: CRMTeamService,
     private printerService: PrinterService,
     private modalService: TDSModalService,
     private cacheApi: THelperCacheService,
+    private viewContainerRef: ViewContainerRef,
     private router: Router) { }
 
 
@@ -151,12 +154,15 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
         (res: any) => {
           this.payments = [...res.value];
         }
+      },
+      error: (err: any) => {
+        this.message.error(err?.error?.message);
       }
     })
   }
 
   loadTeamById(id: any) {
-    this.cRMTeamService.getTeamById(id).subscribe({
+    this.cRMTeamService.getTeamById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (team: any) => {
           if(team) {
             this.dataModel.Team!.Name = team.Name;
@@ -325,7 +331,7 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
         }
 
         this.isProcessing = false;
-        this.message.error(error?.error?.message);
+        this.message.error(err?.error?.message || err?.message);
       }
     })
   }
@@ -339,5 +345,25 @@ export class DrawerDetailBillComponent implements OnInit, OnChanges {
     if(data && TDSHelperString.hasValueString(data.TrackingUrl)) {
       window.open(data.TrackingUrl, '_blank')
     }
+  }
+
+  showModalDeposit(data: any) {
+    let modal = this.modal.create({
+      title: 'Xác nhận tiền cọc',
+      content: ModalConfirmedDepositComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        data: data
+      }
+    });
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        if(res) {
+          this.loadBill();
+        }
+      }
+    });
   }
 }

@@ -1502,6 +1502,14 @@ export class AddBillComponent implements OnInit {
           this.isEnableCalcFee = false;
           this.isEqualAmountInsurance = false;
 
+          let err: any;
+          if(typeof(error) === "string") {
+            err = JSON.parse(error) as any;
+          } else {
+            err = error;
+          }
+
+          this.message.error(err?.error?.message || err?.message);
           this.router.navigateByUrl(`bill/detail/${this.id}`);
       }
     })

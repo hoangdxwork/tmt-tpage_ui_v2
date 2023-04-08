@@ -438,10 +438,7 @@ export class DetailBillComponent implements OnInit {
 
   print(type: string) {
     let that = this;
-
-    if (this.isProcessing) {
-      return;
-    }
+    if (this.isProcessing) return;
 
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
@@ -459,9 +456,11 @@ export class DetailBillComponent implements OnInit {
 
       if (TDSHelperObject.hasValue(obs)) {
         this.isProcessing = true;
-        obs.pipe(takeUntil(this.destroy$)).subscribe({next: (res: TDSSafeAny) => {
+        obs.pipe(takeUntil(this.destroy$)).subscribe({
+          next: (res: TDSSafeAny) => {
+
             that.printerService.printHtml(res);
-            this.isProcessing = false; 
+            this.isProcessing = false;
             this.isLoading = false;
           },
           error: (error: any) => {
@@ -472,10 +471,10 @@ export class DetailBillComponent implements OnInit {
             } else {
               err = error;
             }
-            
-            this.isProcessing = false; 
+
+            this.isProcessing = false;
             this.isLoading = false;
-            this.message.error(error?.error?.message);
+            this.message.error(err?.error?.message || err?.message);
           }
         })
       }

@@ -870,10 +870,15 @@ export class EditOrderV2Component implements OnInit {
           this.modalRef.destroy('onLoadPage');
 
       }, (error: TDSSafeAny) => {
-          if(error?.error?.message) {
-              this.notification.error( 'Lỗi in phiếu', error?.error?.message);
+          let err: any;
+          if(typeof(error) === "string") {
+            err = JSON.parse(error) as any;
+          } else {
+            err = error;
           }
+
           this.isLoading = false;
+          this.message.error(err?.error?.message || err?.message);
           this.modalRef.destroy('onLoadPage');
       });
     }

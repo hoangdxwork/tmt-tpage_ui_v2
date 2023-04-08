@@ -106,7 +106,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
           }
 
           this.isProcessing = false;
-          this.message.error(error?.error?.message);
+          this.message.error(err?.error?.message || err?.message);
         }
       })
     }

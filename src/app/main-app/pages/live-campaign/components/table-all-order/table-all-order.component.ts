@@ -478,14 +478,21 @@ export class TableAllOrderComponent implements OnInit {
     this.isLoading = true;
 
     obs = this.printerService.printUrl(`/SaleOnline_LiveCampaign/PrintCustomerWaitCheckOut?id=${this.liveCampaignId}`);
-    obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      this.printerService.printHtml(res);
-      this.isLoading = false;
+    obs.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: TDSSafeAny) => {
+        this.printerService.printHtml(res);
+        this.isLoading = false;
+      },
+      error: (error: any) => {
+        let err: any;
+        if(typeof(error) === "string") {
+          err = JSON.parse(error) as any;
+        } else {
+          err = error;
+        }
 
-    }, (error: TDSSafeAny) => {
-      this.isLoading = false;
-      if (error?.error?.message) {
-        this.message.error(error?.error?.message);
+        this.isLoading = false;
+        this.message.error(err?.error?.message || err?.message);
       }
     });
 
