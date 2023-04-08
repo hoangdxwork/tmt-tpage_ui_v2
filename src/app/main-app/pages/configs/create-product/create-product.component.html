@@ -277,38 +277,6 @@
           </div>
         </tds-tab>
 
-        <!-- <tds-tab title="Tồn kho">
-          <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-            <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
-              <tds-label>Theo dõi</tds-label>
-              <tds-form-field class="w-full col-span-2">
-                <tds-select valueField="value" textField="text" placeholder='Không theo dõi'
-                  formControlName="Tracking" [data]="trackingList" [allowClear]="false">
-                </tds-select>
-                <tds-error>
-                  Vui lòng chọn theo dõi
-                </tds-error>
-              </tds-form-field>
-
-              <tds-label>Khối lượng</tds-label>
-              <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="Weight" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
-                <tds-error>
-                  Vui lòng nhập khối lượng
-                </tds-error>
-              </tds-form-field>
-
-              <tds-label>Thể tích (m3)</tds-label>
-              <tds-form-field class="w-full col-span-2">
-                <tds-input-number formControlName="Volume" [min]="0" class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas" [parser]="parserComas"></tds-input-number>
-                <tds-error>
-                  Vui lòng nhập thể tích
-                </tds-error>
-              </tds-form-field>
-            </div>
-          </div>
-        </tds-tab> -->
-
         <tds-tab [title]="custom4" *ngIf="_form.controls.SaleOK.value">
           <ng-template #custom4 let-active="active">
             <span class="w-[92px] flex items-center font-semibold cursor-pointer text-body-2 p-4 relative group border-b-3"
@@ -484,23 +452,22 @@
               <tds-table #variantsTable [listData]="lstVariants" [showPagination]="false">
                 <thead>
                   <tr>
-                    <th width="6%" [align]="'center'">STT</th>
-                    <th width="10" [align]="'center'">Hình ảnh</th>
-                    <th width="24%">Tên</th>
-                    <!-- <th width="30%">Mã chốt đơn</th> -->
-                    <th width="15%">Giá</th>
-                    <th width="15%" [align]="'center'">Số lượng</th>
-                    <th width="15%" [align]="'center'">Hoạt động</th>
-                    <th width="15%" [align]="'center'">Thao tác</th>
+                    <th width="5%" [align]="'center'" class="border-r">STT</th>
+                    <th width="10" [align]="'center'" class="border-r">Hình ảnh</th>
+                    <th width="30%" class="border-r">Tên</th>
+                    <th width="17%" class="border-r">Giá</th>
+                    <th width="15%" [align]="'center'" class="border-r">Số lượng</th>
+                    <th width="10%" [align]="'center'" class="border-r">Hoạt động</th>
+                    <th width="13%" [align]="'center'" class="border-r">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let data of lstVariants; let i = index">
-                    <td [align]="'center'">{{ 1 + i }}</td>
-                    <td [align]="'center'">
-                      <tds-avatar [tdsSrc]="data.ImageUrl" [size]="50" [isAvatar]="false"></tds-avatar>
+                    <td [align]="'center'" class="border-r">{{ 1 + i }}</td>
+                    <td [align]="'center'" class="border-r">
+                      <tds-avatar [tdsSrc]="data.ImageUrl" [size]="50" [isAvatar]="false" [shape]="'square'"></tds-avatar>
                     </td>
-                    <td>
+                    <td class="border-r">
                       <div class="flex flex-col">
                         <span class="mb-2">{{ data.NameGet || data.NameTemplate || data.Name }}</span>
                         <div class="flex flex-wrap items-center gap-1">
@@ -510,31 +477,26 @@
                         </div>
                       </div>
                     </td>
-                    <!-- <td>
-                      <tds-select placeholder='Nhập từ khóa' [valuePrimitive]="false" [(ngModel)]="data.Tags" [ngModelOptions]="{standalone: true}"
-                          [allowClear]="true" [data]="" mode="tags" class="w-full">
-                      </tds-select>
-                    </td> -->
-                    <td>
+                    <td class="border-r">
                       <tds-input-number [(ngModel)]="data.PriceVariant" [ngModelOptions]="{standalone: true}"
                         [formatter]="numberWithCommas" [parser]="parserComas"
                         [min]="0" [step]="1000"
                         class="text-neutral-1-900 text-body-2 font-regular" [disabled]="lstVariants.length == 1">
                       </tds-input-number>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center border-r">
                       <tds-input-number *ngIf="!id" [(ngModel)]="data.QtyAvailable" [ngModelOptions]="{standalone: true}" [disabled]="lstVariants.length == 1"
                         [min]="0" [step]="1" [formatter]="numberWithCommas" [parser]="parserComas" class="text-neutral-1-900 text-body-2 font-regular">
                       </tds-input-number>
 
-                      <div *ngIf="id">
+                      <div *ngIf="id" class="border-r">
                         {{ data.QtyAvailable | numberCustom }}
                       </div>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center border-r">
                       <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}" [disabled]="lstVariants.length == 1"></tds-switch>
                     </td>
-                    <td>
+                    <td class="border-r">
                       <div class="flex flex-row items-center justify-center w-full gap-x-1">
                         <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2" *ngIf="id"
                           (click)="showEditVariantsModal(data)" [disabled]="lstVariants.length == 1">

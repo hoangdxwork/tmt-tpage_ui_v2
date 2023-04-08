@@ -11,20 +11,19 @@ import { ConfigStockMoveDTO } from '../../../../dto/configs/product/config-wareh
 import { Component, Input, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ViewContainerRef } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 import { ProductVariantDto } from '@app/dto/configs/product/config-product-variant.dto';
-import { ConfigAddProductComponent } from '../../create-product/create-product.component';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { ActivatedRoute, Router } from '@angular/router';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { Router } from '@angular/router';
 import { ProductTemplateDto } from '@app/dto/configs/product/config-product-default.dto';
-import { AddProductHandler } from '@app/handler-v2/product/prepare-create-product.handler';
-import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalService } from 'tds-ui/modal';
 import { ModalEditVariantsComponent } from '../modal-edit-variants/modal-edit-variants.component';
 
 @Component({
-    selector: 'product-details',
-    templateUrl: './product-details.component.html'
+    selector: 'expand-product-detail',
+    templateUrl: './expand-product-detail.component.html'
 })
-export class ProductDetailsComponent implements OnInit, OnDestroy {
+
+export class ExpandProductDetailComponent implements OnInit, OnDestroy {
+
     @Input() productTemplate!: ProductTemplateDTO;
 
     lstVariants: Array<ProductVariantDto> = [];
@@ -45,19 +44,16 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     tabIndex:number = 0;
 
     fallback = '../../../assets/imagesv2/config/no-image-default.svg';
-
     private destroy$ = new Subject<void>();
 
-    constructor(
-        private message: TDSMessageService,
+    constructor( private message: TDSMessageService,
         private productService: ProductTemplateService,
         private stokeMoveService: StockMoveService,
         private productTemplateService: ProductTemplateService,
         private modalService: TDSModalService,
         private viewContainerRef: ViewContainerRef,
         private cdRef: ChangeDetectorRef,
-        private router: Router,
-    ) { }
+        private router: Router) { }
 
     ngOnInit(): void {
       this.loadDataDetail(this.productTemplate.Id);
