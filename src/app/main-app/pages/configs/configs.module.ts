@@ -126,6 +126,7 @@ import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.
 import { ProductShopCartComponent } from './product-shopcart/product-shopcart.component';
 import { ProductShopcartDetailComponent } from './components/product-shopcart-detail/product-shopcart-detail.component';
 import { FilterOptionsComponent } from './components/filter-options/filter-options.component';
+import { ModalEditVariantsComponent } from './components/modal-edit-variants/modal-edit-variants.component';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -217,7 +218,8 @@ const SERVICES = [
     DeliveryListComponent,
     ProductShopCartComponent,
     ProductShopcartDetailComponent,
-    FilterOptionsComponent
+    FilterOptionsComponent,
+    ModalEditVariantsComponent
   ],
   imports: [
     CommonModule,

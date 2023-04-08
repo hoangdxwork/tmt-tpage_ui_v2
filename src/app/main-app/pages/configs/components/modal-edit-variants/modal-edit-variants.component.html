@@ -1,0 +1,71 @@
+<div class="w-full">
+  <div class="flex flex-row items-center pb-4">
+    <upload-pictures-wall class="mr-12" [size]="90" (getResult)="getImage($event)" (getBase64)="getBase64($event)">
+    </upload-pictures-wall>
+    <div class="flex flex-col gap-y-3">
+      <label class="font-semibold text-header-2">Sản phẩm {{ data.NameGet || data.NameTemplate || data.Name }}</label>
+    </div>
+  </div>
+  <div class="grid grid-cols-4 gap-x-6 gap-y-4">
+    <tds-label>Biến thể</tds-label>
+    <div class="w-full col-span-3">
+      <div *ngIf="data.AttributeValues.length > 0">
+        <tds-tag *ngFor="let item of data.AttributeValues" status='secondary' rounded="rounded-full" class="mr-3">
+          {{item.NameGet || (item.AttributeName + ': ' + item.Name)}}
+        </tds-tag>
+      </div>
+    </div>
+
+    <tds-label>Hoạt động:</tds-label>
+    <div class="w-full col-span-3 flex items-center">
+      <tds-switch [(ngModel)]="data.Active" [ngModelOptions]="{standalone: true}"></tds-switch>
+    </div>
+
+    <tds-label>Giá biến thể</tds-label>
+    <tds-form-field class="w-full col-span-3">
+      <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.PriceVariant"
+        class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas"
+        [parser]="parserComas"></tds-input-number>
+      <tds-error>
+        Vui lòng nhập giá biến thể
+      </tds-error>
+    </tds-form-field>
+
+    <tds-label>Mã sản phẩm:</tds-label>
+    <tds-form-field class="w-full col-span-3">
+      <input tdsInput placeholder="Nhập mã sản phẩm" [(ngModel)]="data.DefaultCode"
+        class="text-neutral-1-900 text-body-2 font-regular" />
+      <tds-error>
+        Vui lòng nhập mã sản phẩm
+      </tds-error>
+    </tds-form-field>
+
+    <tds-label>Mã vạch:</tds-label>
+    <tds-form-field class="w-full col-span-3">
+      <input tdsInput placeholder="Nhập mã vạch" [(ngModel)]="data.Barcode"
+        class="text-neutral-1-900 text-body-2 font-regular" />
+      <tds-error>
+        Vui lòng nhập mã vạch
+      </tds-error>
+    </tds-form-field>
+
+    <tds-label>Khối lượng:</tds-label>
+    <tds-form-field class="w-full col-span-3">
+      <tds-input-number [min]="0" [step]="0.01" [(ngModel)]="data.Weight"
+        class="text-neutral-1-900 text-body-2 font-regular" [formatter]="numberWithCommas"
+        [parser]="parserComas"></tds-input-number>
+      <tds-error>
+        Vui lòng nhập khối lượng
+      </tds-error>
+    </tds-form-field>
+  </div>
+</div>
+<!-- footer -->
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button class="mr-2" color="secondary" (click)="cancel()">
+    Hủy bỏ
+  </button>
+  <button tds-button type="submit" color="primary" (click)="save()">
+    Lưu
+  </button>
+</div>

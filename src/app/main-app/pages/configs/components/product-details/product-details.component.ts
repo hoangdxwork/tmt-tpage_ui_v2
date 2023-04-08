@@ -8,8 +8,17 @@ import { takeUntil } from 'rxjs/operators';
 import { StockMoveService } from '../../../../services/stock-move.service';
 import { ConfigProductInventoryDTO } from '../../../../dto/configs/product/config-inventory.dto';
 import { ConfigStockMoveDTO } from '../../../../dto/configs/product/config-warehouse.dto';
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ViewContainerRef } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
+import { ProductVariantDto } from '@app/dto/configs/product/config-product-variant.dto';
+import { ConfigAddProductComponent } from '../../create-product/create-product.component';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProductTemplateDto } from '@app/dto/configs/product/config-product-default.dto';
+import { AddProductHandler } from '@app/handler-v2/product/prepare-create-product.handler';
+import { Message } from 'src/app/lib/consts/message.const';
+import { TDSModalService } from 'tds-ui/modal';
+import { ModalEditVariantsComponent } from '../modal-edit-variants/modal-edit-variants.component';
 
 @Component({
     selector: 'product-details',
@@ -18,9 +27,12 @@ import { TDSMessageService } from 'tds-ui/message';
 export class ProductDetailsComponent implements OnInit, OnDestroy {
     @Input() productTemplate!: ProductTemplateDTO;
 
+    lstVariants: Array<ProductVariantDto> = [];
+    dataModel!: ProductTemplateDto;
     lstStockMove: Array<ConfigStockMoveDTO> = [];
     lstProductInventory: Array<ConfigProductInventoryDTO> = [];
 
+    isLoading: boolean = false;
     pageSize_stockMove = 10;
     pageIndex_stockMove = 1;
     isLoading_stockMove = false;
@@ -39,10 +51,17 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     constructor(
         private message: TDSMessageService,
         private productService: ProductTemplateService,
-        private stokeMoveService: StockMoveService
+        private stokeMoveService: StockMoveService,
+        private productTemplateService: ProductTemplateService,
+        private modalService: TDSModalService,
+        private viewContainerRef: ViewContainerRef,
+        private cdRef: ChangeDetectorRef,
+        private router: Router,
     ) { }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+      this.loadDataDetail(this.productTemplate.Id);
+    }
 
     onChangeTab(tabIndex:number){
         this.tabIndex = tabIndex;
@@ -55,6 +74,27 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
                 this.getProductInventory(this.pageSize_inventory, this.pageIndex_inventory);
                 break;
         }
+    }
+
+    loadDataDetail(id: TDSSafeAny) {
+      this.isLoading = true;
+      this.productTemplateService.getProductTemplateByIdV3(id).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: TDSSafeAny) => {
+
+          delete res['@odata.context'];
+          this.dataModel = { ...res };
+
+          // TODO: lấy danh sách biến thể
+          // if(TDSHelperArray.hasListValue(this.dataModel.ProductVariants)){
+          //   this.lstVariants = this.dataModel.ProductVariants;
+          // }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.message.error(error?.message);
+          this.isLoading = false;
+        }
+      })
     }
 
     onQueryParamsStockMove(params: TDSTableQueryParams) {
@@ -112,6 +152,20 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     refreshProductInventoryTable() {
         this.pageIndex_inventory = 1;
         this.getProductInventory(this.pageSize_inventory, this.pageIndex_inventory);
+    }
+
+    showEditVariantsModal(data: ProductVariantDto) {
+
+      const modal = this.modalService.create({
+        title: 'Sửa biến thể sản phẩm',
+        content: ModalEditVariantsComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          data: data,
+          id: this.productTemplate.Id
+        }
+      });
     }
 
     ngOnDestroy(): void {
