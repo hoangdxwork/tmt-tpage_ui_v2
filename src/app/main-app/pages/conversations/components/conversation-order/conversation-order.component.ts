@@ -1076,8 +1076,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
           } else {
             err = error;
           }
-          
-          this.message.error(error?.error?.message);
+
+          this.message.error(err?.error?.message || err?.message);
         }
       });
     }

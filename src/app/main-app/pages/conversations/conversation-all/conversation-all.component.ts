@@ -770,6 +770,18 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           .pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe({
               next: (res: TDSSafeAny) => {
                   that.printerService.printHtml(res);
+              },
+              error: (error: any) => {
+                let err: any;
+
+                if(typeof(error) === "string") {
+                  err = JSON.parse(error) as any;
+                } else {
+                  err = error;
+                }
+
+                this.isProcessing = false;
+                this.message.error(err?.error?.message || err?.message);
               }
           })}
   }

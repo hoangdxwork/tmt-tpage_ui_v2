@@ -52,8 +52,12 @@
                                     <div class="w-1/2">
                                         <span>Tiền thu hộ</span>
                                     </div>
-                                    <div class="w-1/2">
+                                    <div *ngIf="dataModel.Source != 'SHOPAPP'" class="w-1/2">
                                         <span class="font-semibold">{{ dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
+                                    </div>
+                                    <div *ngIf="dataModel.Source == 'SHOPAPP'" class="w-1/2">
+                                        <span *ngIf="dataModel.IsDeposited" class="font-semibold">{{ dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
+                                        <span *ngIf="!dataModel.IsDeposited" class="font-semibold">{{ (dataModel.CashOnDelivery || 0) + (dataModel.AmountDeposit || 0) | numberCustom }} đ</span>
                                     </div>
                                 </div>
                                 <div class="flex gap-x-6 items-center">
@@ -179,8 +183,21 @@
                                         <div class="w-1/3">
                                             <span>Tiền cọc</span>
                                         </div>
-                                        <div class="w-2/3">
-                                            <span class="font-semibold">{{ dataModel.AmountDeposit || 0 | numberCustom }} đ</span>
+                                        <div *ngIf="dataModel.Source != 'SHOPAPP'" class="w-2/3">
+                                            <span  class="font-semibold">{{ dataModel.AmountDeposit || 0 | numberCustom }} đ</span>
+                                        </div>
+                                        <div *ngIf="dataModel.Source == 'SHOPAPP'" class="w-2/3">
+                                            <span *ngIf="dataModel.IsDeposited" class="font-semibold">{{ dataModel.AmountDeposit || 0 | numberCustom }} đ</span>
+
+                                            <span class="w-full mr-2" *ngIf="!dataModel.IsDeposited && dataModel.AmountDeposit > 0"> 0 đ </span>
+                                            <span *ngIf="!dataModel.IsDeposited" class="mr-1 text-error-500" style="font-size: 12px">Chưa xác nhận cọc</span>
+
+                                            <p *ngIf="!dataModel.IsDeposited" class="italic text-info-500">
+                                              <span class="mr-2" style="text-decoration: underline"  tds-tooltip="Số tiền cần xác nhận cọc"> {{ dataModel.AmountDeposit || 0 | numberCustom }} đ</span>
+                                              <span class="w-full" *ngIf="!dataModel.IsDeposited" (click)="showModalDeposit(dataModel)" tds-tooltip="Click để xác nhận cọc">
+                                                <span class="tdsi-money-2-fill text-[18px]" style="color: rgb(68, 128, 241)"></span>
+                                              </span>
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="flex gap-x-6 items-center">

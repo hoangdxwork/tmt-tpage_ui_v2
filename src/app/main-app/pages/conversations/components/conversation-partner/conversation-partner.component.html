@@ -345,31 +345,18 @@
                       <div class="flex gap-x-2 items-center">
 
                         <div *ngIf="isEditPartner" class="flex flex-auto">
-                          <!-- <input tdsInput autocomplete="off" class="w-full truncate" placeholder="Địa chỉ" [(ngModel)]="" [ngModelOptions]="{standalone: true}"/> -->
-
-                          <!-- <tds-select valueField="Address" textField="Address"
-                              placeholder='Nhập địa chỉ cần tìm' disabledField="isActive"
-                              [data]="suggestData | async" [allowClear]="true" [valuePrimitive]="false"
-                              [autoClearSearchValue]="true" [serverSearch]="true"
-                              [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}"
-                              [tdsInputDebounce]="750"
-                              (inputKeyup)="onInputKeyupSuggestion($event)"
-                              (onSearch)="onSearchSuggestion($event)"
-                              (selectChange)="onSelectSuggestion($event)">
-                          </tds-select> -->
-
                           <div class="w-full flex gap-x-2">
                             <tds-form-field class="w-full">
                               <input class="placeholder-neutral-1-400" placeholder="Tìm kiếm địa chỉ" tdsInput
-                                  [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="300" 
+                                  [(ngModel)]="suggestText" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="300"
                                   (inputKeyup)="onInputKeyupSuggestion($event)" [tdsAutocomplete]="addressComplete"/>
                               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                               <span tdsSuffix (click)="closeSearchAddress()">
                                   <i class="tdsi-close-fill text-neutral-1-500 text-base" *ngIf="suggestText && suggestText != ''"></i>
                               </span>
                             </tds-form-field>
-                  
-                            <tds-autocomplete #addressComplete (selectionChange)="onSelectSuggestion($event)">  
+
+                            <tds-autocomplete #addressComplete (selectionChange)="onSelectSuggestion($event)">
                                 <tds-auto-option *ngFor="let option of (suggestData | async)"
                                     [label]="option.Address" [value]="option">
                                     <div class="flex w-full justify-between items-center">
@@ -382,7 +369,7 @@
                                   </div>
                                 </tds-auto-option>
                             </tds-autocomplete>
-                  
+
                           </div>
                         </div>
 

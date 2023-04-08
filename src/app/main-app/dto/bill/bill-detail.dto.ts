@@ -541,4 +541,5 @@ export interface BillDetailDTO {
   IRAttachmentUrl: any;
   IRAttachmentUrls: any[];
   IsDeposited: any;
+  Source: any;
 }
