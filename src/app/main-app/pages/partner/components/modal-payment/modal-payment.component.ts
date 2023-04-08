@@ -49,7 +49,7 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
     }
     return value;
   } ;
-  
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -144,22 +144,40 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
           return this.accRegisterPayment.createPayment(model);
       }))
       .pipe(takeUntil(this.destroy$), finalize(() => this.fastSaleOrderService.onLoadPage$.emit('onLoadPage')))
-      .subscribe((obs: any) => {
+      .subscribe({
+        next: (obs: any) => {
           if(obs) {
             this.message.success('Xác nhận thanh toán thành công');
 
             if(type == 'print') {
                 let printer = this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${obs?.value}`);
-                printer.pipe(takeUntil(this.destroy$)).subscribe((a: TDSSafeAny) => {
+                printer.pipe(takeUntil(this.destroy$)).subscribe({
+                  next: (a: TDSSafeAny) => {
                     this.printerService.printHtml(a);
+                  },
+                  error: (error: any) => {
+                    let err: any;
+
+                    if(typeof(error) === "string") {
+                      err = JSON.parse(error) as any;
+                    } else {
+                      err = error;
+                    }
+
+                    this.isLoading = false;
+                    this.message.error(err?.error?.message || err?.message);
+                  }
                 })
             }
           }
-
+          this.isLoading = false;
           this.modal.destroy('onLoadPage');
-      }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-        this.modal.destroy(null);
+      },
+      error: (error: any) => {
+          this.isLoading = false;
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+          this.modal.destroy(null);
+        }
       })
   }
 

@@ -15,7 +15,7 @@ import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef } 
 })
 export class ModalGetSharedComponent implements OnInit {
   @Input() lstShares: GetSharedDto[] = [];
-  
+
   isLoading: boolean = false;
   data: PartnerShareDto[] = [];
 
@@ -62,9 +62,17 @@ export class ModalGetSharedComponent implements OnInit {
           this.printerService.printHtml(res);
           this.isLoading = false;
         },
-        error: (err: any) => {
+        error: (error: any) => {
+          let err: any;
+
+          if(typeof(error) === "string") {
+            err = JSON.parse(error) as any;
+          } else {
+            err = error;
+          }
+
           this.isLoading = false;
-          this.message.error(err?.error?.message);
+          this.message.error(err?.error?.message || err?.message);
         }
       })
     } else {
@@ -73,9 +81,17 @@ export class ModalGetSharedComponent implements OnInit {
           this.printerService.printHtml(res);
           this.isLoading = false;
         },
-        error: (err: any) => {
+        error: (error: any) => {
+          let err: any;
+
+          if(typeof(error) === "string") {
+            err = JSON.parse(error) as any;
+          } else {
+            err = error;
+          }
+
           this.isLoading = false;
-          this.message.error(err?.error?.message);
+          this.message.error(err?.error?.message || err?.message);
         }
       })
     }

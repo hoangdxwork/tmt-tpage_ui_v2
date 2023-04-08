@@ -105,7 +105,7 @@ export class PaymentJsonBillComponent implements OnInit {
         }
 
         this.isLoading = false;
-      }, 
+      },
       error:(error) => {
         this.isLoading = false;
         this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
@@ -129,17 +129,30 @@ export class PaymentJsonBillComponent implements OnInit {
     if(!model.JournalId && this._form.controls['Journal'].value) {
       this.message.error('Vui lòng chọn PT thanh toán');
     }
-    
+
     this.isLoading = true;
     this.accountPaymentJsonService.actionCreatePost({model: model}).pipe(takeUntil(this.destroy$)).subscribe({
         next:(obs: any) => {
-          
+
           if(obs && obs.value) {
             this.message.success('Xác nhận thanh toán thành công');
             if(type && type == 'print') {
                 let printer = this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${obs?.value}`);
-                printer.pipe(takeUntil(this.destroy$)).subscribe((content: TDSSafeAny) => {
+                printer.pipe(takeUntil(this.destroy$)).subscribe({
+                  next: (content: TDSSafeAny) => {
+                    this.isLoading = false;
                     this.printerService.printHtml(content);
+                  },
+                  error: (error: any) => {
+                    let err: any;
+                    if(typeof(error) === "string") {
+                      err = JSON.parse(error) as any;
+                    } else {
+                      err = error;
+                    }
+                    this.isLoading = false;
+                    this.message.error(err?.error?.message || err?.message);
+                  }
                 })
             }
 
@@ -148,7 +161,7 @@ export class PaymentJsonBillComponent implements OnInit {
           }
 
           this.isLoading = false;
-        }, 
+        },
         error:(error) => {
           this.isLoading = false;
           this.message.error(error?.error?.message || 'Đã xảy ra lỗi');

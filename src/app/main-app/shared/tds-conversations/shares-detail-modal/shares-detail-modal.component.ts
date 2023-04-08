@@ -29,7 +29,7 @@ export class SharesDetailModalComponent implements OnInit {
   countPerson: number = 0;
   countSharedGroup: number = 0;
   countSharedPersonal: number = 0;
-  
+
   isLoading: boolean = false;
 
   constructor(private modalRef: TDSModalRef,
@@ -77,7 +77,7 @@ export class SharesDetailModalComponent implements OnInit {
       } else {
         personalShares = 1;
       }
-     
+
       this.countTotal = this.countTotal + (groupShares + personalShares);
       this.countSharedGroup = this.countSharedGroup + groupShares;
       this.countSharedPersonal = this.countSharedPersonal + personalShares;
@@ -145,9 +145,17 @@ export class SharesDetailModalComponent implements OnInit {
           this.printerService.printHtml(res);
           this.isLoading = false;
         },
-        error: (err: any) => {
+        error: (error: any) => {
+          let err: any;
+
+          if(typeof(error) === "string") {
+            err = JSON.parse(error) as any;
+          } else {
+            err = error;
+          }
+
           this.isLoading = false;
-          this.message.error(err?.error?.message);
+          this.message.error(err?.error?.message || err?.message);
         }
       })
     } else {
@@ -156,9 +164,17 @@ export class SharesDetailModalComponent implements OnInit {
           this.printerService.printHtml(res);
           this.isLoading = false;
         },
-        error: (err: any) => {
+        error: (error: any) => {
+          let err: any;
+
+          if(typeof(error) === "string") {
+            err = JSON.parse(error) as any;
+          } else {
+            err = error;
+          }
+
           this.isLoading = false;
-          this.message.error(err?.error?.message);
+          this.message.error(err?.error?.message || err?.message);
         }
       })
     }

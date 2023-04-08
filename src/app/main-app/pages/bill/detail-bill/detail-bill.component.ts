@@ -411,6 +411,17 @@ export class DetailBillComponent implements OnInit{
                       next:(res: TDSSafeAny) => {
                           that.printerService.printHtml(res);
                       },
+                      error: (error: any) => {
+                        let err: any;
+
+                        if(typeof(error) === "string") {
+                          err = JSON.parse(error) as any;
+                        } else {
+                          err = error;
+                        }
+
+                        this.message.error(err?.error?.message || err?.message);
+                      }
                   })
                 }
 

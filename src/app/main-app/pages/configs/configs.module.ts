@@ -58,7 +58,7 @@ import { ConfigQuickQuestionComponent } from './config-pages/config-pages-basic/
 import { ConfigGreetingComponent } from './config-pages/config-pages-basic/config-greeting/config-greeting.component';
 import { CreateTagModalComponent } from './components/create-tag-modal/create-tag-modal.component';
 import { FacebookService } from '../../services/facebook.service';
-import { ProductDetailsComponent } from './components/product-details/product-details.component';
+import { ExpandProductDetailComponent } from './components/expand-product-detail/expand-product-detail.component';
 import { ApplicationRoleService } from '../../services/application-role.service';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { ConfigAddAttributeProductModalComponent } from './components/config-attribute-modal/config-attribute-modal.component';
@@ -126,6 +126,7 @@ import { ProductShopCartService } from '@app/services/shopcart/product-shopcart.
 import { ProductShopCartComponent } from './product-shopcart/product-shopcart.component';
 import { ProductShopcartDetailComponent } from './components/product-shopcart-detail/product-shopcart-detail.component';
 import { FilterOptionsComponent } from './components/filter-options/filter-options.component';
+import { ModalEditVariantsComponent } from './components/modal-edit-variants/modal-edit-variants.component';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -193,7 +194,7 @@ const SERVICES = [
     ConfigQuickQuestionComponent,
     ConfigGreetingComponent,
     CreateTagModalComponent,
-    ProductDetailsComponent,
+    ExpandProductDetailComponent,
     ConfigAddAttributeProductModalComponent,
     ConfigAddPromotionComponent,
     ConfigEditPromotionComponent,
@@ -217,7 +218,8 @@ const SERVICES = [
     DeliveryListComponent,
     ProductShopCartComponent,
     ProductShopcartDetailComponent,
-    FilterOptionsComponent
+    FilterOptionsComponent,
+    ModalEditVariantsComponent
   ],
   imports: [
     CommonModule,

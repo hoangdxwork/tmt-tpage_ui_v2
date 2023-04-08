@@ -54,11 +54,11 @@ export class CreateBillErrorComponent implements OnInit {
 
     if(TDSHelperString.hasValueString(this.type)){
       switch(this.type){
-        case 'print': 
+        case 'print':
           this.isPrint = true;
           this.isPrintShip = false;
           break;
-        case 'printShip': 
+        case 'printShip':
           this.isPrintShip = true;
           this.isPrint = false;
           break;
@@ -131,7 +131,7 @@ export class CreateBillErrorComponent implements OnInit {
       obs.pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: TDSSafeAny) => {
           this.printerService.printHtml(res);
-        }, 
+        },
         error: (error: any) => {
           let err: any;
 
@@ -141,7 +141,7 @@ export class CreateBillErrorComponent implements OnInit {
             err = error;
           }
 
-          this.message.error(error?.error?.message);
+          this.message.error(err?.error?.message || err?.message);
         }
       });
     }
@@ -178,7 +178,7 @@ export class CreateBillErrorComponent implements OnInit {
       //TODO: lọc lại danh sách lỗi
       this.lstErrorSelected = this.lstErrorSelected.filter((f, i) => !lstChecked.includes(i));
       this.checkAllStatus();
-      
+
       this.fastSaleOrderService.insertOrderProductDefaultWithForce({model: this.billDefaultModel}).pipe(takeUntil(this.destroy$)).subscribe({
         next:(res: CreateBillDefaultErrorDTO) => {
           this.isLoading = false;
