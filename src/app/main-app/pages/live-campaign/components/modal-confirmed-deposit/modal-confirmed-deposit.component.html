@@ -15,6 +15,9 @@
         <div>Tổng tiền:</div>
         <div class="col-span-2 text-title-1 font-semibold">{{data?.AmountTotal || 0 | numberCustom}} đ</div>
 
+        <div>Phí ship mặc định:</div>
+        <div class="col-span-2 text-title-1 font-semibold">{{data?.DeliveryPrice || 0 | numberCustom}} đ</div>
+
         <div>Tiền cọc</div>
         <div class="col-span-2 text-title-1 font-semibold flex space-x-2 items-center">
           <div>{{data.AmountDeposit || 0 | numberCustom}}đ</div>
@@ -28,15 +31,12 @@
         <div>Tiền thu hộ:</div>
         <div class="col-span-2 text-title-1 font-semibold">{{data?.CashOnDelivery || 0 | numberCustom}} đ</div>
 
-        <div>Phí ship mặc định:</div>
-        <div class="col-span-2 text-title-1 font-semibold">{{data?.DeliveryPrice || 0 | numberCustom}} đ</div>
-
       </div>
 
       <div class="w-full mt-3 flex items-end" *ngIf="!data.IsDeposited">
         <tds-form-field class="w-full">
           <tds-label>Xác nhận tiền cọc:</tds-label>
-          <tds-input-number [(ngModel)]="currentDeposit" [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas">
+          <tds-input-number [(ngModel)]="currentDeposit" [min]="0" [max]="(data.CashOnDelivery || 0) + (data.AmountDeposit || 0)" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas">
           </tds-input-number>
         </tds-form-field>
 
