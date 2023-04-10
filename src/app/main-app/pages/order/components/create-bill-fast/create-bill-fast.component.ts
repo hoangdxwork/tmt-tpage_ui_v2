@@ -384,13 +384,12 @@ export class CreateBillFastComponent implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {
+    if(index < 0) return;
     let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
 
-    if(feeShip > 0 && index > -1) {
+    if(feeShip != null) {
       this.lstData[index].DeliveryPrice = feeShip;
-    }
-
-    if(feeShip == 0 && index > -1) {
+    } else {
       let deliveryPrice = this.lstData[index]?.Carrier?.Config_DefaultFee || 0;
       this.lstData[index].DeliveryPrice = deliveryPrice;
     }
