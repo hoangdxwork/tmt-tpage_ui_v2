@@ -157,6 +157,9 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
           this.setOfCheckedId = new Set<string>();
           this.checked = false;
           this.indeterminate = false;
+          if(this.lstOfData.length == 0) {
+            this.isOpenCollapCheck = false;
+          }
 
           this.cdr.detectChanges();
       },
@@ -347,6 +350,11 @@ export class ConversationOrderListComponent implements OnInit, OnChanges {
   }
 
   setCheck(){
+    if(!this.isOpenCollapCheck && (!this.lstOfData || this.lstOfData.length == 0)) {
+      this.message.error("Bài viết chưa có đơn hàng");
+      return;
+    }
+
     this.isOpenCollapCheck = !this.isOpenCollapCheck;
     if(!this.isOpenCollapCheck) {
       this.setOfCheckedId = new Set<string>();
