@@ -345,7 +345,7 @@
                                   <div class="flex items-center justify-between desktop:gap-x-2 gap-x-1 desktop:text-body-2 laptop:text-caption-1">
                                       <div class="flex gap-x-2 items-center">
                                           <div *ngIf="(child.Data | facebookDataCs) && (child.Data | facebookDataCs)?.from" class="min-w-[50px] desktop:max-w-[220px] max-w-[105px] truncate text-body-2">
-                                              <span class="font-semibold cursor-pointer" (click)="loadPartnerTab(child, commentOrders ? commentOrders[child.Data?.from!.id]: '')" tds-tooltip="{{child.Data.from.name}}">{{ child.Data.from.name }}</span>
+                                              <span class="font-semibold cursor-pointer" [ngClass]="child.IsOwner ? 'text-info-500' : ''" (click)="loadPartnerTab(child, commentOrders ? commentOrders[child.Data?.from!.id]: '')" tds-tooltip="{{child.Data.from.name}}">{{ child.Data.from.name }}</span>
                                           </div>
 
                                           <!-- Mã đơn hàng -->
