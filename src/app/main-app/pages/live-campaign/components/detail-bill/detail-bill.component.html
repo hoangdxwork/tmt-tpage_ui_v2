@@ -223,7 +223,7 @@
 
             <!-- Đặt cọc -->
             <td *ngIf="isHidden('AmountDeposit')" [align]="'right'" class="border-r w-full">
-              <div *ngIf="bill.PaymentJournalType == 'bank' && bill.Source == 'bank'">
+              <div *ngIf="bill.PaymentJournalType == 'bank' && bill.Source == 'SHOPAPP'">
                 <p class="w-full" *ngIf="bill.IsDeposited">
                   <span class="mr-1">{{bill.AmountDeposit || 0 | numberCustom}} đ</span>
                 </p>
@@ -241,7 +241,7 @@
                 <p *ngIf="!bill.IsDeposited" class="mr-1 text-error-500" style="font-size: 12px">Chưa xác nhận cọc</p>
               </div>
 
-              <div *ngIf="!(bill.PaymentJournalType == 'bank' && bill.Source == 'bank')">
+              <div *ngIf="!(bill.PaymentJournalType == 'bank' && bill.Source == 'SHOPAPP')">
                 <p class="w-full">
                   <span class="mr-1">{{bill.AmountDeposit || 0 | numberCustom}} đ</span>
                 </p>
