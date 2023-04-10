@@ -122,7 +122,7 @@ export class SharedService extends BaseSevice {
     return this._getTransportsConfigsSubject$.asObservable();
   }
 
-  setFeeShip(cityCode: any, districtCode: any, lstTransport: TransportConfigsDto[], deliveryType: any) {debugger
+  setFeeShip(cityCode: any, districtCode: any, lstTransport: TransportConfigsDto[], deliveryType: any) {
     if(!TDSHelperString.hasValueString(cityCode)) return null;
     
     let exist1 = lstTransport.filter(x => x.ProvinceId == cityCode);
