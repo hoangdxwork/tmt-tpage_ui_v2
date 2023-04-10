@@ -223,22 +223,29 @@
 
             <!-- Đặt cọc -->
             <td *ngIf="isHidden('AmountDeposit')" [align]="'right'" class="border-r w-full">
-              <p class="w-full" *ngIf="bill.IsDeposited">
-                <span class="mr-1">{{bill.AmountDeposit || 0 | numberCustom}} đ</span>
-              </p>
+              <div *ngIf="bill.PaymentJournalType == 'bank' && bill.Source == 'bank'">
+                <p class="w-full" *ngIf="bill.IsDeposited">
+                  <span class="mr-1">{{bill.AmountDeposit || 0 | numberCustom}} đ</span>
+                </p>
 
-              <p class="w-full" *ngIf="!bill.IsDeposited && bill.AmountDeposit > 0">
-                <span class="mr-2">0 đ</span>
-              </p>
+                <p class="w-full" *ngIf="!bill.IsDeposited && bill.AmountDeposit > 0">
+                  <span class="mr-2">0 đ</span>
+                </p>
 
-              <p *ngIf="!bill.IsDeposited" class="italic text-info-500">
-                <span class="mr-2" style="text-decoration: underline"  tds-tooltip="Số tiền cần xác nhận cọc"> {{ bill.AmountDeposit || 0 | numberCustom }} đ</span>
-                <span class="w-full" *ngIf="!bill.IsDeposited" (click)="showModalDeposit(bill)" tds-tooltip="Click để xác nhận cọc">
-                  <span class="tdsi-money-2-fill text-[18px]" style="color: rgb(68, 128, 241)"></span>
-                </span>
-              </p>
+                <p *ngIf="!bill.IsDeposited" class="italic text-info-500">
+                  <span class="mr-2" style="text-decoration: underline"  tds-tooltip="Số tiền cần xác nhận cọc"> {{ bill.AmountDeposit || 0 | numberCustom }} đ</span>
+                  <span class="w-full" *ngIf="!bill.IsDeposited" (click)="showModalDeposit(bill)" tds-tooltip="Click để xác nhận cọc">
+                    <span class="tdsi-money-2-fill text-[18px]" style="color: rgb(68, 128, 241)"></span>
+                  </span>
+                </p>
+                <p *ngIf="!bill.IsDeposited" class="mr-1 text-error-500" style="font-size: 12px">Chưa xác nhận cọc</p>
+              </div>
 
-              <p *ngIf="!bill.IsDeposited" class="mr-1 text-error-500" style="font-size: 12px">Chưa xác nhận cọc</p>
+              <div *ngIf="!(bill.PaymentJournalType == 'bank' && bill.Source == 'bank')">
+                <p class="w-full">
+                  <span class="mr-1">{{bill.AmountDeposit || 0 | numberCustom}} đ</span>
+                </p>
+              </div>
             </td>
 
             <!-- Tổng tiền -->
@@ -253,8 +260,13 @@
 
             <!-- Thu hộ -->
             <td *ngIf="isHidden('CashOnDelivery')" [align]="'right'" class="border-r">
-              <p *ngIf="bill.IsDeposited">{{ bill.CashOnDelivery || 0 | numberCustom }} đ</p>
-              <p *ngIf="!bill.IsDeposited">{{ (bill.CashOnDelivery || 0) + (bill.AmountDeposit || 0) | numberCustom }} đ</p>
+              <div *ngIf="bill.PaymentJournalType == 'bank' && bill.Source == 'SHOPAPP'">
+                <p *ngIf="bill.IsDeposited">{{ bill.CashOnDelivery || 0 | numberCustom }} đ</p>
+                <p *ngIf="!bill.IsDeposited">{{ (bill.CashOnDelivery || 0) + (bill.AmountDeposit || 0) | numberCustom }} đ</p>
+              </div>
+              <div *ngIf="!(bill.PaymentJournalType == 'bank' && bill.Source == 'SHOPAPP')">
+                <p>{{ bill.CashOnDelivery || 0 | numberCustom }} đ</p>
+              </div>
             </td>
 
             <!-- Còn nợ -->
