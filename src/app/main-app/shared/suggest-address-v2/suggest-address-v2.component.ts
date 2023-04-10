@@ -359,6 +359,7 @@ export class SuggestAddressV2Component implements OnInit, OnChanges, OnDestroy {
           this.isAlert = true;
           this.message.error('Không tìm thấy kết quả phù hợp!');
           this.isLoading = false;
+          this.cdRef.detectChanges();
       }
     })
   }

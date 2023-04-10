@@ -491,6 +491,7 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
     let id = this.quickOrderModel.Id as string;
     if(!id) {
         this.noteWhenNoId = this.quickOrderModel.Note;
+        this.setFeeShipFromTransport(this.quickOrderModel.CityCode, this.quickOrderModel.DistrictCode, this.saleModel?.Carrier?.DeliveryType);
         this.cdRef.detectChanges();
         return;
     }
@@ -779,7 +780,8 @@ export class ConversationOrderComponent implements OnInit, OnChanges, OnDestroy 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
     if(this.saleModel) {
       let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
-      if(feeShip > 0) {
+      
+      if(feeShip != null && feeShip >= 0) {
         this.saleModel.DeliveryPrice = feeShip;
         this.coDAmount();
       } else {

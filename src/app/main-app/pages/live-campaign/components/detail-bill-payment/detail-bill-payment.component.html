@@ -145,12 +145,16 @@
 
             <!-- Tiền cọc -->
             <td *ngIf="isHidden('AmountDeposit')" [align]="'right'" class="border-r">
-              <p *ngIf="data.IsDeposited">{{ data.AmountDeposit || 0 | numberCustom }} đ</p>
-
-              <p *ngIf="!data.IsDeposited">0 đ</p>
-              <p (click)="showModalDeposit(data)" *ngIf="!data.IsDeposited && data.AmountDeposit > 0" class="italic text-info-500" tds-tooltip="Số tiền cần xác nhận cọc" style="text-decoration: underline">
-                {{ data.AmountDeposit || 0 | numberCustom }} đ
-              </p>
+              <div *ngIf="data.PaymentJournalType == 'bank' && data.Source == 'SHOPAPP'">
+                <p *ngIf="data.IsDeposited">{{ data.AmountDeposit || 0 | numberCustom }} đ</p>
+                <p *ngIf="!data.IsDeposited">0 đ</p>
+                <p (click)="showModalDeposit(data)" *ngIf="!data.IsDeposited && data.AmountDeposit > 0" class="italic text-info-500" tds-tooltip="Số tiền cần xác nhận cọc" style="text-decoration: underline">
+                  {{ data.AmountDeposit || 0 | numberCustom }} đ
+                </p>
+              </div>
+              <div *ngIf="!(data.PaymentJournalType == 'bank' && data.Source == 'SHOPAPP')">
+                <p>{{ data.AmountDeposit || 0 | numberCustom }} đ</p>
+              </div>
             </td>
 
             <!-- Còn nợ -->
@@ -164,8 +168,13 @@
 
             <!-- Tiền thu hộ -->
             <td *ngIf="isHidden('CashOnDelivery')" [align]="'right'" class="border-r">
-              <p *ngIf="data.IsDeposited">{{ data.CashOnDelivery || 0 | numberCustom }} đ</p>
-              <p *ngIf="!data.IsDeposited">{{ (data.CashOnDelivery || 0) + (data.AmountDeposit || 0) | numberCustom }} đ</p>
+              <div *ngIf="data.PaymentJournalType == 'bank' && data.Source == 'SHOPAPP'">
+                <p *ngIf="data.IsDeposited">{{ data.CashOnDelivery || 0 | numberCustom }} đ</p>
+                <p *ngIf="!data.IsDeposited">{{ (data.CashOnDelivery || 0) + (data.AmountDeposit || 0) | numberCustom }} đ</p>
+              </div>
+              <div *ngIf="!(data.PaymentJournalType == 'bank' && data.Source == 'SHOPAPP')">
+                <p>{{ data.CashOnDelivery || 0 | numberCustom }} đ</p>
+              </div>
             </td>
 
             <!-- Trạng thái -->

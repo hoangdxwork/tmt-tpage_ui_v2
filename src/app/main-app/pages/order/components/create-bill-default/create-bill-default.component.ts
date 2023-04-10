@@ -550,13 +550,13 @@ export class CreateBillDefaultComponent implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {
+    if(index < 0) return;
     let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
-    if(feeShip > 0 && index > -1) {
+    
+    if(feeShip != null && feeShip >= 0) {
       this.lstLine[index].ShipAmount = feeShip;
       this.coDAmount();
-    }
-
-    if(feeShip == 0 && index > -1) {
+    } else {
       let carrier = this.lstCarriers.find(x => x.Id == this.lstLine[index]?.CarrierId);
       let deliveryPrice = carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
       this.lstLine[index].ShipAmount = deliveryPrice;

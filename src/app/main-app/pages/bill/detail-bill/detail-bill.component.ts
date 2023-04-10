@@ -216,7 +216,7 @@ export class DetailBillComponent implements OnInit{
           }
 
           this.isProcessing = false;
-          this.message.error(error?.error?.message);
+          this.message.error(err?.error?.message || err?.message);
         }
       })
     }

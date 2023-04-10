@@ -48,7 +48,6 @@ export class ModalAddAddressV2Component implements OnInit {
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
     this.item = item;
-    this.innerText = item?.Address || '';
   }
 
   onCancel() {

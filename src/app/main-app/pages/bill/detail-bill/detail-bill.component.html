@@ -162,10 +162,10 @@
                             <div class="w-1/3">
                                 <span>Tiền thu hộ</span>
                             </div>
-                            <div *ngIf="dataModel.Source != 'SHOPAPP'" class="w-2/3">
+                            <div *ngIf="!(dataModel.Source == 'SHOPAPP' && dataModel.PaymentJournal?.Type == 'bank')" class="w-2/3">
                               <span class="font-semibold">{{ dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
                             </div>
-                            <div *ngIf="dataModel.Source == 'SHOPAPP'" class="w-2/3">
+                            <div *ngIf="dataModel.Source == 'SHOPAPP' && dataModel.PaymentJournal?.Type == 'bank'" class="w-2/3">
                               <span *ngIf="dataModel.IsDeposited" class="font-semibold">{{ dataModel.CashOnDelivery || 0 | numberCustom }} đ</span>
                               <p *ngIf="!dataModel.IsDeposited">{{ (dataModel.CashOnDelivery || 0) + (dataModel.AmountDeposit || 0) | numberCustom }} đ</p>
                             </div>
@@ -477,11 +477,11 @@
                             <div class="w-1/3">
                                 <span>Tiền cọc</span>
                             </div>
-                            <div *ngIf="dataModel.Source != 'SHOPAPP'" class="w-2/3 flex gap-4 items-center">
+                            <div *ngIf="!(dataModel.Source == 'SHOPAPP' && dataModel.PaymentJournal?.Type == 'bank')" class="w-2/3 flex gap-4 items-center">
                                 <span class="mr-1">{{dataModel.AmountDeposit || 0 | numberCustom}}đ </span>
                             </div>
 
-                            <div *ngIf="dataModel.Source == 'SHOPAPP'" class="w-2/3 flex gap-4 items-center">
+                            <div *ngIf="dataModel.Source == 'SHOPAPP' && dataModel.PaymentJournal?.Type == 'bank'" class="w-2/3 flex gap-4 items-center">
                               <p class="w-full" *ngIf="dataModel.IsDeposited">
                                 <span class="mr-1">{{dataModel.AmountDeposit || 0 | numberCustom}}đ </span>
                                 <span tds-tooltip="Hình ảnh thanh toán" (click)="openImages()" class="tdsi-images-fill text-neutral-1-600 hover:text-primary-1 text-xl"></span>
@@ -501,7 +501,6 @@
                                     <span class="tdsi-money-2-fill text-[18px]" style="color: rgb(68, 128, 241)"></span>
                                   </span>
                                 </div>
-
                               </div>
                             </div>
                         </div>

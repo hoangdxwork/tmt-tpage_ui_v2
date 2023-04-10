@@ -17,6 +17,7 @@ import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { CarrierListOrderDTO, GetListOrderIdsDTO, PartnerListOrderDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
 import { CreateBillDefaultErrorDTO } from '@app/dto/order/default-error.dto';
 import { DeliveryCarrierV2Service } from '@app/services/delivery-carrier-v2.service';
+import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
 
 @Component({
   selector: 'create-bill-fast',
@@ -30,6 +31,8 @@ export class CreateBillFastComponent implements OnInit {
   @Input() lstData!: GetListOrderIdsDTO[];
 
   _form!: FormGroup;
+  companyCurrents!: CompanyCurrentDTO;
+  phoneRegex!:string;
 
   lstPayment: { Id:number, Payment:RegisterPayment }[] = [];
   lstCarriers: Array<CarrierListOrderDTO> = [];
@@ -71,6 +74,7 @@ export class CreateBillFastComponent implements OnInit {
 
   ngOnInit(): void {
     if(TDSHelperArray.hasListValue(this.lstData)) {
+      this.loadCurrentCompany();
       this.loadDeliveryCarrier();
       this.loadTransport();
 
@@ -109,6 +113,21 @@ export class CreateBillFastComponent implements OnInit {
         this.message.error(err?.error?.mesage);
       }
     })
+  }
+
+  loadCurrentCompany() {
+    this.sharedService.setCurrentCompany();
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: CompanyCurrentDTO) => {
+        this.companyCurrents = res;
+        if(this.companyCurrents?.Configs){
+          this.phoneRegex = JSON.parse(this.companyCurrents.Configs)?.PhoneRegex;
+        }
+      },
+      error: (error: any) => {
+        this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+      }
+    });
   }
 
   onChangeCarrier(carrier: CarrierListOrderDTO, index: number) {
@@ -384,14 +403,13 @@ export class CreateBillFastComponent implements OnInit {
   }
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any, index: number) {
+    if(index < 0) return;
     let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
 
-    if(feeShip > 0 && index > -1) {
+    if(feeShip != null && feeShip >= 0) {
       this.lstData[index].DeliveryPrice = feeShip;
-    }
-
-    if(feeShip == 0 && index > -1) {
-      let deliveryPrice = this.lstData[index]?.Carrier?.Config_DefaultFee || 0;
+    } else {
+      let deliveryPrice = this.lstData[index]?.Carrier?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
       this.lstData[index].DeliveryPrice = deliveryPrice;
     }
   }

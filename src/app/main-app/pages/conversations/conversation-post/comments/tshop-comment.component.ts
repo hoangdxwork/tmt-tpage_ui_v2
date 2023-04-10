@@ -199,7 +199,7 @@ export class TShopCommentComponent implements OnInit, OnChanges, OnDestroy {
       this.retryFetchComments();
     }, 3 * 1000);
 
-    if(this.socketFetchCommentsTimer && this.vsStartIndex <= 1) {
+    if(this.socketFetchCommentsTimer && this.vsStartIndex <= 1 && !TDSHelperString.hasValueString(this.innerText)) {
       this.loadDataFetchComment();
     }
   }
