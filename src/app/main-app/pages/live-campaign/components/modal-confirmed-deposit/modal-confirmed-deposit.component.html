@@ -13,7 +13,7 @@
         <div class="col-span-2 text-title-1 font-semibold">{{data?.PartnerDisplayName}}</div>
 
         <div>Tổng tiền:</div>
-        <div class="col-span-2 text-title-1 font-semibold">{{data?.AmountTotal || 0 | numberCustom}}đ</div>
+        <div class="col-span-2 text-title-1 font-semibold">{{data?.AmountTotal || 0 | numberCustom}} đ</div>
 
         <div>Tiền cọc</div>
         <div class="col-span-2 text-title-1 font-semibold flex space-x-2 items-center">
@@ -26,7 +26,10 @@
         </div>
 
         <div>Tiền thu hộ:</div>
-        <div class="col-span-2 text-title-1 font-semibold">{{data?.CashOnDelivery || 0 | numberCustom}}đ</div>
+        <div class="col-span-2 text-title-1 font-semibold">{{data?.CashOnDelivery || 0 | numberCustom}} đ</div>
+
+        <div>Phí ship mặc định:</div>
+        <div class="col-span-2 text-title-1 font-semibold">{{data?.DeliveryPrice || 0 | numberCustom}} đ</div>
 
       </div>
 
