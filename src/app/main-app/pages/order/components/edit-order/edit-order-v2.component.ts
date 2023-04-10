@@ -1301,7 +1301,7 @@ export class EditOrderV2Component implements OnInit {
     if(this.saleModel) {
       let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType || null);
 
-      if(feeShip != null) {
+      if(feeShip != null && feeShip >= 0) {
         this.saleModel.DeliveryPrice = feeShip;
         this.coDAmount();
       } else {
