@@ -580,6 +580,7 @@ export interface FastSaleOrderModelDTO {
   ShipmentDetailsAship: ShipmentDetailsAship;
   ExtraProperties: ExtraProperties;
   Error?: any;
+  PaymentJournalType?: any;
 }
 
 export interface PartnerCategory {
