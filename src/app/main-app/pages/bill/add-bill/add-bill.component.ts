@@ -1383,7 +1383,7 @@ export class AddBillComponent implements OnInit {
 
   setFeeShipFromTransport(cityCode: any, districtCode: any, deliveryType: any) {
     let feeShip = this.sharedService.setFeeShip(cityCode, districtCode, this.lstTransport, deliveryType);
-    if(feeShip > 0) {
+    if(feeShip != null) {
       this._form.controls["DeliveryPrice"].setValue(feeShip);
       this.coDAmount();
     } else {
@@ -1816,10 +1816,11 @@ export class AddBillComponent implements OnInit {
 
     this.mappingStreet();
 
+    let ship_Receiver = this._form.controls['Ship_Receiver'].value;
     let item: ResultCheckAddressDTO = {
-        Address: this._form.controls['Ship_Receiver'].value?.Street,
-        CityCode: city ? city.code : null,
-        CityName: city ? city.name : null,
+        Address: ship_Receiver?.Street,
+        CityCode: ship_Receiver?.City?.code || null,
+        CityName: ship_Receiver?.City?.name || null,
         DistrictCode: null,
         DistrictName: null,
         WardCode: null,
@@ -1847,13 +1848,14 @@ export class AddBillComponent implements OnInit {
       this.loadWards(district.code);
     }
     this.mappingStreet();
-
+    
+    let ship_Receiver = this._form.controls['Ship_Receiver'].value;
     let item: ResultCheckAddressDTO = {
-        Address: this._form.controls['Ship_Receiver'].value?.Street,
-        CityCode: district ? district.cityCode : null,
-        CityName:  district ? district.cityName : null,
-        DistrictCode: district ? district.code : null,
-        DistrictName: district ? district.name : null,
+        Address: ship_Receiver?.Street,
+        CityCode: ship_Receiver?.City?.code || null,
+        CityName:  ship_Receiver?.City?.name || null,
+        DistrictCode: ship_Receiver?.District?.code || null,
+        DistrictName: ship_Receiver?.District?.name || null,
         WardCode: null,
         WardName: null
     } as any;
@@ -1875,14 +1877,15 @@ export class AddBillComponent implements OnInit {
     }
     this.mappingStreet();
 
+    let ship_Receiver = this._form.controls['Ship_Receiver'].value;
     let item: ResultCheckAddressDTO = {
-        Address: this._form.controls['Ship_Receiver'].value?.Street,
-        CityCode: ward ? ward.cityCode : null,
-        CityName: ward ? ward.cityName : null,
-        DistrictCode: ward ? ward.districtCode : null,
-        DistrictName: ward ? ward.districtName : null,
-        WardCode: ward ? ward.code : null,
-        WardName: ward ? ward.name : null
+        Address: ship_Receiver?.Street,
+        CityCode: ship_Receiver?.City?.code || null,
+        CityName: ship_Receiver?.City?.name || null,
+        DistrictCode: ship_Receiver?.District?.code || null,
+        DistrictName: ship_Receiver?.District?.name || null,
+        WardCode: ship_Receiver?.Ward?.code || null,
+        WardName: ship_Receiver?.Ward?.name || null
     } as any;
 
     this.setAddress(item)
@@ -1892,16 +1895,17 @@ export class AddBillComponent implements OnInit {
     if(event) {
       this._form.controls['Street'].setValue(event.target.value);
 
+      let ship_Receiver = this._form.controls['Ship_Receiver'].value;
       let item: ResultCheckAddressDTO = {
         Telephone: null,
-        Address: this._form.controls['Ship_Receiver'].value?.Street,
+        Address: ship_Receiver?.Street,
         ShortAddress: '',
-        CityCode: this._form.controls['Ship_Receiver'].value?.City?.code,
-        CityName: this._form.controls['Ship_Receiver'].value?.City?.name,
-        DistrictCode: this._form.controls['Ship_Receiver'].value?.District?.code,
-        DistrictName: this._form.controls['Ship_Receiver'].value?.District?.name,
-        WardCode: this._form.controls['Ship_Receiver'].value?.Ward?.code,
-        WardName: this._form.controls['Ship_Receiver'].value?.Ward?.name,
+        CityCode: ship_Receiver?.City?.code || null,
+        CityName: ship_Receiver?.City?.name || null,
+        DistrictCode: ship_Receiver?.District?.code || null,
+        DistrictName: ship_Receiver?.District?.name || null,
+        WardCode: ship_Receiver?.Ward?.code || null,
+        WardName: ship_Receiver?.Ward?.name || null,
         Score: 0
       }
       this.setAddress(item);

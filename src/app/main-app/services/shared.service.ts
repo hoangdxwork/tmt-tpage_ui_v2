@@ -122,38 +122,38 @@ export class SharedService extends BaseSevice {
     return this._getTransportsConfigsSubject$.asObservable();
   }
 
-  setFeeShip(cityCode: any, districtCode: any, lstTransport: TransportConfigsDto[], deliveryType: any) {
-    if(!TDSHelperString.hasValueString(cityCode)) return 0;
+  setFeeShip(cityCode: any, districtCode: any, lstTransport: TransportConfigsDto[], deliveryType: any) {debugger
+    if(!TDSHelperString.hasValueString(cityCode)) return null;
+    
+    let exist1 = lstTransport.filter(x => x.ProvinceId == cityCode);
+    if(exist1 && exist1.length == 0) return null;
 
-        let exist1 = lstTransport.filter(x => x.ProvinceId == cityCode);
-        if(exist1 && exist1.length == 0) return 0;
+    if(exist1 && exist1.length > 0) {
+      let exist2 = exist1.filter(x => x.DistrictId == districtCode && TDSHelperString.hasValueString(districtCode));
+      
+      if(exist2 && exist2.length == 0) {
+        let exist3 = exist1.filter(x => !TDSHelperString.hasValueString(x.DistrictId));
 
-        if(exist1 && exist1.length > 0) {
-          let exist2 = exist1.filter(x => x.DistrictId == districtCode);
+        if(exist3 && exist3.length == 0) return null;
+        if(this.checkProviders(exist3[0], deliveryType)) return exist3[0].FeeShip;
+        return null;
+      };
 
-          if(exist2 && exist2.length == 0) {
-            let exist3 = exist1.filter(x => !TDSHelperString.hasValueString(x.DistrictId));
+      if(exist2 && exist2.length > 0) {
+        let feeShip: number|null = null;
 
-            if(exist3 && exist3.length == 0) return 0;
-            if(this.checkProviders(exist3[0], deliveryType)) return exist3[0].FeeShip;
-            return 0;
+        exist2.map(x => {
+          if(this.checkProviders(x, deliveryType)) {
+            feeShip = x.FeeShip;
+            return;
           };
+        });
+        return feeShip;
+      }
 
-          if(exist2 && exist2.length > 0) {
-            let feeShip = 0;
-
-            exist2.map(x => {
-              if(this.checkProviders(x, deliveryType)) {
-                feeShip = x.FeeShip;
-                return;
-              };
-            });
-            return feeShip;
-          }
-
-          return 0;
-        }
-        return 0;
+      return null;
+    }
+    return null;
   }
 
   public checkProviders(data: TransportConfigsDto, deliveryType: any) {
